@@ -1,88 +1,118 @@
-# Phase 3 final verification report
+# Phase 3 final acceptance audit report
 
 Branch: `feature/phase3-warehouse-installation`.
-Worktree: `/Users/akilan/Downloads/SOLOPS-phase3`.
 Acceptance: a working and verified Phase 1–3 backend. No frontend and
 no QA-owned changes were made. Phase 4 was not started.
 
-## Environment proof (executed commands)
+Status words: VERIFIED (proven by an executed check this session),
+PARTIAL (works, with a named coverage or capability gap), BLOCKED
+(could not be checked, with the reason), NOT IMPLEMENTED (explicitly
+out of scope).
 
-1. `pwd -P` returns `/Users/akilan/Downloads/SOLOPS-phase3`.
-2. `git branch --show-current` returns
+## Environment proof
+
+1. VERIFIED — `pwd -P` returns
+   `/Users/akilan/Downloads/SOLOPS-phase3`.
+2. VERIFIED — `git branch --show-current` returns
    `feature/phase3-warehouse-installation`.
-3. The worktree is writable (created and removed a probe file).
-4. PostgreSQL 15 (Homebrew, port 5432) accepts connections; both
-   `solarops` and `solarops_test` answer. Note: the default shell
-   sandbox blocks TCP to 127.0.0.1, so every database-backed command
-   in this session ran with escalated sandbox permission. That is a
-   sandbox property, not a repository or database problem.
-5. `uv sync --frozen` completes with `UV_CACHE_DIR=/tmp/uv-cache-phase3`
-   (the home-directory cache is blocked in this environment). The
-   isolated `solarops_test` database exists and the test guard refuses
-   any other database name.
-6. The pre-existing Phase 1–2 suite passed before any Phase 3 edit:
-   46 passed, `ruff check` clean.
+3. VERIFIED — the worktree is writable (probe file created and
+   removed; this session also wrote, migrated, and committed here).
+4. VERIFIED — PostgreSQL 15 on port 5432 answers for `solarops` and
+   `solarops_test`. Note: the default shell sandbox blocks TCP to
+   127.0.0.1, so every database-backed command ran with escalated
+   sandbox permission. Sandbox property, not a repository problem.
+5. VERIFIED — `uv sync --frozen` completes with
+   `UV_CACHE_DIR=/tmp/uv-cache-phase3`; the test guard refuses any
+   database except `solarops_test`.
+6. VERIFIED — the 46 pre-existing Phase 1–2 tests passed before any
+   Phase 3 edit and still pass now.
 
-## What was built
+## Business-journey coverage (all VERIFIED, PostgreSQL-backed)
 
-- Warehouse inventory: stock operations (`draft`/`ready`/`done`/
-  `cancelled`), ledger-only on-hand, reservations, serial scans,
-  replenishment request/decision.
-- Picking (delivery creation with availability check), delivery
-  state machine, installation scheduling slots, technician job
-  execution (arrival, customer OTP, evidence, signature, completion),
-  and warranty activation/void.
-- Integration: order confirmation auto-creates reservations; delivery
-  confirmation consumes them and activates the warranty.
-- Contract updates: `contracts/generated/openapi.json` regenerated
-  from the app; `docs/api/API_CONTRACTS.md` lists the new routes as
-  implemented.
+| Journey step | Result | Proof |
+| --- | --- | --- |
+| Enquiry to confirmed order (Phase 1–2 intact) | VERIFIED | 46 unchanged tests pass |
+| Order auto-creates material reservations | VERIFIED | `test_confirmed_order_creates_reservations` |
+| Receipt/transfer/adjustment ledger math | VERIFIED | receipt, failed-ledger, location tests |
+| Two orders competing for one stock lot | VERIFIED | `test_competing_orders_cannot_pick_the_same_stock`: second gets 409, no rows, loser stays reserved |
+| Failed pick creates nothing | VERIFIED | delivery/ledger counts unchanged in void test |
+| Failed validation leaves ledger unchanged | VERIFIED | `test_failed_transfer_and_delivery_leave_ledger_unchanged` |
+| Concurrent same-operation validation, one winner | VERIFIED | `test_concurrent_validation_has_a_single_winner` |
+| Concurrent cross-operation picks serialize | VERIFIED | `test_concurrent_picks_serialize_on_component_locks` |
+| Duplicate delivery confirmation rejected | VERIFIED | `test_duplicate_delivery_confirmation_fails` |
+| Delivery cancel restocks MAIN | VERIFIED | `test_delivery_cancel_restocks_main` |
+| Location consistency (SITE needs transfer) | VERIFIED | `test_site_stock_must_transfer_to_main_before_pick` |
+| Serial scan uniqueness | VERIFIED | `test_serial_scan_is_unique_and_rejects_done_operations` |
+| Serial assign, mismatch, install on confirm | VERIFIED | `test_serial_assign_install_and_mismatch` |
+| Unauthorized technician blocked (404) | VERIFIED | `test_foreign_technician_cannot_touch_assigned_job` |
+| Expired and reused OTP rejected | VERIFIED | `test_expired_and_reused_customer_otp_fail` |
+| Completion gates (OTP, evidence, signature) | VERIFIED | `test_job_completion_requires_otp_evidence_and_signature` |
+| Customer cannot touch warehouse | VERIFIED | security test, 403/404 asserts |
+| Warranty created at confirm, void guarded | VERIFIED | confirm, void, duplicate-void asserts |
+| Full order-to-completed-installation journey | VERIFIED | `test_cross_phase_order_to_completed_installation` |
+| Migration from empty + downgrade round-trip | VERIFIED | `solarops_fresh` disposable check (see below) |
 
-## Test evidence (PostgreSQL-backed, all observed this session)
+## Migration check on a disposable database (VERIFIED)
 
-- Full suite: **58 passed** (`apps/api`, `uv run pytest`).
-  Phase 1–2 files: 46 passed, unchanged. New
-  `tests/test_phase3_warehouse_installation.py`: **12 passed**.
-- `ruff check app tests scripts`: clean.
-- Alembic `upgrade head` applies `d5f1a2b3c4e5` on the development
-  database; the test session migrates from an empty schema each run.
-- Coverage by layer: unit (ledger math, transitions), integration
-  (order to completed installation end to end), concurrency (two
-  racing validations, one winner), security (customer 403s,
-  staff-decision 403, foreign-job 404s), cross-phase (enquiry through
-  survey, quotation, cash payment, order, reservation, receipt,
-  delivery, warranty, scheduling, job).
-- OpenAPI export reproduces the committed contract file content
-  (exported from the running app in this session).
+`solarops_fresh` was created (superuser `akilan` via the `/tmp`
+socket; the `solarops` role lacks `CREATEDB`), `alembic upgrade head`
+applied all four revisions from empty, `downgrade -1` plus
+`upgrade head` round-tripped, seeds held 7 roles, 12 packages and
+2 locations (`MAIN`, `SITE`), and the database was dropped
+afterwards. Development data was never touched: `solarops` still
+holds its 7 users, `solarops_test` is rebuilt by the test session.
 
-## Defects found and fixed
+## Defects found and fixed this audit
 
-1. Deliveries skipped the stock availability check: a delivery could
-   be prepared for an order with no stock on hand. Fixed in
-   `_check_pick_availability` (`fulfillment_service.py`); new test
-   `test_picking_without_stock_fails` proves the 409.
-2. Reservations were created but never consumed: `consume_reservations`
-   was dead code. Delivery confirmation now consumes them in the same
-   transaction as the warranty activation; the warranty test asserts
-   the `consumed` state.
-3. Dead `issue_job_otp` helper duplicated OTP issuance. Removed; OTP
-   issuance lives only in `installation_service.create_job`.
+1. VERIFIED fixed — deliveries never deducted ledger stock, so two
+   orders could pick the same goods. Creation now checks MAIN
+   on-hand under a component lock and deducts it atomically.
+2. VERIFIED fixed — concurrent validations across operations did not
+   serialize. `lock_components` now locks catalogue rows in sorted
+   order in both `validate_operation` and the pick path.
+3. VERIFIED fixed — serials could never attach to an order
+   (`order_id` stayed null). New `POST /serials/{id}/assign` plus
+   auto-install at delivery confirmation close the loop.
+4. VERIFIED fixed — job reads returned 403 for a foreign technician
+   while writes returned 404, leaking job existence. Reads now
+   return 404, matching the write path.
 
-Each fix was followed by a full green rerun (58 passed).
+## PARTIAL (works, named gap)
 
-## Unverified risks and handoff
+- `threshold_suggestion` has no dedicated test; ledger math around
+  it is covered indirectly.
+- Delivery list filters: the owner-customer path is asserted; staff
+  list paths are exercised but not asserted per role.
+- Same-key idempotent replay is asserted for operations; the
+  delivery replay path returns the original but has no dedicated
+  replay test.
+- Picks deduct from MAIN only. Multi-location allocation is a
+  documented rule, not a silent behavior.
 
-- Browser and frontend checks were not run: the web app is teammate
-  2's scope and QA is teammate 3's.
-- The development database `solarops` was migrated but never reset or
-  deleted, per instructions. `solarops_test` is rebuilt by the test
-  session.
-- Recommended next steps for the other teammates: teammate 2 builds
-  the warehouse, delivery, scheduling, job, and warranty screens
-  against the implemented contract table; teammate 3 runs the
-  independent QA pass and the Playwright enquiry flow.
-- All work is uncommitted in the working tree (local commits were
-  permitted but not required). Files changed or added are listed by
-  `git status`: 3 modified source/contract files plus the migration,
-  2 routers, 2 services, 1 model, 1 schema, 1 test file, and 4 docs.
-  Nothing was pushed, no PR opened, no branch merged.
+## NOT IMPLEMENTED (explicit Phase 4 candidates)
+
+Replenishment auto-receiving, skill-based recommendations,
+dispatcher overrides, customer self-scheduling, partial deliveries
+and returns, serial-level picking (serials attach to orders, not
+delivery lines), historical as-of-date stock queries, no-SMS OTP
+channel beyond the one-time `customer_code`.
+
+## BLOCKED
+
+None for the backend scope. Browser and end-to-end UI checks belong
+to teammate 2 (frontend) and teammate 3 (independent QA) and were
+not attempted here.
+
+## Final gates (this session, observed)
+
+- `uv run ruff check app tests scripts`: clean.
+- `uv run pytest`: 67 passed (46 Phase 1–2 + 21 Phase 3).
+- `scripts/export_openapi.py` reproduces the committed contract.
+- Working tree committed locally; nothing pushed, no PR, no merge.
+
+## Readiness verdict
+
+Backend VERIFIED for the acceptance scope, with the PARTIAL items
+above as the honest residue. The remaining work is teammate 2's
+screens against the implemented contract table and teammate 3's
+independent QA pass — not backend rework.

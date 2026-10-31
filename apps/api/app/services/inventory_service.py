@@ -253,6 +253,14 @@ def cancel_operation(db: Session, user: User, operation_id: uuid.UUID) -> StockO
     return operation
 
 
+def lock_components(db: Session, codes: list[str]) -> None:
+    """Lock catalogue rows in a stable order so concurrent stock writers serialize."""
+    for code in sorted(set(codes)):
+        row = db.scalar(select(CatalogueComponent).where(CatalogueComponent.code == code).with_for_update())
+        if row is None:
+            raise AppError(400, "unknown_component", f"Unknown component {code}.")
+
+
 def validate_operation(db: Session, user: User, operation_id: uuid.UUID) -> StockOperation:
     """Validate a ready operation, writing ledger rows in one transaction."""
     if user.role_code not in WAREHOUSE:
@@ -267,6 +275,7 @@ def validate_operation(db: Session, user: User, operation_id: uuid.UUID) -> Stoc
         raise AppError(404, "not_found", "Stock operation not found.")
     if operation.status != "ready":
         raise AppError(409, "invalid_transition", "Only ready operations validate.")
+    lock_components(db, [line.component_code for line in operation.lines])
     deltas: list[tuple[str, str, Decimal]] = []
     for line in sorted(operation.lines, key=lambda item: (item.component_code, item.from_location or "", item.to_location or "")):
         quantity = Decimal(str(line.quantity))

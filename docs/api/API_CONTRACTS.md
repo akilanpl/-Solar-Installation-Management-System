@@ -73,6 +73,7 @@ Planned routes below are not registered. Calling them returns 404 `not_found`.
 | POST | `/api/v1/stock/reservations` | Cookie | sales, admin, warehouse staff, manager | Reserves an order's material lines. Idempotent per order and component. |
 | GET | `/api/v1/stock/reservations` | Cookie | sales, admin, warehouse staff, manager | Optional `order_id` filter. |
 | POST | `/api/v1/serials/scan` | Cookie | warehouse staff, manager, admin | Registers a serial. 409 `serial_exists`. |
+| POST | `/api/v1/serials/{id}/assign` | Cookie | warehouse staff, manager, admin | Assigns an in-stock serial to an order. 409 on mismatch or reuse. |
 | POST | `/api/v1/replenishment/requests` | Cookie | warehouse staff, manager, admin | `proposed`. |
 | POST | `/api/v1/replenishment/requests/{id}/decision` | Cookie | warehouse manager, admin | `approve` or `reject`. Staff gets 403. |
 | POST | `/api/v1/deliveries` | Cookie | warehouse staff, manager, admin | Picks an order's material lines. 409 `insufficient_stock`. Idempotency-Key required. |
@@ -80,7 +81,8 @@ Planned routes below are not registered. Calling them returns 404 `not_found`.
 | GET | `/api/v1/deliveries/{id}` | Cookie | same as list | |
 | POST | `/api/v1/deliveries/{id}/transit` | Cookie | warehouse staff, manager, admin | Prepared to in transit. |
 | POST | `/api/v1/deliveries/{id}/deliver` | Cookie | warehouse staff, manager, admin | In transit to delivered. |
-| POST | `/api/v1/deliveries/{id}/confirm` | Cookie | warehouse staff, manager, admin, technician | Delivered to confirmed. Consumes reservations and activates the warranty. |
+| POST | `/api/v1/deliveries/{id}/confirm` | Cookie | warehouse staff, manager, admin, technician | Delivered to confirmed. Consumes reservations, installs serials, activates the warranty. |
+| POST | `/api/v1/deliveries/{id}/cancel` | Cookie | warehouse staff, manager, admin | Prepared/in-transit to cancelled. Restocks MAIN. |
 | POST | `/api/v1/scheduling/installations/{id}/slot` | Cookie | sales, admin | Sets a real slot timestamp. |
 | POST | `/api/v1/assignments/recommendations` | Cookie | sales, admin | Ranked technicians. Does not persist an assignment. |
 | POST | `/api/v1/jobs` | Cookie | sales, admin | Creates the installation job. Returns a one-time customer code. |

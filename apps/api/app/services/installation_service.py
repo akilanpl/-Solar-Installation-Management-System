@@ -272,8 +272,10 @@ def get_job(db: Session, user: User, job_id: uuid.UUID) -> InstallationJob:
     order = db.get(SalesOrder, job.order_id)
     if user.role_code in SALES | {"warehouse_staff", "warehouse_manager", "admin", "support"}:
         return job
-    if user.role_code == TECHNICIAN and job.technician_user_id == user.id:
-        return job
+    if user.role_code == TECHNICIAN:
+        if job.technician_user_id == user.id:
+            return job
+        raise AppError(404, "not_found", "Job not found.")
     if user.role_code == "customer" and order is not None and order.customer_user_id == user.id:
         return job
     if user.role_code == "customer":

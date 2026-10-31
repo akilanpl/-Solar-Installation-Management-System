@@ -14,8 +14,11 @@ every state change writes an audit event.
    `draft` -> `ready` -> `done`. Only validation writes `stock_ledger`
    rows, in one transaction.
 3. Picking is delivery creation: `POST /api/v1/deliveries` copies the
-   order's material lines and refuses with `insufficient_stock` when
-   on-hand minus other orders' reservations does not cover the pick.
+   order's material lines, checks MAIN on-hand under a component lock,
+   and deducts it through an internal delivery stock operation in the
+   same transaction. Short stock fails with `insufficient_stock`,
+   leaving no delivery and no ledger rows. Picks deduct from MAIN
+   only; stage SITE stock there with a transfer first.
 4. The delivery moves `prepared` -> `in_transit` -> `delivered` ->
    `confirmed`. Confirmation consumes the reservations and activates a
    five-year warranty in the same transaction.
@@ -28,11 +31,16 @@ every state change writes an audit event.
 
 - `stock_ledger` is the only on-hand source. `GET /api/v1/stock`
   aggregates it. No cached quantity is stored anywhere else.
-- Validation locks the operation row, then checks each line in a stable
+- Validation locks the operation row, then locks the catalogue rows
+  in sorted component order, then checks each line in a stable
   `(component, from, to)` order. A failed check raises before any
   ledger insert, so stock and the ledger stay unchanged.
-- Two concurrent validations serialize on the row lock. The loser gets
-  `invalid_transition`.
+- Two validations of one operation serialize on the row lock (loser
+  gets `invalid_transition`); races across operations serialize on
+  the component locks (loser gets `insufficient_stock`).
+- Delivery creation and cancellation write their own done stock
+  operations (pick deducts MAIN; cancel restocks MAIN), so every
+  ledger movement traces to a stock operation.
 - Quantities are `NUMERIC(14, 4)`. Only adjustments accept negatives,
   and a negative adjustment that would drive stock below zero fails.
 - Operation ids are idempotent per `(created_by, idempotency_key)`.
@@ -101,6 +109,8 @@ every state change writes an audit event.
 
 ## What Phase 3 does not do
 
+- Picks deduct from MAIN only; multi-location allocation is not
+  implemented.
 - No automatic purchase orders: an approved replenishment does not
   create a receipt operation by itself.
 - No skill matrix: recommendations rank by open jobs only.

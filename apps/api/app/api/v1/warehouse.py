@@ -17,6 +17,7 @@ from app.schemas.phase3 import (
     ReplenishmentResponse,
     ReservationCreate,
     ReservationResponse,
+    SerialAssign,
     SerialResponse,
     SerialScanCreate,
     StockLevelResponse,
@@ -216,6 +217,26 @@ def scan_serial(
     )
 
 
+@router.post("/serials/{serial_id}/assign", response_model=SerialResponse)
+def assign_serial(
+    serial_id: UUID,
+    payload: SerialAssign,
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db),
+):
+    row = fulfillment_service.assign_serial(db, user, serial_id, payload.order_id)
+    return SerialResponse(
+        id=row.id,
+        serial_number=row.serial_number,
+        component_code=row.component_code,
+        status=row.status,
+        location_code=row.location_code,
+        order_id=row.order_id,
+        operation_id=row.operation_id,
+        created_at=row.created_at,
+    )
+
+
 @router.post("/replenishment/requests", response_model=ReplenishmentResponse)
 def request_replenishment(
     payload: ReplenishmentCreate,
@@ -313,3 +334,12 @@ def delivery_confirm(
     db: Session = Depends(get_db),
 ):
     return _delivery_payload(fulfillment_service.transition(db, user, delivery_id, "confirmed"))
+
+
+@router.post("/deliveries/{delivery_id}/cancel", response_model=DeliveryResponse)
+def delivery_cancel(
+    delivery_id: UUID,
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db),
+):
+    return _delivery_payload(fulfillment_service.transition(db, user, delivery_id, "cancelled"))

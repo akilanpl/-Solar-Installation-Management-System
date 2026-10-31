@@ -120,6 +120,12 @@ class SerialResponse(BaseModel):
     created_at: datetime
 
 
+class SerialAssign(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    order_id: uuid.UUID
+
+
 class ReplenishmentCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

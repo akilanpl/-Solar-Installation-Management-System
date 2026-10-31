@@ -2347,6 +2347,59 @@
         }
       }
     },
+    "/api/v1/serials/{serial_id}/assign": {
+      "post": {
+        "tags": [
+          "warehouse"
+        ],
+        "summary": "Assign Serial",
+        "operationId": "assign_serial_api_v1_serials__serial_id__assign_post",
+        "parameters": [
+          {
+            "name": "serial_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Serial Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SerialAssign"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SerialResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/replenishment/requests": {
       "post": {
         "tags": [
@@ -2659,6 +2712,49 @@
         ],
         "summary": "Delivery Confirm",
         "operationId": "delivery_confirm_api_v1_deliveries__delivery_id__confirm_post",
+        "parameters": [
+          {
+            "name": "delivery_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Delivery Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeliveryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/deliveries/{delivery_id}/cancel": {
+      "post": {
+        "tags": [
+          "warehouse"
+        ],
+        "summary": "Delivery Cancel",
+        "operationId": "delivery_cancel_api_v1_deliveries__delivery_id__cancel_post",
         "parameters": [
           {
             "name": "delivery_id",
@@ -5754,6 +5850,21 @@
           "slot_starts_at"
         ],
         "title": "SchedulingSlotUpdate"
+      },
+      "SerialAssign": {
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "order_id"
+        ],
+        "title": "SerialAssign"
       },
       "SerialResponse": {
         "properties": {
