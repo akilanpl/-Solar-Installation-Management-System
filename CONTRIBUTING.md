@@ -69,3 +69,15 @@ If two branches change a migration, do not edit the merged revision in place. Ad
 cd apps/api && uv run ruff check app tests scripts && uv run pytest
 cd apps/web && npm test && npm run typecheck && npm run lint
 ```
+
+## Release gate checkpoint
+
+Enable the repository pre-push hook after cloning:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+The gate requires an explicitly selected disposable PostgreSQL database. Never point it at development or production. For a separate local release database, use the strict `solarops_release_test_YYYYMMDD` naming pattern and set `SOLAROPS_DISPOSABLE_TEST_DATABASE_NAME` to the exact database name as an additional destructive-test opt-in.
+
+`.pushgate/run.sh` executes the available backend/frontend checks and writes machine-readable evidence. Missing full browser, coverage/mutation, performance/resilience and business acceptance evidence currently prevents PASS. This is an incomplete campaign, not a release certification. The added CI gate deliberately remains blocking until these missing checks are implemented and run. Require its check through normal repository protection settings before releasing; do not bypass it.

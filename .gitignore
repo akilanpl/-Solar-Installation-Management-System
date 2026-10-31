@@ -44,3 +44,7 @@ pgdata/
 dist/
 build/
 *.tsbuildinfo
+
+# Release gate evidence stays local; sanitized reports are in docs/release.
+.pushgate/reports/
+apps/web/.next-release-preview/
