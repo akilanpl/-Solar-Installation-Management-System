@@ -277,29 +277,30 @@ export function TechnicianMapPage() {
               <svg
                 className="standalone-vector-map-svg"
                 viewBox="0 0 1024 536"
-                preserveAspectRatio="none"
+                preserveAspectRatio="xMidYMid meet"
                 style={{ transform: `scale(${zoomLevel})`, transition: 'transform 0.25s ease' }}
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <defs>
-                  <filter id="fullNeonGlow" x="-30%" y="-30%" width="160%" height="160%">
-                    <feDropShadow dx="0" dy="0" stdDeviation="5" floodColor="#0284c7" floodOpacity="0.85" />
-                    <feDropShadow dx="0" dy="0" stdDeviation="10" floodColor="#38bdf8" floodOpacity="0.6" />
+                  {/* Soft aura for continuous navigation guide line */}
+                  <filter id="fullRouteAura" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="1" stdDeviation="2.5" floodColor="#1a73e8" floodOpacity="0.4" />
                   </filter>
 
-                  <filter id="fullPinShadow" x="-30%" y="-30%" width="160%" height="160%">
-                    <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#000000" floodOpacity="0.45" />
+                  {/* Clean card shadow for floating white pin labels */}
+                  <filter id="fullPinShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#0f172a" floodOpacity="0.18" />
                   </filter>
                 </defs>
 
-                {/* BASE MAP LAYER: The user's city map */}
+                {/* BASE MAP LAYER: Uncompressed 1024x536 Real City Map */}
                 <image
                   href="/maps/dispatch-map.jpg"
                   x="0"
                   y="0"
                   width="1024"
                   height="536"
-                  preserveAspectRatio="none"
+                  preserveAspectRatio="xMidYMid meet"
                   className={`fullmap-raster-base ${activeLayer === 'night' ? 'night-filter' : ''}`}
                 />
 
@@ -318,100 +319,90 @@ export function TechnicianMapPage() {
                   </g>
                 )}
 
-                {/* ACTIVE GPS NAVIGATION ROUTE */}
+                {/* ACTIVE GPS NAVIGATION GUIDE LINES: Thin continuous lines following actual streets */}
                 {activeStop.id === 'stop-1' && (
-                  <g>
+                  <g filter="url(#fullRouteAura)">
                     <path
                       d="M 440 400 L 560 335 L 560 200"
                       fill="none"
-                      stroke="#38bdf8"
-                      strokeWidth="10"
+                      stroke="#93c5fd"
+                      strokeWidth="6"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       opacity="0.5"
-                      filter="url(#fullNeonGlow)"
                     />
                     <path
                       d="M 440 400 L 560 335 L 560 200"
                       fill="none"
-                      stroke="#0284c7"
-                      strokeWidth="5"
+                      stroke="#1d4ed8"
+                      strokeWidth="2.8"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeDasharray="10 6"
-                      className="anim-dark-gps-route"
                     />
                   </g>
                 )}
 
                 {activeStop.id === 'stop-2' && (
-                  <g>
+                  <g filter="url(#fullRouteAura)">
                     <path
                       d="M 440 400 L 680 270 L 710 240"
                       fill="none"
-                      stroke="#38bdf8"
-                      strokeWidth="10"
+                      stroke="#93c5fd"
+                      strokeWidth="6"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       opacity="0.5"
-                      filter="url(#fullNeonGlow)"
                     />
                     <path
                       d="M 440 400 L 680 270 L 710 240"
                       fill="none"
-                      stroke="#0284c7"
-                      strokeWidth="5"
+                      stroke="#1d4ed8"
+                      strokeWidth="2.8"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeDasharray="10 6"
-                      className="anim-dark-gps-route"
                     />
                   </g>
                 )}
 
                 {activeStop.id === 'stop-3' && (
-                  <g>
+                  <g filter="url(#fullRouteAura)">
                     <path
                       d="M 440 400 L 740 240 L 870 240 L 870 310"
                       fill="none"
-                      stroke="#a855f7"
-                      strokeWidth="10"
+                      stroke="#c084fc"
+                      strokeWidth="6"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      opacity="0.5"
-                      filter="url(#fullNeonGlow)"
+                      opacity="0.45"
                     />
                     <path
                       d="M 440 400 L 740 240 L 870 240 L 870 310"
                       fill="none"
-                      stroke="#9333ea"
-                      strokeWidth="5"
+                      stroke="#7e22ce"
+                      strokeWidth="2.8"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeDasharray="10 6"
-                      className="anim-dark-gps-route"
                     />
                   </g>
                 )}
 
-                {/* TECHNICIAN BEACON */}
-                <g transform="translate(440, 400)" className="dark-beacon-group" filter="url(#fullPinShadow)">
-                  <circle cx="0" cy="0" r="26" fill="#0284c7" opacity="0.25" className="beacon-radar-wave" />
-                  <circle cx="0" cy="0" r="15" fill="#0369a1" opacity="0.35" />
-                  <circle cx="0" cy="0" r="8.5" fill="#0284c7" stroke="#ffffff" strokeWidth="2.5" />
-                  <polygon points="0,-12 4,-5 -4,-5" fill="#ffffff" />
+                {/* TECHNICIAN BEACON (Paseo de la Reforma / Rio Lerma) */}
+                <g transform="translate(440, 400)" className="tech-beacon-marker" filter="url(#fullPinShadow)">
+                  <circle cx="0" cy="0" r="22" fill="#0284c7" opacity="0.2" className="beacon-pulse-circle" />
+                  <circle cx="0" cy="0" r="13" fill="#0284c7" opacity="0.3" />
+                  <circle cx="0" cy="0" r="7.5" fill="#0284c7" stroke="#ffffff" strokeWidth="2.5" />
+                  <polygon points="0,-10 3.5,-4 -3.5,-4" fill="#ffffff" />
                   <rect
                     x="-75"
-                    y="-38"
+                    y="-36"
                     width="150"
-                    height="24"
-                    rx="12"
-                    fill="#0f172a"
+                    height="22"
+                    rx="11"
+                    fill="#ffffff"
                     stroke="#0284c7"
                     strokeWidth="1.2"
-                    opacity="0.95"
                   />
-                  <text x="0" y="-23" fill="#38bdf8" fontSize="11" fontWeight="700" textAnchor="middle">
+                  <text x="0" y="-21" fill="#0369a1" fontSize="10.5" fontWeight="700" textAnchor="middle">
                     Technician Live (Karthik)
                   </text>
                 </g>
@@ -424,26 +415,25 @@ export function TechnicianMapPage() {
                   onClick={() => setActiveStopId('stop-1')}
                   filter="url(#fullPinShadow)"
                 >
-                  <circle cx="0" cy="0" r="24" fill="#ef4444" opacity="0.25" className="marker-sonar-pulse" />
+                  <circle cx="0" cy="0" r="20" fill="#ef4444" opacity="0.22" className="beacon-pulse-circle" />
                   <path
-                    d="M0 -28 C-10 -28 -18 -20 -18 -10 C-18 4 0 18 0 18 C0 18 18 4 18 -10 C18 -20 10 -28 0 -28 Z"
-                    fill="#ef4444"
+                    d="M0 -26 C-9 -26 -16 -19 -16 -10 C-16 3 0 16 0 16 C0 16 16 3 16 -10 C16 -19 9 -26 0 -26 Z"
+                    fill="#ea4335"
                     stroke="#ffffff"
                     strokeWidth="2"
                   />
-                  <circle cx="0" cy="-10" r="5" fill="#ffffff" />
+                  <circle cx="0" cy="-10" r="4.5" fill="#ffffff" />
                   <rect
-                    x="-75"
-                    y="-60"
-                    width="150"
-                    height="26"
-                    rx="13"
-                    fill="#0f172a"
-                    stroke="#ef4444"
-                    strokeWidth="1.2"
-                    opacity="0.95"
+                    x="-78"
+                    y="-56"
+                    width="156"
+                    height="24"
+                    rx="12"
+                    fill="#ffffff"
+                    stroke="#ea4335"
+                    strokeWidth="1.5"
                   />
-                  <text x="0" y="-43" fill="#ffffff" fontSize="11" fontWeight="800" textAnchor="middle">
+                  <text x="0" y="-40" fill="#991b1b" fontSize="10.5" fontWeight="800" textAnchor="middle">
                     Arun Kumar · E-04 Red LED
                   </text>
                 </g>
@@ -455,26 +445,25 @@ export function TechnicianMapPage() {
                   onClick={() => setActiveStopId('stop-2')}
                   filter="url(#fullPinShadow)"
                 >
-                  <circle cx="0" cy="0" r="20" fill="#0284c7" opacity="0.22" />
+                  <circle cx="0" cy="0" r="18" fill="#0284c7" opacity="0.22" />
                   <path
                     d="M0 -26 C-9 -26 -16 -19 -16 -10 C-16 3 0 16 0 16 C0 16 16 3 16 -10 C16 -19 9 -26 0 -26 Z"
-                    fill="#0284c7"
+                    fill="#1a73e8"
                     stroke="#ffffff"
                     strokeWidth="2"
                   />
                   <circle cx="0" cy="-10" r="4.5" fill="#ffffff" />
                   <rect
-                    x="-70"
+                    x="-72"
                     y="-56"
-                    width="140"
+                    width="144"
                     height="24"
                     rx="12"
-                    fill="#0f172a"
-                    stroke="#0284c7"
-                    strokeWidth="1.2"
-                    opacity="0.95"
+                    fill="#ffffff"
+                    stroke="#1a73e8"
+                    strokeWidth="1.5"
                   />
-                  <text x="0" y="-40" fill="#ffffff" fontSize="10.5" fontWeight="700" textAnchor="middle">
+                  <text x="0" y="-40" fill="#1e40af" fontSize="10" fontWeight="700" textAnchor="middle">
                     Villa 12 · Structure Markings
                   </text>
                 </g>
@@ -486,7 +475,7 @@ export function TechnicianMapPage() {
                   onClick={() => setActiveStopId('stop-3')}
                   filter="url(#fullPinShadow)"
                 >
-                  <circle cx="0" cy="0" r="20" fill="#9333ea" opacity="0.22" />
+                  <circle cx="0" cy="0" r="18" fill="#9333ea" opacity="0.22" />
                   <path
                     d="M0 -26 C-9 -26 -16 -19 -16 -10 C-16 3 0 16 0 16 C0 16 16 3 16 -10 C16 -19 9 -26 0 -26 Z"
                     fill="#9333ea"
@@ -495,17 +484,16 @@ export function TechnicianMapPage() {
                   />
                   <circle cx="0" cy="-10" r="4.5" fill="#ffffff" />
                   <rect
-                    x="-75"
+                    x="-82"
                     y="-56"
-                    width="150"
+                    width="164"
                     height="24"
                     rx="12"
-                    fill="#0f172a"
+                    fill="#ffffff"
                     stroke="#9333ea"
-                    strokeWidth="1.2"
-                    opacity="0.95"
+                    strokeWidth="1.5"
                   />
-                  <text x="0" y="-40" fill="#ffffff" fontSize="10.5" fontWeight="700" textAnchor="middle">
+                  <text x="0" y="-40" fill="#6b21a8" fontSize="10" fontWeight="700" textAnchor="middle">
                     TechSpark · 10kW Commercial DB
                   </text>
                 </g>

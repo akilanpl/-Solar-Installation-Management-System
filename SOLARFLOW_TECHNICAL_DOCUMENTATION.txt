@@ -2083,3 +2083,40 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+36. UNCOMPRESSED MAP ASPECT RATIO, DASHBOARD THEME ALIGNMENT & CONTINUOUS ROUTE LINES
+--------------------------------------------------------------------------------
+- Date & Context:
+  Addressed user feedback on the Field Technician Site Map (media_1793456637533_82093952.png):
+  1. The map image appeared vertically squashed/compressed due to fixed container heights
+     and preserveAspectRatio="none".
+  2. The dark pitch-black container theme clashed with the rest of the clean Bento light dashboard cards.
+  3. The thick dashed navigation lines needed to be replaced with clean, continuous solid guide lines
+     following real city streets.
+
+- Key Architecture & Visual Elements:
+  1. Natural Uncompressed Aspect Ratio (TechnicianSiteMap.jsx, TechnicianMapPage.jsx):
+     - Established exact 1024:536 intrinsic geometry with aspect-ratio: 1024 / 536; and
+       preserveAspectRatio="xMidYMid meet" across both SVG and raster <image> nodes.
+     - Fully eliminated vertical and horizontal image distortion.
+  2. Bento Dashboard Theme Alignment (TechnicianSiteMap.css, TechnicianMapPage.css):
+     - Container: Replaced dark canvas with clean Bento card styling (#ffffff, border #edf0f5,
+       shadow 0 4px 18px rgba(0,0,0,0.03)).
+     - Typography: Headings in #0f172a, subtext in #64748b.
+     - Controls & HUD: Glassmorphic frost chips (background: rgba(255, 255, 255, 0.94); border: 1px solid rgba(226, 232, 240, 0.9); color: #0f172a;).
+     - Stop Cards: Crisp white/blue cards (#eff6ff, border #3b82f6 on active).
+  3. Sleek Continuous Route Guide Lines:
+     - Replaced thick dashed lines (strokeDasharray="10 6", 5px) with continuous solid turn-by-turn
+     guide lines (strokeWidth="2.8", stroke="#1d4ed8", round caps & joins) and a soft aura (strokeWidth="6" opacity="0.5").
+     - Clean white floating tooltips with crisp colored borders and drop shadows for technician and destination waypoints.
+
+- Files Modified:
+  * apps/web/src/components/TechnicianSiteMap/TechnicianSiteMap.jsx (Modified)
+  * apps/web/src/components/TechnicianSiteMap/TechnicianSiteMap.css (Modified)
+  * apps/web/src/pages/Technician/TechnicianMapPage.jsx (Modified)
+  * apps/web/src/pages/Technician/TechnicianMapPage.css (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================

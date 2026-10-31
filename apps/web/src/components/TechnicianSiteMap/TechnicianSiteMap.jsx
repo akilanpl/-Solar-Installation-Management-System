@@ -12,12 +12,10 @@ import {
   Wrench,
   ShieldCheck,
   Maximize2,
-  Layers,
   ZoomIn,
   ZoomOut,
   Crosshair,
-  Sun,
-  Moon,
+  Radio,
 } from 'lucide-react';
 import { useRouter } from '../../router/Router';
 import './TechnicianSiteMap.css';
@@ -98,7 +96,6 @@ export function TechnicianSiteMap({ onCheckIn, onToast, isStandalone = false }) 
   const { navigate } = useRouter();
   const [selectedStopId, setSelectedStopId] = useState('stop-1');
   const [arrivedStops, setArrivedStops] = useState({});
-  const [mapMode, setMapMode] = useState('street'); // 'street' | 'night'
   const [zoomLevel, setZoomLevel] = useState(1);
 
   const activeStop = STOPS.find((s) => s.id === selectedStopId) || STOPS[0];
@@ -135,52 +132,32 @@ export function TechnicianSiteMap({ onCheckIn, onToast, isStandalone = false }) 
 
   return (
     <div
-      className={`tech-map-dark-container ${isStandalone ? 'standalone-mode' : ''} mode-${mapMode}`}
+      className={`tech-map-dashboard-container ${isStandalone ? 'standalone-mode' : ''}`}
       aria-label="Field Technician Customer Site Map"
     >
-      {/* Header Bar */}
-      <div className="tech-dark-header">
-        <div>
-          <div className="tech-dark-title-row">
-            <Navigation size={18} color="#0284c7" />
-            <h3 className="tech-dark-title">Field Dispatch & Navigation Map</h3>
-            <span className="dark-theme-badge">Live City Road Map</span>
+      {/* Header Bar matching Dashboard UI Color Theme */}
+      <div className="tech-map-header">
+        <div className="header-title-column">
+          <div className="title-with-badge">
+            <div className="map-nav-icon-bubble">
+              <Navigation size={18} color="#0284c7" />
+            </div>
+            <h3 className="tech-map-title">Field Dispatch & Navigation Map</h3>
+            <span className="live-road-map-chip">Live City Street Network</span>
           </div>
-          <span className="tech-dark-subtitle">
+          <span className="tech-map-subtitle">
             Turn-by-turn street routing to customer premises for on-site diagnosis and fault rectification.
           </span>
         </div>
 
-        <div className="tech-dark-header-actions">
-          {/* Map Layer Switcher: Street Map vs Night Navigation */}
-          <div className="map-layer-selector">
-            <button
-              type="button"
-              className={`layer-btn ${mapMode === 'street' ? 'active' : ''}`}
-              onClick={() => setMapMode('street')}
-              title="Standard Street Map View"
-            >
-              <Sun size={13} />
-              <span>Street</span>
-            </button>
-            <button
-              type="button"
-              className={`layer-btn ${mapMode === 'night' ? 'active' : ''}`}
-              onClick={() => setMapMode('night')}
-              title="Night Navigation View"
-            >
-              <Moon size={13} />
-              <span>Night</span>
-            </button>
-          </div>
-
-          <div className="tech-dark-stats">
-            <span className="dark-stat-chip">
+        <div className="tech-map-actions">
+          <div className="map-stats-group">
+            <span className="stat-pill-item">
               <Car size={13} color="#0284c7" />
               <span>3 Stops · 23.4 km</span>
             </span>
-            <span className="dark-live-gps-pill">
-              <span className="dark-live-dot" />
+            <span className="stat-pill-live">
+              <span className="live-gps-dot" />
               <span>GPS Tracking Live</span>
             </span>
           </div>
@@ -199,8 +176,8 @@ export function TechnicianSiteMap({ onCheckIn, onToast, isStandalone = false }) 
         </div>
       </div>
 
-      {/* Stop Selection Tabs */}
-      <div className="tech-dark-stops-row" role="tablist">
+      {/* Stop Selection Tabs in Dashboard Theme */}
+      <div className="tech-stops-tabs-row" role="tablist">
         {STOPS.map((stop, index) => {
           const isSelected = stop.id === selectedStopId;
           const stopArrived = arrivedStops[stop.id];
@@ -211,35 +188,35 @@ export function TechnicianSiteMap({ onCheckIn, onToast, isStandalone = false }) 
               type="button"
               role="tab"
               aria-selected={isSelected}
-              className={`tech-dark-stop-pill ${isSelected ? 'active' : ''} ${
+              className={`tech-stop-tab-card ${isSelected ? 'active' : ''} ${
                 stopArrived ? 'arrived' : ''
               }`}
               onClick={() => setSelectedStopId(stop.id)}
             >
-              <div className="dark-stop-num">
+              <div className="stop-tab-num">
                 {stopArrived ? '✓' : index + 1}
               </div>
-              <div className="dark-stop-info">
-                <span className="dark-stop-area">{stop.area}</span>
-                <span className="dark-stop-cust">
+              <div className="stop-tab-info">
+                <span className="stop-tab-area">{stop.area}</span>
+                <span className="stop-tab-sub">
                   {stop.customerName.split(' ')[0]} · {stop.distance}
                 </span>
               </div>
               {stop.priority === 'Urgent' && (
-                <span className="dark-urgent-dot" title="Urgent Inverter Alarm" />
+                <span className="stop-urgent-dot" title="Urgent Inverter Alarm" />
               )}
             </button>
           );
         })}
       </div>
 
-      {/* Map Viewport featuring the Uploaded Real City Street Map */}
-      <div className="tech-dark-map-viewport">
-        {/* Floating Zoom Controls */}
-        <div className="map-inner-zoom-controls">
+      {/* Map Viewport in True Uncompressed Proportions */}
+      <div className="tech-map-viewport">
+        {/* Floating Zoom & Recenter Controls */}
+        <div className="map-zoom-overlay-controls">
           <button
             type="button"
-            className="zoom-mini-btn"
+            className="zoom-tool-btn"
             onClick={() => setZoomLevel((z) => Math.min(z + 0.15, 1.45))}
             title="Zoom In"
           >
@@ -247,7 +224,7 @@ export function TechnicianSiteMap({ onCheckIn, onToast, isStandalone = false }) 
           </button>
           <button
             type="button"
-            className="zoom-mini-btn"
+            className="zoom-tool-btn"
             onClick={() => setZoomLevel((z) => Math.max(z - 0.15, 0.85))}
             title="Zoom Out"
           >
@@ -255,7 +232,7 @@ export function TechnicianSiteMap({ onCheckIn, onToast, isStandalone = false }) 
           </button>
           <button
             type="button"
-            className="zoom-mini-btn"
+            className="zoom-tool-btn"
             onClick={() => setZoomLevel(1)}
             title="Recenter Map"
           >
@@ -264,155 +241,125 @@ export function TechnicianSiteMap({ onCheckIn, onToast, isStandalone = false }) 
         </div>
 
         <svg
-          className="tech-dark-vector-map-svg"
+          className="tech-vector-map-svg"
           viewBox="0 0 1024 536"
-          preserveAspectRatio="none"
+          preserveAspectRatio="xMidYMid meet"
           style={{ transform: `scale(${zoomLevel})`, transition: 'transform 0.25s ease' }}
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
-            {/* Glowing route stroke filter */}
-            <filter id="neonRouteGlow" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#0284c7" floodOpacity="0.8" />
-              <feDropShadow dx="0" dy="0" stdDeviation="8" floodColor="#38bdf8" floodOpacity="0.5" />
+            {/* Subtle soft aura for continuous navigation path */}
+            <filter id="cleanRouteAura" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="1" stdDeviation="2.5" floodColor="#1a73e8" floodOpacity="0.4" />
             </filter>
 
-            {/* Marker pin drop shadow */}
-            <filter id="pinShadow" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#000000" floodOpacity="0.45" />
+            {/* Drop shadow for floating white pin labels */}
+            <filter id="cleanCardShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#0f172a" floodOpacity="0.18" />
             </filter>
           </defs>
 
-          {/* BASE MAP LAYER: The user's city map */}
+          {/* BASE MAP LAYER: Uncompressed 1024x536 Real City Map */}
           <image
             href="/maps/dispatch-map.jpg"
             x="0"
             y="0"
             width="1024"
             height="536"
-            preserveAspectRatio="none"
-            className={`tech-map-raster-base ${mapMode === 'night' ? 'night-filter' : ''}`}
+            preserveAspectRatio="xMidYMid meet"
+            className="tech-map-raster-base"
           />
 
-          {/* Night Mode Subtle Tint Overlay */}
-          {mapMode === 'night' && (
-            <rect width="1024" height="536" fill="#0b0f19" opacity="0.25" pointerEvents="none" />
-          )}
-
-          {/* Street Corridor Highlights */}
-          {/* Paseo de la Reforma Trunk Corridor highlight line */}
-          <line
-            x1="220"
-            y1="520"
-            x2="880"
-            y2="195"
-            stroke="#0284c7"
-            strokeWidth="3"
-            opacity={mapMode === 'night' ? '0.45' : '0.2'}
-            strokeDasharray="4 6"
-            pointerEvents="none"
-          />
-
-          {/* ACTIVE GPS NAVIGATION ROUTE OVERLAY */}
-          {/* Stop 1: Indiranagar / San Rafael (Along Reforma then north on Rio Marne/Sullivan) */}
+          {/* ACTIVE GPS NAVIGATION GUIDE LINES: Thin continuous lines following actual streets */}
+          {/* Stop 1: Indiranagar / San Rafael (Continuous thin line along Reforma to Sullivan) */}
           {activeStop.id === 'stop-1' && (
-            <g>
-              {/* Outer Glow Path */}
+            <g filter="url(#cleanRouteAura)">
+              {/* Outer soft aura */}
               <path
                 d="M 440 400 L 560 335 L 560 200"
                 fill="none"
-                stroke="#38bdf8"
-                strokeWidth="10"
+                stroke="#93c5fd"
+                strokeWidth="6"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 opacity="0.5"
-                filter="url(#neonRouteGlow)"
               />
-              {/* Core Animated Path */}
+              {/* Thin continuous solid guide line */}
               <path
                 d="M 440 400 L 560 335 L 560 200"
                 fill="none"
-                stroke="#0284c7"
-                strokeWidth="5"
+                stroke="#1d4ed8"
+                strokeWidth="2.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeDasharray="10 6"
-                className="anim-dark-gps-route"
               />
             </g>
           )}
 
-          {/* Stop 2: Doddanekkundi / Tabacalera (Along Reforma to Ignacio Mariscal / Tabacalera) */}
+          {/* Stop 2: Doddanekkundi / Tabacalera (Continuous thin line along Reforma to Tabacalera) */}
           {activeStop.id === 'stop-2' && (
-            <g>
+            <g filter="url(#cleanRouteAura)">
               <path
                 d="M 440 400 L 680 270 L 710 240"
                 fill="none"
-                stroke="#38bdf8"
-                strokeWidth="10"
+                stroke="#93c5fd"
+                strokeWidth="6"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 opacity="0.5"
-                filter="url(#neonRouteGlow)"
               />
               <path
                 d="M 440 400 L 680 270 L 710 240"
                 fill="none"
-                stroke="#0284c7"
-                strokeWidth="5"
+                stroke="#1d4ed8"
+                strokeWidth="2.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeDasharray="10 6"
-                className="anim-dark-gps-route"
               />
             </g>
           )}
 
-          {/* Stop 3: Whitefield / Balderas Hub (Along Reforma to Av. Juárez / Balderas) */}
+          {/* Stop 3: Whitefield / Balderas Hub (Continuous thin line along Reforma to Av. Juárez & Balderas) */}
           {activeStop.id === 'stop-3' && (
-            <g>
+            <g filter="url(#cleanRouteAura)">
               <path
                 d="M 440 400 L 740 240 L 870 240 L 870 310"
                 fill="none"
-                stroke="#a855f7"
-                strokeWidth="10"
+                stroke="#c084fc"
+                strokeWidth="6"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                opacity="0.5"
-                filter="url(#neonRouteGlow)"
+                opacity="0.45"
               />
               <path
                 d="M 440 400 L 740 240 L 870 240 L 870 310"
                 fill="none"
-                stroke="#9333ea"
-                strokeWidth="5"
+                stroke="#7e22ce"
+                strokeWidth="2.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeDasharray="10 6"
-                className="anim-dark-gps-route"
               />
             </g>
           )}
 
-          {/* TECHNICIAN LIVE GPS BEACON (On Paseo de la Reforma / Rio Lerma) */}
-          <g transform="translate(440, 400)" className="dark-beacon-group" filter="url(#pinShadow)">
-            <circle cx="0" cy="0" r="24" fill="#0284c7" opacity="0.25" className="beacon-radar-wave" />
-            <circle cx="0" cy="0" r="14" fill="#0369a1" opacity="0.35" />
-            <circle cx="0" cy="0" r="8.5" fill="#0284c7" stroke="#ffffff" strokeWidth="2.5" />
-            {/* Heading Arrow indicator */}
-            <polygon points="0,-12 4,-5 -4,-5" fill="#ffffff" />
+          {/* TECHNICIAN LIVE BEACON (Paseo de la Reforma / Rio Lerma) */}
+          <g transform="translate(440, 400)" className="tech-beacon-marker" filter="url(#cleanCardShadow)">
+            <circle cx="0" cy="0" r="22" fill="#0284c7" opacity="0.2" className="beacon-pulse-circle" />
+            <circle cx="0" cy="0" r="13" fill="#0284c7" opacity="0.3" />
+            <circle cx="0" cy="0" r="7.5" fill="#0284c7" stroke="#ffffff" strokeWidth="2.5" />
+            <polygon points="0,-10 3.5,-4 -3.5,-4" fill="#ffffff" />
+            {/* Clean White Floating Label */}
             <rect
               x="-75"
-              y="-38"
+              y="-36"
               width="150"
               height="22"
               rx="11"
-              fill="#0f172a"
+              fill="#ffffff"
               stroke="#0284c7"
               strokeWidth="1.2"
-              opacity="0.95"
             />
-            <text x="0" y="-24" fill="#38bdf8" fontSize="10.5" fontWeight="700" textAnchor="middle">
+            <text x="0" y="-21" fill="#0369a1" fontSize="10.5" fontWeight="700" textAnchor="middle">
               Technician Live (Karthik)
             </text>
           </g>
@@ -420,155 +367,151 @@ export function TechnicianSiteMap({ onCheckIn, onToast, isStandalone = false }) 
           {/* STOP 1 PIN: INDIRANAGAR / SAN RAFAEL (Arun Kumar - Urgent Inverter E-04) */}
           <g
             transform="translate(560, 200)"
-            className={`dark-marker-pin ${selectedStopId === 'stop-1' ? 'active-pin' : ''}`}
+            className={`map-pin-item ${selectedStopId === 'stop-1' ? 'active-pin' : ''}`}
             onClick={() => setSelectedStopId('stop-1')}
-            filter="url(#pinShadow)"
+            filter="url(#cleanCardShadow)"
           >
-            <circle cx="0" cy="0" r="22" fill="#ef4444" opacity="0.25" className="marker-sonar-pulse" />
+            <circle cx="0" cy="0" r="20" fill="#ef4444" opacity="0.22" className="beacon-pulse-circle" />
             <path
-              d="M0 -28 C-10 -28 -18 -20 -18 -10 C-18 4 0 18 0 18 C0 18 18 4 18 -10 C18 -20 10 -28 0 -28 Z"
-              fill="#ef4444"
+              d="M0 -26 C-9 -26 -16 -19 -16 -10 C-16 3 0 16 0 16 C0 16 16 3 16 -10 C16 -19 9 -26 0 -26 Z"
+              fill="#ea4335"
               stroke="#ffffff"
               strokeWidth="2"
             />
-            <circle cx="0" cy="-10" r="5" fill="#ffffff" />
+            <circle cx="0" cy="-10" r="4.5" fill="#ffffff" />
+            {/* Clean White Floating Tooltip */}
             <rect
-              x="-75"
-              y="-58"
-              width="150"
+              x="-78"
+              y="-56"
+              width="156"
               height="24"
               rx="12"
-              fill="#0f172a"
-              stroke="#ef4444"
-              strokeWidth="1.2"
-              opacity="0.95"
+              fill="#ffffff"
+              stroke="#ea4335"
+              strokeWidth="1.5"
             />
-            <text x="0" y="-42" fill="#ffffff" fontSize="10.5" fontWeight="800" textAnchor="middle">
+            <text x="0" y="-40" fill="#991b1b" fontSize="10.5" fontWeight="800" textAnchor="middle">
               Arun Kumar · E-04 Red LED
             </text>
           </g>
 
-          {/* STOP 2 PIN: DODDANEKKUNDI / TABACALERA (Villa 12 - Pre-Install Survey) */}
+          {/* STOP 2 PIN: DODDANEKKUNDI / TABACALERA (Villa 12) */}
           <g
             transform="translate(710, 240)"
-            className={`dark-marker-pin ${selectedStopId === 'stop-2' ? 'active-pin' : ''}`}
+            className={`map-pin-item ${selectedStopId === 'stop-2' ? 'active-pin' : ''}`}
             onClick={() => setSelectedStopId('stop-2')}
-            filter="url(#pinShadow)"
+            filter="url(#cleanCardShadow)"
           >
-            <circle cx="0" cy="0" r="18" fill="#0284c7" opacity="0.22" />
+            <circle cx="0" cy="0" r="16" fill="#0284c7" opacity="0.2" />
             <path
-              d="M0 -26 C-9 -26 -16 -19 -16 -10 C-16 3 0 16 0 16 C0 16 16 3 16 -10 C16 -19 9 -26 0 -26 Z"
-              fill="#0284c7"
+              d="M0 -24 C-8 -24 -14 -18 -14 -10 C-14 3 0 15 0 15 C0 15 14 3 14 -10 C14 -18 8 -24 0 -24 Z"
+              fill="#1a73e8"
               stroke="#ffffff"
               strokeWidth="2"
             />
-            <circle cx="0" cy="-10" r="4.5" fill="#ffffff" />
+            <circle cx="0" cy="-10" r="4" fill="#ffffff" />
             <rect
-              x="-70"
-              y="-54"
-              width="140"
+              x="-72"
+              y="-52"
+              width="144"
               height="22"
               rx="11"
-              fill="#0f172a"
-              stroke="#0284c7"
+              fill="#ffffff"
+              stroke="#1a73e8"
               strokeWidth="1.2"
-              opacity="0.95"
             />
-            <text x="0" y="-39" fill="#ffffff" fontSize="10" fontWeight="700" textAnchor="middle">
+            <text x="0" y="-37" fill="#1e40af" fontSize="10" fontWeight="700" textAnchor="middle">
               Villa 12 · Structure Markings
             </text>
           </g>
 
-          {/* STOP 3 PIN: WHITEFIELD / BALDERAS HUB (TechSpark - Commercial 3-Phase DB) */}
+          {/* STOP 3 PIN: WHITEFIELD / BALDERAS HUB (TechSpark) */}
           <g
             transform="translate(870, 310)"
-            className={`dark-marker-pin ${selectedStopId === 'stop-3' ? 'active-pin' : ''}`}
+            className={`map-pin-item ${selectedStopId === 'stop-3' ? 'active-pin' : ''}`}
             onClick={() => setSelectedStopId('stop-3')}
-            filter="url(#pinShadow)"
+            filter="url(#cleanCardShadow)"
           >
-            <circle cx="0" cy="0" r="18" fill="#9333ea" opacity="0.22" />
+            <circle cx="0" cy="0" r="16" fill="#9333ea" opacity="0.2" />
             <path
-              d="M0 -26 C-9 -26 -16 -19 -16 -10 C-16 3 0 16 0 16 C0 16 16 3 16 -10 C16 -19 9 -26 0 -26 Z"
+              d="M0 -24 C-8 -24 -14 -18 -14 -10 C-14 3 0 15 0 15 C0 15 14 3 14 -10 C14 -18 8 -24 0 -24 Z"
               fill="#9333ea"
               stroke="#ffffff"
               strokeWidth="2"
             />
-            <circle cx="0" cy="-10" r="4.5" fill="#ffffff" />
+            <circle cx="0" cy="-10" r="4" fill="#ffffff" />
             <rect
-              x="-75"
-              y="-54"
-              width="150"
+              x="-78"
+              y="-52"
+              width="156"
               height="22"
               rx="11"
-              fill="#0f172a"
+              fill="#ffffff"
               stroke="#9333ea"
               strokeWidth="1.2"
-              opacity="0.95"
             />
-            <text x="0" y="-39" fill="#ffffff" fontSize="10" fontWeight="700" textAnchor="middle">
+            <text x="0" y="-37" fill="#6b21a8" fontSize="10" fontWeight="700" textAnchor="middle">
               TechSpark · 10kW Commercial DB
             </text>
           </g>
         </svg>
 
-        {/* Live Navigation Heads-Up Display (Glassmorphic HUD) */}
-        <div className="tech-dark-hud-overlay">
-          <div className="dark-hud-chip">
+        {/* Clean Frost HUD Overlay */}
+        <div className="tech-map-hud-row">
+          <div className="map-hud-chip">
             <Compass size={14} color="#0284c7" />
             <span>NE · Heading 042° Straight</span>
           </div>
-          <div className="dark-hud-chip next-step">
-            <Navigation size={14} color="#10b981" />
+          <div className="map-hud-chip next-step">
+            <Navigation size={14} color="#059669" />
             <span>{activeStop.nextTurn}</span>
           </div>
-          <div className="dark-hud-chip">
-            <span className="traffic-live-dot" />
+          <div className="map-hud-chip">
+            <span className="live-traffic-circle" />
             <span>{activeStop.traffic}</span>
           </div>
-          <div className="dark-hud-chip speed-chip">
+          <div className="map-hud-chip speed-chip">
             <span>42 km/h</span>
           </div>
         </div>
       </div>
 
-      {/* Selected Customer Site Action Panel */}
-      <div className="tech-dark-action-card">
-        <div className="dark-site-info-col">
-          <div className="dark-tag-row">
-            <span className="dark-priority-pill-urgent">
+      {/* Selected Customer Site Action Panel in Dashboard Theme */}
+      <div className="tech-map-action-panel">
+        <div className="site-details-column">
+          <div className="site-badges-row">
+            <span className="badge-urgent-tag">
               <AlertTriangle size={12} />
               <span>{activeStop.issueType}</span>
             </span>
-            <span className="dark-tag-pill">{activeStop.workOrderId}</span>
-            <span className="dark-tag-pill">{activeStop.systemSize}</span>
-            <span className="dark-eta-pill">
+            <span className="badge-meta-pill">{activeStop.workOrderId}</span>
+            <span className="badge-meta-pill">{activeStop.systemSize}</span>
+            <span className="badge-eta-pill">
               <Clock size={12} />
-              <span>
-                {activeStop.distance} · {activeStop.eta} away
-              </span>
+              <span>{activeStop.distance} · {activeStop.eta} away</span>
             </span>
           </div>
 
-          <h4 className="dark-customer-title">
+          <h4 className="site-customer-heading">
             <span>{activeStop.customerName}</span>
-            <span className="dark-slot-sub">({activeStop.scheduledSlot})</span>
+            <span className="slot-subtitle">({activeStop.scheduledSlot})</span>
           </h4>
 
-          <div className="dark-address-row">
+          <div className="site-address-line">
             <MapPin size={14} color="#64748b" className="flex-shrink-0" />
             <span>{activeStop.address}</span>
           </div>
 
-          <div className="dark-directive-box">
+          <div className="site-directive-card">
             <strong>Rectification Directive:</strong> {activeStop.problemDescription}
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="dark-actions-col">
+        <div className="site-actions-column">
           <button
             type="button"
-            className="dark-nav-btn primary"
+            className="panel-btn primary"
             onClick={() => handleStartNavigation(activeStop)}
           >
             <Navigation size={15} />
@@ -578,7 +521,7 @@ export function TechnicianSiteMap({ onCheckIn, onToast, isStandalone = false }) 
 
           <a
             href={`tel:${activeStop.phone}`}
-            className="dark-nav-btn secondary"
+            className="panel-btn secondary"
             title="Call Customer"
           >
             <Phone size={15} />
@@ -587,12 +530,12 @@ export function TechnicianSiteMap({ onCheckIn, onToast, isStandalone = false }) 
 
           <button
             type="button"
-            className={`dark-nav-btn ${isArrived ? 'verified' : 'outline'}`}
+            className={`panel-btn ${isArrived ? 'verified' : 'checkin'}`}
             onClick={() => handleMarkArrived(activeStop.id)}
           >
             {isArrived ? (
               <>
-                <CheckCircle2 size={15} color="#34d399" />
+                <CheckCircle2 size={15} color="#059669" />
                 <span>On-Site Check-in Verified</span>
               </>
             ) : (
