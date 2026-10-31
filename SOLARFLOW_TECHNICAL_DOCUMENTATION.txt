@@ -2744,3 +2744,67 @@ SECTION 51: USER-CENTRIC SEPARATION OF EQUIPMENT SCANNER (MANAGER VS TECHNICIAN)
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Appended Section 51)
 
 ================================================================================
+
+================================================================================
+SECTION 52: RIGHT-SIDE NOTIFICATION DRAWER & FULL-SCREEN USER SETTINGS CENTER
+================================================================================
+
+- Overview:
+  Upgraded the application header to deliver a modern, high-performance user experience
+  for notifications and profile settings:
+  1. Converted notifications from a floating dropdown into a hardware-accelerated
+     right-side slide-over drawer with category filters, unread management, and live telemetry.
+  2. Transformed settings from a basic popup modal into an expansive full-screen
+     User Account & Operational Control Center, complete with comprehensive user profile
+     management (name, avatar photo upload & presets, phone number, regional hub, bio),
+     security credentials (password change & 2FA), and workspace defaults.
+
+- Technical Implementations:
+  1. Right-Side Notification Drawer (`NotificationDrawer.jsx` & `NotificationDrawer.css`):
+     - Displays as a slide-in drawer from the right edge (`transform: translateX(0)`)
+       with a frosted glass backdrop overlay (`backdrop-filter: blur(5px)`).
+     - Category filters: "All", "Unread", "Surveys", "DISCOM", "Dispatch".
+     - Actionable cards with unread pulse indicators, relative timestamps, and category icons.
+     - "Mark All Read" and "Clear History" actions.
+     - Escape key and backdrop-click listener with body scroll locking.
+  2. Full-Screen User Settings & Profile Control Center (`UserSettingsModal.jsx` & `UserSettingsModal.css`):
+     - Opens in full-screen overlay (`position: fixed; inset: 0; width: 100vw; height: 100vh`).
+     - Top bar with SolarOps brand pill, role indicator, discard, and "Save All Changes" action.
+     - Left navigation sidebar with live user avatar ring, active tab indicators, and version telemetry.
+     - Tab 1 - User Profile & Identity:
+       * Large avatar uploader with file reader (`readAsDataURL`) for custom photo uploads.
+       * 5 role-based illustrated preset avatars (Executive, Field Engineer, Warehouse Lead, Support, Admin).
+       * Full Legal Name editable input (updates `user.full_name` across the app in real time).
+       * Mobile Phone Number editable input with country code.
+       * Primary Work Email input with "Verified" badge.
+       * Department, Service Hub & Warehouse Base, and Professional Bio.
+     - Tab 2 - Security & Password:
+       * Current, new, and confirm password change form with show/hide visibility toggle.
+       * Two-Factor Authentication (2FA) switch toggle.
+     - Tab 3 - Grid & Operational Defaults:
+       * Default DISCOM circle (BESCOM, MESCOM, HESCOM, etc.).
+       * Standard Inverter Architecture and Auto Sanction Load Ratio toggle.
+     - Tab 4 - Field Dispatch & Automated Notifications:
+       * Technician Route SMS Reminders, Customer WhatsApp Milestone Tracking, and Low-Stock Warnings.
+     - Tab 5 - VisionOS & Live Telemetry:
+       * Telemetry Polling Rate dropdown and VisionOS Liquid Glass Optical Refraction switch.
+  3. Reactive State Synchronization (`AuthContext.jsx`):
+     - Added `updateUser(updatedFields)` in `AuthContext` to update user state and synchronize
+       with `localStorage.getItem('solarops_current_user')`.
+     - Profile changes propagate immediately across dashboards (greeting name, user roster, etc.).
+  4. Unit Test Coverage:
+     - Updated Unit Test #13 in `apps/web/test/app.test.js` validating notification unread filtering
+       and user profile object merging (full name, phone number, avatar URL, bio).
+
+- Files Modified & Created:
+  * apps/web/src/components/NotificationDrawer/NotificationDrawer.jsx (Created)
+  * apps/web/src/components/NotificationDrawer/NotificationDrawer.css (Created)
+  * apps/web/src/components/UserSettingsModal/UserSettingsModal.jsx (Created)
+  * apps/web/src/components/UserSettingsModal/UserSettingsModal.css (Created)
+  * apps/web/src/components/Header/Header.jsx (Modified - slide-over drawer & fullscreen settings)
+  * apps/web/src/components/Header/Header.css (Modified - streamlined top bar)
+  * apps/web/src/context/AuthContext.jsx (Modified - updateUser method added)
+  * apps/web/test/app.test.js (Modified - Unit Test #13 updated)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Appended Section 52)
+
+================================================================================

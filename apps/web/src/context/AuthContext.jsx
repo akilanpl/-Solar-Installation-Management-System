@@ -105,6 +105,18 @@ export function AuthProvider({ children }) {
     return await api.verifyEmail(email, code);
   };
 
+  const updateUser = (updatedFields) => {
+    setUser((prev) => {
+      const merged = { ...prev, ...updatedFields };
+      try {
+        localStorage.setItem('solarops_current_user', JSON.stringify(merged));
+      } catch (e) {
+        console.error('Failed to persist user profile update', e);
+      }
+      return merged;
+    });
+  };
+
   const logout = async () => {
     await api.logout();
     setUser(null);
@@ -125,6 +137,7 @@ export function AuthProvider({ children }) {
         verifyEmail,
         bypassLogin,
         logout,
+        updateUser,
         showToast,
       }}
     >

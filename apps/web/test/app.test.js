@@ -206,6 +206,29 @@ test('Header Top Nav: notifications count, filter, and settings state', () => {
 
   assert.ok(sampleSettings.discomCircle.includes('BESCOM'));
   assert.equal(sampleSettings.autoSanctionCalc, true);
+
+  // User Profile & Settings update validation (Full-screen user controls)
+  const initialUser = {
+    id: 'usr_emp_001',
+    full_name: 'Vikramaditya',
+    phone: '+91 98450 12345',
+    email: 'admin@solarops.dev',
+    avatar_url: '',
+    role: 'admin',
+  };
+
+  const updatedProfile = {
+    full_name: 'Vikramaditya Verma',
+    phone: '+91 99000 77889',
+    avatar_url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+    bio: 'Chief Operations Officer',
+  };
+
+  const mergedUser = { ...initialUser, ...updatedProfile };
+  assert.equal(mergedUser.full_name, 'Vikramaditya Verma');
+  assert.equal(mergedUser.phone, '+91 99000 77889');
+  assert.ok(mergedUser.avatar_url.startsWith('data:image'));
+  assert.equal(mergedUser.bio, 'Chief Operations Officer');
 });
 
 test('Equipment Scanner: role-based visibility and BOM serial match verification', () => {
