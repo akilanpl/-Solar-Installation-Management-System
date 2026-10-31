@@ -1,255 +1,265 @@
 /* ==========================================================================
-   SOLARFLOW / SOLAROPS - LOGIN SCREEN (REFERENCE LAYOUT MATCH)
-   Exact match to the reference image:
-   - Outer container on dark background
-   - Dual split card: Left vibrant gradient hero panel with 3 bottom step cards,
-     Right clean high-contrast form panel.
-   - Theme palette:
-     Black:  #000000
-     Violet: #7E3BED
-     White:  #FFFFFF
-     Lime:   #C6FF34
+   SOLARFLOW / SOLAROPS - FULL-SCREEN HERO LOGIN (UI/UX PRO MAX)
+   Full-screen immersive hero panel with centered sign-in component
+   Palette:
+   Black:  #000000
+   Violet: #7E3BED
+   White:  #FFFFFF
+   Lime:   #C6FF34
    ========================================================================== */
 
-.login-page-bg {
+.login-fullscreen-canvas {
   min-height: 100vh;
-  width: 100%;
-  background-color: var(--color-black);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 20px;
+  width: 100vw;
+  background: linear-gradient(140deg, #06040c 0%, #130728 30%, #3e1291 65%, #7E3BED 100%);
   position: relative;
-  overflow-x: hidden;
-}
-
-/* Ambient glow in background */
-.login-page-bg::before {
-  content: '';
-  position: absolute;
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, rgba(126, 59, 237, 0.18) 0%, rgba(0, 0, 0, 0) 70%);
-  top: -200px;
-  left: -100px;
-  pointer-events: none;
-}
-
-.login-page-bg::after {
-  content: '';
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(198, 255, 52, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
-  bottom: -200px;
-  right: -100px;
-  pointer-events: none;
-}
-
-/* Master Dual Split Card Container */
-.login-split-card {
-  width: 100%;
-  max-width: 1100px;
-  min-height: 680px;
-  background: var(--color-white);
-  border-radius: 28px;
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  overflow: hidden;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 1px 1px rgba(255, 255, 255, 0.1);
-  position: relative;
-  z-index: 2;
-}
-
-/* --------------------------------------------------------------------------
-   LEFT PANEL: VIBRANT GRADIENT HERO WITH 3 STEP CARDS
-   -------------------------------------------------------------------------- */
-.login-hero-panel {
-  background: linear-gradient(145deg, #7E3BED 0%, #571dc4 38%, #1c0e3d 78%, #090514 100%);
-  padding: 44px 40px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: space-between;
-  position: relative;
-  overflow: hidden;
-  color: var(--color-white);
+  padding: 24px 20px 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
-/* Ambient solar texture on left hero */
-.login-hero-panel::before {
+/* Ambient Radial Solar Energy Lighting */
+.login-fullscreen-canvas::before {
   content: '';
-  position: absolute;
-  top: -50px;
-  right: -50px;
-  width: 380px;
-  height: 380px;
-  background: radial-gradient(circle, rgba(198, 255, 52, 0.22) 0%, rgba(126, 59, 237, 0) 70%);
+  position: fixed;
+  top: -120px;
+  right: -100px;
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(198, 255, 52, 0.2) 0%, rgba(126, 59, 237, 0) 70%);
   pointer-events: none;
+  z-index: 1;
 }
 
-/* Top Branding */
-.hero-logo-box {
+.login-fullscreen-canvas::after {
+  content: '';
+  position: fixed;
+  bottom: -150px;
+  left: -120px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(126, 59, 237, 0.35) 0%, rgba(0, 0, 0, 0) 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Subtle Geometric Grid Texture */
+.login-grid-overlay {
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Top Navigation Bar on the Full Screen Hero */
+.login-top-bar {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+  padding: 8px 12px;
+}
+
+.login-top-brand {
   display: flex;
   align-items: center;
   gap: 12px;
-  z-index: 2;
-}
-
-.hero-logo-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-lime);
-  box-shadow: 0 0 14px rgba(198, 255, 52, 0.4);
-}
-
-.hero-brand-name {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  text-decoration: none;
   color: var(--color-white);
 }
 
-/* Center Messaging */
-.hero-content-box {
-  margin: 40px 0 32px;
-  z-index: 2;
+.login-top-brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--color-violet), var(--color-lime));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+  box-shadow: 0 0 16px rgba(198, 255, 52, 0.4);
 }
 
-.hero-badge-pill {
+.login-top-brand-text {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.login-top-brand-sub {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.7);
+  margin-left: 4px;
+}
+
+.login-top-status-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 6px 14px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(198, 255, 52, 0.4);
   backdrop-filter: blur(12px);
   border-radius: var(--radius-full);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-white);
-  margin-bottom: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-lime);
+  box-shadow: 0 0 12px rgba(198, 255, 52, 0.2);
 }
 
-.hero-title {
-  font-size: 42px;
+.login-top-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-lime);
+  box-shadow: 0 0 8px var(--color-lime);
+}
+
+/* --------------------------------------------------------------------------
+   CENTER SIGN-IN COMPONENT (HERO CENTERPIECE)
+   -------------------------------------------------------------------------- */
+.login-center-container {
+  width: 100%;
+  max-width: 540px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 10;
+}
+
+.login-hero-card {
+  background: var(--color-white);
+  border-radius: 24px;
+  padding: 36px 36px 32px;
+  box-shadow: 
+    0 24px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 0 40px rgba(126, 59, 237, 0.25);
+  color: #1a1a24;
+  position: relative;
+  overflow: hidden;
+  animation: cardFadeUp 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Card Header & Badge */
+.login-card-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: #f3f0ff;
+  border: 1px solid rgba(126, 59, 237, 0.2);
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--color-violet);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.login-card-title {
+  font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.03em;
-  line-height: 1.15;
-  color: var(--color-white);
-  margin-bottom: 14px;
+  color: #0d0c14;
+  line-height: 1.2;
 }
 
-.hero-subhead {
-  font-size: 15px;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.85);
-  max-width: 440px;
+.login-card-subtitle {
+  font-size: 13.5px;
+  color: #64748b;
+  margin-top: 6px;
+  line-height: 1.45;
 }
 
-/* Bottom 3 Step Cards matching the reference image */
-.hero-steps-row {
+/* 3 Journey Process Steps (From Reference, Sleek Pill Format) */
+.login-journey-steps-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  z-index: 2;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
-.hero-step-card {
-  padding: 16px 14px;
-  border-radius: 16px;
+.journey-step-pill {
+  padding: 8px 10px;
+  border-radius: 10px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 124px;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  line-height: 1.2;
   transition: all var(--transition-fast);
-  cursor: default;
 }
 
-/* Active Highlighted Card 1 (Clean white card like reference) */
-.hero-step-card.active {
-  background: var(--color-white);
-  color: var(--color-black);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-  transform: translateY(-2px);
+.journey-step-pill.active {
+  background: #f7f5ff;
+  border: 1px solid var(--color-violet);
+  color: #1e1b4b;
+  font-weight: 700;
 }
 
-.hero-step-card.active .hero-step-num {
+.journey-step-pill.active .journey-step-circle {
   background: var(--color-violet);
   color: var(--color-white);
 }
 
-.hero-step-card.active .hero-step-text {
-  color: #121217;
-  font-weight: 700;
-}
-
-/* Translucent Glass Cards 2 & 3 like reference */
-.hero-step-card.translucent {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.hero-step-card.translucent .hero-step-num {
-  background: rgba(255, 255, 255, 0.25);
-  color: var(--color-white);
-}
-
-.hero-step-card.translucent .hero-step-text {
-  color: rgba(255, 255, 255, 0.9);
+.journey-step-pill.inactive {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #94a3b8;
   font-weight: 500;
 }
 
-.hero-step-num {
-  width: 26px;
-  height: 26px;
+.journey-step-pill.inactive .journey-step-circle {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.journey-step-circle {
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 800;
-  margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
-.hero-step-text {
-  font-size: 12.5px;
-  line-height: 1.35;
-}
-
-/* --------------------------------------------------------------------------
-   RIGHT PANEL: CLEAN FORM PANEL (MATCHING REFERENCE)
-   -------------------------------------------------------------------------- */
-.login-form-panel {
-  background: var(--color-white);
-  padding: 48px 48px 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: #1a1a24;
-}
-
-.form-header-title {
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #0f0e17;
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-/* ⚡ Prominent Demo Bypass Bar inside the form */
+/* ⚡ Prominent Demo Bypass Callout Box */
 .form-bypass-box {
-  background: #f7f5ff;
+  background: linear-gradient(135deg, #f7f5ff 0%, #f4fbf0 100%);
   border: 1px solid rgba(126, 59, 237, 0.25);
   border-radius: var(--radius-md);
   padding: 12px 14px;
@@ -276,7 +286,7 @@
 
 .form-bypass-tag {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 800;
   background: var(--color-lime);
   color: var(--color-black);
   padding: 2px 8px;
@@ -292,9 +302,9 @@
 .form-bypass-btn {
   background: var(--color-white);
   border: 1px solid #e2ddf7;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 7px 4px;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
   color: #2b1f4a;
   cursor: pointer;
@@ -311,7 +321,7 @@
   box-shadow: 0 4px 10px rgba(126, 59, 237, 0.25);
 }
 
-/* Form Inputs matching the reference styling */
+/* Form Fields */
 .clean-form-group {
   display: flex;
   flex-direction: column;
@@ -322,14 +332,16 @@
 .clean-form-label {
   font-size: 12px;
   font-weight: 700;
-  color: #3b3a4a;
+  color: #334155;
+  display: flex;
+  justify-content: space-between;
 }
 
 .clean-input-box {
   display: flex;
   align-items: center;
-  background: #f8f9fc;
-  border: 1px solid #e2e5ec;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 0 14px;
   height: 48px;
@@ -347,7 +359,7 @@
   align-items: center;
   gap: 8px;
   margin-right: 10px;
-  color: #555;
+  color: #475569;
   font-size: 13px;
   font-weight: 600;
 }
@@ -358,30 +370,30 @@
   background: transparent;
   font-family: var(--font-family);
   font-size: 14px;
-  color: #111827;
+  color: #0f172a;
   outline: none;
   width: 100%;
 }
 
 .clean-input-field::placeholder {
-  color: #9ca3af;
+  color: #94a3b8;
 }
 
 .clean-password-toggle {
   background: transparent;
   border: none;
-  color: #9ca3af;
+  color: #94a3b8;
   cursor: pointer;
   display: flex;
   align-items: center;
   padding: 4px;
+  transition: color var(--transition-fast);
 }
 
 .clean-password-toggle:hover {
-  color: #4b5563;
+  color: #334155;
 }
 
-/* 2-Column row (like Full Name + Username in reference) */
 .clean-form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -390,12 +402,12 @@
 
 .clean-input-helper {
   font-size: 11px;
-  color: #6b7280;
+  color: #64748b;
   margin-top: 4px;
   line-height: 1.35;
 }
 
-/* Primary Continue Button */
+/* Primary Action Button */
 .clean-primary-btn {
   width: 100%;
   height: 48px;
@@ -416,8 +428,8 @@
 }
 
 .clean-primary-btn:hover:not(:disabled) {
-  background: #6c2bd9;
-  box-shadow: 0 8px 24px rgba(126, 59, 237, 0.45);
+  background: #6a2bd9;
+  box-shadow: 0 8px 24px rgba(126, 59, 237, 0.5);
   transform: translateY(-1px);
 }
 
@@ -430,11 +442,11 @@
   cursor: not-allowed;
 }
 
-/* Links & Alternative Auth */
+/* Links & Footers */
 .clean-switch-link {
   text-align: center;
   font-size: 13px;
-  color: #6b7280;
+  color: #64748b;
   margin: 14px 0 10px;
 }
 
@@ -453,7 +465,7 @@
   align-items: center;
   text-align: center;
   margin: 12px 0;
-  color: #9ca3af;
+  color: #94a3b8;
   font-size: 12px;
 }
 
@@ -461,23 +473,22 @@
 .clean-divider::after {
   content: '';
   flex: 1;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .clean-divider span {
   padding: 0 10px;
 }
 
-/* Secondary Action Button (Google / SSO style from reference) */
 .clean-secondary-btn {
   width: 100%;
   height: 46px;
   background: var(--color-white);
-  border: 1px solid #e5e7eb;
+  border: 1px solid #cbd5e1;
   border-radius: 12px;
   font-size: 13.5px;
   font-weight: 600;
-  color: #374151;
+  color: #334155;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -487,61 +498,76 @@
 }
 
 .clean-secondary-btn:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
+  background: #f8fafc;
+  border-color: #94a3b8;
 }
 
-/* Bottom Disclaimer */
 .clean-disclaimer {
   font-size: 11px;
   line-height: 1.45;
-  color: #9ca3af;
+  color: #94a3b8;
   text-align: center;
   margin-top: 18px;
 }
 
 .clean-disclaimer a {
-  color: #6b7280;
+  color: #64748b;
   text-decoration: underline;
 }
 
-/* --------------------------------------------------------------------------
-   RESPONSIVENESS
-   -------------------------------------------------------------------------- */
-@media (max-width: 960px) {
-  .login-split-card {
-    grid-template-columns: 1fr;
-    max-width: 540px;
+/* Bottom Full-Screen Hero Footer */
+.login-bottom-bar {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.65);
+  padding: 8px 12px;
+}
+
+.login-bottom-links {
+  display: flex;
+  gap: 16px;
+}
+
+.login-bottom-links a:hover {
+  color: var(--color-lime);
+}
+
+/* Responsive Scaling */
+@media (max-width: 640px) {
+  .login-fullscreen-canvas {
+    padding: 16px 12px;
+  }
+
+  .login-hero-card {
+    padding: 24px 20px;
     border-radius: 20px;
   }
 
-  .login-hero-panel {
-    padding: 32px 24px;
+  .login-card-title {
+    font-size: 24px;
   }
 
-  .hero-title {
-    font-size: 32px;
-  }
-
-  .hero-steps-row {
+  .login-journey-steps-row {
     grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .form-bypass-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .clean-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .login-bottom-bar {
+    flex-direction: column;
     gap: 8px;
-  }
-
-  .hero-step-card {
-    min-height: auto;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-  }
-
-  .hero-step-num {
-    margin-bottom: 0;
-    flex-shrink: 0;
-  }
-
-  .login-form-panel {
-    padding: 32px 24px;
+    text-align: center;
   }
 }

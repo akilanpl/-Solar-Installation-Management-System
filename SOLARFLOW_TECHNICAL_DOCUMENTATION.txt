@@ -316,3 +316,75 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
       code, documentation, and configuration files are tracked.
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+10. FULL-SCREEN HERO LOGIN & UI/UX PRO MAX DESIGN SYSTEM ENHANCEMENTS
+--------------------------------------------------------------------------------
+- Date & Context:
+  Elevated the overall application layout and transformed the login experience using
+  the UI/UX Pro Max design system guidelines. Instead of a nested floating card with
+  outer black gutter margins, the login screen was re-architected as a full-bleed,
+  immersive 100vw x 100vh hero panel experience with the sign-in component as the
+  prominent centerpiece.
+
+- Key UI/UX Enhancements Implemented:
+  1. Full-Screen Hero Canvas (100vw x 100vh):
+     - Background: Full-bleed electric Violet-to-Black gradient (#06040c -> #130728 -> #3e1291 -> #7E3BED)
+       enhanced with subtle geometric grid overlay and radial solar energy lighting in Neon Lime (#C6FF34).
+     - Top Navigation Header: Brand icon, bold SolarOps title, and real-time "Grid Operations Active"
+       status badge with pulsing neon indicator.
+     - Bottom Hero Footer: Operational copyright notices, security terms, and operations desk links.
+  2. Hero Centerpiece Sign-In Component:
+     - Sleek, high-contrast, rounded container (24px radius) centered within the full-screen canvas.
+     - Header: "Join Us to Build ☀️" badge + "Start your Journey" title and contextual subtitle.
+     - 3-Step Journey Indicator Pills: Embedded clean process chips (Step 1 active: "1. Instant Bypass / Auth",
+       Step 2: "2. Site Survey", Step 3: "3. Net-Metering").
+     - 1-Click Instant Demo Bypass: Prominent quick-access grid enabling instant login for Customer,
+       Sales, Technician, Warehouse, Support, and Admin.
+     - Form Fields: High-contrast inputs for phone (+91 prefix), portal role, email/employee ID,
+       and password with interactive Eye/EyeOff toggle.
+     - Primary CTA: Full-width "Continue" button in electric violet with active press and hover feedback.
+  3. UI/UX Pro Max Systemic Upgrades Across the Workspace:
+     - WCAG 2.2 AA Compliance: Maintained a minimum of 4.5:1 text-to-background contrast ratio across
+       both dark and light surfaces.
+     - Focus Visibility: Enhanced keyboard navigation with a 2px Neon Lime outline and 3px offset.
+     - Micro-Interactions: Transition timing standardized to 150ms-250ms cubic-bezier curves with
+       active scaling on button presses (`transform: translateY(0)`).
+     - Motion Safety: Media query `prefers-reduced-motion` added to automatically disable animations
+       for users with vestibular or motion sensitivities.
+     - AppShell Layout Spacing: Increased container padding (36px 44px, max-width 1440px) with ambient
+       lighting gradients behind the dashboard content.
+
+- Files Modified:
+  * apps/web/src/index.css
+  * apps/web/src/pages/Login/Login.jsx
+  * apps/web/src/pages/Login/Login.css
+  * apps/web/src/components/AppShell/AppShell.css
+
+- React Concepts & Hooks Used:
+  * useState:
+    - `showPassword`: Controls interactive password reveal.
+    - `portal`: Selects current operational role and synchronizes default identifier.
+    - `loading`: Manages asynchronous authentication feedback states.
+    - `fakeModalOpen`: Manages interactive persona selector modal visibility.
+  * Controlled Inputs:
+    - Two-way state binding for phone, identifier, and password.
+  * Context Consumption:
+    - `useAuth()` provides `login()`, `bypassLogin()`, and session feedback.
+    - `useRouter()` provides client-side SPA navigation via `navigate()`.
+
+- Technical Interview Questions & Answers:
+  Q1: What are the UX advantages of a full-screen hero login over an isolated modal dialog?
+  A1: A full-screen hero layout creates immediate immersive brand engagement, eliminates
+      visual clutter and distracting outer borders, gives ample whitespace for field labels
+      and validation helpers, and adapts seamlessly across screen orientations without
+      unintended clipping or nested scrollbars.
+
+  Q2: How does the `prefers-reduced-motion` CSS media query improve accessibility?
+  A2: Users suffering from vestibular motion disorders can experience dizziness, nausea,
+      or disorientation from rapid transitions, scaling animations, and ambient particle pulses.
+      The `prefers-reduced-motion: reduce` query detects system-level accessibility settings and
+      clamps animation and transition durations to 0.01ms, ensuring a safe, static experience.
+
+================================================================================

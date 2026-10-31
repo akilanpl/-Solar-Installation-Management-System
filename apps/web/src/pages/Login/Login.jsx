@@ -13,6 +13,7 @@ import {
   Check,
   ArrowRight,
   Sparkles,
+  Lock,
 } from 'lucide-react';
 import './Login.css';
 
@@ -37,8 +38,6 @@ export function Login() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fakeModalOpen, setFakeModalOpen] = useState(false);
-
-  const currentPortalConfig = PORTALS.find((p) => p.value === portal) || PORTALS[0];
 
   const handlePortalChange = (newPortal) => {
     setPortal(newPortal);
@@ -74,69 +73,63 @@ export function Login() {
   };
 
   return (
-    <div className="login-page-bg">
-      <div className="login-split-card">
-        {/* ==================================================================
-            LEFT PANEL: HERO GRADIENT WITH STEP CARDS (EXACT REFERENCE LAYOUT)
-            ================================================================== */}
-        <div className="login-hero-panel">
-          {/* Top Logo */}
-          <div className="hero-logo-box">
-            <div className="hero-logo-icon">
-              <Zap size={18} fill="#C6FF34" />
-            </div>
-            <span className="hero-brand-name">SolarOps</span>
+    <div className="login-fullscreen-canvas">
+      <div className="login-grid-overlay" />
+
+      {/* Top Navigation Bar on the Full Screen Hero */}
+      <header className="login-top-bar">
+        <Link href="/" className="login-top-brand">
+          <div className="login-top-brand-icon">
+            <Zap size={20} fill="#000000" />
           </div>
+          <div>
+            <span className="login-top-brand-text">SolarOps</span>
+            <span className="login-top-brand-sub">SunPower Solutions</span>
+          </div>
+        </Link>
 
-          {/* Central Hero Messaging */}
-          <div className="hero-content-box">
-            <div className="hero-badge-pill">
-              <span>Join Us to Build</span>
-              <span>☀️</span>
+        <div className="login-top-status-badge">
+          <span className="login-top-status-dot" />
+          <span>Grid Operations Active</span>
+        </div>
+      </header>
+
+      {/* Center Sign-In Component (Hero Centerpiece) */}
+      <main className="login-center-container">
+        <div className="login-hero-card">
+          {/* Card Header & Badge */}
+          <div className="login-card-header">
+            <div className="login-badge-pill">
+              <span>Join Us to Build ☀️</span>
             </div>
-
-            <h1 className="hero-title">Start your Journey</h1>
-
-            <p className="hero-subhead">
-              Follow these simple steps to set up your rooftop solar account, monitor
-              surveys, and track turnkey installation progress.
+            <h1 className="login-card-title">Start your Journey</h1>
+            <p className="login-card-subtitle">
+              Sign in with your enterprise credentials or use instant 1-click bypass.
             </p>
           </div>
 
-          {/* 3 Process Step Cards (Matching the reference layout) */}
-          <div className="hero-steps-row">
-            {/* Step 1: Active Clean White Card */}
-            <div className="hero-step-card active">
-              <div className="hero-step-num">1</div>
-              <div className="hero-step-text">Register or instant bypass login</div>
+          {/* 3 Process Step Indicator Pills */}
+          <div className="login-journey-steps-row">
+            <div className="journey-step-pill active">
+              <span className="journey-step-circle">1</span>
+              <span>Instant Bypass / Auth</span>
             </div>
-
-            {/* Step 2: Translucent Glass Card */}
-            <div className="hero-step-card translucent">
-              <div className="hero-step-num">2</div>
-              <div className="hero-step-text">Technical rooftop survey inspection</div>
+            <div className="journey-step-pill inactive">
+              <span className="journey-step-circle">2</span>
+              <span>Site Survey</span>
             </div>
-
-            {/* Step 3: Translucent Glass Card */}
-            <div className="hero-step-card translucent">
-              <div className="hero-step-num">3</div>
-              <div className="hero-step-text">DISCOM net-metering & power on</div>
+            <div className="journey-step-pill inactive">
+              <span className="journey-step-circle">3</span>
+              <span>Net-Metering</span>
             </div>
           </div>
-        </div>
-
-        {/* ==================================================================
-            RIGHT PANEL: HIGH CONTRAST FORM (EXACT REFERENCE LAYOUT)
-            ================================================================== */}
-        <div className="login-form-panel">
-          <h2 className="form-header-title">Sign In</h2>
 
           {/* ⚡ 1-Click Instant Demo Bypass Callout */}
           <div className="form-bypass-box">
             <div className="form-bypass-header">
               <span className="form-bypass-title">
                 <Zap size={14} />
-                <span>⚡ Instant Demo Bypass</span>
+                <span>⚡ 1-Click Demo Bypass</span>
               </span>
               <span className="form-bypass-tag">Skip Login</span>
             </div>
@@ -195,7 +188,7 @@ export function Login() {
           {error && <ErrorState message={error} />}
 
           <form onSubmit={handleSubmit}>
-            {/* Phone Number / Contact (Like Reference Field 1) */}
+            {/* Phone Number Input */}
             <div className="clean-form-group">
               <label className="clean-form-label">Phone number</label>
               <div className="clean-input-box">
@@ -213,7 +206,7 @@ export function Login() {
               </div>
             </div>
 
-            {/* 2-Column Row: Portal Role + Identifier (Like Full Name & Username in Reference) */}
+            {/* 2-Column Row: Portal Role + Identifier */}
             <div className="clean-form-row">
               <div className="clean-form-group">
                 <label className="clean-form-label">Signing in as</label>
@@ -250,7 +243,7 @@ export function Login() {
               </div>
             </div>
 
-            {/* Password Field with Eye Toggle (Like Reference) */}
+            {/* Password Field with Eye Toggle */}
             <div className="clean-form-group">
               <label className="clean-form-label">Password</label>
               <div className="clean-input-box">
@@ -260,6 +253,7 @@ export function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••••••"
+                  autoComplete="current-password"
                   required
                 />
                 <button
@@ -276,14 +270,14 @@ export function Login() {
               </span>
             </div>
 
-            {/* Continue Primary Button */}
+            {/* Primary Continue Button */}
             <button
               type="submit"
               className="clean-primary-btn"
               disabled={loading}
             >
               {loading ? (
-                'Connecting to SolarOps…'
+                'Authenticating…'
               ) : (
                 <>
                   <span>Continue</span>
@@ -303,7 +297,7 @@ export function Login() {
             <span>Or</span>
           </div>
 
-          {/* Secondary Action matching reference Google button */}
+          {/* Secondary Action */}
           <button
             type="button"
             className="clean-secondary-btn"
@@ -319,7 +313,17 @@ export function Login() {
             <a href="#privacy">Privacy Policy</a> and <a href="#terms">Terms of Service</a>.
           </p>
         </div>
-      </div>
+      </main>
+
+      {/* Bottom Hero Footer */}
+      <footer className="login-bottom-bar">
+        <span>SunPower Solutions Operations © 2026. Enterprise Rooftop Solar Platform.</span>
+        <div className="login-bottom-links">
+          <a href="#privacy">Privacy</a>
+          <a href="#terms">Security Policy</a>
+          <a href="#support">Operations Desk</a>
+        </div>
+      </footer>
 
       {/* Interactive Modal for full persona switcher */}
       <FakeLoginModal
