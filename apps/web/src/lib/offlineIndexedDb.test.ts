@@ -29,7 +29,7 @@ function read<T>(db: IDBDatabase, store: string, key: IDBValidKey): Promise<T> {
 
 it("resolves a draft write only after the actual transaction commits",async()=>{
   const events:string[]=[];const original=FakeStore.prototype.put;
-  vi.spyOn(FakeStore.prototype,"put").mockImplementation(function(this:FakeStore,...args:Parameters<typeof original>){
+  vi.spyOn(FakeStore.prototype,"put").mockImplementation(function(this:InstanceType<typeof FakeStore>,...args:Parameters<typeof original>){
     const request=original.apply(this,args);
     request.addEventListener("success",()=>events.push("request-success"));
     this.transaction.addEventListener("complete",()=>events.push("commit"));
@@ -43,7 +43,7 @@ it("resolves a draft write only after the actual transaction commits",async()=>{
 
 it("rejects an abort after request success without claiming a saved draft",async()=>{
   const original=FakeStore.prototype.put;
-  vi.spyOn(FakeStore.prototype,"put").mockImplementation(function(this:FakeStore,...args:Parameters<typeof original>){
+  vi.spyOn(FakeStore.prototype,"put").mockImplementation(function(this:InstanceType<typeof FakeStore>,...args:Parameters<typeof original>){
     const request=original.apply(this,args);
     request.addEventListener("success",()=>this.transaction.abort());
     return request;
@@ -107,7 +107,7 @@ it("reports aborted purge and retains every affected draft",async()=>{
   const store=createIndexedDbStore("abort-purge");
   await store.put(operation("tech-a","one"));await store.put(operation("tech-a","two"));await store.put(operation("tech-b","one"));
   const original=FakeStore.prototype.delete;
-  vi.spyOn(FakeStore.prototype,"delete").mockImplementation(function(this:FakeStore,...args:Parameters<typeof original>){
+  vi.spyOn(FakeStore.prototype,"delete").mockImplementation(function(this:InstanceType<typeof FakeStore>,...args:Parameters<typeof original>){
     const request=original.apply(this,args);
     request.addEventListener("success",()=>this.transaction.abort());
     return request;
