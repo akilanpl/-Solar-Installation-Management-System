@@ -498,7 +498,11 @@ def consume_service_invoice_stock(db, user, invoice_id):
         raise AppError(404, "not_found", "Invoice not found.")
     if invoice.consumption_operation_id is not None:
         operation = db.get(StockOperation, invoice.consumption_operation_id)
-        if operation is None or operation.status != "done":
+        ticket = db.get(ServiceTicket, invoice.ticket_id)
+        if (operation is None or operation.status != "done" or ticket is None
+                or operation.operation_type != "delivery" or operation.validated_at is None
+                or operation.idempotency_key != f"invoice-consume-{invoice.id}"
+                or operation.source_order_id != ticket.order_id):
             raise AppError(409, "invalid_consumption", "Invoice consumption record is invalid.")
         return operation
     estimate = db.scalar(select(ServiceEstimate).where(

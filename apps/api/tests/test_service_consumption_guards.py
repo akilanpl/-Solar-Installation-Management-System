@@ -189,4 +189,10 @@ def test_unlinked_prior_operation_cannot_be_adopted_as_consumption(client, appli
         with pytest.raises(AppError) as rejected:
             consume_service_invoice_stock(db, user, invoice.id)
         assert rejected.value.code == "invalid_consumption"
-        db.rollback()
+        db.commit()  # Persist a deliberate legacy linkage in this disposable fixture.
+    rejected_api = client.post(f"/api/v1/service-invoices/{bill['id']}/consume", headers=warehouse)
+    assert rejected_api.status_code == 409, rejected_api.text
+    assert rejected_api.json()["error"]["code"] == "invalid_consumption"
+    with Session(application.state.engine) as db:
+        assert db.scalar(select(func.count()).select_from(StockLedger).where(
+            StockLedger.operation_id == operation.id)) == 0

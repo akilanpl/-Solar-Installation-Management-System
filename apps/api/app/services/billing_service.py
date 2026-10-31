@@ -402,9 +402,10 @@ def consume_invoice_parts(db: Session, user: User,
     )
     if invoice is None:
         raise AppError(404, "not_found", "Invoice not found.")
-    if invoice.consumption_operation_id is not None:
-        return invoice
+    already_consumed = invoice.consumption_operation_id is not None
     operation = inventory_service.consume_service_invoice_stock(db, user, invoice.id)
+    if already_consumed:
+        return invoice
     invoice.consumption_operation_id = operation.id
     db.flush()
     add_audit(db, actor_user_id=user.id, action="billing.parts_consumed",
