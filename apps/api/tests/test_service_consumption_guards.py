@@ -1,8 +1,9 @@
 """Real PostgreSQL safety guards for source-linked repair consumption.
 
-Public workflows construct valid invoices. Deliberately malformed persisted
-snapshots are changed only inside a rolled-back transaction to simulate
-legacy/corrupt imports that cannot be submitted through the current API.
+Public workflows construct valid invoices. Deliberately malformed snapshots
+are confined to the disposable test database to simulate legacy/corrupt imports.
+Most remain in rolled-back transactions; one linkage fixture is committed so
+its public API rejection is observed independently.
 """
 
 import copy
@@ -180,7 +181,7 @@ def test_unlinked_prior_operation_cannot_be_adopted_as_consumption(client, appli
         operation = db.get(StockOperation, uuid.UUID(prior.json()["id"]))
         assert operation.status == "draft"
         assert db.scalar(select(func.count()).select_from(StockLedger).where(
-            StockLedger.operation_id == operation.id)) == 0
+            StockLedger.operation_id == uuid.UUID(prior.json()["id"]))) == 0
         # A corrupt linkage must also be rejected, rather than marking consumed
         # merely because an existing draft operation's UUID was attached.
         invoice.consumption_operation_id = operation.id
@@ -195,4 +196,4 @@ def test_unlinked_prior_operation_cannot_be_adopted_as_consumption(client, appli
     assert rejected_api.json()["error"]["code"] == "invalid_consumption"
     with Session(application.state.engine) as db:
         assert db.scalar(select(func.count()).select_from(StockLedger).where(
-            StockLedger.operation_id == operation.id)) == 0
+            StockLedger.operation_id == uuid.UUID(prior.json()["id"]))) == 0
