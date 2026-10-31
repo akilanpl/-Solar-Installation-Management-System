@@ -136,7 +136,7 @@ test("C+D offline sync, conflict, session expiry", async ({ request, playwright 
   const customer = await signupCustomer(request, `accept-off-${stamp}@example.com`);
   const sales = await loginAs(playwright, SALES);
   const tech = await loginAs(playwright, TECH);
-  const support = await loginAs(playwright, SUPPORT);
+  await loginAs(playwright, SUPPORT);
 
   const enquiry = await customer.post("/api/v1/enquiries", {
     contact_name: "Acceptance Customer",

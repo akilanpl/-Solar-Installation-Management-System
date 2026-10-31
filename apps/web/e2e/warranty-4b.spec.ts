@@ -70,8 +70,6 @@ async function signIn(page: Page, kind: string, identifier: string, password: st
   await page.waitForLoadState("load");
 }
 
-type Ctx = { request: APIRequestContext };
-
 async function installOrderAndTicket(
   c: APIRequestContext,
   s: APIRequestContext,
