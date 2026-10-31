@@ -8,6 +8,7 @@ warranty activation) so tickets always reference real installed equipment.
 import threading
 import uuid
 from datetime import UTC, datetime, timedelta
+from unittest.mock import patch
 
 import pytest
 from app.core.errors import AppError
@@ -249,14 +250,26 @@ def _installed_order(client, application, email: str = "leela@example.com",
     """Confirmed order with one installed serial and an active warranty."""
     order = _confirmed_order(client, application, email)
     warehouse = _warehouse(client)
-    for component_code, quantity in _order_material(application, order["id"]):
-        _receipt_validate(client, warehouse, component_code, f"{quantity}.0000", "MAIN")
-    scanned = client.post(
-        "/api/v1/serials/scan",
-        json={"serial_number": serial, "component_code": _order_material(application, order["id"])[0][0]},
-        headers=warehouse,
-    )
-    assert scanned.status_code == 201, scanned.text
+    from tests.test_phase3_warehouse_installation import _register_received_units
+
+    material = _order_material(application, order["id"])
+    named_component = material[0][0]
+    scanned = None
+    for component_code, quantity in material:
+        receipt = _receipt_validate(client, warehouse, component_code, f"{quantity}.0000", "MAIN")
+        if component_code == named_component:
+            scanned = client.post(
+                "/api/v1/serials/scan",
+                json={"serial_number": serial, "component_code": component_code,
+                      "operation_id": receipt["id"]},
+                headers=warehouse,
+            )
+            assert scanned.status_code == 201, scanned.text
+            assert scanned.json()["status"] == "in_stock"
+            _register_received_units(client, warehouse, receipt, component_code, skip=1)
+        else:
+            _register_received_units(client, warehouse, receipt, component_code)
+    assert scanned is not None
     assigned = client.post(
         f"/api/v1/serials/{scanned.json()['id']}/assign",
         json={"order_id": order["id"]},
@@ -273,9 +286,60 @@ def _installed_order(client, application, email: str = "leela@example.com",
     assert client.post(f"/api/v1/deliveries/{delivery_id}/transit", headers=warehouse).status_code == 200
     assert client.post(f"/api/v1/deliveries/{delivery_id}/deliver", headers=warehouse).status_code == 200
     assert client.post(f"/api/v1/deliveries/{delivery_id}/confirm", headers=warehouse).status_code == 200
+    _complete_installation(client, application, order["id"], email)
     warranty = client.get(f"/api/v1/warranties/order/{order['id']}", headers=_sales(client))
     assert warranty.json()["status"] == "active", warranty.text
+    from app.models.phase3 import EquipmentSerial
+
+    with Session(application.state.engine) as db:
+        installed = db.scalar(select(EquipmentSerial).where(
+            EquipmentSerial.serial_number == serial.upper()))
+        assert installed is not None and installed.status == "installed"
+        assert installed.operation_id is not None
     return order, serial
+
+
+def _complete_installation(client, application, order_id, email):
+    """Complete genuine custody/evidence/OTP/customer-acknowledgment commands."""
+    from tests.test_phase3_warehouse_installation import _scheduled_payload, _uploaded_photo
+
+    job = client.post(
+        "/api/v1/jobs",
+        json=_scheduled_payload(application, order_id, _tech_id(application, "tech@example.com")),
+        headers=_sales(client),
+    )
+    assert job.status_code == 201, job.text
+    job_id = job.json()["id"]
+    customer_code = application.state.email_sender.messages[-1].code
+    tech = _technician(client)
+    # A deterministic test clock supplies a real elapsed work interval; all
+    # business transitions still pass through the production API and guards.
+    arrival_time = datetime.now(UTC) - timedelta(minutes=3)
+    with patch("app.services.installation_service.utcnow", return_value=arrival_time):
+        arrived = client.post(f"/api/v1/jobs/{job_id}/arrival", headers=tech)
+    assert arrived.status_code == 200, arrived.text
+    verified = client.post(f"/api/v1/jobs/{job_id}/customer-otp",
+                           json={"code": customer_code}, headers=tech)
+    assert verified.status_code == 200, verified.text
+    recorded = client.post(f"/api/v1/jobs/{job_id}/evidence", json={
+        "photo_refs": [_uploaded_photo(client, job_id, tech)],
+        "test_readings": {"voc_v": 612.5}, "installed_capacity_kw": "3",
+        "started_at": arrival_time.isoformat(),
+        "finished_at": datetime.now(UTC).isoformat(),
+    }, headers=tech)
+    assert recorded.status_code == 200, recorded.text
+    customer = _login(client, "customer", email, "Solarops123")
+    summary = client.get(f"/api/v1/jobs/{job_id}/work-summary")
+    assert summary.status_code == 200, summary.text
+    signed = client.post(f"/api/v1/jobs/{job_id}/signature", json={
+        "signature_ref": "Synthetic customer fixture acknowledgment",
+        "customer_confirmed": True, "summary_hash": summary.json()["summary_hash"],
+    }, headers=customer)
+    assert signed.status_code == 200, signed.text
+    done = client.post(f"/api/v1/jobs/{job_id}/completion", headers=_technician(client))
+    assert done.status_code == 200, done.text
+    assert done.json()["status"] == "completed"
+    return done.json()
 
 
 def _ticket_payload(order_id: str, serial: str | None = "SN-INV-0001") -> dict:
@@ -393,9 +457,11 @@ def test_ticket_create_rejects_uninstalled_serial(client, application):
     order = _confirmed_order(client, application)
     warehouse = _warehouse(client)
     component = _order_material(application, order["id"])[0][0]
+    receipt = _receipt_validate(client, warehouse, component, "1.0000")
     scanned = client.post(
         "/api/v1/serials/scan",
-        json={"serial_number": "SN-RESERVED-1", "component_code": component},
+        json={"serial_number": "SN-RESERVED-1", "component_code": component,
+              "operation_id": receipt["id"]},
         headers=warehouse,
     )
     assert scanned.status_code == 201, scanned.text

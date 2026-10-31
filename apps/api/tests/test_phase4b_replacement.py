@@ -33,10 +33,11 @@ def _covered_ticket(client, application, serial_new="SN-RPL-0001", **policy_kw):
     from tests.test_phase4a_support import _order_material, _receipt_validate
 
     component = _order_material(application, order["id"])[0][0]
-    _receipt_validate(client, warehouse, component, "1.0000", "MAIN")
+    receipt = _receipt_validate(client, warehouse, component, "1.0000", "MAIN")
     scanned = client.post(
         "/api/v1/serials/scan",
-        json={"serial_number": serial_new, "component_code": component},
+        json={"serial_number": serial_new, "component_code": component,
+              "operation_id": receipt["id"]},
         headers=warehouse,
     )
     assert scanned.status_code == 201, scanned.text

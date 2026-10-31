@@ -9,7 +9,7 @@ import pytest
 from app.core.errors import AppError
 from app.models.finance import FinanceEntry, FinanceEvidence, FinanceRecord
 from app.models.identity import User
-from app.models.phase3 import InstallationJob, StockLedger, StockOperation
+from app.models.phase3 import StockLedger, StockOperation
 from app.models.workflow import PaymentIntent, SalesOrder
 from app.schemas import finance as s
 from app.services import finance_service as f
@@ -91,22 +91,6 @@ def completed_order(client, application):
     from tests.test_phase3_warehouse_installation import _technician
 
     job, code, _, _ = prepared(client, application)
-    from tests.test_phase4a_support import _order_material, _receipt_validate, _warehouse
-
-    warehouse = _warehouse(client)
-    for component, quantity in _order_material(application, job["order_id"]):
-        _receipt_validate(client, warehouse, component, str(quantity))
-    delivery = client.post(
-        "/api/v1/deliveries",
-        json={"order_id": job["order_id"]},
-        headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex},
-    )
-    assert delivery.status_code == 201, delivery.text
-    for action in ["transit", "deliver", "confirm"]:
-        response = client.post(
-            f"/api/v1/deliveries/{delivery.json()['id']}/{action}", headers=warehouse
-        )
-        assert response.status_code == 200, response.text
     path = f"/api/v1/jobs/{job['id']}"
     summary = client.get(path + "/work-summary").json()
     assert (
@@ -512,19 +496,18 @@ def test_technician_payable_rounding_adjustment_and_settlement(client, applicati
     order, _ = _installed_order(client, application)
     headers = admin_login(client)
     now = datetime.now(UTC)
-    # Source job has recorded elapsed work; synthetic local clock span.
+    # Reuse the source completed by real upload/OTP/customer-signature APIs.
     tech_id = _tech_id(application, "tech@example.com")
-    job = client.post(
-        "/api/v1/jobs",
-        json={"order_id": order["id"], "technician_user_id": tech_id},
-        headers=_login(client, "employee", "EMP-SALES-901", "Staffpass123"),
-    ).json()
-    with Session(application.state.engine) as db:
-        source = db.get(InstallationJob, uuid.UUID(job["id"]))
-        source.arrival_at = now - timedelta(hours=1)
-        source.completed_at = now
-        source.status = "completed"
-        db.commit()
+    jobs = client.get("/api/v1/jobs", headers=_login(
+        client, "employee", "EMP-SALES-901", "Staffpass123"))
+    assert jobs.status_code == 200, jobs.text
+    job = next(row for row in jobs.json() if row["order_id"] == order["id"])
+    assert job["status"] == "completed"
+    source_arrival = datetime.fromisoformat(job["arrival_at"])
+    source_end = datetime.fromisoformat(job["completed_at"])
+    check_in = source_arrival + timedelta(seconds=1)
+    check_out = check_in + timedelta(minutes=1)
+    assert check_out <= source_end
     headers = admin_login(client)
     rate = post(
         client,
@@ -546,8 +529,8 @@ def test_technician_payable_rounding_adjustment_and_settlement(client, applicati
         {
             "job_kind": "installation",
             "job_id": job["id"],
-            "check_in": (now - timedelta(minutes=1)).isoformat(),
-            "check_out": now.isoformat(),
+            "check_in": check_in.isoformat(),
+            "check_out": check_out.isoformat(),
             "note": "Actual test work",
             "key": "sheet",
         },
@@ -626,8 +609,8 @@ def test_technician_payable_rounding_adjustment_and_settlement(client, applicati
         {
             "job_kind": "installation",
             "job_id": job["id"],
-            "check_in": (now - timedelta(minutes=2)).isoformat(),
-            "check_out": (now - timedelta(minutes=1)).isoformat(),
+            "check_in": check_out.isoformat(),
+            "check_out": (check_out + timedelta(minutes=1)).isoformat(),
             "note": "Second nonoverlapping minute of actual work",
             "key": "other-sheet",
         },

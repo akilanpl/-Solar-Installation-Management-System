@@ -7,7 +7,6 @@ benchmark module records measured latencies separately.
 
 import threading
 import uuid
-from datetime import UTC, datetime, timedelta
 
 import pytest
 from sqlalchemy import select
@@ -54,31 +53,14 @@ def _login_customer(client, email="leela@example.com") -> dict[str, str]:
 
 
 def _schedule_slot(client, application, order_id: str) -> None:
-    """Book a genuine installation slot and job so snapshots list real visits."""
-    from app.models.identity import User
+    """Require the genuine completed installation already established by the fixture."""
 
     sales = _sales(client)
-    scheduling = client.get("/api/v1/scheduling/installations", headers=sales)
-    assert scheduling.status_code == 200, scheduling.text
-    row = [item for item in scheduling.json() if item["order_id"] == order_id][0]
-    slot = (datetime.now(UTC) + timedelta(days=1)).isoformat()
-    scheduled = client.post(
-        f"/api/v1/scheduling/installations/{row['id']}/slot",
-        json={"slot_starts_at": slot},
-        headers=_sales(client),
-    )
-    assert scheduled.status_code == 200, scheduled.text
-    with Session(application.state.engine) as db:
-        tech = db.scalar(select(User).where(User.email == "tech@example.com"))
-        assert tech is not None
-        tech_id = str(tech.id)
-    job = client.post(
-        "/api/v1/jobs",
-        json={"order_id": order_id, "technician_user_id": tech_id,
-              "slot_starts_at": slot},
-        headers=_sales(client),
-    )
-    assert job.status_code == 201, job.text
+    jobs = client.get("/api/v1/jobs", headers=sales)
+    assert jobs.status_code == 200, jobs.text
+    job = next(row for row in jobs.json() if row["order_id"] == order_id)
+    assert job["status"] == "completed"
+    assert job["slot_starts_at"] and job["arrival_at"] and job["completed_at"]
 
 
 def _installed(client, application, email="leela@example.com", serial="SN-INV-0001"):
