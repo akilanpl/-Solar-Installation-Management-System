@@ -326,3 +326,4 @@ export function WeatherCard({
 }
 
 export default WeatherCard;
+
