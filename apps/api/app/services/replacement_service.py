@@ -416,15 +416,11 @@ def inspect_return(db: Session, user: User, replacement_id: uuid.UUID, verdict: 
     old.status = "returned"
     old.location_code = "MAIN"
     db.flush()
-    restock_operation_id = None
-    if verdict == "restocked":
-        operation = inventory_service.replacement_stock_movement(db, user, row.id, restock=True)
-        restock_operation_id = operation.id
-        old.status = "in_stock"
-        old.location_code = "MAIN"
-    else:
-        old.status = "quarantined"
-        old.location_code = "QUARANTINE"
+    operation = inventory_service.replacement_stock_movement(
+        db, user, row.id, return_verdict=verdict)
+    # All physical returns, including unusable quarantine/scrap custody, have
+    # an exact serialized receipt and ledger record at their actual location.
+    restock_operation_id = operation.id
     inspection = ReturnInspection(
         replacement_id=row.id, serial_id=old.id, verdict=verdict, note=note.strip(),
         restock_operation_id=restock_operation_id, inspected_by_user_id=user.id,

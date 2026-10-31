@@ -482,7 +482,7 @@ def consume_reservations(db: Session, order_id: uuid.UUID) -> None:
     db.flush()
 
 
-def replacement_stock_movement(db, user, replacement_id, *, restock=False):
+def replacement_stock_movement(db, user, replacement_id, *, return_verdict=None):
     """Post one exact unit for an authorized replacement, never generic dispatch.
 
     The persisted replacement owns authorization and idempotency. This path
@@ -493,6 +493,10 @@ def replacement_stock_movement(db, user, replacement_id, *, restock=False):
     from app.models.warranty import ReplacementDecision
     from app.services.location_allocation import outstanding
 
+    if return_verdict not in {None, "restocked", "quarantined", "scrapped"}:
+        raise AppError(422, "validation_error", "Unknown replacement return disposition.")
+    restock = return_verdict is not None
+    usable_return = return_verdict == "restocked"
     if user.role_code not in WAREHOUSE:
         raise AppError(403, "forbidden", "Only warehouse staff can move replacement stock.")
     replacement = db.scalar(select(ReplacementDecision).where(
@@ -511,13 +515,25 @@ def replacement_stock_movement(db, user, replacement_id, *, restock=False):
     required_status = "returned" if restock else "reserved"
     if serial.status != required_status or serial.order_id != ticket.order_id:
         raise AppError(409, "invalid_serial_state", "Replacement unit custody changed.")
-    location = "MAIN" if restock else serial.location_code
-    if not location or location == "QUARANTINE":
+    location = ("MAIN" if usable_return else "QUARANTINE") if restock else serial.location_code
+    if not location or (not restock and location == "QUARANTINE"):
         raise AppError(409, "invalid_serial_state", "A usable exact stock location is required.")
     _check_location(db, location)
     if not restock:
-        receipt = db.get(StockOperation, serial.operation_id) if serial.operation_id else None
-        if receipt is None or receipt.operation_type != "receipt" or receipt.status != "done":
+        # Custody may include legitimate transfers after receipt. Establish
+        # provenance from the exact immutable receipt movement, not a mutable
+        # serial pointer; current location and balance remain independently checked.
+        receipt = db.scalar(
+            select(StockOperation.id)
+            .join(StockSerialMovement, StockSerialMovement.operation_id == StockOperation.id)
+            .join(StockOperationLine, StockOperationLine.id == StockSerialMovement.line_id)
+            .where(StockSerialMovement.serial_id == serial.id,
+                   StockSerialMovement.serial_number == serial.serial_number,
+                   StockOperationLine.component_code == serial.component_code,
+                   StockOperation.operation_type == "receipt", StockOperation.status == "done")
+            .limit(1)
+        )
+        if receipt is None:
             raise AppError(409, "receipt_required", "A validated receipt must back the issued unit.")
         if on_hand(db, serial.component_code, location) - 1 < outstanding(
                 db, serial.component_code, location):
@@ -540,10 +556,11 @@ def replacement_stock_movement(db, user, replacement_id, *, restock=False):
                        location_code=location, quantity_delta=1 if restock else -1))
     operation.status = "done"
     operation.validated_at = utcnow()
-    serial.status = "in_stock" if restock else "in_transit"
+    serial.status = ("in_stock" if usable_return else "quarantined") if restock else "in_transit"
     serial.location_code = location if restock else None
     if restock:
-        serial.order_id = None
+        if usable_return:
+            serial.order_id = None
         serial.operation_id = operation.id
     add_audit(db, actor_user_id=user.id, action="replacement.stock_validated",
               entity_type="stock_operation", entity_id=operation.id,

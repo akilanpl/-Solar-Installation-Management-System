@@ -308,6 +308,13 @@ def test_replacement_roles_and_quarantine(client, application):
     installed = client.post(f"/api/v1/replacements/{replacement_id}/install", headers=_support(client))
     assert installed.status_code == 200, installed.text
     warehouse = _warehouse(client)
+    with Session(application.state.engine) as db:
+        component = db.scalar(select(EquipmentSerial.component_code).where(
+            EquipmentSerial.serial_number == old))
+        before_main = db.scalar(select(func.coalesce(func.sum(StockLedger.quantity_delta), 0)).where(
+            StockLedger.component_code == component, StockLedger.location_code == "MAIN"))
+        before_quarantine = db.scalar(select(func.coalesce(func.sum(StockLedger.quantity_delta), 0)).where(
+            StockLedger.component_code == component, StockLedger.location_code == "QUARANTINE"))
     quarantined = client.post(
         f"/api/v1/replacements/{replacement_id}/inspect",
         json={"verdict": "quarantined",
@@ -316,6 +323,25 @@ def test_replacement_roles_and_quarantine(client, application):
     )
     assert quarantined.status_code == 201, quarantined.text
     assert _serial_status(application, old) == "quarantined"
+    with Session(application.state.engine) as db:
+        from app.models.custody import StockSerialMovement
+        from app.models.phase3 import StockOperation
+
+        old_unit = db.scalar(select(EquipmentSerial).where(EquipmentSerial.serial_number == old))
+        operation = db.get(StockOperation, uuid.UUID(quarantined.json()["restock_operation_id"]))
+        assert operation.status == "done" and operation.operation_type == "receipt"
+        movements = list(db.scalars(select(StockSerialMovement).where(
+            StockSerialMovement.operation_id == operation.id)))
+        assert len(movements) == 1 and movements[0].serial_id == old_unit.id
+        assert old_unit.location_code == "QUARANTINE"
+        assert db.scalar(select(func.sum(StockLedger.quantity_delta)).where(
+            StockLedger.component_code == component, StockLedger.location_code == "QUARANTINE")) == before_quarantine + 1
+        assert db.scalar(select(func.sum(StockLedger.quantity_delta)).where(
+            StockLedger.component_code == component, StockLedger.location_code == "MAIN")) == before_main
+    # Quarantined returned equipment cannot be reserved or assigned as usable stock.
+    denied = client.post(f"/api/v1/serials/{old_unit.id}/assign",
+                          json={"order_id": ticket["order_id"]}, headers=warehouse)
+    assert denied.status_code == 409, denied.text
     again = client.post(
         f"/api/v1/replacements/{replacement_id}/inspect",
         json={"verdict": "restocked", "note": "Trying to inspect the same return twice."},
@@ -357,3 +383,46 @@ def test_technician_confirms_install_and_fixed_days(client, application):
         assert new_coverage is not None
         span = new_coverage.ends_at - new_coverage.starts_at
         assert span.days == 90, span
+
+
+
+def test_replacement_issue_uses_transferred_unit_exact_location(client, application):
+    from app.models.custody import StockSerialMovement
+    from app.models.phase3 import StockOperation
+
+    _all_staff(application)
+    ticket, old, new, _ = _covered_ticket(client, application, serial_new="SN-RPL-TRANSFER-1")
+    warehouse = _warehouse(client)
+    with Session(application.state.engine) as db:
+        unit = db.scalar(select(EquipmentSerial).where(EquipmentSerial.serial_number == new))
+        unit_id, component = str(unit.id), unit.component_code
+    # SITE is an established usable stock location; preserve exact transfer custody.
+    catalogue = client.get("/api/v1/workspace/warehouse-catalogue", headers=warehouse)
+    assert catalogue.status_code == 200, catalogue.text
+    locations = [row["code"] for row in catalogue.json()["locations"] if row["code"] not in {"MAIN", "QUARANTINE"}]
+    assert locations, "An existing usable destination is required by the fixture"
+    destination = locations[0]
+    transfer = client.post("/api/v1/stock/operations", json={
+        "operation_type": "transfer", "lines": [{"component_code": component, "quantity": "1",
+            "from_location": "MAIN", "to_location": destination, "serial_ids": [unit_id]}],
+    }, headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex})
+    assert transfer.status_code == 201, transfer.text
+    transfer_id = transfer.json()["id"]
+    assert client.post(f"/api/v1/stock/operations/{transfer_id}/ready", headers=warehouse).status_code == 200
+    validated = client.post(f"/api/v1/stock/operations/{transfer_id}/validate", headers=warehouse)
+    assert validated.status_code == 200, validated.text
+    proposed = _propose(client, ticket["id"], old, new)
+    assert proposed.status_code == 201, proposed.text
+    replacement_id = proposed.json()["id"]
+    assert client.post(f"/api/v1/replacements/{replacement_id}/approve", headers=_support(client)).status_code == 200
+    warehouse = _warehouse(client)
+    assert client.post(f"/api/v1/replacements/{replacement_id}/reserve", headers=warehouse).status_code == 200
+    issued = client.post(f"/api/v1/replacements/{replacement_id}/issue",
+                          headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex})
+    assert issued.status_code == 200, issued.text
+    with Session(application.state.engine) as db:
+        operation = db.get(StockOperation, uuid.UUID(issued.json()["issue_operation_id"]))
+        assert operation.lines[0].from_location == destination
+        movement = db.scalar(select(StockSerialMovement).where(StockSerialMovement.operation_id == operation.id))
+        assert str(movement.serial_id) == unit_id
+        assert db.get(EquipmentSerial, uuid.UUID(unit_id)).status == "in_transit"
