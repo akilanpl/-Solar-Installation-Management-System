@@ -11,42 +11,42 @@ import './FakeLoginModal.css';
 const PERSONAS = [
   {
     key: 'customer',
-    icon: <UserCheck size={18} color="#C6FF34" />,
+    icon: <UserCheck size={18} color="#5B5FC7" />,
     role: 'Customer',
     data: FAKE_USERS.customer,
     desc: 'Submit & track home/commercial solar enquiries',
   },
   {
     key: 'sales',
-    icon: <Sparkles size={18} color="#7E3BED" />,
+    icon: <Sparkles size={18} color="#3B82F6" />,
     role: 'Sales Executive',
     data: FAKE_USERS.sales,
     desc: 'Review, qualify & schedule customer solar leads',
   },
   {
     key: 'technician',
-    icon: <HardHat size={18} color="#C6FF34" />,
+    icon: <HardHat size={18} color="#10B981" />,
     role: 'Field Technician',
     data: FAKE_USERS.technician,
     desc: 'Shadow ray tracing, roof load checks & site surveys',
   },
   {
     key: 'warehouse',
-    icon: <Warehouse size={18} color="#7E3BED" />,
+    icon: <Warehouse size={18} color="#F59E0B" />,
     role: 'Warehouse Manager',
     data: FAKE_USERS.warehouse,
     desc: 'Manage panels, hybrid inverters & battery dispatch',
   },
   {
     key: 'support',
-    icon: <Headphones size={18} color="#C6FF34" />,
+    icon: <Headphones size={18} color="#06B6D4" />,
     role: 'Support Specialist',
     data: FAKE_USERS.support,
     desc: 'Net-metering, subsidy queries & warranty tickets',
   },
   {
     key: 'admin',
-    icon: <Shield size={18} color="#7E3BED" />,
+    icon: <Shield size={18} color="#8B5CF6" />,
     role: 'Administrator',
     data: FAKE_USERS.admin,
     desc: 'Full ops oversight, employee provisioning & logs',
@@ -69,8 +69,8 @@ export function FakeLoginModal({ isOpen, onClose }) {
       onClose={onClose}
       title={
         <>
-          <Zap size={20} color="#C6FF34" />
-          <span>  Instant Fake Login (Demo Bypass)</span>
+          <Zap size={20} color="#5B5FC7" />
+          <span>  Instant Demo Persona Switcher</span>
         </>
       }
       maxWidth="720px"
@@ -80,8 +80,8 @@ export function FakeLoginModal({ isOpen, onClose }) {
         </Button>
       }
     >
-      <p style={{ marginBottom: '18px', fontSize: '13px', color: 'var(--color-white-dim)' }}>
-        Select any persona below to immediately bypass authentication with mock session credentials.
+      <p style={{ marginBottom: '18px', fontSize: '13px', color: '#64748b' }}>
+        Select any persona below to immediately switch authentication with mock session credentials.
         No database or password required:
       </p>
 

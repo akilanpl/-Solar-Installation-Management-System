@@ -41,7 +41,16 @@ export function Header() {
         <div className="top-nav-right">
           {/* User Role Badge */}
           <div className="top-user-pill">
-            <span className="top-user-avatar">⚡</span>
+            <span className="top-user-avatar">
+              {user?.full_name
+                ? user.full_name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')
+                    .substring(0, 2)
+                    .toUpperCase()
+                : 'SO'}
+            </span>
             <div className="top-user-meta">
               <span className="top-user-name">{user?.full_name || 'User'}</span>
               <span className="top-user-role">{roleLabel}</span>
