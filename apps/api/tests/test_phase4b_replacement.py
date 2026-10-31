@@ -77,6 +77,48 @@ def _serial_status(application, serial_number):
         return row.status
 
 
+def _submit_acknowledged_swap(client, application, ticket, old, new, job=None):
+    from datetime import UTC, datetime, timedelta
+
+    from tests.test_phase3_warehouse_installation import _png
+
+    job = job or _repair_job(client, ticket["id"], _tech_id(application, "tech@example.com"))
+    tech = _technician(client)
+    path = f"/api/v1/repair-jobs/{job['id']}"
+    arrived = client.post(path + "/arrival", headers=tech)
+    assert arrived.status_code == 200, arrived.text
+    diagnostics = client.post(path + "/diagnostics", json={
+        "findings": f"Original {old} defective; replacement {new} matched.",
+        "root_cause": "Verified defective component",
+    }, headers=tech)
+    assert diagnostics.status_code == 200, diagnostics.text
+    evidence = client.post(f"/api/v1/tickets/{ticket['id']}/attachments",
+        params={"repair_job_id": job["id"]},
+        files={"upload": ("swap.png", _png(), "image/png")}, headers=tech)
+    assert evidence.status_code == 201, evidence.text
+    now = datetime.now(UTC)
+    work = client.post(path + "/work", json={
+        "work_performed": f"Removed {old}; installed {new}; tested electrical continuity.",
+        "work_started_at": (now - timedelta(minutes=1)).isoformat(),
+        "work_finished_at": now.isoformat(), "parts_used": [],
+    }, headers=tech)
+    assert work.status_code == 200, work.text
+    submitted = client.post(path + "/submit", json={
+        "summary": f"Replacement {new} installed and original {old} retained for return.",
+    }, headers=tech)
+    assert submitted.status_code == 200, submitted.text
+    ready = client.post(f"/api/v1/tickets/{ticket['id']}/resolution-ready", json={
+        "summary": f"Exact replacement {new} installed for {old}; customer to review.",
+    }, headers=_support(client))
+    assert ready.status_code == 200, ready.text
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    confirmation = client.post(f"/api/v1/tickets/{ticket['id']}/confirmation", json={
+        "decision": "confirmed", "summary_version": ready.json()["resolution_version"],
+    }, headers=customer)
+    assert confirmation.status_code == 200, confirmation.text
+    return job
+
+
 def test_replacement_full_custody_and_transfer(client, application):
     from tests.test_phase4a_support import _order_material
 
@@ -105,12 +147,28 @@ def test_replacement_full_custody_and_transfer(client, application):
     assert issued.status_code == 200, issued.text
     assert issued.json()["status"] == "issued"
     assert _ledger_total(application, component) == before - 1
-    assert _serial_status(application, new) == "installed"
-    assert _serial_status(application, old) == "returned"
+    assert _serial_status(application, new) == "in_transit"
+    assert _serial_status(application, old) == "faulty"
+    with Session(application.state.engine) as db:
+        from app.models.custody import StockSerialMovement
+        from app.models.phase3 import StockOperation
+
+        operation = db.get(StockOperation, uuid.UUID(issued.json()["issue_operation_id"]))
+        movements = list(db.scalars(select(StockSerialMovement).where(
+            StockSerialMovement.operation_id == operation.id)))
+        assert operation.status == "done"
+        assert len(movements) == 1 and movements[0].serial_number == new
+        assert db.scalar(select(SerializedAssetCoverage).where(
+            SerializedAssetCoverage.serial_id == movements[0].serial_id)) is None
     replay = client.post(
         f"/api/v1/replacements/{replacement_id}/issue",
         headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex})
     assert replay.status_code == 200, replay.text
+    premature = client.post(
+        f"/api/v1/replacements/{replacement_id}/install", headers=_support(client))
+    assert premature.status_code == 409, premature.text
+    assert premature.json()["error"]["code"] == "installation_evidence_required"
+    _submit_acknowledged_swap(client, application, ticket, old, new)
     installed = client.post(
         f"/api/v1/replacements/{replacement_id}/install", headers=_support(client))
     assert installed.status_code == 200, installed.text
@@ -242,6 +300,14 @@ def test_replacement_roles_and_quarantine(client, application):
     assert client.post(
         f"/api/v1/replacements/{replacement_id}/issue",
         headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex}).status_code == 200
+    early = client.post(f"/api/v1/replacements/{replacement_id}/inspect",
+        json={"verdict": "quarantined", "note": "Cannot receive before physical swap."},
+        headers=warehouse)
+    assert early.status_code == 409, early.text
+    _submit_acknowledged_swap(client, application, ticket, old, new)
+    installed = client.post(f"/api/v1/replacements/{replacement_id}/install", headers=_support(client))
+    assert installed.status_code == 200, installed.text
+    warehouse = _warehouse(client)
     quarantined = client.post(
         f"/api/v1/replacements/{replacement_id}/inspect",
         json={"verdict": "quarantined",
@@ -275,6 +341,7 @@ def test_technician_confirms_install_and_fixed_days(client, application):
     assert client.post(
         f"/api/v1/replacements/{replacement_id}/issue",
         headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex}).status_code == 200
+    _submit_acknowledged_swap(client, application, ticket, old, new, job=job)
     technician = _technician(client)
     installed = client.post(
         f"/api/v1/replacements/{replacement_id}/install", headers=technician)

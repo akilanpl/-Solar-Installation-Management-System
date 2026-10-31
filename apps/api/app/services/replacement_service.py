@@ -22,7 +22,13 @@ from app.core.errors import AppError
 from app.core.security import utcnow
 from app.models.identity import User
 from app.models.phase3 import EquipmentSerial
-from app.models.support import ServiceTicket, ServiceTicketEvent, TicketRepairJob
+from app.models.support import (
+    ResolutionAcknowledgment,
+    ServiceTicket,
+    ServiceTicketAttachment,
+    ServiceTicketEvent,
+    TicketRepairJob,
+)
 from app.models.warranty import (
     CoverageDecision,
     ReplacementDecision,
@@ -215,7 +221,11 @@ def reserve_replacement(db: Session, user: User,
                        "Only an approved replacement can be reserved.")
     ticket = db.get(ServiceTicket, row.ticket_id)
     assert ticket is not None
-    new = db.get(EquipmentSerial, row.new_serial_id)
+    peek = db.get(EquipmentSerial, row.new_serial_id)
+    assert peek is not None
+    inventory_service.lock_components(db, [peek.component_code])
+    new = db.scalar(select(EquipmentSerial).where(EquipmentSerial.id == row.new_serial_id)
+                    .with_for_update().execution_options(populate_existing=True))
     assert new is not None
     if new.status == "reserved" and new.order_id == ticket.order_id:
         return row
@@ -247,21 +257,22 @@ def issue_replacement(db: Session, user: User, replacement_id: uuid.UUID,
     if new.status != "reserved" or new.order_id != ticket.order_id:
         raise AppError(409, "replacement_unavailable",
                        "Reserve the replacement unit for this order first.")
-    operation, _ = inventory_service.create_operation(
-        db, user, "delivery",
-        [{"component_code": new.component_code, "quantity": "1.0000",
-          "from_location": "MAIN", "to_location": None}],
-        f"Replacement {row.reference} for ticket {ticket.reference}",
-        ticket.order_id, f"replacement-issue-{row.id}",
-    )
-    inventory_service.mark_ready(db, user, operation.id)
-    inventory_service.validate_operation(db, user, operation.id)
+    operation = inventory_service.replacement_stock_movement(db, user, row.id)
+    row.issue_operation_id = operation.id
+    row.status = "issued"
+    db.flush()
+    _record(db, user, ticket, "replacement_issued", None,
+            {"replacement_id": str(row.id), "operation_id": str(operation.id),
+             "new_serial": new.serial_number, "old_serial": old.serial_number})
+    return row
+
+
+def _activate_replacement_coverage(db, row, ticket, old, new):
     now = utcnow()
     new.status = "installed"
     new.location_code = None
-    new.operation_id = operation.id
-    old.status = "returned"
-    old.location_code = "MAIN"
+    old.status = "faulty"
+    old.location_code = None
     old_coverage = db.scalar(
         select(SerializedAssetCoverage).where(
             SerializedAssetCoverage.serial_id == old.id)
@@ -286,15 +297,7 @@ def issue_replacement(db: Session, user: User, replacement_id: uuid.UUID,
         old_coverage.replaced_by_serial_id = new.id
     if new_coverage is not None:
         db.add(new_coverage)
-    row.issue_operation_id = operation.id
-    row.status = "issued"
     db.flush()
-    _record(db, user, ticket, "replacement_issued", None,
-            {"replacement_id": str(row.id), "operation_id": str(operation.id),
-             "new_serial": new.serial_number, "old_serial": old.serial_number,
-             "new_coverage_ends_at": (new_coverage.ends_at.isoformat()
-                                      if new_coverage else None)})
-    return row
 
 
 def confirm_install(db: Session, user: User,
@@ -316,6 +319,45 @@ def confirm_install(db: Session, user: User,
     if row.status != "issued":
         raise AppError(409, "invalid_transition",
                        "Only an issued replacement can be confirmed installed.")
+    ticket = db.scalar(select(ServiceTicket).where(ServiceTicket.id == ticket.id).with_for_update())
+    summary = ticket.resolution_summary or {}
+    job = db.get(TicketRepairJob, uuid.UUID(summary["repair_job_id"])) if summary.get("repair_job_id") else None
+    acknowledgment = db.scalar(select(ResolutionAcknowledgment).where(
+        ResolutionAcknowledgment.ticket_id == ticket.id,
+        ResolutionAcknowledgment.summary_version == ticket.resolution_version,
+        ResolutionAcknowledgment.decision == "confirmed",
+        ResolutionAcknowledgment.customer_user_id == ticket.customer_user_id,
+    ))
+    evidence = db.scalar(select(ServiceTicketAttachment.id).where(
+        ServiceTicketAttachment.ticket_id == ticket.id,
+        ServiceTicketAttachment.repair_job_id == job.id,
+    )) if job else None
+    if (job is None or job.status != "work_submitted" or not job.work_performed
+            or not job.work_finished_at or not evidence or acknowledgment is None
+            or ticket.status not in {"customer_confirmed", "closed"}):
+        raise AppError(409, "installation_evidence_required",
+                       "Submit assigned repair work and evidence, then obtain customer acknowledgment.")
+    if user.role_code == TECHNICIAN and job.technician_user_id != user.id:
+        raise AppError(404, "not_found", "Replacement decision not found.")
+    old = db.scalar(select(EquipmentSerial).where(EquipmentSerial.id == row.old_serial_id)
+                    .with_for_update())
+    new = db.scalar(select(EquipmentSerial).where(EquipmentSerial.id == row.new_serial_id)
+                    .with_for_update())
+    if new is None or old is None or new.status != "in_transit" or old.status != "faulty":
+        raise AppError(409, "invalid_serial_state", "Replacement custody changed before installation.")
+    from app.models.phase3 import StockOperation
+    from app.services.ticket_service import resolution_payload
+
+    operation = db.get(StockOperation, row.issue_operation_id)
+    if (operation is None or operation.status != "done" or not operation.validated_at
+            or job.work_finished_at < operation.validated_at
+            or old.serial_number not in job.work_performed.upper()
+            or new.serial_number not in job.work_performed.upper()
+            or acknowledgment.repair_job_id != job.id
+            or acknowledgment.payload_hash != resolution_payload(ticket)["payload_hash"]):
+        raise AppError(409, "installation_evidence_required",
+                       "Acknowledged work must identify the exact issued replacement and original unit.")
+    _activate_replacement_coverage(db, row, ticket, old, new)
     row.status = "installed"
     db.flush()
     _record(db, user, ticket, "replacement_installed", None,
@@ -354,7 +396,7 @@ def inspect_return(db: Session, user: User, replacement_id: uuid.UUID, verdict: 
     if len(note.strip()) < 10:
         raise AppError(422, "validation_error", "Inspection needs a real recorded note.")
     row = _lock_replacement(db, replacement_id)
-    if row.status not in ("issued", "installed"):
+    if row.status != "installed":
         raise AppError(409, "invalid_transition",
                        "The defective unit has not been returned yet.")
     existing = db.scalar(
@@ -364,21 +406,18 @@ def inspect_return(db: Session, user: User, replacement_id: uuid.UUID, verdict: 
         raise AppError(409, "inspection_exists", "This return was already inspected.")
     ticket = db.get(ServiceTicket, row.ticket_id)
     assert ticket is not None
-    old = db.get(EquipmentSerial, row.old_serial_id)
+    old = db.scalar(select(EquipmentSerial).where(EquipmentSerial.id == row.old_serial_id)
+                    .with_for_update())
     assert old is not None
-    if old.status != "returned":
+    if old.status != "faulty":
         raise AppError(409, "invalid_transition", "The defective unit is not in returns.")
+    # This explicit warehouse inspection records physical receipt of the
+    # defective unit; dispatching its replacement never implies a return.
+    old.status = "returned"
+    old.location_code = "MAIN"
     restock_operation_id = None
     if verdict == "restocked":
-        operation, _ = inventory_service.create_operation(
-            db, user, "adjustment",
-            [{"component_code": old.component_code, "quantity": "1.0000",
-              "from_location": None, "to_location": "MAIN"}],
-            f"Restock inspected return for replacement {row.reference}",
-            ticket.order_id, f"replacement-restock-{row.id}",
-        )
-        inventory_service.mark_ready(db, user, operation.id)
-        inventory_service.validate_operation(db, user, operation.id)
+        operation = inventory_service.replacement_stock_movement(db, user, row.id, restock=True)
         restock_operation_id = operation.id
         old.status = "in_stock"
         old.location_code = "MAIN"

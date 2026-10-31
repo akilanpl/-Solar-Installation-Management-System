@@ -1,6 +1,6 @@
 """Warehouse inventory: operations, ledger, reservations, serials, replenishment.
 
-Ledger rows are the stock truth and are written only by ``validate_operation``
+Ledger rows are the stock truth and are written by validated stock commands
 in the same transaction that flips the operation to ``done``. A failed
 validation raises before any ledger insert, so stock and the ledger stay
 unchanged. Concurrent validations serialize on the operation row lock plus
@@ -480,6 +480,77 @@ def consume_reservations(db: Session, order_id: uuid.UUID) -> None:
             raise AppError(409, "invalid_transition", "Reservations are no longer reserved.")
         row.status = "consumed"
     db.flush()
+
+
+def replacement_stock_movement(db, user, replacement_id, *, restock=False):
+    """Post one exact unit for an authorized replacement, never generic dispatch.
+
+    The persisted replacement owns authorization and idempotency. This path
+    cannot be selected by stock-operation HTTP input and cannot move any unit
+    other than the approved replacement's named serial.
+    """
+    from app.models.support import ServiceTicket
+    from app.models.warranty import ReplacementDecision
+    from app.services.location_allocation import outstanding
+
+    if user.role_code not in WAREHOUSE:
+        raise AppError(403, "forbidden", "Only warehouse staff can move replacement stock.")
+    replacement = db.scalar(select(ReplacementDecision).where(
+        ReplacementDecision.id == replacement_id).with_for_update())
+    expected = "installed" if restock else "approved"
+    if replacement is None or replacement.status != expected:
+        raise AppError(409, "invalid_transition", "Replacement is not ready for this movement.")
+    ticket = db.get(ServiceTicket, replacement.ticket_id)
+    serial_id = replacement.old_serial_id if restock else replacement.new_serial_id
+    peek = db.get(EquipmentSerial, serial_id)
+    if ticket is None or peek is None:
+        raise AppError(404, "not_found", "Replacement source not found.")
+    lock_components(db, [peek.component_code])
+    serial = db.scalar(select(EquipmentSerial).where(EquipmentSerial.id == serial_id)
+                       .with_for_update().execution_options(populate_existing=True))
+    required_status = "returned" if restock else "reserved"
+    if serial.status != required_status or serial.order_id != ticket.order_id:
+        raise AppError(409, "invalid_serial_state", "Replacement unit custody changed.")
+    location = "MAIN" if restock else serial.location_code
+    if not location or location == "QUARANTINE":
+        raise AppError(409, "invalid_serial_state", "A usable exact stock location is required.")
+    _check_location(db, location)
+    if not restock:
+        receipt = db.get(StockOperation, serial.operation_id) if serial.operation_id else None
+        if receipt is None or receipt.operation_type != "receipt" or receipt.status != "done":
+            raise AppError(409, "receipt_required", "A validated receipt must back the issued unit.")
+        if on_hand(db, serial.component_code, location) - 1 < outstanding(
+                db, serial.component_code, location):
+            raise AppError(409, "insufficient_stock", "Replacement exceeds unallocated stock.")
+    operation, reused = create_operation(
+        db, user, "receipt" if restock else "delivery",
+        [{"component_code": serial.component_code, "quantity": "1.0000",
+          "from_location": None if restock else location,
+          "to_location": location if restock else None}],
+        f"Inspected replacement return {replacement.reference}" if restock
+        else f"Approved replacement issue {replacement.reference}",
+        ticket.order_id, f"replacement-{'return' if restock else 'issue'}-{replacement.id}",
+    )
+    if reused:
+        raise AppError(409, "invalid_transition", "Replacement movement already exists.")
+    line = operation.lines[0]
+    db.add(StockSerialMovement(operation_id=operation.id, line_id=line.id,
+                               serial_id=serial.id, serial_number=serial.serial_number))
+    db.add(StockLedger(operation_id=operation.id, component_code=serial.component_code,
+                       location_code=location, quantity_delta=1 if restock else -1))
+    operation.status = "done"
+    operation.validated_at = utcnow()
+    serial.status = "in_stock" if restock else "in_transit"
+    serial.location_code = location if restock else None
+    if restock:
+        serial.order_id = None
+        serial.operation_id = operation.id
+    add_audit(db, actor_user_id=user.id, action="replacement.stock_validated",
+              entity_type="stock_operation", entity_id=operation.id,
+              metadata={"replacement_id": str(replacement.id), "serial_id": str(serial.id),
+                        "direction": "return" if restock else "issue"})
+    db.flush()
+    return operation
 
 
 def scan_serial(
