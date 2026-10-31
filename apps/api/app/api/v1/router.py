@@ -15,6 +15,7 @@ from app.api.v1 import (
     surveys,
     tickets,
     warehouse,
+    warranty,
 )
 
 api_router = APIRouter(prefix="/api/v1", dependencies=[Depends(require_csrf)])
@@ -29,5 +30,6 @@ api_router.include_router(orders.router)
 api_router.include_router(warehouse.router)
 api_router.include_router(installation.router)
 api_router.include_router(tickets.router)
+api_router.include_router(warranty.router)
 api_router.include_router(admin.router)
 api_router.include_router(dev.router)

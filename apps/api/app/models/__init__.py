@@ -32,6 +32,21 @@ from app.models.support import (  # noqa: F401
     ServiceTicketEvent,
     TicketRepairJob,
 )
+from app.models.warranty import (  # noqa: F401
+    CoverageDecision,
+    EstimateDecision,
+    ReplacementDecision,
+    ReturnInspection,
+    SerializedAssetCoverage,
+    ServiceCreditNote,
+    ServiceEstimate,
+    ServiceInvoice,
+    ServicePriceBook,
+    ServiceTaxPolicy,
+    WarrantyException,
+    WarrantyPolicy,
+    WarrantyPolicyVersion,
+)
 from app.models.workflow import (  # noqa: F401
     CatalogueComponent,
     DocumentCounter,
