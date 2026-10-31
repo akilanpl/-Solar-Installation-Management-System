@@ -25,6 +25,18 @@ from app.models.phase3 import (  # noqa: F401
     WarehouseLocation,
     Warranty,
 )
+from app.models.phase4e import (  # noqa: F401
+    MfaFactor,
+    MfaRecoveryCode,
+    MfaTicket,
+    StrongAuthGrant,
+    TechnicianSyncOperation,
+    WarrantyExtension,
+    WarrantyExtensionOffer,
+    WarrantyExtensionTerms,
+    WebauthnChallenge,
+    WebauthnCredential,
+)
 from app.models.support import (  # noqa: F401
     ResolutionAcknowledgment,
     ServiceTicket,
