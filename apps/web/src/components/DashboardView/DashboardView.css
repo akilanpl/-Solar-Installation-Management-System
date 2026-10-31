@@ -58,10 +58,10 @@
   max-width: 340px;
 }
 
-/* Top Feature Cards (4 Columns) */
+/* Top Feature Cards (3 Columns) */
 .dash-feature-cards-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, minmax(130px, 1fr));
   gap: 16px;
 }
 
@@ -83,31 +83,6 @@
 .dash-feature-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-}
-
-.dash-feature-card.create-new {
-  background-color: #eef2ff;
-  border: 1.5px dashed #c7d2fe;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.dash-create-icon-box {
-  width: 38px;
-  height: 38px;
-  background-color: #6366f1;
-  color: #ffffff;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
-  transition: transform 150ms ease;
-}
-
-.dash-feature-card.create-new:hover .dash-create-icon-box {
-  transform: scale(1.1);
 }
 
 .dash-feature-illustration {

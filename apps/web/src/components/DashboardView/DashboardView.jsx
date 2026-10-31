@@ -115,11 +115,6 @@ export function DashboardView({
             'Screen incoming solar enquiries, analyze rooftop load parameters, and schedule site engineering surveys.',
           featureCards: [
             {
-              isAdd: true,
-              label: 'Qualify Leads',
-              action: () => showToast({ type: 'info', title: 'Lead Queue', message: 'Ready to qualify incoming leads.' }),
-            },
-            {
               title: 'Enquiry Funnel',
               sub: `${enquiries.length || 18} Active submissions`,
               icon: <Layers size={28} color="#4F46E5" />,
@@ -156,11 +151,6 @@ export function DashboardView({
           greetingSub:
             'Conduct on-site rooftop shadow raytracing, verify structural roof integrity, and upload engineering checklist evidence.',
           featureCards: [
-            {
-              isAdd: true,
-              label: 'New Inspection',
-              action: () => showToast({ type: 'info', title: 'Field Queue', message: 'Ready for today\'s inspections.' }),
-            },
             {
               title: 'Assigned Surveys',
               sub: `${jobs.length || 3} Rooftop locations`,
@@ -200,11 +190,6 @@ export function DashboardView({
             'Monitor physical counts of photovoltaic modules, hybrid inverters, batteries, and staging material dispatches.',
           featureCards: [
             {
-              isAdd: true,
-              label: 'Inbound GRN',
-              action: () => showToast({ type: 'info', title: 'Warehouse', message: 'GRN intake modal initialized.' }),
-            },
-            {
               title: 'In-Stock Modules',
               sub: `${stock.reduce?.((acc, s) => acc + (s.in_stock || 0), 0) || 142} PV Panels`,
               icon: <Package size={28} color="#4F46E5" />,
@@ -242,11 +227,6 @@ export function DashboardView({
             'Liaise on BESCOM net-metering approvals, DISCOM grid synchronization, and inverter warranty tickets.',
           featureCards: [
             {
-              isAdd: true,
-              label: 'New Ticket',
-              action: () => showToast({ type: 'info', title: 'Support', message: 'Escalation ticket modal opened.' }),
-            },
-            {
               title: 'Open Tickets',
               sub: `${tickets.length || 8} Active enquiries`,
               icon: <Headphones size={28} color="#4F46E5" />,
@@ -283,11 +263,6 @@ export function DashboardView({
           greetingSub:
             'Monitor per-installation job cost accounting, customer invoices, subsidy claims, and enterprise personnel roster.',
           featureCards: [
-            {
-              isAdd: true,
-              label: 'Add Staff',
-              action: onNewAction || (() => showToast({ type: 'info', title: 'Staff Roster', message: 'Employee provisioning open.' })),
-            },
             {
               title: 'Total Revenue',
               sub: '₹1.48 Cr Q2 YTD',
@@ -329,11 +304,6 @@ export function DashboardView({
           greetingSub:
             'Track your rooftop solar system installation, milestones, serialized equipment warranties, and monthly savings.',
           featureCards: [
-            {
-              isAdd: true,
-              label: 'New Solar Enquiry',
-              action: onNewAction || (() => navigate('/customer/enquiries/new')),
-            },
             {
               title: 'My Enquiries',
               sub: `${enquiries.length || 1} Active project`,
@@ -476,23 +446,11 @@ export function DashboardView({
           <WeatherCard />
         </div>
 
-        {/* Right: 4 Tailored Quick-Action / Stat Cards */}
+        {/* Right: 3 Tailored Quick-Action / Stat Cards */}
         <div className="dash-feature-cards-grid">
-          {config.featureCards.map((card, idx) =>
-            card.isAdd ? (
-              <div
-                key={idx}
-                className="dash-feature-card create-new"
-                onClick={card.action}
-                title={card.label}
-                role="button"
-                tabIndex={0}
-              >
-                <div className="dash-create-icon-box">
-                  <Plus size={22} strokeWidth={2.8} />
-                </div>
-              </div>
-            ) : (
+          {config.featureCards
+            .filter((card) => !card.isAdd)
+            .map((card, idx) => (
               <div
                 key={idx}
                 className="dash-feature-card"
@@ -510,8 +468,7 @@ export function DashboardView({
                   <p className="dash-feature-sub">{card.sub}</p>
                 </div>
               </div>
-            )
-          )}
+            ))}
         </div>
       </section>
 

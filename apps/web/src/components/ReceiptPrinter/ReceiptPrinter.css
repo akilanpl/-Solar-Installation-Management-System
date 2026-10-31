@@ -1,0 +1,484 @@
+/* ================================================================
+   RECEIPT PRINTER (POS THERMAL BILL GENERATOR) CSS
+   Authentic stepped paper feed keyframes, thermal paper texture,
+   LCD screen, sawtooth tear edge, and responsive printer chassis.
+   ================================================================ */
+
+.receipt-printer-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: receiptOverlayFadeIn 0.3s ease-out;
+}
+
+@keyframes receiptOverlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.receipt-printer-root {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* ================================================================
+   1. PRINTER MACHINE CHASSIS
+   ================================================================ */
+.receipt-machine {
+  width: 100%;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px 18px 10px 10px;
+  padding: 16px 20px 12px 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  position: relative;
+  z-index: 10;
+}
+
+.receipt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.receipt-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.receipt-power-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  animation: receiptPowerPulse 2s infinite ease-in-out;
+}
+
+@keyframes receiptPowerPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+}
+
+/* Machine LCD Digital Screen */
+.receipt-screen {
+  background: #020617;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.receipt-screen-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.receipt-screen-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.receipt-screen-label {
+  font-size: 11.5px;
+  color: #64748b;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  text-transform: uppercase;
+}
+
+.receipt-screen-amount {
+  font-size: 19px;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: -0.5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.receipt-status-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.receipt-status-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.receipt-status-icon .spin-icon {
+  animation: receiptSpin 1s linear infinite;
+}
+
+@keyframes receiptSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.receipt-status-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: #e2e8f0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Machine Ejection Slit */
+.receipt-slot-slit {
+  height: 7px;
+  width: 94%;
+  margin: 0 auto;
+  background: #000000;
+  border-radius: 4px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ================================================================
+   2. PAPER OUTPUT & STEPPED FEED ANIMATION
+   ================================================================ */
+.receipt-output-viewport {
+  width: 90%;
+  max-width: 380px;
+  overflow: hidden;
+  position: relative;
+  margin-top: -3px;
+  padding-bottom: 12px;
+}
+
+.receipt-paper-wrapper {
+  transform: translate3d(0, -96%, 0);
+  transition: transform 0.3s ease-out;
+}
+
+.receipt-paper-wrapper.anim-stepped-feed {
+  animation: receiptSteppedFeed 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.receipt-paper-wrapper.feed-complete {
+  transform: translate3d(0, 0%, 0);
+}
+
+.receipt-paper-wrapper.feed-hidden {
+  transform: translate3d(0, -100%, 0);
+  opacity: 0;
+}
+
+/* Precise 20-Keyframe Stepped Mechanical Feed */
+@keyframes receiptSteppedFeed {
+  0% {
+    transform: translate3d(0, -96%, 0);
+  }
+  7.5% {
+    transform: translate3d(0, -96%, 0);
+  }
+  10.5% {
+    transform: translate3d(0, -93%, 0);
+  }
+  19.5% {
+    transform: translate3d(0, -93%, 0);
+  }
+  22.5% {
+    transform: translate3d(0, -84%, 0);
+  }
+  31.5% {
+    transform: translate3d(0, -84%, 0);
+  }
+  34.5% {
+    transform: translate3d(0, -68%, 0);
+  }
+  43.5% {
+    transform: translate3d(0, -68%, 0);
+  }
+  46.5% {
+    transform: translate3d(0, -56%, 0);
+  }
+  55.5% {
+    transform: translate3d(0, -56%, 0);
+  }
+  58.5% {
+    transform: translate3d(0, -42%, 0);
+  }
+  67.5% {
+    transform: translate3d(0, -42%, 0);
+  }
+  70.5% {
+    transform: translate3d(0, -31%, 0);
+  }
+  79.5% {
+    transform: translate3d(0, -31%, 0);
+  }
+  82.5% {
+    transform: translate3d(0, -20%, 0);
+  }
+  91.5% {
+    transform: translate3d(0, -20%, 0);
+  }
+  94.5% {
+    transform: translate3d(0, -10%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0%, 0);
+  }
+}
+
+/* ================================================================
+   3. THERMAL PAPER STYLING & SAWTOOTH CLIP PATH
+   ================================================================ */
+.receipt-paper {
+  background: #ffffff;
+  color: #0f172a;
+  padding: 24px 22px 30px 22px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.paper-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.paper-brand-emblem {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.3px;
+  margin-bottom: 2px;
+}
+
+.paper-subhead {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  margin: 0;
+}
+
+.paper-tax-id {
+  font-size: 9.5px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+  letter-spacing: 0.3px;
+}
+
+.paper-dash-line {
+  border-bottom: 1.5px dashed #cbd5e1;
+  margin: 12px 0;
+}
+
+/* Meta Data Grid */
+.paper-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+  font-size: 11px;
+}
+
+.meta-label {
+  color: #64748b;
+  margin-right: 4px;
+}
+
+.meta-val {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* Items Table */
+.paper-items-table {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.paper-item-row {
+  display: grid;
+  grid-template-columns: 1fr 40px 85px;
+  font-size: 11px;
+}
+
+.paper-item-row.header {
+  font-weight: 700;
+  color: #64748b;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 4px;
+  margin-bottom: 2px;
+}
+
+.paper-item-row .item-name {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.paper-item-row .item-qty {
+  text-align: center;
+  color: #475569;
+}
+
+.paper-item-row .item-cost {
+  text-align: right;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Totals Box */
+.paper-totals-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.paper-total-row.net {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.paper-total-sub {
+  font-size: 10px;
+  color: #64748b;
+}
+
+/* Footer & Stamp */
+.paper-footer {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.paper-barcode-svg {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0 2px 0;
+}
+
+.paper-barcode-text {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: #475569;
+  margin: 0;
+}
+
+.paper-thankyou {
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+  margin: 4px 0 0 0;
+}
+
+.paper-stamp {
+  margin-top: 6px;
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1.5px solid #059669;
+  color: #059669;
+  border-radius: 4px;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  transform: rotate(-3deg);
+}
+
+/* ================================================================
+   4. ACTION CONTROLS BAR (PRINT & RETURN)
+   ================================================================ */
+.receipt-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 14px;
+  width: 100%;
+  animation: receiptFadeUp 0.3s ease-out;
+}
+
+@keyframes receiptFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.receipt-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.receipt-action-btn.primary {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.receipt-action-btn.primary:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.receipt-action-btn.secondary {
+  background: rgba(255, 255, 255, 0.15);
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.receipt-action-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}

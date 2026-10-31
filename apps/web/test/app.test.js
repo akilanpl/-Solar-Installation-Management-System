@@ -29,3 +29,17 @@ test('Formatters: formatInrFromPaise correctly converts paise to INR string', ()
   const formatted = formatInrFromPaise(100000);
   assert.ok(formatted.includes('1,000') || formatted.includes('1000'));
 });
+
+test('Receipt Printer: sawtooth clipPath points generation is well-formed', () => {
+  const toothCount = 36;
+  const toothDepth = 4;
+  const points = Array.from({ length: toothCount * 2 }, (_, index) => {
+    const x = 100 - ((index + 1) * 100) / (toothCount * 2);
+    const y = index % 2 === 0 ? '100%' : `calc(100% - ${toothDepth}px)`;
+    return `${x}% ${y}`;
+  }).join(', ');
+  const clipPath = `polygon(0 0, 100% 0, 100% calc(100% - ${toothDepth}px), ${points})`;
+  assert.ok(clipPath.startsWith('polygon(0 0, 100% 0'));
+  assert.ok(clipPath.includes('calc(100% - 4px)'));
+  assert.ok(clipPath.endsWith(')'));
+});

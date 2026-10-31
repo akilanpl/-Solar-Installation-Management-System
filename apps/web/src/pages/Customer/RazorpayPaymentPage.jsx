@@ -1,429 +1,348 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from '../../router/Router';
 import { useAuth } from '../../context/AuthContext';
-import {
-  Shield,
-  Lock,
-  ArrowLeft,
-  CheckCircle2,
-  CreditCard,
-  QrCode,
-  Building,
-  Smartphone,
-  ChevronRight,
-  ExternalLink,
-  Zap,
-} from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import ReceiptPrinter from '../../components/ReceiptPrinter/ReceiptPrinter';
 import './RazorpayPaymentPage.css';
 
 export function RazorpayPaymentPage() {
   const { navigate } = useRouter();
-  const { showToast, user } = useAuth();
+  const { showToast } = useAuth();
 
-  const [activeTab, setActiveTab] = useState('upi'); // 'upi' | 'card' | 'netbanking'
-  const [upiMethod, setUpiMethod] = useState('qr'); // 'qr' | 'id'
-  const [upiId, setUpiId] = useState('customer@oksbi');
-  const [cardNumber, setCardNumber] = useState('4532 •••• •••• 9821');
-  const [cardExpiry, setCardExpiry] = useState('08/29');
-  const [cardCvv, setCardCvv] = useState('•••');
-  const [selectedBank, setSelectedBank] = useState('sbi');
+  // Selected payment method pill: 'card' (default as per design) | 'paypal' | 'crypto'
+  const [selectedMethod, setSelectedMethod] = useState('card');
 
-  const [paymentState, setPaymentState] = useState('idle'); // 'idle' | 'processing' | 'otp' | 'success'
-  const [otpInput, setOtpInput] = useState('482910');
+  // Interactive Card Form inputs (matching the underline fields on the blue card)
+  const [fullName, setFullName] = useState('Arun Kumar');
+  const [cardNumber, setCardNumber] = useState('4532 8920 1928 4921');
+  const [expireDate, setExpireDate] = useState('08/29');
+  const [cvc, setCvc] = useState('892');
 
-  // Amount details
-  const amountNumber = 78000;
-  const formattedAmount = '₹78,000.00';
-  const orderId = 'order_PMSG_2026_9912';
+  // Receipt Printer Animation Modal state
+  const [showPrinter, setShowPrinter] = useState(false);
+  const [printerStage, setPrinterStage] = useState('processing');
 
-  const handlePay = () => {
-    setPaymentState('processing');
-    setTimeout(() => {
-      setPaymentState('otp');
-    }, 900);
+  // Bill metadata for solar milestone
+  const billInfo = {
+    billId: 'INV-SURYA-2026-9912',
+    orderId: 'order_PMSG_2026_9912',
+    utrNumber: 'RZP91823902381',
+    customerName: fullName || 'Arun Kumar',
+    accountNumber: `•••• ${cardNumber ? cardNumber.replace(/\s+/g, '').slice(-4) : '4921'}`,
+    amount: '₹78,000.00',
+    date: '31 Oct 2026',
+    items: [
+      { name: '5 kW Bifacial Mono PERC Modules', qty: '10x', cost: '₹1,80,000' },
+      { name: '5 kVA Solar Hybrid Inverter', qty: '1x', cost: '₹82,000' },
+      { name: 'Rooftop Mounting Structure & BOS', qty: '1 set', cost: '₹40,000' },
+      { name: 'Central Subsidy (PM Surya Ghar)', qty: 'Credit', cost: '-₹78,000' },
+    ],
   };
 
-  const handleVerifyOtp = () => {
-    setPaymentState('processing');
+  const handleProceedPayment = (e) => {
+    e.preventDefault();
+    setShowPrinter(true);
+    setPrinterStage('processing');
+
+    // Smooth sequence: processing -> printing -> complete
     setTimeout(() => {
-      setPaymentState('success');
-    }, 1100);
+      setPrinterStage('printing');
+    }, 1200);
+
+    setTimeout(() => {
+      setPrinterStage('complete');
+      showToast({
+        type: 'success',
+        title: 'Settlement Confirmed',
+        message: 'Escrow payment verified via Razorpay Route.',
+      });
+    }, 3400);
   };
 
-  // On success, wait 2.2 seconds and redirect back with toast
-  useEffect(() => {
-    if (paymentState === 'success') {
-      const timer = setTimeout(() => {
-        showToast({
-          type: 'success',
-          title: 'Razorpay Payment Settled',
-          message: `${formattedAmount} successfully credited via Razorpay Route.`,
-        });
-        navigate('/customer/payments');
-      }, 2400);
-      return () => clearTimeout(timer);
-    }
-  }, [paymentState, navigate, showToast]);
+  const handleClosePrinter = () => {
+    setShowPrinter(false);
+    navigate('/customer/dashboard');
+  };
 
   return (
-    <div className="rzp-checkout-page">
-      {/* Top Razorpay Header Bar */}
-      <header className="rzp-top-header">
-        <div className="rzp-top-container">
-          <div className="rzp-brand-group">
-            <button
-              type="button"
-              className="rzp-back-btn"
-              onClick={() => navigate('/customer/payments')}
-              title="Return to SolarOps"
-            >
-              <ArrowLeft size={18} />
-              <span>Cancel & Return</span>
-            </button>
-            <div className="rzp-logo-lockup">
-              {/* Razorpay Classic Slanted Emblem */}
-              <svg
-                className="rzp-main-logo"
-                viewBox="0 0 120 30"
-                height="24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M14.8 2L5 18.2H12.4L9.5 28L23.5 12H16L19.2 2H14.8Z"
-                  fill="#0284c7"
-                />
-                <text
-                  x="28"
-                  y="20"
-                  fill="#0c2340"
-                  fontSize="18"
-                  fontWeight="800"
-                  fontFamily="system-ui, -apple-system, sans-serif"
-                  letterSpacing="-0.5px"
-                >
-                  Razorpay
-                </text>
-              </svg>
-            </div>
-          </div>
-
-          <div className="rzp-security-badge">
-            <Lock size={14} color="#10b981" />
-            <span>256-bit SSL Secure Checkout</span>
-          </div>
+    <div className="io-payment-viewport">
+      {/* ================================================================
+          TOP HEADER: BRAND LOGO + RETURN BUTTON
+          ================================================================ */}
+      <header className="io-top-header">
+        <div className="io-brand-mark">
+          {/* Isometric Hexagon Brand Glyph matching reference image */}
+          <svg
+            className="io-hex-logo"
+            viewBox="0 0 36 36"
+            width="32"
+            height="32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 2L32 10.08V26.24L18 34.32L4 26.24V10.08L18 2Z"
+              stroke="#2f57ef"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M18 10L27 15.2V25.6L18 30.8L9 25.6V15.2L18 10Z"
+              stroke="#2f57ef"
+              strokeWidth="1.8"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M18 10V2L27 15.2L32 10.08M18 30.8V34.32M9 25.6L4 26.24"
+              stroke="#2f57ef"
+              strokeWidth="1.5"
+            />
+          </svg>
+          <span className="io-brand-title">SolarOps</span>
         </div>
+
+        <button
+          type="button"
+          className="io-nav-pill-btn"
+          onClick={() => navigate('/customer/dashboard')}
+        >
+          Return to Dashboard
+        </button>
       </header>
 
-      {/* Main Checkout Viewport Container */}
-      <main className="rzp-checkout-main">
-        <div className="rzp-checkout-card">
-          {/* ================================================================
-              LEFT MERCHANT SUMMARY PANEL
-              ================================================================ */}
-          <aside className="rzp-summary-panel">
-            <div className="rzp-merchant-info">
-              <div className="rzp-merchant-avatar">
-                <Zap size={22} color="#ffffff" />
-              </div>
-              <div className="rzp-merchant-text">
-                <h3 className="rzp-merchant-name">SolarOps Energy Pvt Ltd</h3>
-                <span className="rzp-merchant-desc">PM Surya Ghar Solar Escrow</span>
-              </div>
-            </div>
+      {/* ================================================================
+          MAIN CONTENT CONTAINER
+          ================================================================ */}
+      <main className="io-main-container">
+        {/* Top Horizontal Bill Capsule */}
+        <section className="io-bill-capsule" aria-label="Bill Overview">
+          <div className="io-bill-left">
+            <span className="io-bill-heading">Your bill</span>
+          </div>
+          <div className="io-bill-items">
+            <span className="io-bill-tag title">SolarOps PM Surya Ghar</span>
+            <span className="io-bill-tag tier">VIP Site Commissioning</span>
+            <span className="io-bill-tag calculation">
+              1 project × ₹78,000 (INR) = <strong>₹78,000 (INR)</strong>
+            </span>
+          </div>
+        </section>
 
-            <div className="rzp-order-details-box">
-              <div className="rzp-order-item">
-                <span className="rzp-order-label">Order Reference:</span>
-                <span className="rzp-order-val mono">{orderId}</span>
-              </div>
-              <div className="rzp-order-item">
-                <span className="rzp-order-label">Beneficiary Account:</span>
-                <span className="rzp-order-val">A/C •••• 4921</span>
-              </div>
-              <div className="rzp-order-item">
-                <span className="rzp-order-label">Disbursement Route:</span>
-                <span className="rzp-order-val">Direct Subsidy (DBT)</span>
-              </div>
-            </div>
+        {/* Section Heading */}
+        <div className="io-heading-group">
+          <h1 className="io-main-title">Select a payment method</h1>
+          <p className="io-main-subtitle">
+            Select a payment method you want to use to pay for your rooftop solar milestone.
+          </p>
+        </div>
 
-            <div className="rzp-amount-highlight">
-              <span className="rzp-amount-caption">Total Amount to Process</span>
-              <div className="rzp-amount-large">{formattedAmount}</div>
-              <span className="rzp-amount-badge">Instant Bank Credit</span>
-            </div>
-
-            <div className="rzp-trust-badges">
-              <div className="rzp-trust-item">
-                <CheckCircle2 size={14} color="#10b981" />
-                <span>PCI-DSS Level 1 Compliant</span>
-              </div>
-              <div className="rzp-trust-item">
-                <CheckCircle2 size={14} color="#10b981" />
-                <span>NPCI UPI Certified</span>
-              </div>
-            </div>
-          </aside>
-
-          {/* ================================================================
-              RIGHT PAYMENT INTERACTION AREA
-              ================================================================ */}
-          <section className="rzp-interaction-panel">
-            {paymentState === 'idle' && (
-              <>
-                {/* Method Navigation Tabs */}
-                <div className="rzp-method-nav">
-                  <button
-                    type="button"
-                    className={`rzp-nav-btn ${activeTab === 'upi' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('upi')}
-                  >
-                    <Smartphone size={16} />
-                    <span>UPI & QR</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`rzp-nav-btn ${activeTab === 'card' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('card')}
-                  >
-                    <CreditCard size={16} />
-                    <span>Cards</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`rzp-nav-btn ${activeTab === 'netbanking' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('netbanking')}
-                  >
-                    <Building size={16} />
-                    <span>Net Banking</span>
-                  </button>
+        {/* Two-Column Payment Layout */}
+        <div className="io-payment-grid">
+          {/* ============================================================
+              LEFT COLUMN: PAYMENT METHOD PILLS + PROCEED BUTTON
+              ============================================================ */}
+          <div className="io-methods-column">
+            {/* Pill 1: Paypal / UPI */}
+            <div
+              className={`io-method-pill ${selectedMethod === 'paypal' ? 'active' : ''}`}
+              onClick={() => setSelectedMethod('paypal')}
+              role="button"
+              tabIndex={0}
+            >
+              <span className="io-pill-label">Paypal</span>
+              <div className="io-pill-right">
+                <div className="io-paypal-badge">
+                  <span className="pp-p1">P</span>
+                  <span className="pp-p2">P</span>
+                  <span className="pp-text">PayPal</span>
                 </div>
-
-                {/* Tab 1: UPI & QR */}
-                {activeTab === 'upi' && (
-                  <div className="rzp-tab-content">
-                    <div className="rzp-upi-toggle">
-                      <button
-                        type="button"
-                        className={`rzp-sub-toggle ${upiMethod === 'qr' ? 'active' : ''}`}
-                        onClick={() => setUpiMethod('qr')}
-                      >
-                        <QrCode size={15} />
-                        <span>Scan QR Code</span>
-                      </button>
-                      <button
-                        type="button"
-                        className={`rzp-sub-toggle ${upiMethod === 'id' ? 'active' : ''}`}
-                        onClick={() => setUpiMethod('id')}
-                      >
-                        <Smartphone size={15} />
-                        <span>Enter UPI ID</span>
-                      </button>
-                    </div>
-
-                    {upiMethod === 'qr' ? (
-                      <div className="rzp-qr-wrapper">
-                        <div className="rzp-qr-frame">
-                          {/* Live Dynamic QR SVG */}
-                          <svg
-                            viewBox="0 0 160 160"
-                            width="140"
-                            height="140"
-                            className="rzp-qr-svg"
-                          >
-                            <rect width="160" height="160" fill="#ffffff" />
-                            {/* Standard QR Code visual blocks */}
-                            <path
-                              d="M10 10h40v40h-40z M20 20v20h20v-20z M25 25h10v10h-10z M110 10h40v40h-40z M120 20v20h20v-20z M125 25h10v10h-10z M10 110h40v40h-40z M20 120v20h20v-20z M25 125h10v10h-10z"
-                              fill="#0c2340"
-                            />
-                            <path
-                              d="M60 15h10v10h-10z M80 15h15v10h-15z M60 35h20v10h-20z M90 35h10v10h-10z M15 65h15v10h-15z M40 65h10v15h-10z M65 60h30v15h-30z M110 65h20v10h-20z M140 65h10v20h-10z M15 90h20v10h-20z M45 90h15v20h-15z M70 85h15v15h-15z M95 85h25v10h-25z M130 90h20v15h-20z M60 115h20v10h-20z M90 115h15v25h-15z M115 115h10v10h-10z M135 115h15v20h-15z M65 135h15v15h-15z M110 135h20v15h-20z"
-                              fill="#0c2340"
-                            />
-                            {/* Center brand badge inside QR */}
-                            <circle cx="80" cy="80" r="14" fill="#0284c7" />
-                            <text
-                              x="80"
-                              y="85"
-                              fill="#ffffff"
-                              fontSize="12"
-                              fontWeight="bold"
-                              textAnchor="middle"
-                            >
-                              ₹
-                            </text>
-                          </svg>
-                        </div>
-                        <p className="rzp-qr-hint">
-                          Scan with any UPI app: <strong>GPay, PhonePe, Paytm, BHIM</strong>
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="rzp-input-group">
-                        <label className="rzp-input-label">Virtual Payment Address (UPI ID)</label>
-                        <input
-                          type="text"
-                          className="rzp-input-field"
-                          value={upiId}
-                          onChange={(e) => setUpiId(e.target.value)}
-                          placeholder="mobilenumber@upi"
-                        />
-                        <span className="rzp-input-hint">
-                          A payment request will be sent to your UPI app.
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Tab 2: Credit / Debit Cards */}
-                {activeTab === 'card' && (
-                  <div className="rzp-tab-content">
-                    <div className="rzp-input-group">
-                      <label className="rzp-input-label">Card Number</label>
-                      <input
-                        type="text"
-                        className="rzp-input-field"
-                        value={cardNumber}
-                        onChange={(e) => setCardNumber(e.target.value)}
-                        placeholder="•••• •••• •••• ••••"
-                      />
-                    </div>
-                    <div className="rzp-two-col">
-                      <div className="rzp-input-group">
-                        <label className="rzp-input-label">Expiry (MM/YY)</label>
-                        <input
-                          type="text"
-                          className="rzp-input-field"
-                          value={cardExpiry}
-                          onChange={(e) => setCardExpiry(e.target.value)}
-                        />
-                      </div>
-                      <div className="rzp-input-group">
-                        <label className="rzp-input-label">CVV</label>
-                        <input
-                          type="password"
-                          className="rzp-input-field"
-                          value={cardCvv}
-                          onChange={(e) => setCardCvv(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Tab 3: Net Banking */}
-                {activeTab === 'netbanking' && (
-                  <div className="rzp-tab-content">
-                    <label className="rzp-input-label">Select Your Bank</label>
-                    <div className="rzp-bank-grid">
-                      {[
-                        { id: 'sbi', name: 'State Bank of India', code: 'SBI' },
-                        { id: 'hdfc', name: 'HDFC Bank', code: 'HDFC' },
-                        { id: 'icici', name: 'ICICI Bank', code: 'ICICI' },
-                        { id: 'axis', name: 'Axis Bank', code: 'AXIS' },
-                        { id: 'kotak', name: 'Kotak Mahindra', code: 'KOTAK' },
-                        { id: 'bob', name: 'Bank of Baroda', code: 'BOB' },
-                      ].map((bank) => (
-                        <button
-                          key={bank.id}
-                          type="button"
-                          className={`rzp-bank-card ${selectedBank === bank.id ? 'selected' : ''}`}
-                          onClick={() => setSelectedBank(bank.id)}
-                        >
-                          <span className="rzp-bank-code">{bank.code}</span>
-                          <span className="rzp-bank-name">{bank.name}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Submit Action Button */}
-                <button type="button" className="rzp-submit-btn" onClick={handlePay}>
-                  <span>Authorize & Process {formattedAmount}</span>
-                  <ChevronRight size={18} />
-                </button>
-              </>
-            )}
-
-            {/* State: Processing Spinner */}
-            {paymentState === 'processing' && (
-              <div className="rzp-state-screen">
-                <div className="rzp-spinner-ring" />
-                <h4 className="rzp-state-title">Contacting Bank Gateway...</h4>
-                <p className="rzp-state-desc">
-                  Please do not refresh or close this window. Securely communicating with{' '}
-                  <strong>Razorpay Route (AES-256)</strong>.
-                </p>
+                <ChevronRight size={18} className="io-pill-arrow" />
               </div>
-            )}
+            </div>
 
-            {/* State: 3D Secure OTP Verification */}
-            {paymentState === 'otp' && (
-              <div className="rzp-state-screen">
-                <div className="rzp-otp-badge">
-                  <Shield size={20} color="#0284c7" />
-                  <span>Bank 3D-Secure Authorization</span>
+            {/* Pill 2: Card (ACTIVE WITH TOPOGRAPHICAL WAVE PATTERN) */}
+            <div
+              className={`io-method-pill card-pill ${selectedMethod === 'card' ? 'active' : ''}`}
+              onClick={() => setSelectedMethod('card')}
+              role="button"
+              tabIndex={0}
+            >
+              <span className="io-pill-label">Card</span>
+              <div className="io-pill-right">
+                <div className="io-card-brand-badges">
+                  <span className="brand-badge visa">VISA</span>
+                  <span className="brand-badge amex">AMEX</span>
+                  <div className="brand-badge mc" title="Mastercard">
+                    <span className="circle red" />
+                    <span className="circle yellow" />
+                  </div>
+                  <span className="brand-badge discover">DISCOVER</span>
                 </div>
-                <h4 className="rzp-state-title">Enter Bank Authentication OTP</h4>
-                <p className="rzp-state-desc">
-                  A one-time passcode has been dispatched to beneficiary phone{' '}
-                  <strong>+91 ••••• •4921</strong> for transaction verification.
-                </p>
+                <ChevronRight size={18} className="io-pill-arrow" />
+              </div>
+            </div>
 
-                <div className="rzp-otp-input-box">
+            {/* Pill 3: Crypto / Bank Transfer */}
+            <div
+              className={`io-method-pill ${selectedMethod === 'crypto' ? 'active' : ''}`}
+              onClick={() => setSelectedMethod('crypto')}
+              role="button"
+              tabIndex={0}
+            >
+              <span className="io-pill-label">Crypto</span>
+              <div className="io-pill-right">
+                <div className="io-crypto-badges">
+                  <span className="crypto-badge btc">₿</span>
+                  <span className="crypto-badge eth">♦</span>
+                  <span className="crypto-badge ltc">Ł</span>
+                </div>
+                <ChevronRight size={18} className="io-pill-arrow" />
+              </div>
+            </div>
+
+            {/* Proceed Payment Pill Button */}
+            <div className="io-proceed-wrapper">
+              <button
+                type="button"
+                className="io-proceed-btn"
+                onClick={handleProceedPayment}
+              >
+                Proceed payment
+              </button>
+            </div>
+          </div>
+
+          {/* ============================================================
+              RIGHT COLUMN: ROYAL BLUE CREDIT CARD WITH UNDERLINE INPUTS
+              ============================================================ */}
+          <div className="io-card-column">
+            <div className="io-credit-card">
+              {/* Decorative Subtle Wave Lines */}
+              <div className="io-card-wave-bg">
+                <svg viewBox="0 0 500 320" preserveAspectRatio="none" className="card-waves-svg">
+                  <path
+                    d="M-50,160 C120,60 280,260 550,140"
+                    fill="none"
+                    stroke="rgba(255, 255, 255, 0.16)"
+                    strokeWidth="1.6"
+                  />
+                  <path
+                    d="M-50,110 C140,20 290,210 550,90"
+                    fill="none"
+                    stroke="rgba(255, 255, 255, 0.12)"
+                    strokeWidth="1.2"
+                  />
+                  <path
+                    d="M-50,210 C100,100 270,310 550,190"
+                    fill="none"
+                    stroke="rgba(255, 255, 255, 0.14)"
+                    strokeWidth="1.4"
+                  />
+                </svg>
+              </div>
+
+              {/* Card Top Row: Brand Badges */}
+              <div className="io-card-top-row">
+                <div className="io-card-badges-group">
+                  <span className="card-top-badge visa">VISA</span>
+                  <span className="card-top-badge amex">AMEX</span>
+                  <div className="card-top-badge mc">
+                    <span className="circle red" />
+                    <span className="circle yellow" />
+                  </div>
+                  <span className="card-top-badge discover">DISCOVER</span>
+                </div>
+              </div>
+
+              {/* Interactive Card Surface Fields */}
+              <div className="io-card-fields-wrapper">
+                {/* Field 1: Your Full Name */}
+                <div className="io-card-field-group">
+                  <label className="io-card-field-label">Your Full name</label>
                   <input
                     type="text"
-                    className="rzp-otp-field"
-                    value={otpInput}
-                    onChange={(e) => setOtpInput(e.target.value)}
-                    maxLength={6}
+                    className="io-card-underline-input"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Arun Kumar"
+                    spellCheck="false"
                   />
-                  <button type="button" className="rzp-submit-btn" onClick={handleVerifyOtp}>
-                    Verify OTP & Complete Settlement
-                  </button>
                 </div>
-              </div>
-            )}
 
-            {/* State: Payment Success Celebration */}
-            {paymentState === 'success' && (
-              <div className="rzp-state-screen success">
-                <div className="rzp-success-circle">
-                  <CheckCircle2 size={48} color="#10b981" />
+                {/* Field 2: Card Number */}
+                <div className="io-card-field-group">
+                  <label className="io-card-field-label">Card Number</label>
+                  <input
+                    type="text"
+                    className="io-card-underline-input"
+                    value={cardNumber}
+                    onChange={(e) => setCardNumber(e.target.value)}
+                    placeholder="4532 8920 1928 4921"
+                    maxLength={19}
+                    spellCheck="false"
+                  />
                 </div>
-                <h3 className="rzp-success-title">Payment Settlement Successful!</h3>
-                <div className="rzp-success-amount">{formattedAmount}</div>
-                <p className="rzp-success-sub">
-                  Payment Reference: <strong className="mono">pay_PMSG_9912847291</strong>
-                  <br />
-                  Direct subsidy credited to Aadhaar-linked Bank A/C •••• 4921.
-                </p>
-                <div className="rzp-redirect-bar">
-                  <div className="rzp-progress-fill" />
-                  <span>Auto-returning to SolarOps Escrow Schedule...</span>
+
+                {/* Row with Expire Date, CVC, and EMV Chip */}
+                <div className="io-card-bottom-row">
+                  <div className="io-card-inputs-subgrid">
+                    <div className="io-card-field-group">
+                      <label className="io-card-field-label">Expire date</label>
+                      <input
+                        type="text"
+                        className="io-card-underline-input short"
+                        value={expireDate}
+                        onChange={(e) => setExpireDate(e.target.value)}
+                        placeholder="08/29"
+                        maxLength={5}
+                      />
+                    </div>
+                    <div className="io-card-field-group">
+                      <label className="io-card-field-label">CVC</label>
+                      <input
+                        type="password"
+                        className="io-card-underline-input short"
+                        value={cvc}
+                        onChange={(e) => setCvc(e.target.value)}
+                        placeholder="892"
+                        maxLength={4}
+                      />
+                    </div>
+                  </div>
+
+                  {/* EMV Smart Chip */}
+                  <div className="io-emv-chip" aria-label="EMV Smart Chip">
+                    <div className="chip-inner-trace t1" />
+                    <div className="chip-inner-trace t2" />
+                    <div className="chip-inner-trace t3" />
+                  </div>
                 </div>
               </div>
-            )}
-          </section>
+            </div>
+          </div>
         </div>
       </main>
 
-      {/* Razorpay Footer */}
-      <footer className="rzp-bottom-footer">
-        <div className="rzp-footer-content">
-          <span>Powered by Razorpay Payments India</span>
-          <span>•</span>
-          <span>Terms & Privacy Policy</span>
-          <span>•</span>
-          <span>Merchant ID: MID_SOLAROPS_BLR</span>
-        </div>
+      {/* ================================================================
+          BOTTOM FOOTER: COPYRIGHT / STUDIO CREDIT
+          ================================================================ */}
+      <footer className="io-bottom-footer">
+        <span>SolarOps © all right reserved 2026</span>
       </footer>
+
+      {/* ================================================================
+          BILL GENERATION ANIMATION MODAL (RECEIPT PRINTER)
+          ================================================================ */}
+      {showPrinter && (
+        <ReceiptPrinter
+          stage={printerStage}
+          billDetails={billInfo}
+          onClose={handleClosePrinter}
+          onDownload={() => window.print()}
+        />
+      )}
     </div>
   );
 }
 
 export default RazorpayPaymentPage;
-
