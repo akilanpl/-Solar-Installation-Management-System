@@ -47,7 +47,7 @@ def upgrade():
     op.create_check_constraint(
         op.f("ck_equipment_serials_serial_status"),
         "equipment_serials",
-        "status IN ('registered','in_stock','reserved','in_transit','delivered','installed','faulty','missing')",
+        "status IN ('registered', 'in_stock', 'reserved', 'in_transit', 'delivered', 'installed', 'faulty', 'missing', 'returned', 'quarantined')",
     )
 
 

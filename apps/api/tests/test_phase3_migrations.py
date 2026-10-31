@@ -46,7 +46,7 @@ def test_phase3_round_trip_keeps_existing_phase1_record(client, application):
         _assert_safe(TEST_DATABASE_URL)
         command.upgrade(config, "head")
     with application.state.engine.connect() as connection:
-        assert set(connection.scalars(text("SELECT version_num FROM alembic_version"))) == {"4c1c2d3e4f50", "4d1a2b3c4d50", "35958a00676d"}
+        assert set(connection.scalars(text("SELECT version_num FROM alembic_version"))) == {"6a1b2c3d4e50"}
     schema = inspect(application.state.engine)
     for name in (
         "finance_records",
@@ -136,12 +136,20 @@ def test_forward_hardening_migration_preserves_financial_and_ledger_records(clie
             for table in tables:
                 rows = sorted(
                     json.dumps(list(row), default=str, sort_keys=True)
-                    for row in conn.execute(text("SELECT * FROM " + table))
+                    for row in conn.execute(text("SELECT " + ",".join(
+                        column["name"] for column in inspect(conn).get_columns(table)
+                        if not (table == "surveys" and column["name"] == "field_version")
+                    ) + " FROM " + table))
                 )
                 assert rows, table + " fixture must contain representative preserved records"
                 result[table] = (len(rows), hashlib.sha256("\n".join(rows).encode()).hexdigest())
             return result
 
+    # The 4E optimistic-lock column is additive, and this legacy roundtrip
+    # intentionally predates it. Prove its default is unmodified before
+    # comparing all columns that existed at the earlier revision.
+    with application.state.engine.connect() as connection:
+        assert set(connection.scalars(text("SELECT field_version FROM surveys"))) == {0}
     original = snapshot()
     config = Config("alembic.ini")
     command.downgrade(config, "e6a2b3c4d5f6")
@@ -152,3 +160,54 @@ def test_forward_hardening_migration_preserves_financial_and_ledger_records(clie
         _assert_safe(TEST_DATABASE_URL)
         command.upgrade(config, "head")
     assert snapshot() == original
+
+
+@pytest.mark.parametrize(
+    ("source_revision", "statuses"),
+    [
+        ("f3b9c0d1e2a3", ("registered", "delivered", "missing")),
+        ("4b1c2d3e4f51", ("returned", "quarantined")),
+    ],
+)
+def test_combined_upgrade_preserves_sibling_serial_custody(application, source_revision, statuses):
+    """Neither sibling's CHECK may reject or translate the other's saved states."""
+    _assert_safe(TEST_DATABASE_URL)
+    engine = application.state.engine
+    config = Config("alembic.ini")
+    # Dedicated disposable test DB only. Reconstruct a truly earlier branch,
+    # rather than stamping a current schema to pretend an upgrade occurred.
+    with engine.begin() as connection:
+        connection.execute(text("DROP SCHEMA public CASCADE"))
+        connection.execute(text("CREATE SCHEMA public"))
+    command.upgrade(config, source_revision)
+    ids = [uuid.uuid4() for _ in statuses]
+    columns = "id, serial_number, component_code, status, location_code, order_id, operation_id, created_at"
+    try:
+        with engine.begin() as connection:
+            connection.execute(text(
+                "INSERT INTO catalogue_components (code,name,unit) VALUES ('MIG-PANEL','Migration panel','unit')"
+            ))
+            for serial_id, status in zip(ids, statuses):
+                connection.execute(text(
+                    "INSERT INTO equipment_serials (id,serial_number,component_code,status) "
+                    "VALUES (:id,:serial,'MIG-PANEL',:status)"
+                ), {"id": serial_id, "serial": "MIG-" + serial_id.hex, "status": status})
+            original = list(connection.execute(text("SELECT " + columns + " FROM equipment_serials ORDER BY id")))
+        command.upgrade(config, "head")
+        with engine.connect() as connection:
+            assert list(connection.execute(text("SELECT " + columns + " FROM equipment_serials ORDER BY id"))) == original
+            assert set(connection.scalars(text("SELECT version_num FROM alembic_version"))) == {"6a1b2c3d4e50"}
+        # Verify all union states are accepted after migration; unknown states
+        # remain rejected by the database, not merely by the API.
+        with engine.begin() as connection:
+            for state in ("registered", "in_stock", "reserved", "in_transit", "delivered", "installed", "faulty", "missing", "returned", "quarantined"):
+                connection.execute(text("UPDATE equipment_serials SET status=:state"), {"state": state})
+        from sqlalchemy.exc import IntegrityError
+        with pytest.raises(IntegrityError):
+            with engine.begin() as connection:
+                connection.execute(text("UPDATE equipment_serials SET status='invented_success'"))
+    finally:
+        command.upgrade(config, "head")
+        with engine.begin() as connection:
+            connection.execute(text("DELETE FROM equipment_serials WHERE component_code='MIG-PANEL'"))
+            connection.execute(text("DELETE FROM catalogue_components WHERE code='MIG-PANEL'"))
