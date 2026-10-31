@@ -684,3 +684,382 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ==========================================================================
+   SURVEY & SITE VISITS CARD - REDESIGNED PREMIUM APPOINTMENT & OTP VAULT
+   ========================================================================== */
+.survey-visit-bento-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.site-visit-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-visit-pulse-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #059669;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+.live-dot-green {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  animation: liveVisitPulse 2s infinite ease-in-out;
+}
+
+@keyframes liveVisitPulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.month-badge {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #4f46e5;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+}
+
+/* Appointment Card Container */
+.survey-appointment-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.survey-service-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.service-title-box {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.survey-service-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.survey-service-desc {
+  font-size: 11.5px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.stage-status-badge {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+/* Assigned Technician Profile */
+.survey-technician-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.technician-avatar-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.tech-online-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #10b981;
+  border: 2px solid #ffffff;
+}
+
+.technician-info-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.technician-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.technician-name {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.technician-role-pill {
+  font-size: 10px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.technician-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+}
+
+.tech-rating {
+  color: #d97706;
+  font-weight: 700;
+}
+
+.tech-bullet {
+  color: #cbd5e1;
+}
+
+.tech-discom {
+  color: #059669;
+  font-weight: 600;
+}
+
+.tech-call-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 140ms ease;
+  flex-shrink: 0;
+}
+
+.tech-call-btn:hover {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #4f46e5;
+}
+
+/* Schedule Chips Row */
+.survey-schedule-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.schedule-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* OTP Vault Card */
+.otp-vault-card {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 60%, #fafffc 100%);
+  border: 1.5px solid #a7f3d0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.06);
+}
+
+.otp-vault-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.otp-vault-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vault-title {
+  display: block;
+  font-size: 12.5px;
+  color: #065f46;
+}
+
+.vault-subtitle {
+  font-size: 10.5px;
+  color: #047857;
+}
+
+.otp-copy-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ffffff;
+  border: 1px solid #6ee7b7;
+  color: #065f46;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 140ms ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.otp-copy-action-btn:hover {
+  background: #d1fae5;
+  border-color: #34d399;
+}
+
+.otp-copy-action-btn.copied {
+  background: #059669;
+  color: #ffffff;
+  border-color: #059669;
+}
+
+/* 6-Digit Monospace PIN Display */
+.otp-digits-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.otp-box-triad {
+  display: flex;
+  gap: 6px;
+}
+
+.otp-box-digit {
+  width: 34px;
+  height: 40px;
+  background: #ffffff;
+  border: 1.5px solid #6ee7b7;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'SF Mono', Consolas, Monaco, monospace;
+  font-size: 18px;
+  font-weight: 800;
+  color: #065f46;
+  box-shadow: 0 2px 5px rgba(5, 150, 105, 0.08);
+}
+
+.otp-box-separator {
+  font-size: 20px;
+  font-weight: 800;
+  color: #059669;
+  padding: 0 2px;
+}
+
+.otp-vault-note {
+  font-size: 11px;
+  color: #047857;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Bottom Actions Bar */
+.survey-actions-bar {
+  display: flex;
+  gap: 8px;
+}
+
+.survey-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.survey-action-btn.primary {
+  flex: 1;
+  background: #4f46e5;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+}
+
+.survey-action-btn.primary:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+.survey-action-btn.secondary {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.survey-action-btn.secondary:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}

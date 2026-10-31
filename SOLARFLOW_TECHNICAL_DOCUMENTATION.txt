@@ -2607,3 +2607,40 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+================================================================================
+49. REDESIGNED SURVEY & SITE VISITS BENTO CARD & OTP PIN VAULT (SECTION 49)
+================================================================================
+- Context & Requirements:
+  The user requested to make the "Survey & Site Visits" card look significantly
+  better. The previous implementation had an awkwardly wrapped yellow dashed OTP badge,
+  unformatted technician text, and cramped date/time pills.
+
+- Visual & Functional Redesign:
+  1. Header & Live Indicator:
+     - Clear title with green pulsing indicator chip: ● Upcoming Visit.
+     - Elegant calendar month pill: Sat, 18 May 2026.
+  2. Main Survey Appointment Card:
+     - Clear service title: Rooftop Feasibility & Shadow Raytracing.
+     - Subtitle detailing scope: 3D LiDAR Azimuth, RCC Roof Structural Load & AC/DC Cable Route Audit.
+     - Verified Technician Profile Pill:
+       * Monogram gradient avatar KN with live green online status dot.
+       * Name, title (Senior Field Engineer), rating (★ 4.9), and BESCOM certification.
+       * Interactive Call button for one-click technician phone outreach.
+     - Formatted schedule & site location pills (11:00 AM – 12:30 PM (IST) & Indiranagar, Bengaluru).
+  3. High-Security OTP Verification PIN Vault:
+     - Mint security card (#f0fdf4 gradient with #a7f3d0 border).
+     - Large individual monospace digit boxes: [ 8 ][ 4 ][ 9 ] • [ 2 ][ 0 ][ 1 ].
+     - Interactive Copy PIN button with clipboard integration and checkmark feedback.
+     - Security instruction note for field engineer authentication.
+  4. Quick Action Controls:
+     - Direct Live Technician GPS Track button linking to technician route map.
+     - Reschedule request action with instant confirmation toast.
+
+- Files Modified:
+  * apps/web/src/components/DashboardView/DashboardView.jsx (Redesigned Survey card & OTP copy handler)
+  * apps/web/src/components/DashboardView/DashboardView.css (Styled appointment card, technician profile, and PIN vault)
+  * apps/web/test/app.test.js (Added Unit Test #15)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================

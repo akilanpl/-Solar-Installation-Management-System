@@ -639,3 +639,4 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
 }
 
 export default EquipmentScannerModal;
+

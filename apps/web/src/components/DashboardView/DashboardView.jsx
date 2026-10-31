@@ -24,6 +24,7 @@ import {
   Wrench,
   Headphones,
   Shield,
+  ShieldCheck,
   Check,
   AlertTriangle,
   Upload,
@@ -35,6 +36,8 @@ import {
   ExternalLink,
   Award,
   ShoppingBag,
+  Copy,
+  Navigation,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from '../../router/Router';
@@ -104,6 +107,20 @@ export function DashboardView({
 
   // Customer Advance Payment
   const [advancePaid, setAdvancePaid] = useState(false);
+  const [otpCopied, setOtpCopied] = useState(false);
+
+  const handleCopyOtp = () => {
+    try {
+      navigator.clipboard?.writeText?.('849201');
+    } catch (_) {}
+    setOtpCopied(true);
+    setTimeout(() => setOtpCopied(false), 2000);
+    showToast({
+      type: 'success',
+      title: 'Verification PIN Copied',
+      message: 'Share OTP 849-201 with Karthik Nair to authenticate rooftop audit.',
+    });
+  };
 
   // --------------------------------------------------------------------------
   // ROLE CONFIGURATION: GREETINGS, TOP STATS, FOCUS CARD, GAUGES & BRIEFINGS
@@ -600,46 +617,155 @@ export function DashboardView({
             </div>
 
             {/* Col 3: Upcoming Rooftop Survey & Appointments */}
-            <div className="bento-card">
+            <div className="bento-card survey-visit-bento-card">
               <div className="bento-card-header">
-                <h3 className="bento-card-title">Survey & Site Visits</h3>
-                <span className="event-pill">
+                <div className="site-visit-title-group">
+                  <h3 className="bento-card-title">Survey & Site Visits</h3>
+                  <span className="live-visit-pulse-chip">
+                    <span className="live-dot-green" />
+                    <span>Upcoming Visit</span>
+                  </span>
+                </div>
+                <span className="event-pill month-badge">
                   <Calendar size={12} color="#4f46e5" />
-                  <span>May 2026</span>
+                  <span>Sat, 18 May 2026</span>
                 </span>
               </div>
 
-              <div className="floating-event-card">
-                <div className="event-top-row">
-                  <span className="event-title-badge">
-                    <span>Upcoming Visit</span>
-                    <span className="event-status-dot" />
-                  </span>
-                  <span className="otp-badge">OTP: 849 201</span>
+              {/* Main Survey Appointment Card */}
+              <div className="survey-appointment-card">
+                <div className="survey-service-header">
+                  <div className="service-title-box">
+                    <h4 className="survey-service-title">
+                      Rooftop Feasibility & Shadow Raytracing
+                    </h4>
+                    <p className="survey-service-desc">
+                      3D LiDAR Azimuth, RCC Roof Structural Load & AC/DC Cable Route Audit
+                    </p>
+                  </div>
+                  <span className="stage-status-badge">Confirmed</span>
                 </div>
-                <p className="event-sub-info">
-                  Technician Rooftop Shadow Raytracing & Load Audit | Karthik Nair
-                </p>
-                <div className="event-pills-row">
-                  <span className="event-pill">
-                    <Calendar size={12} color="#4f46e5" />
-                    <span>Sat, 18 May</span>
-                  </span>
-                  <span className="event-pill">
+
+                {/* Assigned Field Engineer Profile */}
+                <div className="survey-technician-profile">
+                  <div className="technician-avatar-circle">
+                    <span>KN</span>
+                    <span className="tech-online-dot" />
+                  </div>
+                  <div className="technician-info-col">
+                    <div className="technician-name-row">
+                      <strong className="technician-name">Karthik Nair</strong>
+                      <span className="technician-role-pill">Senior Field Engineer</span>
+                    </div>
+                    <div className="technician-meta-row">
+                      <span className="tech-rating">★ 4.9 (142 visits)</span>
+                      <span className="tech-bullet">·</span>
+                      <span className="tech-discom">BESCOM Certified</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="tech-call-btn"
+                    title="Call Technician Karthik Nair"
+                    onClick={() =>
+                      showToast({
+                        type: 'info',
+                        title: 'Connecting Field Crew',
+                        message: 'Calling Karthik Nair (+91 98450 12890)...',
+                      })
+                    }
+                  >
+                    <Phone size={13} />
+                    <span>Call</span>
+                  </button>
+                </div>
+
+                {/* Time & Location Chips Row */}
+                <div className="survey-schedule-chips">
+                  <div className="schedule-chip">
                     <Clock size={12} color="#4f46e5" />
-                    <span>11:00 AM - 12:30 PM</span>
-                  </span>
+                    <span>11:00 AM – 12:30 PM (IST)</span>
+                  </div>
+                  <div className="schedule-chip">
+                    <MapPin size={12} color="#059669" />
+                    <span>Indiranagar, Bengaluru</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="notification-item-compact" style={{ marginTop: '12px' }}>
-                <div className="notif-top">
-                  <span className="notif-title">Verification Pin for Technician</span>
-                  <Shield size={14} color="#6366f1" />
+              {/* Secure Authentication PIN Vault Card */}
+              <div className="otp-vault-card">
+                <div className="otp-vault-top">
+                  <div className="otp-vault-label">
+                    <ShieldCheck size={16} color="#059669" />
+                    <div>
+                      <strong className="vault-title">Technician Authentication PIN</strong>
+                      <span className="vault-subtitle">One-Time Security Passcode (OTP)</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className={`otp-copy-action-btn ${otpCopied ? 'copied' : ''}`}
+                    onClick={handleCopyOtp}
+                    title="Copy 6-Digit PIN to Clipboard"
+                  >
+                    {otpCopied ? (
+                      <>
+                        <Check size={13} color="#059669" />
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={13} />
+                        <span>Copy PIN</span>
+                      </>
+                    )}
+                  </button>
                 </div>
-                <p className="notif-desc">
-                  Share OTP <strong>849 201</strong> with the field engineer upon arrival to authenticate the visit and unlock checklist logging.
+
+                {/* 6-Digit PIN Boxes */}
+                <div className="otp-digits-display">
+                  <div className="otp-box-triad">
+                    <span className="otp-box-digit">8</span>
+                    <span className="otp-box-digit">4</span>
+                    <span className="otp-box-digit">9</span>
+                  </div>
+                  <span className="otp-box-separator">•</span>
+                  <div className="otp-box-triad">
+                    <span className="otp-box-digit">2</span>
+                    <span className="otp-box-digit">0</span>
+                    <span className="otp-box-digit">1</span>
+                  </div>
+                </div>
+
+                <p className="otp-vault-note">
+                  Share PIN <strong style={{ color: '#0f172a' }}>849 201</strong> with Karthik Nair upon arrival to authenticate field visit & unlock checklist logging.
                 </p>
+              </div>
+
+              {/* Bottom Quick Actions */}
+              <div className="survey-actions-bar">
+                <button
+                  type="button"
+                  className="survey-action-btn primary"
+                  onClick={() => navigate('/technician/map')}
+                >
+                  <Navigation size={13} />
+                  <span>Live Technician GPS Track</span>
+                </button>
+                <button
+                  type="button"
+                  className="survey-action-btn secondary"
+                  onClick={() =>
+                    showToast({
+                      type: 'info',
+                      title: 'Reschedule Request',
+                      message: 'Our operations team will contact you to select an alternative date.',
+                    })
+                  }
+                >
+                  <span>Reschedule</span>
+                </button>
               </div>
             </div>
           </>

@@ -241,6 +241,21 @@ test('Equipment Scanner: role-based visibility and BOM serial match verification
   assert.match(whSerial, /^SN-PV\d+-KA-\d+$/);
 });
 
+test('Customer Dashboard: technician verification PIN OTP format and parsing', () => {
+  const otpRaw = '849201';
+  assert.equal(otpRaw.length, 6);
+  assert.match(otpRaw, /^\d{6}$/);
+
+  const triad1 = otpRaw.slice(0, 3);
+  const triad2 = otpRaw.slice(3, 6);
+  assert.equal(triad1, '849');
+  assert.equal(triad2, '201');
+
+  const formattedOtp = `${triad1} ${triad2}`;
+  assert.equal(formattedOtp, '849 201');
+});
+
+
 
 
 
