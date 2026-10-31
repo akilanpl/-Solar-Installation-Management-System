@@ -199,3 +199,30 @@ def test_evidence_cannot_be_reused_on_another_job(client, application):
     assert response.json()["error"]["code"] == "invalid_evidence"
     assert client.get(f"/api/v1/jobs/{second_id}/uploads/{key}").status_code == 404
     assert first["id"] != second_id
+
+
+def test_only_customer_can_reissue_code_and_old_code_is_revoked(client, application):
+    job, _ = _job(client, application)
+    old_code = application.state.email_sender.messages[-1].code
+    path = f"/api/v1/jobs/{job['id']}/verification-code/request"
+    assert client.post(path, headers=_technician(client)).status_code == 403
+    assert client.post(path, headers=customer(client)).status_code == 429
+    with Session(application.state.engine) as db:
+        challenge = db.scalar(select(InstallationOtp).where(InstallationOtp.job_id == uuid.UUID(job["id"])))
+        challenge.created_at = datetime.now(UTC) - timedelta(minutes=2)
+        db.commit()
+    response = client.post(path, headers=customer(client))
+    assert response.status_code == 200
+    new_code = application.state.email_sender.messages[-1].code
+    assert new_code not in response.text
+    assert "Delivery is not confirmed" in response.json()["message"]
+    # Compare stored hashes, avoiding the one-in-a-million random code collision.
+    with Session(application.state.engine) as db:
+        rows = list(db.scalars(select(InstallationOtp).where(InstallationOtp.job_id == uuid.UUID(job["id"])).order_by(InstallationOtp.created_at)))
+        assert len(rows) == 2
+        assert rows[0].consumed_at is not None
+        assert rows[1].consumed_at is None
+    tech = _technician(client)
+    if old_code != new_code:
+        assert client.post(f"/api/v1/jobs/{job['id']}/customer-otp", json={"code": old_code}, headers=tech).status_code == 400
+    assert client.post(f"/api/v1/jobs/{job['id']}/customer-otp", json={"code": new_code}, headers=tech).status_code == 200

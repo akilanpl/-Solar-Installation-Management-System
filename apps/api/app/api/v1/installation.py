@@ -238,3 +238,35 @@ def download_job_evidence(job_id: UUID, storage_key: str, user: User = Depends(c
         raise AppError(404, "not_found", "Evidence not found.")
     installation_service.verify_file(row)
     return FileResponse(evidence_file(installation_service.get_settings(), row.storage_key), media_type=row.content_type, headers={"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"})
+
+
+@router.post("/jobs/{job_id}/verification-code/request")
+def request_verification_code(job_id: UUID, request: Request, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    """Reissue through the owning customer's configured email channel only."""
+    import secrets
+    from datetime import timedelta
+
+    from app.core.security import hash_secret, utcnow
+    from app.models.phase3 import InstallationJob, InstallationOtp
+    from app.repositories.queries import add_audit
+
+    visible = installation_service.get_job(db, user, job_id)
+    order = db.get(SalesOrder, visible.order_id)
+    if user.role_code != "customer" or order.customer_user_id != user.id:
+        raise AppError(403, "forbidden", "Only the owning customer may request a verification code.")
+    job = db.scalar(select(InstallationJob).where(InstallationJob.id == job_id).with_for_update())
+    if job.otp_verified or job.status in {"cancelled", "completed"}:
+        raise AppError(409, "invalid_transition", "This job does not need a new verification code.")
+    recent = db.scalar(select(InstallationOtp).where(InstallationOtp.job_id == job_id).order_by(InstallationOtp.created_at.desc()).limit(1))
+    if recent and recent.created_at > utcnow() - timedelta(minutes=1):
+        raise AppError(429, "rate_limited", "Wait one minute before requesting a new code.")
+    active = db.scalars(select(InstallationOtp).where(InstallationOtp.job_id == job_id, InstallationOtp.consumed_at.is_(None)).with_for_update())
+    for challenge in active:
+        challenge.consumed_at = utcnow()
+    code = f"{secrets.randbelow(900000) + 100000:06d}"
+    settings = request.app.state.settings
+    db.add(InstallationOtp(job_id=job.id, purpose="job_customer_verify", code_hash=hash_secret(f"{job.id}:job_customer_verify:{code}", settings.secret_key), expires_at=utcnow() + timedelta(minutes=30)))
+    request.app.state.email_sender.send(OutboundEmail(recipient=user.email, subject=f"SolarOps installation {job.reference}", body=f"Installation {job.reference}: verification code {code}. This does not acknowledge completed work.", code=code))
+    add_audit(db, actor_user_id=user.id, action="job.verification_code_requested", entity_type="installation_job", entity_id=job.id, metadata={"channel": "configured_customer_email"})
+    db.flush()
+    return {"message": "Verification code submitted to your configured email channel. Delivery is not confirmed."}

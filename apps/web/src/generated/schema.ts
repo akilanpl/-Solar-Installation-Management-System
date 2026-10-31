@@ -1219,6 +1219,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/jobs/{job_id}/verification-code/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Verification Code
+         * @description Reissue through the owning customer's configured email channel only.
+         */
+        post: operations["request_verification_code_api_v1_jobs__job_id__verification_code_request_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/employees": {
         parameters: {
             query?: never;
@@ -5225,6 +5245,37 @@ export interface operations {
             path: {
                 job_id: string;
                 storage_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_verification_code_api_v1_jobs__job_id__verification_code_request_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
             };
             cookie?: never;
         };

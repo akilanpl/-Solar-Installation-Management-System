@@ -3514,6 +3514,48 @@
         }
       }
     },
+    "/api/v1/jobs/{job_id}/verification-code/request": {
+      "post": {
+        "tags": [
+          "installation"
+        ],
+        "summary": "Request Verification Code",
+        "description": "Reissue through the owning customer's configured email channel only.",
+        "operationId": "request_verification_code_api_v1_jobs__job_id__verification_code_request_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/employees": {
       "get": {
         "tags": [
