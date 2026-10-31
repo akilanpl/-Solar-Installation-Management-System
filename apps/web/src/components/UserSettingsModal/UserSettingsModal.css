@@ -800,6 +800,16 @@
 }
 
 @media (max-width: 768px) {
+  .user-settings-topbar {
+    padding: 0 14px;
+    height: 56px;
+  }
+  .user-settings-topbar-left {
+    gap: 8px;
+  }
+  .brand-pill span {
+    display: none;
+  }
   .user-settings-main-layout {
     flex-direction: column;
   }
@@ -807,10 +817,40 @@
     width: 100%;
     border-right: none;
     border-bottom: 1px solid #e2e8f0;
-    padding: 16px;
+    padding: 10px 14px;
+    flex-shrink: 0;
+  }
+  .user-settings-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .user-settings-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .nav-tab-item {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 8px 12px;
+  }
+  .user-settings-content {
+    padding: 18px 14px;
   }
   .form-grid-2col {
     grid-template-columns: 1fr;
+  }
+  .user-settings-bottom-bar {
+    padding: 0 14px;
+    height: 54px;
+  }
+  .bottom-bar-left {
+    display: none;
+  }
+  .bottom-bar-right {
+    width: 100%;
+    justify-content: flex-end;
   }
 }
 

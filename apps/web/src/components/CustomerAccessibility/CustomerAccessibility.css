@@ -421,3 +421,26 @@ html.customer-reduce-motion *::after {
   z-index: 99999;
   backdrop-filter: invert(0.06);
 }
+
+/* 6. MOBILE RESPONSIVE FLOAT POSITIONING */
+@media (max-width: 768px) {
+  .customer-a11y-floating-trigger {
+    bottom: 84px;
+    right: 14px;
+  }
+
+  .a11y-pill-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .customer-a11y-drawer {
+    width: calc(100vw - 28px);
+    max-width: 360px;
+    bottom: 52px;
+    right: 0;
+    max-height: 72vh;
+  }
+}
+
+

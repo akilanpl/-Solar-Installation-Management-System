@@ -105,3 +105,23 @@
     transform: scale(1) translateY(0);
   }
 }
+
+@media (max-width: 640px) {
+  .modal-backdrop {
+    padding: 10px;
+  }
+  .modal-container {
+    max-width: 100%;
+    border-radius: 20px;
+    max-height: 94vh;
+  }
+  .modal-header {
+    padding: 14px 18px;
+  }
+  .modal-body {
+    padding: 16px 14px;
+  }
+  .modal-footer {
+    padding: 14px 18px;
+  }
+}

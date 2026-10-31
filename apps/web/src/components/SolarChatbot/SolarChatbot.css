@@ -692,13 +692,16 @@
 }
 
 /* Responsive adjustment */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .dock-chat-panel {
     left: 0;
+    top: 0;
     width: 100vw;
     max-width: 100vw;
-    border-radius: 0;
+    height: calc(100vh - 78px);
+    border-radius: 0 0 24px 24px;
     padding: 10px;
+    z-index: 1050;
   }
 
   .lemon-chat-header {

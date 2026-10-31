@@ -685,6 +685,45 @@
   }
 }
 
+@media (max-width: 540px) {
+  .dash-container {
+    gap: 20px;
+  }
+  .dash-hero-row {
+    gap: 16px;
+  }
+  .dash-greeting-title {
+    font-size: 23px;
+    line-height: 1.22;
+    letter-spacing: -0.4px;
+  }
+  .dash-greeting-sub {
+    font-size: 13px;
+    margin-top: 8px;
+    max-width: 100%;
+  }
+  .dash-feature-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .dash-feature-card {
+    height: auto;
+    min-height: 120px;
+    padding: 16px;
+  }
+  .otp-box-digit {
+    width: 30px;
+    height: 36px;
+    font-size: 16px;
+  }
+  .otp-digits-display {
+    gap: 4px;
+  }
+  .survey-actions-bar {
+    flex-direction: column;
+  }
+}
+
 /* ==========================================================================
    SURVEY & SITE VISITS CARD - REDESIGNED PREMIUM APPOINTMENT & OTP VAULT
    ========================================================================== */

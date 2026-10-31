@@ -340,3 +340,103 @@
     height: 36px;
   }
 }
+
+/* Mobile Viewport: Liquid-Glass Floating Bottom Navigation Pill */
+@media (max-width: 768px) {
+  .dock-sidebar-container {
+    width: calc(100% - 24px);
+    max-width: 520px;
+    height: 62px;
+    top: auto;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+    border-radius: 28px;
+    padding: 6px 12px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    border-left: 1.5px solid rgba(255, 255, 255, 0.75);
+    border-right: 1.5px solid rgba(255, 255, 255, 0.75);
+    border-top: 1.5px solid rgba(255, 255, 255, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow:
+      0 12px 36px rgba(15, 23, 42, 0.22),
+      0 0 20px rgba(79, 70, 229, 0.2),
+      inset 0 1.5px 2px rgba(255, 255, 255, 0.85);
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.75) 0%,
+      rgba(238, 242, 255, 0.65) 60%,
+      rgba(99, 102, 241, 0.25) 100%
+    );
+  }
+
+  .liquid-glass-specular-sheen {
+    display: none;
+  }
+
+  .dock-nav-column {
+    flex-direction: row;
+    gap: 8px;
+    width: auto;
+    flex: 1;
+    justify-content: flex-start;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 2px 4px;
+  }
+
+  .dock-nav-column::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dock-bottom-column {
+    flex-direction: row;
+    gap: 8px;
+    width: auto;
+    flex-shrink: 0;
+    align-items: center;
+    padding-left: 8px;
+    border-left: 1px solid rgba(255, 255, 255, 0.4);
+    margin-left: 4px;
+  }
+
+  .dock-item-active {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+  }
+
+  .dock-nav-btn {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+
+  .dock-bottom-btn {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+  }
+
+  .dock-active-glow {
+    left: 50%;
+    top: auto;
+    bottom: -5px;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 3px;
+    border-radius: 9999px;
+  }
+
+  .dock-ai-png-icon {
+    width: 22px;
+    height: 22px;
+  }
+}

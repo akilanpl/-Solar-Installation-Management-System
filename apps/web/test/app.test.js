@@ -473,6 +473,44 @@ test('Customer Accessibility: scoped screen reader, speech-to-text dictation, an
   assert.ok(a11yCss.includes('customer-reading-ruler'), 'CSS must include reading ruler styling');
 });
 
+test('Mobile Responsiveness: floating bottom liquid-glass dock, zero app-shell margin, and phone scaling', () => {
+  // 1. Sidebar.css: Floating liquid-glass bottom dock on mobile (<= 768px)
+  const sidebarCssPath = path.join(__dirname, '../src/components/Sidebar/Sidebar.css');
+  const sidebarCss = fs.readFileSync(sidebarCssPath, 'utf8');
+  assert.ok(sidebarCss.includes('@media (max-width: 768px)'), 'Sidebar must include 768px mobile breakpoint');
+  assert.ok(sidebarCss.includes('bottom: 12px'), 'Dock must anchor to bottom on mobile');
+  assert.ok(sidebarCss.includes('flex-direction: row'), 'Dock must switch to horizontal row layout on mobile');
+
+  // 2. AppShell.css: Eliminate left margin and reserve bottom dock clearance
+  const shellCssPath = path.join(__dirname, '../src/components/AppShell/AppShell.css');
+  const shellCss = fs.readFileSync(shellCssPath, 'utf8');
+  assert.ok(shellCss.includes('margin-left: 0 !important'), 'AppShell main must remove left sidebar margin on mobile');
+  assert.ok(shellCss.includes('padding-bottom: 86px !important'), 'AppShell main must add bottom clearance for floating dock');
+
+  // 3. Customer Accessibility: Position floating trigger above bottom nav dock
+  const a11yCssPath = path.join(__dirname, '../src/components/CustomerAccessibility/CustomerAccessibility.css');
+  const a11yCss = fs.readFileSync(a11yCssPath, 'utf8');
+  assert.ok(a11yCss.includes('bottom: 84px'), 'Accessibility trigger must float safely above bottom dock');
+
+  // 4. Multi-Card Wallet: Responsive scaling without horizontal overflow
+  const walletCssPath = path.join(__dirname, '../src/components/MultiCardWallet/MultiCardWallet.css');
+  const walletCss = fs.readFileSync(walletCssPath, 'utf8');
+  assert.ok(walletCss.includes('@media (max-width: 480px)'), 'Wallet must include mobile phone breakpoint');
+  assert.ok(walletCss.includes('@media (max-width: 380px)'), 'Wallet must include compact phone breakpoint');
+
+  // 5. Solar Chatbot: Full-width mobile sheet
+  const chatbotCssPath = path.join(__dirname, '../src/components/SolarChatbot/SolarChatbot.css');
+  const chatbotCss = fs.readFileSync(chatbotCssPath, 'utf8');
+  assert.ok(chatbotCss.includes('@media (max-width: 768px)'), 'Chatbot must include 768px mobile breakpoint');
+  assert.ok(chatbotCss.includes('width: 100vw'), 'Chatbot panel must expand to full viewport width on mobile');
+
+  // 6. Modal component: Full-width responsive container
+  const modalCssPath = path.join(__dirname, '../src/components/Modal/Modal.css');
+  const modalCss = fs.readFileSync(modalCssPath, 'utf8');
+  assert.ok(modalCss.includes('@media (max-width: 640px)'), 'Modal must include mobile breakpoint');
+  assert.ok(modalCss.includes('max-width: 100%'), 'Modal must adapt to full width on mobile screens');
+});
+
 
 
 

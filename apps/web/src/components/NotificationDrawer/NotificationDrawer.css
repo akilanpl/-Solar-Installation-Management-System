@@ -379,9 +379,19 @@
   background: #fee2e2;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .notif-drawer-panel {
     width: 100vw;
+  }
+  .notif-drawer-header {
+    padding: 16px 16px 12px;
+  }
+  .notif-drawer-tabs {
+    padding: 10px 16px;
+    gap: 6px;
+  }
+  .notif-drawer-list {
+    padding: 12px 14px;
   }
 }
 

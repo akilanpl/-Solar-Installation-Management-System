@@ -1397,3 +1397,9 @@
   }
 }
 
+@media (max-width: 560px) {
+  .store-products-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

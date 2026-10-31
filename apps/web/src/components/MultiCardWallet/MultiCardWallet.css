@@ -6,18 +6,20 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 480px;
+  max-width: 100%;
   margin: 0 auto;
+  overflow: visible;
 }
 
 .wallet-outer-box {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 36px 20px 40px;
+  padding: 36px 16px 40px;
   position: relative;
   width: 100%;
   min-height: 330px;
+  box-sizing: border-box;
 }
 
 /* Wallet Scaler - Expands component size with smooth scaling */
@@ -30,19 +32,33 @@
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .wallet-scaler {
-    transform: scale(1.12);
+    transform: scale(1.15);
   }
   .wallet-outer-box {
-    min-height: 290px;
+    min-height: 300px;
     padding: 24px 10px 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wallet-scaler {
+    transform: scale(1.0);
+  }
+  .wallet-outer-box {
+    min-height: 270px;
+    padding: 20px 6px 24px;
   }
 }
 
 @media (max-width: 380px) {
   .wallet-scaler {
-    transform: scale(0.96);
+    transform: scale(0.90);
+  }
+  .wallet-outer-box {
+    min-height: 250px;
+    padding: 16px 4px 20px;
   }
 }
 

@@ -583,3 +583,36 @@
     padding: 20px 16px;
   }
 }
+
+@media (max-width: 480px) {
+  .io-payment-viewport {
+    padding: 16px 12px 28px 12px;
+  }
+
+  .io-top-header {
+    margin-bottom: 20px;
+  }
+
+  .io-brand-title {
+    font-size: 18px;
+  }
+
+  .io-nav-pill-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .io-bill-heading {
+    font-size: 20px;
+  }
+
+  .io-method-pill {
+    height: 56px;
+    padding: 10px 14px;
+    border-radius: 16px;
+  }
+
+  .io-left-bill-block {
+    padding: 18px 16px;
+  }
+}

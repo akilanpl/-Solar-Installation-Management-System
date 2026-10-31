@@ -138,6 +138,31 @@
 /* Responsive */
 @media (max-width: 768px) {
   .top-nav-bar {
-    padding: 12px 18px;
+    padding: 10px 14px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-nav-bar {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .top-nav-tab {
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .bypass-trigger-pill span {
+    display: none;
+  }
+
+  .bypass-trigger-pill {
+    padding: 6px 10px;
+  }
+
+  .top-nav-right {
+    gap: 8px;
   }
 }

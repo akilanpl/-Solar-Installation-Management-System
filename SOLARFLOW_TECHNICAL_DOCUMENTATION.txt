@@ -3094,3 +3094,84 @@ Scope: apps/web/src/components/CustomerAccessibility/CustomerAccessibility.jsx,
    - All 18 unit tests passing (18/18).
    - Production build verified in 2.27s (dist/assets/CustomerAccessibility-BrBO0agr.js code-split to 11.5 kB).
 ================================================================================
+
+================================================================================
+SECTION 59: COMPREHENSIVE MOBILE RESPONSIVENESS ARCHITECTURE & FLOATING LIQUID-GLASS BOTTOM DOCK
+================================================================================
+Date: 2026-11-01
+Author: SolarFlow Lead Frontend Architect
+Target Workspaces: 
+       apps/web/src/components/Sidebar/Sidebar.css,
+       apps/web/src/components/AppShell/AppShell.css,
+       apps/web/src/components/Header/Header.css,
+       apps/web/src/components/CustomerAccessibility/CustomerAccessibility.css,
+       apps/web/src/components/MultiCardWallet/MultiCardWallet.css,
+       apps/web/src/components/SolarChatbot/SolarChatbot.css,
+       apps/web/src/components/EquipmentScannerModal/EquipmentScannerModal.css,
+       apps/web/src/components/UserSettingsModal/UserSettingsModal.css,
+       apps/web/src/components/NotificationDrawer/NotificationDrawer.css,
+       apps/web/src/components/Modal/Modal.css,
+       apps/web/src/components/DashboardView/DashboardView.css,
+       apps/web/src/pages/Customer/SolarStore.css,
+       apps/web/src/pages/Customer/RazorpayPaymentPage.css,
+       apps/web/test/app.test.js
+
+1. Executive Summary & Mobile-First Principles:
+   - Completely transformed the desktop interface into an ultra-premium, fluid mobile experience
+     across smartphones and tablets (360px to 768px viewports).
+   - Eliminated awkward desktop fixed sidebars, excessive margins, and horizontal overflowing elements.
+   - Preserved all Apple VisionOS liquid-glass aesthetics, specular highlights, real-time optical
+     blurring, and role-tailored workflows.
+
+2. Liquid-Glass Floating Bottom Navigation Dock:
+   - Sidebar Repositioning:
+     * On viewports <= 768px, converted the vertical fixed left dock (76px width) into a floating
+       liquid-glass pill navigation bar centered along the bottom edge:
+       `position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%); width: calc(100% - 24px); max-width: 520px; height: 62px; border-radius: 28px;`
+     * Styled with multi-layer specular glass rim borders, 28px backdrop defocus blur, and subtle ambient drop shadow.
+     * Reoriented navigation buttons horizontally (flex-direction: row; gap: 8px) with touch-friendly 38x38px dimensions.
+     * Enabled smooth horizontal touch-scrolling (overflow-x: auto; scrollbar-width: none) inside .dock-nav-column
+       so roles with many modules (e.g. Admin with 6 routes + scanner + AI copilot) navigate gracefully without clipping.
+     * Repositioned active indicator glow dot to the bottom center of the active icon.
+     * Partitioned bottom actions (demo persona switcher & sign-out) with a subtle vertical glass separator.
+
+3. AppShell & Top Navigation Harmonization:
+   - Zero-Margin Main Viewport:
+     * Eliminated margin-left: 76px on mobile (margin-left: 0 !important; width: 100%;) allowing content to utilize 100% of the mobile screen.
+     * Added padding-bottom: 86px !important to ensure that dashboard cards, tables, and buttons are never obscured by the floating bottom dock.
+   - Top Header Bar:
+     * Tightened padding to 10px 14px on tablets and 8px 10px on phones.
+     * On narrow screens (< 480px), collapsed the "Switch Role" button into a compact pill showing the amber lightning zap icon.
+
+4. Component-Level Mobile Optimizations:
+   - Customer Accessibility Assistant:
+     * Re-anchored the floating trigger button to bottom: 84px; right: 14px;, floating gracefully above the bottom navigation dock without collision.
+     * Tuned drawer modal to width: calc(100vw - 28px); max-width: 360px; max-height: 72vh.
+   - Multi-Card Leather Wallet:
+     * Re-calibrated scale dynamically across screen widths: 1.32x (desktop) -> 1.15x (tablet) -> 1.0x (mobile < 480px) -> 0.90x (compact mobile < 380px).
+     * Prevents card clipping, horizontal scrolling, and touch boundary issues.
+   - Solar AI Chatbot:
+     * On viewports <= 768px, opens as a full-viewport mobile sheet (left: 0; top: 0; width: 100vw; height: calc(100vh - 78px); border-radius: 0 0 24px 24px; z-index: 1050;).
+   - Optical Scanner & Installation Verification Modal:
+     * Scaled camera container viewport to 250px height with adaptive 16:9 / 4:3 fit on phones.
+     * Stacked manual serial entry row and action footer buttons vertically on narrow viewports.
+   - Fullscreen User Settings Modal:
+     * Converted vertical settings sidebar into a horizontal touch-scrolling tab strip (overflow-x: auto; flex-direction: row;).
+     * Stacked form grids from 2 columns into 1 clean column.
+   - Notification Drawer:
+     * Adapted to 100vw full-screen slide-over on mobile devices <= 640px.
+   - Dashboard View Bento Grid:
+     * Stacked 3-column hero greeting, weather widget, and feature cards into a vertical responsive layout.
+     * Adjusted hero greeting title size to 23px for comfortable multi-line wrapping.
+     * Resized monospace technician verification OTP boxes to 30x36px with 16px font size on small screens.
+   - Solar Store & Hardware Marketplace:
+     * Adapted product catalog grid to 1 column on screens <= 560px with edge-to-edge hardware cards.
+     * Scaled hero banner and category filter pills with touch-friendly tapping targets.
+   - Razorpay Payment Page:
+     * Re-architected checkout viewport with 1-column stacked flow, comfortable 56px method pills, and legible bill summaries.
+
+5. Verification & Test Suite:
+   - Added Unit Test #19 in apps/web/test/app.test.js validating floating bottom dock breakpoints, zero app-shell margins, accessibility dock clearance, wallet scaling, and mobile modal containers.
+   - All 19 unit tests passing (19/19).
+   - Production build verified in 2.27s with zero build warnings or errors.
+================================================================================
