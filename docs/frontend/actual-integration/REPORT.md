@@ -148,3 +148,7 @@ gh pr create --draft --base integration/final-release --head fix/actual-frontend
 ```
 
 Do not bypass the release gate silently, force-push or merge to main. External provider functionality, original Phase 3 backend limitations, bounded lists and exhaustive browser workflow coverage remain as described above.
+
+### Approved review publication
+
+On 2026-10-31 the user explicitly selected “Publish draft PR with documented gate override.” Publication uses the skill's mandatory-reason logged override. The hook now supports that explicit flag while refusing protected targets, tags and branch deletion; normal gate behavior and CI are unchanged. The 55.4/100 INCOMPLETE result remains visible and does not become a release pass.

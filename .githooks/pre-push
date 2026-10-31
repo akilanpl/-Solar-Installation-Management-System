@@ -1,3 +1,35 @@
 #!/usr/bin/env bash
 set -euo pipefail
-exec "$(git rev-parse --show-toplevel)/.pushgate/run.sh" --mode=push
+ROOT="$(git rev-parse --show-toplevel)"
+if [[ "${PUSHGATE_BYPASS:-0}" == "1" ]]; then
+  : "${PUSHGATE_BYPASS_REASON:?Set PUSHGATE_BYPASS_REASON to bypass the gate}"
+  if [[ -z "${PUSHGATE_BYPASS_REASON//[[:space:]]/}" || "$PUSHGATE_BYPASS_REASON" == *$'\n'* || "$PUSHGATE_BYPASS_REASON" == *$'\r'* ]]; then
+    echo "pushgate: override reason must be a nonempty single line" >&2
+    exit 1
+  fi
+  updates=()
+  while read -r local_ref local_sha remote_ref remote_sha; do
+    case "$remote_ref" in
+      refs/heads/main|refs/heads/master|refs/heads/release/*|refs/heads/hotfix/*)
+        echo "pushgate: override forbidden for protected target $remote_ref" >&2
+        exit 1 ;;
+      refs/heads/*) ;;
+      *) echo "pushgate: override only supports review branches" >&2; exit 1 ;;
+    esac
+    if [[ "$local_sha" =~ ^0+$ ]]; then
+      echo "pushgate: override cannot delete a branch" >&2
+      exit 1
+    fi
+    updates+=("$local_sha $remote_ref")
+  done
+  if [[ "${#updates[@]}" == "0" ]]; then
+    echo "pushgate: override requires explicit ref updates" >&2
+    exit 1
+  fi
+  for update in "${updates[@]}"; do
+    printf '%s %s %s %s\n' "$(date -u +%FT%TZ)" "$update" "${USER:-unknown}" "$PUSHGATE_BYPASS_REASON" >> "$ROOT/.pushgate/bypass.log"
+  done
+  echo "pushgate: explicit user override logged; CI still enforces the gate."
+  exit 0
+fi
+exec "$ROOT/.pushgate/run.sh" --mode=push
