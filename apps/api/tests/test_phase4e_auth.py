@@ -422,6 +422,38 @@ def test_staff_roles_survive_mfa_enrollment(client, application):
     assert me.json()["user"]["role"] == "support"
 
 
+def test_step_up_passkey_grant_flow(client, application):
+    email = "stepup-passkey@example.com"
+    headers = _customer_with_session(client, application, email)
+    options = client.post("/api/v1/auth/passkeys/registration/options", headers=headers)
+    auth = VirtualAuthenticator()
+    created = client.post(
+        "/api/v1/auth/passkeys/registration/verify",
+        json={"credential": auth.register(options.json()["options"]["challenge"])},
+        headers=headers,
+    )
+    assert created.status_code == 201, created.text
+    started = client.post("/api/v1/auth/step-up/start", headers=headers)
+    assert started.status_code == 200, started.text
+    assert started.json()["methods"] == ["passkey"]
+    scoped = client.post(
+        "/api/v1/auth/passkeys/authentication/options", headers=headers)
+    assert scoped.status_code == 200, scoped.text
+    grant = client.post(
+        "/api/v1/auth/step-up/verify-passkey",
+        json={"ticket": started.json()["ticket"], "credential": auth.authenticate(
+            scoped.json()["options"]["challenge"])},
+        headers=headers,
+    )
+    assert grant.status_code == 200, grant.text
+    assert grant.json()["method"] == "passkey"
+    # The grant authorizes sensitive actions: revoking the passkey works.
+    revoked = client.post(
+        f"/api/v1/auth/passkeys/{created.json()['id']}/revoke",
+        json={}, headers={**headers, "X-Strong-Auth": grant.json()["grant"]})
+    assert revoked.status_code == 200, revoked.text
+
+
 def test_step_up_grant_flow(client, application):
     email = "stepup-cust@example.com"
     headers = _customer_with_session(client, application, email)

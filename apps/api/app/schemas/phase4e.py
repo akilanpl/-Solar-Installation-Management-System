@@ -66,6 +66,7 @@ class RevokeRequest(BaseModel):
 
 class MfaStatusResponse(BaseModel):
     totp_enrolled: bool
+    totp_factor_id: uuid.UUID | None = None
     passkeys_registered: bool
     recovery_codes_remaining: int
 

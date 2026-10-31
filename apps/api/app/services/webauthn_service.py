@@ -27,6 +27,7 @@ from webauthn.helpers.structs import (
     AttestationConveyancePreference,
     AuthenticatorSelectionCriteria,
     PublicKeyCredentialDescriptor,
+    ResidentKeyRequirement,
     UserVerificationRequirement,
 )
 
@@ -75,6 +76,9 @@ def registration_options(db: Session, settings: Settings, user: User) -> dict:
         timeout=60000,
         attestation=AttestationConveyancePreference.NONE,
         authenticator_selection=AuthenticatorSelectionCriteria(
+            # Passkeys are discoverable credentials: the login ceremony sends
+            # no allow list, so registration must store a resident key.
+            resident_key=ResidentKeyRequirement.REQUIRED,
             user_verification=UserVerificationRequirement.PREFERRED,
         ),
         exclude_credentials=[

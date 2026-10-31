@@ -10637,6 +10637,18 @@
             "type": "boolean",
             "title": "Totp Enrolled"
           },
+          "totp_factor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Totp Factor Id"
+          },
           "passkeys_registered": {
             "type": "boolean",
             "title": "Passkeys Registered"

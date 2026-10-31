@@ -83,10 +83,7 @@ def _credential_response(row) -> PasskeyCredentialResponse:
 
 
 def _strong_methods(db: Session, user: User) -> list[str]:
-    methods = mfa_service.available_second_factors(db, user)
-    if webauthn_service.list_credentials(db, user):
-        methods.append("passkey")
-    return methods
+    return mfa_service.available_step_up_methods(db, user)
 
 
 # ---------------------------------------------------------------- passkeys

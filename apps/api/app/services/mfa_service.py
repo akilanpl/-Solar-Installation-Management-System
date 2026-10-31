@@ -51,6 +51,7 @@ def _verified_totp_factor(db: Session, user_id: uuid.UUID) -> MfaFactor | None:
 def user_mfa_methods(db: Session, user: User) -> dict:
     from app.models.phase4e import WebauthnCredential
 
+    factor = _verified_totp_factor(db, user.id)
     passkeys = db.scalar(
         select(WebauthnCredential).where(
             WebauthnCredential.user_id == user.id,
@@ -66,7 +67,8 @@ def user_mfa_methods(db: Session, user: User) -> dict:
         ).all()
     )
     return {
-        "totp_enrolled": _verified_totp_factor(db, user.id) is not None,
+        "totp_enrolled": factor is not None,
+        "totp_factor_id": factor.id if factor is not None else None,
         "passkeys_registered": passkeys is not None,
         "recovery_codes_remaining": codes_remaining,
     }
@@ -252,12 +254,34 @@ def consume_recovery_code(db: Session, settings: Settings, user: User, code: str
     return False
 
 
+def available_step_up_methods(db: Session, user: User) -> list[str]:
+    """Totp, recovery and passkey methods usable for reauthentication."""
+    from app.models.phase4e import WebauthnCredential
+
+    methods = available_second_factors(db, user)
+    has_passkey = (
+        db.scalar(
+            select(WebauthnCredential.id).where(
+                WebauthnCredential.user_id == user.id,
+                WebauthnCredential.revoked_at.is_(None),
+            )
+        )
+        is not None
+    )
+    if has_passkey:
+        methods.append("passkey")
+    return methods
+
+
 def issue_ticket(
     db: Session, settings: Settings, user: User, purpose: str
 ) -> tuple[MfaTicket, str]:
     if purpose not in {"login", "step_up"}:
         raise AppError(400, "invalid_purpose", "Unknown second-factor purpose.")
-    methods = available_second_factors(db, user)
+    if purpose == "login":
+        methods = available_second_factors(db, user)
+    else:
+        methods = available_step_up_methods(db, user)
     if not methods:
         raise AppError(409, "mfa_not_enrolled", "No second factor is available.")
     raw = new_token()
