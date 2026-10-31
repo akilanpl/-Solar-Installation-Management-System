@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 import { Workspace } from "@/components/workspace";
 import { Button, Card, ConfirmDialog, ErrorState, LoadingState, PageHeader, SelectField, StatusBadge, TextField } from "@/components/ui";
-import { api, ApiError, type EnquiryDetail } from "@/lib/api";
+import { api, ApiError, type EnquiryDetail, type QualificationUpdate } from "@/lib/api";
 import { formatCapacity, formatInrFromPaise, GRID_LABEL, STATUS_LABEL } from "@/lib/format";
 
 const NEXT_STATUS: Record<string, string[]> = {
@@ -29,6 +29,8 @@ function Review({ id }: { id: string }) {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState("under_review");
   const [note, setNote] = useState("");
+  const [area,setArea] = useState("");
+  const [grid,setGrid] = useState("");
   const [confirming, setConfirming] = useState(false);
   const [pending, setPending] = useState(false);
 
@@ -36,6 +38,8 @@ function Review({ id }: { id: string }) {
     api<EnquiryDetail>(`/api/v1/enquiries/${id}`)
       .then((body) => {
         setEnquiry(body);
+        setArea(body.shadow_free_area_sqm ?? "");
+        setGrid(body.grid_connection_suitable === null ? "" : String(body.grid_connection_suitable));
         const options = NEXT_STATUS[body.status] ?? [];
         if (options[0]) setStatus(options[0]);
       })
@@ -50,9 +54,10 @@ function Review({ id }: { id: string }) {
     try {
       const updated = await api<EnquiryDetail>(`/api/v1/enquiries/${id}/qualification`, {
         method: "PATCH",
-        body: JSON.stringify({ status, note: note || null }),
+        body: JSON.stringify({ status: status as QualificationUpdate["status"], note: note || null, acknowledge_downstream:false, ...(status === "qualified" ? {shadow_free_area_sqm:area,grid_connection_suitable:grid === "true"} : {}) } satisfies QualificationUpdate),
       });
       setEnquiry(updated);
+      setStatus((NEXT_STATUS[updated.status] ?? [])[0] ?? "");
       setNote("");
       setConfirming(false);
     } catch (caught) {
@@ -100,6 +105,7 @@ function Review({ id }: { id: string }) {
                   </option>
                 ))}
               </SelectField>
+              {status === "qualified" && <><TextField label="Verified shadow-free roof area (m²)" name="shadow_free_area_sqm" type="number" min="0.01" max="100000" step="0.01" value={area} onChange={event=>setArea(event.target.value)} required/><SelectField label="Grid connection suitability" name="grid_connection_suitable" value={grid} onChange={event=>setGrid(event.target.value)} required><option value="" disabled>Choose after verifying</option><option value="true">Suitable</option><option value="false">Not suitable</option></SelectField></>}
               <TextField label="Note" name="note" value={note} onChange={(event) => setNote(event.target.value)} hint="Required when marking not qualified." />
               <Button type="submit">Update status</Button>
             </form>

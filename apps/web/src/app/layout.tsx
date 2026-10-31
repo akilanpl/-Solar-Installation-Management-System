@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
 
 import "./globals.css";
+import "@/styles/teammate-tokens.css";
+import "@/styles/teammate-auth.css";
+import "@/styles/teammate-shell.css";
+import "@/styles/teammate-dock.css";
+import "@/styles/teammate-header.css";
+import "@/styles/teammate-dashboard.css";
+import "@/styles/teammate-records.css";
+import "@/styles/teammate-transaction.css";
+import "@/styles/integration.css";
 
 export const metadata: Metadata = {
   title: "SolarOps",

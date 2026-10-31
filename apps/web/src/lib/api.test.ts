@@ -1,0 +1,16 @@
+import {afterEach,beforeEach,describe,expect,it,vi} from "vitest";
+import {api,ApiError} from "./api";
+const fetchMock=vi.fn();
+beforeEach(()=>{vi.stubGlobal("fetch",fetchMock);vi.stubGlobal("document",{cookie:"solarops_csrf=test-fixture-csrf"});});
+afterEach(()=>{vi.unstubAllGlobals();vi.resetAllMocks();});
+describe("authenticated same-origin API transport",()=>{
+ it("uses cookies and returns persisted server payload",async()=>{fetchMock.mockResolvedValue(new Response(JSON.stringify({reference:"ENQ-test"})));expect(await api("/api/v1/enquiries")).toEqual({reference:"ENQ-test"});expect(fetchMock.mock.calls[0][1].credentials).toBe("include");});
+ it("adds CSRF on business mutation",async()=>{fetchMock.mockResolvedValue(new Response('{}'));await api("/api/v1/jobs",{method:"POST",body:'{}'});const headers=fetchMock.mock.calls[0][1].headers as Headers;expect(headers.get("X-CSRF-Token")).toBe("test-fixture-csrf");expect(headers.get("Content-Type")).toBe("application/json");});
+ it("lets the browser generate multipart upload boundaries",async()=>{fetchMock.mockResolvedValue(new Response('{}'));const body=new FormData();body.set("upload",new Blob(["fixture"]),"roof.png");await api("/api/v1/jobs/job/uploads",{method:"POST",body});const request=fetchMock.mock.calls[0][1];expect(request.body).toBe(body);expect((request.headers as Headers).has("Content-Type")).toBe(false);expect((request.headers as Headers).has("X-CSRF-Token")).toBe(true);});
+ it("does not turn role rejection into mock success",async()=>{fetchMock.mockResolvedValue(new Response(JSON.stringify({error:{code:"forbidden",message:"Not permitted"}}),{status:403}));await expect(api("/api/v1/admin/employees")).rejects.toMatchObject({status:403,code:"forbidden",message:"Not permitted"});});
+ it("returns a useful provider/proxy error for non-JSON failure",async()=>{fetchMock.mockResolvedValue(new Response('<html>bad gateway</html>',{status:502}));await expect(api("/api/v1/jobs")).rejects.toMatchObject({status:502,code:"invalid_response"});});
+ it("returns a network state instead of local mock records",async()=>{fetchMock.mockRejectedValue(new TypeError("Failed to fetch"));await expect(api("/api/v1/jobs")).rejects.toMatchObject({status:0,code:"network_unavailable"});});
+ it("supports logout with no response body",async()=>{fetchMock.mockResolvedValue(new Response(null,{status:204}));expect(await api("/api/v1/auth/logout",{method:"POST"})).toBeUndefined();});
+ it("acquires a CSRF token when no cookie exists",async()=>{vi.stubGlobal("document",{cookie:""});fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({csrf_token:"fresh-csrf"}))).mockResolvedValueOnce(new Response('{}'));await api("/api/v1/auth/login",{method:"POST",body:'{}'});expect(fetchMock.mock.calls[0][0]).toBe("/api/v1/auth/csrf");expect((fetchMock.mock.calls[1][1].headers as Headers).get("X-CSRF-Token")).toBe("fresh-csrf");});
+ it("retains field validation details",async()=>{fetchMock.mockResolvedValue(new Response(JSON.stringify({error:{code:"validation_error",message:"Check inputs",details:[{field:"phone",message:"Invalid phone"}]}}),{status:422}));try{await api("/api/v1/auth/signup",{method:"POST",body:'{}'});throw Error("should reject");}catch(e){expect(e).toBeInstanceOf(ApiError);expect((e as ApiError).details).toEqual([{field:"phone",message:"Invalid phone"}]);}});
+});

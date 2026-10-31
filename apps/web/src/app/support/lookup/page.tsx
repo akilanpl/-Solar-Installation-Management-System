@@ -1,5 +1,4 @@
 "use client";
-import { PlannedRoute } from "@/components/planned-route";
-export default function Page() {
-  return <PlannedRoute path="/support/lookup" kind="lookup" />;
-}
+import {Workspace} from "@/components/workspace";
+import {SupportRecords} from "@/components/orders-board";
+export default function Page(){return <Workspace path="/support/lookup">{()=> <SupportRecords/>}</Workspace>;}

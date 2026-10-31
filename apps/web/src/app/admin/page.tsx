@@ -29,7 +29,8 @@ function Employees() {
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const payload: EmployeeCreate = {
       full_name: String(form.get("full_name")),
       email: String(form.get("email")),
@@ -42,7 +43,7 @@ function Employees() {
     setError(null);
     try {
       await api("/api/v1/admin/employees", { method: "POST", body: JSON.stringify(payload) });
-      event.currentTarget.reset();
+      formElement.reset();
       load();
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : "The employee was not created.");
@@ -84,7 +85,7 @@ function Employees() {
           </table>
         </div>
       ) : null}
-      <Card className="mt-6">
+      <div id="employee-roster"><Card className="mt-6">
         <h2 className="font-semibold">Provision an employee</h2>
         <p className="mt-1 text-sm text-moss-900/80">
           The new account is marked verified because the company checked identity outside this form. Customers cannot use this action.
@@ -107,7 +108,7 @@ function Employees() {
             <Button type="submit" disabled={pending}>{pending ? "Saving…" : "Create employee"}</Button>
           </div>
         </form>
-      </Card>
+      </Card></div>
     </>
   );
 }

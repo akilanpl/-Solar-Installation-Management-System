@@ -1,0 +1,151 @@
+/* Ported from ashwin-hue at 74f4734cc73212e235e7f256c2bd327634b3b5dd. */
+/* ==========================================================================
+   SOLARFLOW / SOLAROPS - FIXED ORGANIC CURVED DOCK SIDEBAR
+   Fixed to viewport (completely unaffected by page scrolling)
+   ========================================================================== */
+
+.dock-sidebar-container {
+  width: 76px;
+  height: 100vh;
+  background: linear-gradient(180deg, #605DEC 0%, #5B5FC7 50%, #4F46E5 100%);
+  border-radius: 0 32px 32px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0 28px 0;
+  box-sizing: border-box;
+  position: fixed; /* FIXED - immune to page scrolling! */
+  top: 0;
+  left: 0;
+  z-index: 100;
+  box-shadow: 4px 0 24px rgba(79, 70, 229, 0.15);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+/* Organic curved flare on the dock edge */
+.dock-sidebar-container::after {
+  content: '';
+  position: absolute;
+  top: 22%;
+  right: -14px;
+  width: 28px;
+  height: 90px;
+  background: #5B5FC7;
+  border-radius: 0 28px 28px 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Nav Icons Column */
+.dock-nav-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Active Top Dashboard Icon (White rounded square pill) */
+.dock-item-active {
+  width: 44px;
+  height: 44px;
+  background-color: #ffffff;
+  color: #5B5FC7;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  position: relative;
+  text-decoration: none;
+}
+
+.dock-item-active:hover {
+  transform: scale(1.06);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* Standard Nav Icons */
+.dock-nav-btn {
+  width: 42px;
+  height: 42px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.82);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 180ms ease;
+  position: relative;
+  text-decoration: none;
+}
+
+.dock-nav-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+/* Small Status Indicator */
+.dock-status-dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
+}
+
+/* Bottom Actions Column */
+.dock-bottom-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.dock-bottom-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.dock-bottom-btn:hover {
+  background: rgba(239, 68, 68, 0.28);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Responsive adjustment for Mobile */
+@media (max-width: 1024px) {
+  .dock-sidebar-container {
+    width: 60px;
+    padding: 16px 0;
+  }
+
+  .dock-item-active {
+    width: 38px;
+    height: 38px;
+  }
+
+  .dock-nav-btn {
+    width: 36px;
+    height: 36px;
+  }
+}

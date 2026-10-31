@@ -32,7 +32,7 @@ function SalesQueue() {
     <>
       <PageHeader
         title="Enquiries"
-        description="Sales can read every customer enquiry in the database and update qualification. Survey assignment and quotations are later phases."
+        description="Sales can read every customer enquiry in the database and update qualification. Open survey assignment, quotations and installation scheduling from the workspace dock."
       />
       {error ? <ErrorState message={error} onRetry={load} /> : null}
       {!data && !error ? <LoadingState label="Loading enquiries" /> : null}

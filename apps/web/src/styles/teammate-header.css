@@ -1,0 +1,178 @@
+/* Ported from ashwin-hue at 74f4734cc73212e235e7f256c2bd327634b3b5dd. */
+/* ==========================================================================
+   SOLARFLOW / SOLAROPS - TOP NAVIGATION BAR
+   Clean, focused navigation with Dashboard tab, user profile, notifications & bypass
+   ========================================================================== */
+
+.top-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 36px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #edf0f5;
+  box-sizing: border-box;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: 20px;
+}
+
+/* Left Section: Dashboard Tab */
+.top-nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.top-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.top-nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #111827;
+  text-decoration: none;
+  padding: 8px 0;
+  position: relative;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+}
+
+.top-nav-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background-color: #5b5fc7;
+  border-radius: 9999px;
+}
+
+/* Right Section: User Profile Pill, Bell, Settings, Bypass */
+.top-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* User Role & Name Pill */
+.top-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #f8fafc;
+  border: 1px solid #edf0f5;
+  border-radius: 9999px;
+  padding: 4px 14px 4px 6px;
+}
+
+.top-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #605dec, #4f46e5);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(91, 95, 199, 0.25);
+  flex-shrink: 0;
+}
+
+.top-user-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-user-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.top-user-role {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Icon Buttons: Bell, Settings */
+.top-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 150ms ease;
+  position: relative;
+}
+
+.top-icon-btn:hover {
+  background-color: #f1f5f9;
+  color: #111827;
+}
+
+.top-icon-dot {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ef4444;
+}
+
+/* Demo Bypass Trigger */
+.bypass-trigger-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 150ms ease;
+  font-family: inherit;
+}
+
+.bypass-trigger-pill:hover {
+  border-color: #6366f1;
+  color: #4f46e5;
+  background-color: #eef2ff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .top-nav-bar {
+    padding: 12px 18px;
+  }
+
+  .top-user-pill {
+    display: none;
+  }
+}

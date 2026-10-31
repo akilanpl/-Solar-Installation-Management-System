@@ -1,0 +1,62 @@
+/* Original design tokens from frontend teammate; scoped application defaults. */
+:root {
+  /* Core Surface & Text Tokens */
+  --color-black: #111827;
+  --color-black-deep: #0f172a;
+  --color-black-surface: #f8fafc;
+  --color-black-card: #ffffff;
+  --color-black-card-hover: #f8fafc;
+  --color-black-elevated: #ffffff;
+
+  --color-border: #edf0f5;
+  --color-border-subtle: #f1f5f9;
+  --color-border-bright: #cbd5e1;
+
+  /* Royal Periwinkle / Indigo Brand Accents */
+  --color-violet: #5B5FC7;
+  --color-violet-light: #605DEC;
+  --color-violet-dark: #4338CA;
+  --color-violet-subtle: #EEF2FF;
+  --color-violet-glow: 0 4px 14px rgba(91, 95, 199, 0.25);
+
+  /* High-Contrast Text Tokens */
+  --color-white: #111827;
+  --color-white-pure: #ffffff;
+  --color-white-muted: #334155;
+  --color-white-dim: #64748b;
+  --color-white-faint: #94a3b8;
+
+  /* Solar Emerald Green Highlights */
+  --color-lime: #10B981;
+  --color-lime-dark: #059669;
+  --color-lime-subtle: #ECFDF5;
+  --color-lime-glow: 0 0 14px rgba(16, 185, 129, 0.25);
+
+  /* Status Semantic Colors */
+  --color-danger: #EF4444;
+  --color-danger-subtle: #FEF2F2;
+  --color-warning: #F59E0B;
+  --color-warning-subtle: #FFFBEB;
+  --color-info: #0284C7;
+  --color-info-subtle: #F0F9FF;
+
+  /* Radii */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+body { font-family: var(--font-family); background:#f6f8fb; color:#111827; }
