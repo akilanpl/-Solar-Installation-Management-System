@@ -2225,3 +2225,66 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+--------------------------------------------------------------------------------
+40. 3D NAVIGATION PIN REDESIGN & ELIMINATION OF RASTERIZATION/COORDINATE GLITCHES
+--------------------------------------------------------------------------------
+- Date & Context:
+  Redesigned the field dispatch map markers across both the dashboard widget
+  (TechnicianSiteMap.jsx, TechnicianSiteMap.css) and dedicated full-page map
+  (TechnicianMapPage.jsx, TechnicianMapPage.css). Resolved map pin coordinate
+  jumping and flickering bugs, and elevated visual fidelity to a modern 3D Google
+  Maps / Apple Maps navigation style with anchored caret tooltips and stop index discs.
+
+- Root Cause Analysis & Glitch Remediation:
+  1. CSS Transform Collisions with SVG Coordinates:
+     - Previously, `.map-pin-item:hover` applied `transform: scale(1.08)` and
+       `.dark-marker-pin:hover` applied `transform: translateY(-3px)` in CSS.
+     - In Blink/WebKit CSSOM engines, applying a CSS transform to an SVG `<g>`
+       element containing an inline `transform="translate(x, y)"` attribute
+       overwrote the translation matrix, causing the pin to reset its origin and
+       jump erratically across the viewport on mouse hover.
+     - Remediation: Removed all CSS `transform` declarations from map marker
+       hover states. Transitioned interactions to clean GPU-accelerated
+       `filter: drop-shadow(0 6px 14px rgba(15, 23, 42, 0.35))` without modifying
+       geometric coordinates.
+  2. SVG Radius Property Animation Lag:
+     - `@keyframes radarWavePulse` / `beaconPulse` animated the SVG `r` attribute
+       (`r: 8` to `r: 30`), triggering continuous layout invalidation and GPU
+       repainting cycles that appeared as rasterization glitches.
+     - Remediation: Replaced radius animation with smooth opacity pulsing
+       (`@keyframes gpsHaloPulse` modifying opacity between 0.2 and 0.55 on a
+       fixed 18px radius halo).
+
+- Architectural & Design Enhancements:
+  1. 3D Navigation Pin Geometry (Google Maps / Apple Maps Style):
+     - Anchored exact road contact point at `(0, 0)` touching the street route lines
+       (Indiranagar at `560, 200`, Doddanekkundi at `710, 240`, Whitefield at `870, 310`).
+     - Added ground contact shadow ellipse (`rx="9" ry="3.2" opacity="0.35"`)
+       directly below the pin tip to firmly anchor it to the asphalt.
+     - Created smooth tapered bezier body:
+       `M 0 0 C -3.5 -5.5, -15 -18, -15 -29 A 15 15 0 1 1 15 -29 C 15 -18, 3.5 -5.5, 0 0 Z`
+       with crisp 2.2px white bezels and rich vertical linear gradients:
+       * Stop 1: `pinGradRed` (#ef4444 to #b91c1c)
+       * Stop 2: `pinGradBlue` (#2563eb to #1d4ed8)
+       * Stop 3: `pinGradPurple` (#9333ea to #6b21a8)
+     - Embedded inner white circular disc (`r="9"`) featuring bold high-contrast
+       stop numbers (`1`, `2`, `3`) matching the dispatch itinerary sequence.
+  2. Anchored Speech-Bubble Tooltips with Downward Caret:
+     - Eliminated awkward detached floating pills by introducing integrated downward
+       triangular carets (`<polygon points="0,0 -5.5,-8 5.5,-8" fill="#ffffff" />`)
+       connecting the tooltip card directly into the pin head.
+     - Crisp card borders (`#e2e8f0`), rounded corners (`rx="6"`), and status dots.
+  3. Live Technician GPS Navigation Puck:
+     - Replaced generic radar with modern blue GPS navigation puck at `(440, 400)`
+       featuring live directional heading chevron arrow, soft emerald status indicator,
+       and attached "Technician Live (Karthik)" speech callout.
+
+- Files Modified:
+  * apps/web/src/components/TechnicianSiteMap/TechnicianSiteMap.jsx (Modified)
+  * apps/web/src/components/TechnicianSiteMap/TechnicianSiteMap.css (Modified)
+  * apps/web/src/pages/Technician/TechnicianMapPage.jsx (Modified)
+  * apps/web/src/pages/Technician/TechnicianMapPage.css (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================

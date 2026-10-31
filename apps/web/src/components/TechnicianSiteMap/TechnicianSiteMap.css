@@ -327,34 +327,36 @@
   transform: scale(1.05);
 }
 
-/* Map Beacon & Pins */
+/* Map Beacon & Modern 3D Pins */
 .tech-beacon-marker {
   cursor: pointer;
 }
 
-.beacon-pulse-circle {
-  animation: radarWavePulse 2s ease-out infinite;
+.tech-gps-halo {
+  animation: gpsHaloPulse 2s ease-in-out infinite;
   transform-origin: center;
 }
 
-@keyframes radarWavePulse {
-  0% {
-    r: 8;
-    opacity: 0.7;
+@keyframes gpsHaloPulse {
+  0%, 100% {
+    opacity: 0.2;
   }
-  100% {
-    r: 30;
-    opacity: 0;
+  50% {
+    opacity: 0.55;
   }
 }
 
-.map-pin-item {
+.tech-map-pin {
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: filter 0.15s ease;
 }
 
-.map-pin-item:hover {
-  transform: scale(1.08);
+.tech-map-pin:hover {
+  filter: drop-shadow(0 6px 14px rgba(15, 23, 42, 0.35));
+}
+
+.tech-map-pin.active-pin {
+  filter: drop-shadow(0 8px 18px rgba(37, 99, 235, 0.45));
 }
 
 /* Clean Frost Heads-Up Display */

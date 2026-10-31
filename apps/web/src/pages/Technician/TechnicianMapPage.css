@@ -550,28 +550,36 @@
   box-shadow: 0 0 5px rgba(16, 185, 129, 0.6);
 }
 
-/* Marker beacon and pin hover styling */
+/* Marker beacon and modern 3D pin styling */
 .tech-beacon-marker {
   cursor: pointer;
 }
 
-.dark-marker-pin {
+.tech-gps-halo {
+  animation: gpsHaloPulse 2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes gpsHaloPulse {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.tech-map-pin {
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: filter 0.15s ease;
 }
 
-.dark-marker-pin:hover {
-  transform: translateY(-3px);
+.tech-map-pin:hover {
+  filter: drop-shadow(0 6px 14px rgba(15, 23, 42, 0.35));
 }
 
-@keyframes beaconPulse {
-  0% { r: 12px; opacity: 0.35; }
-  50% { r: 24px; opacity: 0.1; }
-  100% { r: 12px; opacity: 0.35; }
-}
-
-.beacon-pulse-circle {
-  animation: beaconPulse 2.2s infinite ease-in-out;
+.tech-map-pin.active-pin {
+  filter: drop-shadow(0 8px 18px rgba(37, 99, 235, 0.45));
 }
 
 @media (max-width: 1024px) {

@@ -253,10 +253,26 @@ export function TechnicianSiteMap({ onCheckIn, onToast, isStandalone = false }) 
               <feDropShadow dx="0" dy="1" stdDeviation="2.5" floodColor="#1a73e8" floodOpacity="0.4" />
             </filter>
 
-            {/* Drop shadow for floating white pin labels */}
-            <filter id="cleanCardShadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#0f172a" floodOpacity="0.18" />
+            {/* Clean drop shadow for 3D map pins */}
+            <filter id="cleanPinDropShadow" x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow dx="0" dy="3" stdDeviation="3.5" floodColor="#0f172a" floodOpacity="0.22" />
             </filter>
+
+            {/* Vibrant gradients for modern 3D map pins */}
+            <linearGradient id="pinGradRed" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ef4444" />
+              <stop offset="100%" stopColor="#b91c1c" />
+            </linearGradient>
+
+            <linearGradient id="pinGradBlue" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#2563eb" />
+              <stop offset="100%" stopColor="#1d4ed8" />
+            </linearGradient>
+
+            <linearGradient id="pinGradPurple" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#9333ea" />
+              <stop offset="100%" stopColor="#6b21a8" />
+            </linearGradient>
           </defs>
 
           {/* BASE MAP LAYER: Uncompressed 1024x536 Real City Map */}
@@ -342,117 +358,164 @@ export function TechnicianSiteMap({ onCheckIn, onToast, isStandalone = false }) 
             </g>
           )}
 
-          {/* TECHNICIAN LIVE BEACON (Paseo de la Reforma / Rio Lerma) */}
-          <g transform="translate(440, 400)" className="tech-beacon-marker" filter="url(#cleanCardShadow)">
-            <circle cx="0" cy="0" r="22" fill="#0284c7" opacity="0.2" className="beacon-pulse-circle" />
-            <circle cx="0" cy="0" r="13" fill="#0284c7" opacity="0.3" />
-            <circle cx="0" cy="0" r="7.5" fill="#0284c7" stroke="#ffffff" strokeWidth="2.5" />
-            <polygon points="0,-10 3.5,-4 -3.5,-4" fill="#ffffff" />
-            {/* Clean White Floating Label */}
-            <rect
-              x="-75"
-              y="-36"
-              width="150"
-              height="22"
-              rx="11"
-              fill="#ffffff"
-              stroke="#0284c7"
-              strokeWidth="1.2"
-            />
-            <text x="0" y="-21" fill="#0369a1" fontSize="10.5" fontWeight="700" textAnchor="middle">
-              Technician Live (Karthik)
-            </text>
+          {/* TECHNICIAN LIVE GPS NAVIGATION PUCK (Paseo de la Reforma / Rio Lerma) */}
+          <g transform="translate(440, 400)" className="tech-beacon-marker" filter="url(#cleanPinDropShadow)">
+            <ellipse cx="0" cy="1" rx="8" ry="2.8" fill="#0f172a" opacity="0.25" />
+            <circle cx="0" cy="0" r="18" fill="#38bdf8" className="tech-gps-halo" />
+            <circle cx="0" cy="0" r="11" fill="#0284c7" stroke="#ffffff" strokeWidth="2.5" />
+            <polygon points="0,-6 4,4 0,1.5 -4,4" fill="#ffffff" />
+
+            <g transform="translate(0, -20)">
+              <polygon points="0,0 -4.5,-6 4.5,-6" fill="#ffffff" />
+              <polygon points="0,0 -4.5,-6 4.5,-6" fill="none" stroke="#0284c7" strokeWidth="1" />
+              <rect
+                x="-74"
+                y="-28"
+                width="148"
+                height="22"
+                rx="6"
+                fill="#ffffff"
+                stroke="#0284c7"
+                strokeWidth="1.2"
+              />
+              <polygon points="0,-1 -4,-6 4,-6" fill="#ffffff" />
+              <circle cx="-62" cy="-17" r="3.5" fill="#10b981" />
+              <text x="-52" y="-13.5" fill="#0369a1" fontSize="9.5" fontWeight="800" textAnchor="start">
+                Technician Live (Karthik)
+              </text>
+            </g>
           </g>
 
           {/* STOP 1 PIN: INDIRANAGAR / SAN RAFAEL (Arun Kumar - Urgent Inverter E-04) */}
           <g
             transform="translate(560, 200)"
-            className={`map-pin-item ${selectedStopId === 'stop-1' ? 'active-pin' : ''}`}
+            className={`tech-map-pin ${selectedStopId === 'stop-1' ? 'active-pin' : ''}`}
             onClick={() => setSelectedStopId('stop-1')}
-            filter="url(#cleanCardShadow)"
+            filter="url(#cleanPinDropShadow)"
           >
-            <circle cx="0" cy="0" r="20" fill="#ef4444" opacity="0.22" className="beacon-pulse-circle" />
+            <ellipse cx="0" cy="1" rx="8" ry="2.8" fill="#0f172a" opacity="0.3" />
             <path
-              d="M0 -26 C-9 -26 -16 -19 -16 -10 C-16 3 0 16 0 16 C0 16 16 3 16 -10 C16 -19 9 -26 0 -26 Z"
-              fill="#ea4335"
+              d="M 0 0 C -3 -5, -14 -17, -14 -27 A 14 14 0 1 1 14 -27 C 14 -17, 3 -5, 0 0 Z"
+              fill="url(#pinGradRed)"
               stroke="#ffffff"
               strokeWidth="2"
+              strokeLinejoin="round"
             />
-            <circle cx="0" cy="-10" r="4.5" fill="#ffffff" />
-            {/* Clean White Floating Tooltip */}
-            <rect
-              x="-78"
-              y="-56"
-              width="156"
-              height="24"
-              rx="12"
-              fill="#ffffff"
-              stroke="#ea4335"
-              strokeWidth="1.5"
-            />
-            <text x="0" y="-40" fill="#991b1b" fontSize="10.5" fontWeight="800" textAnchor="middle">
-              Arun Kumar · E-04 Red LED
+            <circle cx="0" cy="-27" r="8.5" fill="#ffffff" />
+            <text x="0" y="-23.5" fill="#dc2626" fontSize="10.5" fontWeight="900" textAnchor="middle">
+              1
             </text>
+
+            <g transform="translate(0, -42)">
+              <polygon points="0,0 -5,-7 5,-7" fill="#ffffff" />
+              <polygon points="0,0 -5,-7 5,-7" fill="none" stroke="#e2e8f0" strokeWidth="1" />
+              <rect
+                x="-78"
+                y="-30"
+                width="156"
+                height="24"
+                rx="6"
+                fill="#ffffff"
+                stroke="#e2e8f0"
+                strokeWidth="1.2"
+              />
+              <polygon points="0,-1 -4.5,-7 4.5,-7" fill="#ffffff" />
+              <circle cx="-66" cy="-18" r="3.5" fill="#ef4444" />
+              <text x="-56" y="-14.5" fill="#0f172a" fontSize="10" fontWeight="800" textAnchor="start">
+                Arun Kumar
+              </text>
+              <text x="8" y="-14.5" fill="#dc2626" fontSize="9" fontWeight="700" textAnchor="start">
+                · E-04 Fault
+              </text>
+            </g>
           </g>
 
           {/* STOP 2 PIN: DODDANEKKUNDI / TABACALERA (Villa 12) */}
           <g
             transform="translate(710, 240)"
-            className={`map-pin-item ${selectedStopId === 'stop-2' ? 'active-pin' : ''}`}
+            className={`tech-map-pin ${selectedStopId === 'stop-2' ? 'active-pin' : ''}`}
             onClick={() => setSelectedStopId('stop-2')}
-            filter="url(#cleanCardShadow)"
+            filter="url(#cleanPinDropShadow)"
           >
-            <circle cx="0" cy="0" r="16" fill="#0284c7" opacity="0.2" />
+            <ellipse cx="0" cy="1" rx="8" ry="2.8" fill="#0f172a" opacity="0.3" />
             <path
-              d="M0 -24 C-8 -24 -14 -18 -14 -10 C-14 3 0 15 0 15 C0 15 14 3 14 -10 C14 -18 8 -24 0 -24 Z"
-              fill="#1a73e8"
+              d="M 0 0 C -3 -5, -14 -17, -14 -27 A 14 14 0 1 1 14 -27 C 14 -17, 3 -5, 0 0 Z"
+              fill="url(#pinGradBlue)"
               stroke="#ffffff"
               strokeWidth="2"
+              strokeLinejoin="round"
             />
-            <circle cx="0" cy="-10" r="4" fill="#ffffff" />
-            <rect
-              x="-72"
-              y="-52"
-              width="144"
-              height="22"
-              rx="11"
-              fill="#ffffff"
-              stroke="#1a73e8"
-              strokeWidth="1.2"
-            />
-            <text x="0" y="-37" fill="#1e40af" fontSize="10" fontWeight="700" textAnchor="middle">
-              Villa 12 · Structure Markings
+            <circle cx="0" cy="-27" r="8.5" fill="#ffffff" />
+            <text x="0" y="-23.5" fill="#1d4ed8" fontSize="10.5" fontWeight="900" textAnchor="middle">
+              2
             </text>
+
+            <g transform="translate(0, -42)">
+              <polygon points="0,0 -5,-7 5,-7" fill="#ffffff" />
+              <polygon points="0,0 -5,-7 5,-7" fill="none" stroke="#e2e8f0" strokeWidth="1" />
+              <rect
+                x="-75"
+                y="-30"
+                width="150"
+                height="24"
+                rx="6"
+                fill="#ffffff"
+                stroke="#e2e8f0"
+                strokeWidth="1.2"
+              />
+              <polygon points="0,-1 -4.5,-7 4.5,-7" fill="#ffffff" />
+              <circle cx="-63" cy="-18" r="3.5" fill="#2563eb" />
+              <text x="-53" y="-14.5" fill="#0f172a" fontSize="10" fontWeight="800" textAnchor="start">
+                Villa 12
+              </text>
+              <text x="-12" y="-14.5" fill="#64748b" fontSize="9" fontWeight="600" textAnchor="start">
+                · 3kW Survey
+              </text>
+            </g>
           </g>
 
           {/* STOP 3 PIN: WHITEFIELD / BALDERAS HUB (TechSpark) */}
           <g
             transform="translate(870, 310)"
-            className={`map-pin-item ${selectedStopId === 'stop-3' ? 'active-pin' : ''}`}
+            className={`tech-map-pin ${selectedStopId === 'stop-3' ? 'active-pin' : ''}`}
             onClick={() => setSelectedStopId('stop-3')}
-            filter="url(#cleanCardShadow)"
+            filter="url(#cleanPinDropShadow)"
           >
-            <circle cx="0" cy="0" r="16" fill="#9333ea" opacity="0.2" />
+            <ellipse cx="0" cy="1" rx="8" ry="2.8" fill="#0f172a" opacity="0.3" />
             <path
-              d="M0 -24 C-8 -24 -14 -18 -14 -10 C-14 3 0 15 0 15 C0 15 14 3 14 -10 C14 -18 8 -24 0 -24 Z"
-              fill="#9333ea"
+              d="M 0 0 C -3 -5, -14 -17, -14 -27 A 14 14 0 1 1 14 -27 C 14 -17, 3 -5, 0 0 Z"
+              fill="url(#pinGradPurple)"
               stroke="#ffffff"
               strokeWidth="2"
+              strokeLinejoin="round"
             />
-            <circle cx="0" cy="-10" r="4" fill="#ffffff" />
-            <rect
-              x="-78"
-              y="-52"
-              width="156"
-              height="22"
-              rx="11"
-              fill="#ffffff"
-              stroke="#9333ea"
-              strokeWidth="1.2"
-            />
-            <text x="0" y="-37" fill="#6b21a8" fontSize="10" fontWeight="700" textAnchor="middle">
-              TechSpark · 10kW Commercial DB
+            <circle cx="0" cy="-27" r="8.5" fill="#ffffff" />
+            <text x="0" y="-23.5" fill="#7e22ce" fontSize="10.5" fontWeight="900" textAnchor="middle">
+              3
             </text>
+
+            <g transform="translate(0, -42)">
+              <polygon points="0,0 -5,-7 5,-7" fill="#ffffff" />
+              <polygon points="0,0 -5,-7 5,-7" fill="none" stroke="#e2e8f0" strokeWidth="1" />
+              <rect
+                x="-80"
+                y="-30"
+                width="160"
+                height="24"
+                rx="6"
+                fill="#ffffff"
+                stroke="#e2e8f0"
+                strokeWidth="1.2"
+              />
+              <polygon points="0,-1 -4.5,-7 4.5,-7" fill="#ffffff" />
+              <circle cx="-68" cy="-18" r="3.5" fill="#9333ea" />
+              <text x="-58" y="-14.5" fill="#0f172a" fontSize="10" fontWeight="800" textAnchor="start">
+                TechSpark
+              </text>
+              <text x="-3" y="-14.5" fill="#64748b" fontSize="9" fontWeight="600" textAnchor="start">
+                · 10kW Wiring
+              </text>
+            </g>
           </g>
         </svg>
 
