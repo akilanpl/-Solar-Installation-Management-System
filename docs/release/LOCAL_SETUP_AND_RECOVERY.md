@@ -30,3 +30,15 @@ Supported seed tooling creates synthetic staff/customer/enquiry fixtures. Staff 
 Tests require a SEPARATE uniquely created solarops_release_test_XXXXXXXX database and both SOLAROPS_TEST_DATABASE_URL and SOLAROPS_DISPOSABLE_TEST_DATABASE_NAME. The name must exactly match. Never run tests against the demo database. Run .pushgate/run.sh from a clean checkout; do not reuse successful evidence from an earlier SHA.
 
 Before upgrades, pg_dump --format=custom to a protected ignored location; verify restore into another new database and compare source rows/business hashes. This session restored a 100-table synthetic preview with all row counts equal. That is a local backup rehearsal, not production recovery certification. Roll back an application by selecting its preserved source; database rollback requires reviewed backup restoration, not destructive Alembic downgrade. Never replace a live database in place or delete signed/accounting rows.
+
+For the local enhanced preview, create ignored apps/web/.env.local BEFORE building:
+
+```dotenv
+NEXT_PUBLIC_SOLAROPS_ENV=development
+NEXT_PUBLIC_SOLAROPS_PASSKEYS=on
+NEXT_PUBLIC_SOLAROPS_OFFLINE=on
+```
+
+Use http://localhost:3061 for passkeys and configure SOLAROPS_WEBAUTHN_RP_ID=localhost, SOLAROPS_WEBAUTHN_ALLOWED_ORIGINS=http://localhost:3061 and both localhost/127.0.0.1 trusted preview origins. The development mailbox remains backend-gated and is never enabled in production. Build identity includes only these public flags and actual source SHA; private credentials are not embedded.
+
+Offline IndexedDB v1 drafts migrate to a compound-key v2 store. The original store remains for recovery. If migration cannot preserve ownership, it aborts and leaves the old version intact; do not clear another user's browser data to bypass that error.

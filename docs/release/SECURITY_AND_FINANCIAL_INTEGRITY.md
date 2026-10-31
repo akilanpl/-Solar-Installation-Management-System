@@ -13,3 +13,7 @@ Gitleaks 8.30.1 found no secrets in candidate ancestry or any of the five approv
 Dependency audits:53 installed Python packages, no known vulnerabilities; npm initially 18 moderate, zero high/critical. Re-audit final lockfile after added accessibility tooling. No claim of exhaustive penetration testing, dependency safety forever, or provider acceptance.
 
 GitHub main protection endpoint returned404 'Branch not protected' at inspection. Required review/check enforcement must be configured and verified before any merge. This session did not reduce or change repository settings. Source publication exception applies only to five exact commits, with audit records and draft PRs; it is not release acceptance.
+
+Offline storage now waits for transaction completion instead of request success, rejects later aborts, and migrates account-scoped keys transactionally while preserving original recovery records. Eight tests cover durable writes, aborts, migration rollback and cross-account IDs. No existing browser draft database was reset.
+
+The mutation campaign executes a fixed 17-guard inventory in an isolated Git clone with a fresh exclusively owned database for every baseline/mutant. Assertion failures, surviving mutants, runtime/setup errors and timeouts are distinguished. This is a bounded critical-guard spot-check, not an exhaustive mutation score for every application statement; the actual current-SHA report is authoritative.
