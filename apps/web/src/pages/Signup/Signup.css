@@ -1,0 +1,27 @@
+/* Signup Page Styles */
+.signup-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  background-color: var(--color-black);
+}
+
+.signup-card-wrapper {
+  width: 100%;
+  max-width: 580px;
+}
+
+.signup-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .signup-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -1,0 +1,90 @@
+/* StatusProgress Component Styles */
+.status-progress-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  margin: 28px 0;
+  padding: 0 10px;
+}
+
+.status-progress-line {
+  position: absolute;
+  top: 18px;
+  left: 30px;
+  right: 30px;
+  height: 3px;
+  background: var(--color-border);
+  z-index: 1;
+}
+
+.status-progress-fill {
+  position: absolute;
+  top: 18px;
+  left: 30px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-violet), var(--color-lime));
+  box-shadow: 0 0 10px rgba(198, 255, 52, 0.5);
+  z-index: 2;
+  transition: width 400ms ease-out;
+}
+
+.status-progress-step {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.status-step-node {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-black-card);
+  border: 2px solid var(--color-border);
+  color: var(--color-white-dim);
+  font-size: 13px;
+  font-weight: 700;
+  transition: all var(--transition-fast);
+}
+
+.status-step-completed .status-step-node {
+  background: var(--color-lime);
+  border-color: var(--color-lime);
+  color: var(--color-black);
+  box-shadow: 0 0 12px rgba(198, 255, 52, 0.4);
+}
+
+.status-step-current .status-step-node {
+  background: var(--color-violet);
+  border-color: var(--color-white);
+  color: var(--color-white);
+  box-shadow: 0 0 15px rgba(126, 59, 237, 0.6);
+  animation: pulseNode 2s infinite;
+}
+
+.status-step-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-white-dim);
+  max-width: 100px;
+}
+
+.status-step-completed .status-step-label,
+.status-step-current .status-step-label {
+  color: var(--color-white);
+}
+
+@keyframes pulseNode {
+  0% { box-shadow: 0 0 0 0 rgba(126, 59, 237, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(126, 59, 237, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(126, 59, 237, 0); }
+}
+

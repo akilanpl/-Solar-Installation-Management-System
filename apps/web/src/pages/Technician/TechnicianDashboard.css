@@ -1,0 +1,61 @@
+/* TechnicianDashboard Styles */
+.tech-job-card {
+  padding: 24px;
+  background: var(--color-black-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  transition: all var(--transition-fast);
+}
+
+.tech-job-card:hover {
+  border-color: var(--color-lime);
+  box-shadow: 0 0 20px rgba(198, 255, 52, 0.15);
+}
+
+.tech-checklist-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+  padding: 16px;
+  background: var(--color-black-surface);
+  border-radius: var(--radius-sm);
+}
+
+.tech-checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13.5px;
+  color: var(--color-white-muted);
+  transition: color var(--transition-fast);
+}
+
+.tech-checklist-item.done {
+  color: var(--color-lime);
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+.tech-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid var(--color-border-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-black-elevated);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.tech-checklist-item.done .tech-checkbox {
+  background: var(--color-lime);
+  border-color: var(--color-lime);
+  color: var(--color-black);
+}
+

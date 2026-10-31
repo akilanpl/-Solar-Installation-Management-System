@@ -1,0 +1,19 @@
+/* Router component styling */
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: color var(--transition-fast);
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  color: var(--color-lime);
+}
+
+.nav-link.active {
+  color: var(--color-lime);
+  font-weight: 600;
+}
+

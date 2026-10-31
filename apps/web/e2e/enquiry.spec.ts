@@ -1,0 +1,47 @@
+import { expect, test } from "@playwright/test";
+
+test("customer enquiry persists and sales can qualify it", async ({ page, browser }) => {
+  const email = `leela.${Date.now()}@example.com`;
+  await page.goto("/signup");
+  await page.getByLabel("Full name").fill("Leela Nair");
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Mobile").fill("9845099999");
+  await page.getByLabel("Password").fill("Solarops123");
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page.getByRole("heading", { name: "Verify your email" })).toBeVisible();
+  await page.getByRole("button", { name: "Load code from local mailbox" }).click();
+  await page.getByRole("button", { name: "Verify email" }).click();
+  await expect(page.getByRole("heading", { name: "Sign in to SolarOps" })).toBeVisible();
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill("Solarops123");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("heading", { name: /Hello, Leela Nair/ })).toBeVisible();
+  await page.getByRole("link", { name: "New enquiry" }).first().click();
+  await page.getByLabel("Estimated monthly electricity bill (₹)").fill("4500");
+  await page.getByLabel("Site address").fill("12 Lake View Road");
+  await page.getByLabel("City").fill("Hyderabad");
+  await page.getByLabel("State").fill("Telangana");
+  await page.getByLabel("PIN code").fill("500081");
+  await page.getByRole("button", { name: "Submit enquiry" }).click();
+  await expect(page.getByRole("heading", { name: /ENQ-/ })).toBeVisible();
+  const reference = (await page.getByRole("heading", { level: 1 }).textContent()) ?? "";
+  await page.reload();
+  await expect(page.getByRole("heading", { name: reference })).toBeVisible();
+
+  const sales = await browser.newPage();
+  await sales.goto("/login");
+  await sales.getByLabel("I am signing in as").selectOption("sales");
+  await sales.getByLabel("Employee ID").fill("EMP-SALES-001");
+  const password = process.env.SOLAROPS_SEED_PASSWORD;
+  if (!password) throw new Error("Set SOLAROPS_SEED_PASSWORD to the seeded staff password.");
+  await sales.getByLabel("Password").fill(password);
+  await sales.getByRole("button", { name: "Sign in" }).click();
+  await expect(sales.getByRole("heading", { name: "Enquiries" })).toBeVisible();
+  await sales.getByRole("link", { name: reference }).click();
+  await sales.getByRole("button", { name: "Update status" }).click();
+  await sales.getByRole("button", { name: "Save status" }).click();
+  await expect(sales.getByText("Under review")).toBeVisible();
+
+  await page.goto("/customer");
+  await expect(page.getByText("Under review")).toBeVisible();
+});

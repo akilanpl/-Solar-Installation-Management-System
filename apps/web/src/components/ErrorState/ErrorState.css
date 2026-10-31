@@ -1,0 +1,42 @@
+/* ErrorState Component Styles */
+.error-state-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 22px;
+  background: var(--color-black-elevated);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  color: var(--color-white);
+  box-shadow: 0 0 16px rgba(255, 77, 109, 0.25);
+  margin: 16px 0;
+}
+
+.error-icon-box {
+  color: var(--color-danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.error-content {
+  flex: 1;
+}
+
+.error-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-danger);
+  margin-bottom: 4px;
+}
+
+.error-message {
+  font-size: 13px;
+  color: var(--color-white-muted);
+}
+
+.error-actions {
+  margin-top: 12px;
+}
+

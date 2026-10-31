@@ -1,0 +1,42 @@
+/* CustomerSupport Styles */
+.support-tickets-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.support-ticket-item {
+  padding: 18px 20px;
+  background: var(--color-black-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.support-ticket-item:hover {
+  border-color: var(--color-violet);
+  box-shadow: 0 0 15px rgba(126, 59, 237, 0.15);
+}
+
+.ticket-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.ticket-subject {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.ticket-meta {
+  font-size: 12px;
+  color: var(--color-white-dim);
+  display: flex;
+  gap: 16px;
+  margin-top: 6px;
+}
+

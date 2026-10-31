@@ -1,0 +1,42 @@
+/* SelectField Component Styles */
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.select-input {
+  width: 100%;
+  padding: 10px 38px 10px 14px;
+  background-color: var(--color-black-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-white);
+  font-family: var(--font-family);
+  font-size: 14px;
+  appearance: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.select-input:focus {
+  outline: none;
+  border-color: var(--color-lime);
+  box-shadow: 0 0 0 2px var(--color-lime-subtle);
+}
+
+.select-input option {
+  background-color: var(--color-black-elevated);
+  color: var(--color-white);
+  padding: 10px;
+}
+
+.select-icon {
+  position: absolute;
+  right: 14px;
+  pointer-events: none;
+  color: var(--color-white-dim);
+  display: flex;
+  align-items: center;
+}
+

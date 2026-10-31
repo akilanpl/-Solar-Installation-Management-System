@@ -1,0 +1,9 @@
+/* SupportDashboard Styles */
+.lookup-box-card {
+  padding: 20px;
+  background: var(--color-black-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+}
+

@@ -1,0 +1,58 @@
+/* CustomerPayments Styles */
+.payment-milestones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.payment-milestone-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  background: var(--color-black-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.payment-milestone-card.paid {
+  border-color: rgba(198, 255, 52, 0.4);
+  background: linear-gradient(90deg, rgba(198, 255, 52, 0.05), transparent);
+}
+
+.payment-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.payment-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-desc {
+  font-size: 13px;
+  color: var(--color-white-dim);
+}
+
+.payment-amount-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.payment-amount {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-white);
+  font-family: var(--font-mono);
+}
+

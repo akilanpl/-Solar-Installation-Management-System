@@ -1,0 +1,109 @@
+/* NewEnquiry Form Styles */
+.enquiry-layout-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 992px) {
+  .enquiry-layout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.capacity-preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.capacity-preset-btn {
+  padding: 8px 16px;
+  background: var(--color-black-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.capacity-preset-btn:hover {
+  border-color: var(--color-violet);
+  color: var(--color-white);
+}
+
+.capacity-preset-btn.selected {
+  background: var(--color-violet);
+  border-color: var(--color-violet);
+  color: var(--color-white);
+  box-shadow: var(--color-violet-glow);
+}
+
+/* Solar Estimator Card */
+.estimator-summary-box {
+  background: linear-gradient(180deg, var(--color-black-card), var(--color-black-surface));
+  border: 1px solid var(--color-lime);
+  box-shadow: 0 0 20px rgba(198, 255, 52, 0.15);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  position: sticky;
+  top: 90px;
+}
+
+.estimator-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-lime);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.estimator-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+  font-size: 13px;
+}
+
+.estimator-metric-label {
+  color: var(--color-white-dim);
+}
+
+.estimator-metric-val {
+  font-weight: 700;
+  color: var(--color-white);
+  font-family: var(--font-mono);
+}
+
+.estimator-highlight {
+  margin-top: 20px;
+  padding: 14px;
+  background: var(--color-lime-subtle);
+  border: 1px solid rgba(198, 255, 52, 0.3);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.estimator-highlight-val {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-lime);
+}
+
+.estimator-highlight-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-white-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+

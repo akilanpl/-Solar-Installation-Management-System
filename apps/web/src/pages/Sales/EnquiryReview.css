@@ -1,0 +1,18 @@
+/* EnquiryReview Styles */
+.qualification-actions-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--color-black-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.action-buttons-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+

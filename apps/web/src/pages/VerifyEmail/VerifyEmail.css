@@ -1,0 +1,35 @@
+/* VerifyEmail Page Styles */
+.verify-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  background-color: var(--color-black);
+}
+
+.verify-card-wrapper {
+  width: 100%;
+  max-width: 480px;
+}
+
+.otp-input-group {
+  margin: 20px 0;
+}
+
+.dev-mailbox-helper-box {
+  background: var(--color-violet-subtle);
+  border: 1px dashed var(--color-violet);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.dev-mailbox-helper-text {
+  font-size: 12px;
+  color: var(--color-violet-light);
+}
+

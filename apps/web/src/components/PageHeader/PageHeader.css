@@ -1,0 +1,39 @@
+/* PageHeader Component Styles */
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.page-header-content {
+  max-width: 650px;
+}
+
+.page-header-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-header-description {
+  font-size: 14px;
+  color: var(--color-white-dim);
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
+.page-header-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+

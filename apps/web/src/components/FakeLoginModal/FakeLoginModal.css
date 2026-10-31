@@ -1,0 +1,73 @@
+/* Fake Login / Demo Bypass Modal Styles */
+.fake-login-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.fake-user-card {
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+  background: var(--color-black-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+  color: var(--color-white);
+}
+
+.fake-user-card:hover {
+  border-color: var(--color-lime);
+  background: var(--color-black-elevated);
+  box-shadow: 0 0 16px rgba(198, 255, 52, 0.25);
+  transform: translateY(-2px);
+}
+
+.fake-user-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.fake-user-role-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-violet-subtle);
+  color: var(--color-violet-light);
+  border: 1px solid rgba(126, 59, 237, 0.3);
+}
+
+.fake-user-card:hover .fake-user-role-badge {
+  background: var(--color-lime-subtle);
+  color: var(--color-lime);
+  border-color: rgba(198, 255, 52, 0.3);
+}
+
+.fake-user-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-white);
+  margin-bottom: 4px;
+}
+
+.fake-user-id {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-white-dim);
+}
+
+.fake-user-hint {
+  font-size: 11px;
+  color: var(--color-lime);
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
