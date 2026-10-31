@@ -2566,3 +2566,44 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+================================================================================
+48. OPTICAL SCANNER IN SIDE DOCK FOR WAREHOUSE & FIELD TECHNICIAN (SECTION 48)
+================================================================================
+- Context & Requirements:
+  The user requested a dedicated Scan icon in the side navigation dock for
+  warehouse managers/staff (to scan serialized hardware and maintain stock) and
+  technicians (to scan on-site components, verify sales BOM, and upload proof of work).
+
+- Core Features Implemented:
+  1. Dock Scanner Button (.dock-scan-btn & .dock-scan-badge):
+     - Added to Sidebar.jsx with a custom ScanBarcode icon and cyan glass lens styling.
+     - Role-aware: Visible to warehouse_manager, warehouse_staff, technician, and admin.
+     - Tooltip dynamically describes the role-specific scanning workflow.
+
+  2. Optical Equipment Scanner Modal (EquipmentScannerModal.jsx):
+     - Viewfinder Camera HUD: Features corner targeting brackets, animated red laser sweep
+       (laserScan keyframes), live optical feed simulation, flashlight toggle, and capture action.
+     - Warehouse Manager Mode:
+       * Action toggle between Inward Goods Intake (+ Stock) and Outward Installation Dispatch (- Staging).
+       * Scanned items registry tracking serial number, component name, rack location, and batch.
+       * Upload evidence zone for delivery challans and pallet packing slips.
+       * Commits stock updates to warehouse inventory with toast feedback.
+     - Technician Field Verification Mode:
+       * Displays active work order (#SO-0042 Indiranagar Rooftop, Arun Kumar 5kW Hybrid).
+       * Sales BOM verification checklist: Matches scanned serials against BOM targets
+         (Inverter, PV module array, BESCOM smart net-meter, and chemical earthing pit tag).
+       * Upload evidence zone for rooftop azimuth layout and AC/DC wiring inspection photos.
+       * "Submit Verified Work to Sales & HQ" action.
+     - Admin Mode: Includes role switcher strip allowing administrators to test both modes.
+     - Manual Barcode Input & Quick Scan Preset Chips: Instant one-click triggers for realistic hardware.
+
+- Files Modified & Created:
+  * apps/web/src/components/EquipmentScannerModal/EquipmentScannerModal.jsx (Created)
+  * apps/web/src/components/EquipmentScannerModal/EquipmentScannerModal.css (Created)
+  * apps/web/src/components/Sidebar/Sidebar.jsx (Modified - added scan button & modal)
+  * apps/web/src/components/Sidebar/Sidebar.css (Modified - styled scan button & badge)
+  * apps/web/test/app.test.js (Modified - added unit test #14)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================

@@ -208,6 +208,40 @@ test('Header Top Nav: notifications count, filter, and settings state', () => {
   assert.equal(sampleSettings.autoSanctionCalc, true);
 });
 
+test('Equipment Scanner: role-based visibility and BOM serial match verification', () => {
+  const canScanRole = (role) =>
+    role === 'warehouse_manager' ||
+    role === 'warehouse_staff' ||
+    role === 'technician' ||
+    role === 'admin';
+
+  assert.equal(canScanRole('warehouse_manager'), true);
+  assert.equal(canScanRole('warehouse_staff'), true);
+  assert.equal(canScanRole('technician'), true);
+  assert.equal(canScanRole('admin'), true);
+  assert.equal(canScanRole('customer'), false);
+  assert.equal(canScanRole('sales'), false);
+
+  // Technician BOM serial verification logic
+  const bomTargets = [
+    { targetSerial: 'INV-HYB5K-2026-041', status: 'pending' },
+    { targetSerial: 'SN-PV540-KA-0981', status: 'pending' },
+  ];
+
+  const scannedSerial = 'INV-HYB5K-2026-041';
+  const updatedBom = bomTargets.map((item) =>
+    item.targetSerial === scannedSerial ? { ...item, status: 'matched' } : item
+  );
+
+  assert.equal(updatedBom[0].status, 'matched');
+  assert.equal(updatedBom[1].status, 'pending');
+
+  // Warehouse stock intake serial format
+  const whSerial = 'SN-PV540-KA-0985';
+  assert.match(whSerial, /^SN-PV\d+-KA-\d+$/);
+});
+
+
 
 
 

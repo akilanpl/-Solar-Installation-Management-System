@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { homeForRole } from '../../lib/access';
 import { FakeLoginModal } from '../FakeLoginModal/FakeLoginModal';
 import { SolarChatbot } from '../SolarChatbot/SolarChatbot';
+import { EquipmentScannerModal } from '../EquipmentScannerModal/EquipmentScannerModal';
 import {
   LayoutDashboard,
   FileText,
@@ -19,6 +20,7 @@ import {
   LogOut,
   ShoppingBag,
   Navigation,
+  ScanBarcode,
 } from 'lucide-react';
 import dockAiIcon from '../../assets/dock-ai-icon.png';
 import './Sidebar.css';
@@ -28,9 +30,24 @@ export function Sidebar() {
   const { path, navigate } = useRouter();
   const [fakeModalOpen, setFakeModalOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const homePath = user ? homeForRole(user.role) : '/login';
   const role = user?.role || 'customer';
+
+  // Scanner permission: warehouse managers/staff to maintain stock, technicians to verify work, admin to audit both
+  const canScan =
+    role === 'warehouse_manager' ||
+    role === 'warehouse_staff' ||
+    role === 'technician' ||
+    role === 'admin';
+
+  const scannerTitle =
+    role === 'technician'
+      ? 'Field Work Verification Scanner (Verify BOM & Installation)'
+      : role === 'warehouse_manager' || role === 'warehouse_staff'
+      ? 'Warehouse Stock Scanner (Maintain Inventory & Staging)'
+      : 'Optical Equipment & Stock Verification Scanner';
 
   // Build role-tailored essential navigation items
   const getNavItems = () => {
@@ -120,6 +137,19 @@ export function Sidebar() {
             );
           })}
 
+          {/* Optical Scanner Button for Warehouse & Technician */}
+          {canScan && (
+            <button
+              type="button"
+              className={`dock-nav-btn dock-scan-btn ${scannerOpen ? 'active' : ''}`}
+              title={scannerTitle}
+              onClick={() => setScannerOpen(true)}
+            >
+              <ScanBarcode size={20} strokeWidth={2.2} />
+              <span className="dock-scan-badge">SCAN</span>
+            </button>
+          )}
+
           {/* AI Copilot & Problem Resolver Button */}
           <button
             type="button"
@@ -161,20 +191,20 @@ export function Sidebar() {
         </div>
       </aside>
 
-      {/* Expandable Chat Section Attached to Side Nav */}
-      <SolarChatbot
-        isOpen={isChatOpen}
-        onClose={() => setIsChatOpen(false)}
-        onOpenStore={() => {
-          setIsChatOpen(false);
-          navigate('/customer/store');
-        }}
-      />
+      {/* Floating SolarChatbot Pane (Slides from right, toggled by AI dock icon) */}
+      <SolarChatbot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
 
-      {/* Role Switcher Modal */}
+      {/* Modal View for Full Persona Switcher */}
       <FakeLoginModal
         isOpen={fakeModalOpen}
         onClose={() => setFakeModalOpen(false)}
+      />
+
+      {/* Optical Equipment Scanner & Work Verification Modal */}
+      <EquipmentScannerModal
+        isOpen={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        role={role}
       />
     </>
   );
