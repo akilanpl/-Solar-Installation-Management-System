@@ -2992,3 +2992,39 @@ Scope: apps/web/src/components/EquipmentScannerModal/EquipmentScannerModal.jsx,
    - All 17 unit tests passing (17/17).
    - Production Vite build verified: 0 errors, built in 2.30s.
 ================================================================================
+================================================================================
+SECTION 57: MULTI-CARD WALLET SCALE EXPANSION & FOOTER HINT PRUNING
+================================================================================
+Date: 01-Nov-2026
+Author: Antigravity Assistant & Engineering Team
+Scope: apps/web/src/components/MultiCardWallet/MultiCardWallet.jsx,
+       apps/web/src/components/MultiCardWallet/MultiCardWallet.css,
+       apps/web/test/app.test.js
+
+1. Executive Summary & Design System Refinement:
+   - Enlarged the multi-card leather wallet component by 1.32x on desktop views via
+     hardware-accelerated coordinate scaling (.wallet-scaler) to provide a bold,
+     impactful, and premium presence within the Razorpay checkout card column.
+   - Removed the italicized "Hover to see Balance" footer label (.wallet::after).
+   - Removed the bottom confirmation banner ("Selected Card: Stripe · Alex Smith (**** 4242)
+     Click any card to switch") to keep the wallet interface completely focused on the
+     interactive leather pocket and realistic credit card deck.
+
+2. Technical Implementation Details:
+   - Wallet Sizing & Responsive Scaler:
+     * Added .wallet-scaler wrapping the .wallet element with transform: scale(1.32)
+       and cubic-bezier transition (0.16, 1, 0.3, 1), preserving exact SVG vector viewBox
+       geometry (280x160), card layer positioning, and hover animation physics.
+     * Responsive breakpoints: Automatically scales to 1.12x on tablets (<640px)
+       and 0.96x on small mobile viewports (<380px) to prevent layout overflow.
+   - Text & Element Pruning:
+     * Removed .wallet::after pseudo-element completely.
+     * Removed .selected-card-confirmation JSX block and CSS declarations.
+     * Cleaned up unused Lucide icon imports (CheckCircle2, ShieldCheck).
+
+3. Testing & Verification:
+   - Updated Unit Test #17 in apps/web/test/app.test.js asserting .wallet-scaler presence,
+     removal of "Hover to see Balance", and removal of selected-card-confirmation.
+   - All 17 unit tests passing (17/17).
+   - Verified Vite production build completes cleanly in 2.26s.
+================================================================================

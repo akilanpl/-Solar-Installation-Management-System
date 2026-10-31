@@ -5,9 +5,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 22px;
   width: 100%;
-  max-width: 380px;
+  max-width: 480px;
   margin: 0 auto;
 }
 
@@ -15,8 +14,36 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px 16px 42px;
+  padding: 36px 20px 40px;
   position: relative;
+  width: 100%;
+  min-height: 330px;
+}
+
+/* Wallet Scaler - Expands component size with smooth scaling */
+.wallet-scaler {
+  transform: scale(1.32);
+  transform-origin: center center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 640px) {
+  .wallet-scaler {
+    transform: scale(1.12);
+  }
+  .wallet-outer-box {
+    min-height: 290px;
+    padding: 24px 10px 30px;
+  }
+}
+
+@media (max-width: 380px) {
+  .wallet-scaler {
+    transform: scale(0.96);
+  }
 }
 
 /* Wallet Wrapper */
@@ -30,18 +57,6 @@
   justify-content: center;
   align-items: flex-end;
   transition: transform 0.4s ease;
-}
-
-.wallet::after {
-  content: "Hover to see Balance";
-  position: absolute;
-  bottom: -30px;
-  font-style: italic;
-  color: #003087;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: underline;
-  transition: opacity 0.3s ease;
 }
 
 /* Entry animation for card as page loads */
@@ -360,38 +375,5 @@
 .wallet:hover .eye-open {
   opacity: 1 !important;
   transform: scale(1.1);
-}
-
-/* Selected Card Confirmation Bar */
-.selected-card-confirmation {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 320px;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  font-size: 12px;
-  color: #334155;
-  transition: all 0.2s ease;
-}
-
-.confirmation-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.confirmation-left strong {
-  color: #0f172a;
-}
-
-.card-switch-hint {
-  font-size: 10px;
-  color: #64748b;
-  font-weight: 500;
 }
 

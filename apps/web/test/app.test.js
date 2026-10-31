@@ -411,6 +411,12 @@ test('Multi-Card Leather Wallet: card options, visual assets, and metadata synch
   assert.ok(cssContent.includes('.card.paypal'), 'CSS must style PayPal card');
   assert.ok(cssContent.includes('slideIntoPocket'), 'CSS must include slideIntoPocket animation');
 
+  // Verify component scale expansion and removal of extra text/confirmation elements
+  assert.ok(cssContent.includes('.wallet-scaler'), 'CSS must include wallet-scaler for expanded dimensions');
+  assert.ok(!cssContent.includes('Hover to see Balance'), 'CSS must remove "Hover to see Balance" label');
+  const jsxContent = fs.readFileSync(componentPath, 'utf8');
+  assert.ok(!jsxContent.includes('selected-card-confirmation'), 'JSX must remove selected-card-confirmation banner');
+
   // Verify integration in RazorpayPaymentPage.jsx
   const pagePath = path.join(__dirname, '../src/pages/Customer/RazorpayPaymentPage.jsx');
   const pageContent = fs.readFileSync(pagePath, 'utf8');

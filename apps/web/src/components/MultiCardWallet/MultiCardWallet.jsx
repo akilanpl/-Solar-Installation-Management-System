@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { CheckCircle2, ShieldCheck } from 'lucide-react';
 import './MultiCardWallet.css';
 
 export function MultiCardWallet({
@@ -21,8 +20,9 @@ export function MultiCardWallet({
   return (
     <div className="multi-card-wallet-wrapper">
       <div className="wallet-outer-box">
-        <div className="wallet" title="Hover to inspect cards · Click to select payment card">
-          <div className="wallet-back" />
+        <div className="wallet-scaler">
+          <div className="wallet" title="Hover to inspect cards · Click to select payment card">
+            <div className="wallet-back" />
 
           {/* 1. Stripe Card */}
           <div
@@ -200,25 +200,8 @@ export function MultiCardWallet({
           </div>
         </div>
       </div>
-
-      {/* Selected Card Confirmation Card */}
-      <div className="selected-card-confirmation">
-        <div className="confirmation-left">
-          <CheckCircle2 size={16} color="#10b981" />
-          <span>
-            Selected Card:{' '}
-            <strong>
-              {currentActive === 'stripe'
-                ? 'Stripe · Alex Smith (**** 4242)'
-                : currentActive === 'wise'
-                ? 'Wise · Studio LLC (**** 8810)'
-                : 'PayPal · hello@work.com (**** 0094)'}
-            </strong>
-          </span>
-        </div>
-        <span className="card-switch-hint">Click any card to switch</span>
-      </div>
     </div>
+  </div>
   );
 }
 
