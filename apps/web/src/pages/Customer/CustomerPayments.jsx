@@ -4,6 +4,7 @@ import { PageHeader } from '../../components/PageHeader/PageHeader';
 import { Card } from '../../components/Card/Card';
 import { Button } from '../../components/Button/Button';
 import { Badge } from '../../components/Badge/Badge';
+import { TransactionCard } from '../../components/TransactionCard/TransactionCard';
 import { useAuth } from '../../context/AuthContext';
 import { CreditCard, CheckCircle2, Clock, Landmark, ArrowUpRight } from 'lucide-react';
 import './CustomerPayments.css';
@@ -104,41 +105,65 @@ export function CustomerPayments() {
           </Card>
         </div>
 
-        {/* Subsidy Info */}
-        <div>
+        {/* Right Column: Subsidy Info & Razorpay Processed Transaction Card */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <Card accent="lime">
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-              <Landmark size={22} color="var(--color-lime)" />
-              <h3 style={{ fontSize: '17px', fontWeight: '700' }}>Direct Benefit Subsidy</h3>
+              <Landmark size={22} color="#10b981" />
+              <h3 style={{ fontSize: '17px', fontWeight: '700', color: '#111827' }}>Direct Benefit Subsidy</h3>
             </div>
 
-            <div style={{ padding: '16px', background: 'var(--color-black-surface)', borderRadius: 'var(--radius-sm)', marginBottom: '16px' }}>
-              <span style={{ fontSize: '11px', color: 'var(--color-white-dim)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div style={{ padding: '16px', background: '#f8fafc', border: '1px solid #edf0f5', borderRadius: '14px', marginBottom: '16px' }}>
+              <span style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '700' }}>
                 National PM Surya Ghar Portal
               </span>
-              <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-lime)', marginTop: '4px' }}>
+              <div style={{ fontSize: '28px', fontWeight: '800', color: '#10b981', marginTop: '4px', letterSpacing: '-0.5px' }}>
                 ₹78,000
               </div>
-              <p style={{ fontSize: '12px', color: 'var(--color-white-muted)', marginTop: '6px' }}>
+              <p style={{ fontSize: '12.5px', color: '#475569', marginTop: '6px', lineHeight: '1.45' }}>
                 Government subsidy credited directly to your Aadhaar-linked bank account within 30 days of bidirectional meter installation.
               </p>
             </div>
 
-            <div style={{ fontSize: '13px', color: 'var(--color-white-dim)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ fontSize: '13px', color: '#64748b', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>Application ID:</span>
-                <strong style={{ color: 'var(--color-white)' }}>PMSG-KA-2026-9912</strong>
+                <strong style={{ color: '#0f172a', fontWeight: '700' }}>PMSG-KA-2026-9912</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>DISCOM:</span>
-                <strong style={{ color: 'var(--color-white)' }}>BESCOM Bengaluru</strong>
+                <strong style={{ color: '#0f172a', fontWeight: '700' }}>BESCOM Bengaluru</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>Status:</span>
-                <Badge variant="info">Document Verified</Badge>
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  background: '#f0f9ff',
+                  border: '1px solid #bae6fd',
+                  color: '#0284c7',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  padding: '3px 10px',
+                  borderRadius: '9999px',
+                  letterSpacing: '0.04em',
+                }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#0284c7' }} />
+                  DOCUMENT VERIFIED
+                </span>
               </div>
             </div>
           </Card>
+
+          {/* New Transaction Interactive POS Terminal & Razorpay Settlement Card */}
+          <TransactionCard
+            amount="₹78,000.00"
+            accountNumber="•••• 4921"
+            utrNumber="RZP91823902381"
+            beneficiary="Arun Kumar"
+            currencySymbol="₹"
+          />
         </div>
       </div>
     </AppShell>
