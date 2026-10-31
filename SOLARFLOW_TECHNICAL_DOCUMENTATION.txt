@@ -2685,3 +2685,62 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+================================================================================
+SECTION 51: USER-CENTRIC SEPARATION OF EQUIPMENT SCANNER (MANAGER VS TECHNICIAN)
+================================================================================
+
+- Overview:
+  Refactored the Optical Equipment Scanner modal to be strictly user-centric and
+  role-exclusive. Previously, when logged in as an administrator or testing roles,
+  the modal displayed a dual-mode pill switcher strip ("Warehouse Manager Mode" vs
+  "Technician Mode"), creating confusion and an un-user-centric experience. Now,
+  the scanner automatically and exclusively configures itself for the active role:
+  to a manager it is strictly for stock management, and to a technician it is
+  strictly for work & BOM verification.
+
+- Technical Implementations:
+  1. Removal of Mode Switcher Strip:
+     - Completely removed the top pill button switcher strip (`scanner-role-switcher-strip`)
+       from `EquipmentScannerModal.jsx` and `EquipmentScannerModal.css`.
+     - Replaced with a clean header title block featuring a dedicated icon (`Package` for
+       Manager, `Wrench` for Technician) and an informative view badge (`Warehouse Manager`
+       or `Field Technician`).
+  2. Dedicated Warehouse Manager Mode:
+     - Title: "Warehouse Inventory & Stock Receiving Scanner".
+     - Subtitle: "Scan serial numbers and QR codes on modules, inverters and batteries to
+       update live warehouse stock counts and stage kits for installation dispatch."
+     - Actions: Inward Goods Receiving (+ Stock) vs Outward Installation Dispatch (- Staging).
+     - Camera HUD: Reticle labeled "ALIGN BARCODE / QR SERIAL IN FRAME".
+     - Presets: Waaree PV-540W, Hybrid Inverter 5kW, Battery Pack 5kWh, Distribution Box.
+     - Scanned Registry: Warehouse Stock Log table showing serial, rack, batch, and status,
+       with live delete action (`handleDeleteWarehouseItem`).
+     - Evidence: Upload Delivery Challan / Pallet Packing Slip / Supplier Invoice.
+     - Commit Button: "Upload & Commit Stock Updates (+N Items)".
+  3. Dedicated Field Technician Mode:
+     - Title: "Field Work & Installation Verification Scanner".
+     - Subtitle: "Scan serialized solar equipment on-site at Arun Kumar’s Indiranagar
+       residence (#SO-0042) to confirm physical delivery against the approved engineering BOM."
+     - Active Job Banner: Active Site Survey / Installation #SO-0042 in Indiranagar.
+     - Camera HUD: Reticle labeled "ALIGN COMPONENT SERIAL PLATE" with 180° S Azimuth readout.
+     - Presets: Inverter INV-041, PV-540W (#0981), BESCOM Net-Meter, Earth Pit Tag.
+     - Registry: Sales BOM Installation Verification checklist with matched status pills.
+     - Evidence: Upload Rooftop Azimuth, Wiring & Workmanship Photos.
+     - Commit Button: "Submit Verified Work to Sales & HQ".
+  4. Sidebar Smart Role Resolution:
+     - In `Sidebar.jsx`, `scannerRole` is derived based on the active role (`role === 'technician'`
+       or admin inspecting `/technician` routes resolves to `'technician'`, otherwise
+       resolves to `'warehouse_manager'`).
+     - Distinct sidebar tooltip titles for each persona.
+  5. Test Coverage:
+     - Updated Unit Test #14 in `apps/web/test/app.test.js` to assert user-centric mode resolution
+       for technician, warehouse manager, staff, and admin routes.
+
+- Files Modified:
+  * apps/web/src/components/EquipmentScannerModal/EquipmentScannerModal.jsx (Refactored)
+  * apps/web/src/components/EquipmentScannerModal/EquipmentScannerModal.css (Updated)
+  * apps/web/src/components/Sidebar/Sidebar.jsx (Updated role resolution)
+  * apps/web/test/app.test.js (Updated Unit Test #14)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Appended Section 51)
+
+================================================================================

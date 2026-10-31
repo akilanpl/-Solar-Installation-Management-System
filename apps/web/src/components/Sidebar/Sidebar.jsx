@@ -35,19 +35,24 @@ export function Sidebar() {
   const homePath = user ? homeForRole(user.role) : '/login';
   const role = user?.role || 'customer';
 
-  // Scanner permission: warehouse managers/staff to maintain stock, technicians to verify work, admin to audit both
+  // Scanner permission: warehouse managers/staff to maintain stock, technicians to verify work, admin to audit
   const canScan =
     role === 'warehouse_manager' ||
     role === 'warehouse_staff' ||
     role === 'technician' ||
     role === 'admin';
 
-  const scannerTitle =
-    role === 'technician'
-      ? 'Field Work Verification Scanner (Verify BOM & Installation)'
-      : role === 'warehouse_manager' || role === 'warehouse_staff'
-      ? 'Warehouse Stock Scanner (Maintain Inventory & Staging)'
-      : 'Optical Equipment & Stock Verification Scanner';
+  // Strictly user-centric scanner role resolution:
+  // - Field technicians (or admin on technician routes) get the Field Work & BOM verification scanner
+  // - Warehouse managers / staff / admin get the Warehouse Inventory & Stock receiving scanner
+  const isTechnicianContext =
+    role === 'technician' || (role === 'admin' && path.startsWith('/technician'));
+
+  const scannerRole = isTechnicianContext ? 'technician' : 'warehouse_manager';
+
+  const scannerTitle = isTechnicianContext
+    ? 'Field Work Verification Scanner (Technician: Verify BOM & Installation)'
+    : 'Warehouse Stock Scanner (Manager: Maintain Inventory & Inward/Dispatch)';
 
   // Build role-tailored essential navigation items
   const getNavItems = () => {
@@ -204,7 +209,7 @@ export function Sidebar() {
       <EquipmentScannerModal
         isOpen={scannerOpen}
         onClose={() => setScannerOpen(false)}
-        role={role}
+        role={scannerRole}
       />
     </>
   );

@@ -27,15 +27,12 @@ import './EquipmentScannerModal.css';
 export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) {
   const { showToast } = useAuth();
 
-  // Active Role view (support admin switching between both roles for testing)
-  const isWarehouseUser =
-    role === 'warehouse_manager' || role === 'warehouse_staff';
-  const isTechnicianUser = role === 'technician';
-  const isAdminUser = role === 'admin';
-
-  const [activeMode, setActiveMode] = useState(
-    isWarehouseUser ? 'warehouse' : 'technician'
-  );
+  // Purely user-centric mode:
+  // - Technician gets ONLY the Technician mode (BOM verification, site install, checklist)
+  // - Manager (warehouse manager, warehouse staff, admin) gets ONLY the Warehouse Manager mode (stock inventory, inward/dispatch)
+  // There is NO role switcher strip; the interface is 100% tailor-made to the user.
+  const isTechnician = role === 'technician';
+  const activeMode = isTechnician ? 'technician' : 'warehouse';
 
   // Warehouse Mode States
   const [warehouseAction, setWarehouseAction] = useState('inward'); // 'inward' | 'dispatch'
@@ -109,18 +106,18 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
     },
   ]);
 
-  // Uploaded evidence files
-  const [uploadedFiles, setUploadedFiles] = useState(
-    activeMode === 'warehouse'
-      ? [
-          { name: 'Supplier_Delivery_Challan_4981.pdf', size: '240 KB' },
-          { name: 'Pallet_Barcode_Batch_540W.jpg', size: '1.2 MB' },
-        ]
-      : [
-          { name: 'Rooftop_South_Array_Azimuth_180.jpg', size: '2.4 MB' },
-          { name: 'Inverter_ACDC_Distribution_Box.jpg', size: '1.8 MB' },
-        ]
-  );
+  // Dedicated evidence files for each role to prevent crosstalk
+  const [warehouseFiles, setWarehouseFiles] = useState([
+    { name: 'Supplier_Delivery_Challan_4981.pdf', size: '240 KB' },
+    { name: 'Pallet_Barcode_Batch_540W.jpg', size: '1.2 MB' },
+  ]);
+
+  const [techFiles, setTechFiles] = useState([
+    { name: 'Rooftop_South_Array_Azimuth_180.jpg', size: '2.4 MB' },
+    { name: 'Inverter_ACDC_Distribution_Box.jpg', size: '1.8 MB' },
+  ]);
+
+  const uploadedFiles = isTechnician ? techFiles : warehouseFiles;
 
   const [torchOn, setTorchOn] = useState(false);
   const [laserActive, setLaserActive] = useState(true);
@@ -129,7 +126,7 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
   const handleScanBarcode = (serialCode, itemName, rackLoc) => {
     if (!serialCode.trim()) return;
 
-    if (activeMode === 'warehouse') {
+    if (!isTechnician) {
       const newItem = {
         id: Date.now(),
         serial: serialCode.trim(),
@@ -174,8 +171,17 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
     }
   };
 
+  const handleDeleteWarehouseItem = (id) => {
+    setScannedWarehouseItems((prev) => prev.filter((item) => item.id !== id));
+    showToast({
+      type: 'info',
+      title: 'Item Removed',
+      message: 'Scanned item removed from batch log.',
+    });
+  };
+
   const handleSimulateScan = () => {
-    if (activeMode === 'warehouse') {
+    if (!isTechnician) {
       const presets = [
         { code: 'SN-PV540-KA-0986', name: 'Waaree 540W Mono-PERC Module', rack: 'Aisle B - Shelf 04' },
         { code: 'INV-HYB3K-2026-104', name: 'Micro-Inverter 3kW String Unit', rack: 'Aisle A - Bay 03' },
@@ -201,10 +207,15 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      setUploadedFiles([
-        ...uploadedFiles,
-        { name: file.name, size: `${Math.round(file.size / 1024)} KB` },
-      ]);
+      const newFile = {
+        name: file.name,
+        size: `${Math.round(file.size / 1024)} KB`,
+      };
+      if (isTechnician) {
+        setTechFiles((prev) => [...prev, newFile]);
+      } else {
+        setWarehouseFiles((prev) => [...prev, newFile]);
+      }
       showToast({
         type: 'success',
         title: 'Evidence Attached',
@@ -214,12 +225,16 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
   };
 
   const handleRemoveFile = (index) => {
-    setUploadedFiles(uploadedFiles.filter((_, i) => i !== index));
+    if (isTechnician) {
+      setTechFiles((prev) => prev.filter((_, i) => i !== index));
+    } else {
+      setWarehouseFiles((prev) => prev.filter((_, i) => i !== index));
+    }
   };
 
   const handleCommit = (e) => {
     e.preventDefault();
-    if (activeMode === 'warehouse') {
+    if (!isTechnician) {
       showToast({
         type: 'success',
         title: 'Stock Updated Successfully',
@@ -240,44 +255,36 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
       isOpen={isOpen}
       onClose={onClose}
       title={
-        activeMode === 'warehouse'
-          ? 'Warehouse Serial & Inventory Stock Scanner'
-          : 'Field Work & Installation Verification Scanner'
+        <div className="scanner-header-title-wrap">
+          <div className="scanner-header-left">
+            {isTechnician ? (
+              <Wrench size={20} color="#10b981" />
+            ) : (
+              <Package size={20} color="#f59e0b" />
+            )}
+            <span>
+              {isTechnician
+                ? 'Field Work & Installation Verification Scanner'
+                : 'Warehouse Inventory & Stock Receiving Scanner'}
+            </span>
+          </div>
+          <span className={`scanner-role-pill-badge ${isTechnician ? 'technician' : 'manager'}`}>
+            {isTechnician ? 'Field Technician' : 'Warehouse Manager'}
+          </span>
+        </div>
       }
       maxWidth="720px"
     >
       <div className="equipment-scanner-modal-body">
-        {/* Role Mode Switcher for Testing (or for Admin) */}
-        {isAdminUser && (
-          <div className="scanner-role-switcher-strip">
-            <button
-              type="button"
-              className={`scanner-role-pill ${activeMode === 'warehouse' ? 'active' : ''}`}
-              onClick={() => setActiveMode('warehouse')}
-            >
-              <Package size={15} />
-              <span>Warehouse Manager Mode (Maintain Stock)</span>
-            </button>
-            <button
-              type="button"
-              className={`scanner-role-pill ${activeMode === 'technician' ? 'active' : ''}`}
-              onClick={() => setActiveMode('technician')}
-            >
-              <Wrench size={15} />
-              <span>Technician Mode (Verify Work & BOM)</span>
-            </button>
-          </div>
-        )}
-
         {/* Top Context Subtitle */}
         <p className="scanner-modal-description">
-          {activeMode === 'warehouse'
-            ? 'Scan serial numbers and QR codes on modules, inverters and batteries to update live warehouse stock counts and stage kits for installation dispatch.'
-            : 'Scan serialized solar equipment on-site at Arun Kumar’s Indiranagar residence (#SO-0042) to confirm physical delivery against the approved engineering BOM.'}
+          {isTechnician
+            ? 'Scan serialized solar equipment on-site at Arun Kumar’s Indiranagar residence (#SO-0042) to confirm physical delivery against the approved engineering BOM.'
+            : 'Scan serial numbers and QR codes on modules, inverters and batteries to update live warehouse stock counts and stage kits for installation dispatch.'}
         </p>
 
-        {/* Warehouse Action Switcher: Inward vs Outward Dispatch */}
-        {activeMode === 'warehouse' && (
+        {/* Warehouse Inward vs Outward Dispatch Toggle (Manager Only) */}
+        {!isTechnician && (
           <div className="warehouse-action-toggle">
             <button
               type="button"
@@ -298,8 +305,8 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
           </div>
         )}
 
-        {/* Technician Active Job Banner */}
-        {activeMode === 'technician' && (
+        {/* Active Job Banner (Technician Only) */}
+        {isTechnician && (
           <div className="tech-active-job-banner">
             <div className="job-meta-left">
               <MapPin size={16} color="#4f46e5" />
@@ -330,7 +337,7 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
             <div className="hud-center-reticle">
               <ScanBarcode size={48} color="rgba(255, 255, 255, 0.85)" strokeWidth={1.5} />
               <span className="reticle-label">
-                {activeMode === 'warehouse'
+                {!isTechnician
                   ? 'ALIGN BARCODE / QR SERIAL IN FRAME'
                   : 'ALIGN COMPONENT SERIAL PLATE'}
               </span>
@@ -343,7 +350,7 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
                 <span>CAM-01 · 1080p Optical Feed</span>
               </span>
               <span className="hud-meta-item">
-                FPS: 60 · ISO 200 · Azimuth: 180° S
+                FPS: 60 · ISO 200 · {isTechnician ? 'Azimuth: 180° S' : 'Warehouse Aisle B'}
               </span>
             </div>
           </div>
@@ -393,7 +400,11 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
               id="manualBarcode"
               type="text"
               className="manual-scan-input"
-              placeholder="e.g. SN-PV540-KA-0985 or INV-HYB5K-2026-041"
+              placeholder={
+                isTechnician
+                  ? 'e.g. INV-HYB5K-2026-041 or BESCOM-KA-BLR-099234'
+                  : 'e.g. SN-PV540-KA-0985 or INV-HYB5K-2026-041'
+              }
               value={barcodeInput}
               onChange={(e) => setBarcodeInput(e.target.value)}
               onKeyDown={(e) => {
@@ -415,7 +426,7 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
           {/* Quick preset chips */}
           <div className="quick-presets-strip">
             <span className="presets-label">Quick Scan Presets:</span>
-            {activeMode === 'warehouse' ? (
+            {!isTechnician ? (
               <>
                 <button
                   type="button"
@@ -428,7 +439,7 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
                     )
                   }
                 >
-                  PV-540W (#0988)
+                  Waaree PV-540W
                 </button>
                 <button
                   type="button"
@@ -456,6 +467,19 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
                 >
                   Battery Pack 5kWh
                 </button>
+                <button
+                  type="button"
+                  className="preset-chip"
+                  onClick={() =>
+                    handleScanBarcode(
+                      'BOS-DB-SPD-449',
+                      'Solar AC/DC Distribution Box',
+                      'BOS Rack 2'
+                    )
+                  }
+                >
+                  Distribution Box
+                </button>
               </>
             ) : (
               <>
@@ -465,6 +489,13 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
                   onClick={() => handleScanBarcode('INV-HYB5K-2026-041')}
                 >
                   Inverter INV-041
+                </button>
+                <button
+                  type="button"
+                  className="preset-chip"
+                  onClick={() => handleScanBarcode('SN-PV540-KA-0981')}
+                >
+                  PV-540W (#0981)
                 </button>
                 <button
                   type="button"
@@ -488,7 +519,7 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
         {/* =================================================================
             ROLE-SPECIFIC REGISTRY / CHECKLIST
             ================================================================= */}
-        {activeMode === 'warehouse' ? (
+        {!isTechnician ? (
           /* Warehouse Scanned Items Table */
           <div className="scanned-registry-card">
             <div className="registry-header-row">
@@ -496,7 +527,7 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
                 Warehouse Stock Log ({scannedWarehouseItems.length} Items)
               </strong>
               <span className="registry-badge">
-                {warehouseAction === 'inward' ? 'Inward Intake' : 'Dispatch Staging'}
+                {warehouseAction === 'inward' ? 'Inward Intake (+)' : 'Dispatch Staging (-)'}
               </span>
             </div>
 
@@ -516,6 +547,14 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
                       <span>{item.status}</span>
                     </span>
                     <span className="item-time">{item.time}</span>
+                    <button
+                      type="button"
+                      className="item-delete-btn"
+                      onClick={() => handleDeleteWarehouseItem(item.id)}
+                      title="Remove from batch log"
+                    >
+                      <Trash2 size={12} />
+                    </button>
                   </div>
                 </div>
               ))}
@@ -568,19 +607,25 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
         <div className="evidence-upload-zone">
           <div className="evidence-upload-header">
             <strong>
-              {activeMode === 'warehouse'
-                ? 'Upload Delivery Challan / Pallet Packing Slip'
-                : 'Upload Rooftop Azimuth & Workmanship Photos'}
+              {!isTechnician
+                ? 'Upload Delivery Challan / Pallet Packing Slip / Supplier Invoice'
+                : 'Upload Rooftop Azimuth, Wiring & Workmanship Photos'}
             </strong>
             <span className="evidence-subtext">
-              Attached files will be GPS-tagged and synchronized with HQ.
+              {!isTechnician
+                ? 'Attached documents will be reconciled with procurement and inventory records.'
+                : 'Attached photos will be GPS-tagged and synchronized with Sales & HQ engineering.'}
             </span>
           </div>
 
           <div className="evidence-file-picker">
             <label className="upload-dropzone" htmlFor="scannerProofUpload">
               <Upload size={20} color="#4f46e5" />
-              <span>Click or drag image to upload evidence photo</span>
+              <span>
+                {!isTechnician
+                  ? 'Click or drag challan / pallet photo to upload'
+                  : 'Click or drag installation photo to upload evidence'}
+              </span>
               <input
                 id="scannerProofUpload"
                 type="file"
@@ -627,8 +672,8 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
           >
             <CheckCircle2 size={16} />
             <span>
-              {activeMode === 'warehouse'
-                ? 'Upload & Commit Stock Updates'
+              {!isTechnician
+                ? `Upload & Commit Stock Updates (+${scannedWarehouseItems.length} Items)`
                 : 'Submit Verified Work to Sales & HQ'}
             </span>
           </button>
@@ -639,4 +684,3 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
 }
 
 export default EquipmentScannerModal;
-

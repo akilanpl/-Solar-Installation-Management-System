@@ -9,37 +9,46 @@
   gap: 18px;
 }
 
-/* Role Mode Switcher (for Admin or Demo) */
-.scanner-role-switcher-strip {
-  display: flex;
-  background: #f1f5f9;
-  padding: 4px;
-  border-radius: 12px;
-  gap: 6px;
-}
-
-.scanner-role-pill {
-  flex: 1;
+/* Header title with role badge */
+.scanner-header-title-wrap {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: none;
-  background: transparent;
-  padding: 8px 12px;
-  border-radius: 9px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 160ms ease;
+  justify-content: space-between;
+  width: 100%;
+  padding-right: 18px;
+  gap: 12px;
 }
 
-.scanner-role-pill.active {
-  background: #ffffff;
-  color: #4f46e5;
+.scanner-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
   font-weight: 700;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  color: #0f172a;
+}
+
+.scanner-role-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.scanner-role-pill-badge.manager {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.scanner-role-pill-badge.technician {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
 }
 
 .scanner-modal-description {
@@ -492,6 +501,25 @@
 .item-time {
   font-size: 10px;
   color: #94a3b8;
+}
+
+.item-delete-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 3px 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 120ms ease;
+  margin-top: 2px;
+}
+
+.item-delete-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
 }
 
 /* ==========================================================================

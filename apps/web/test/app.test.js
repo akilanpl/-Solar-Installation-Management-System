@@ -222,6 +222,21 @@ test('Equipment Scanner: role-based visibility and BOM serial match verification
   assert.equal(canScanRole('customer'), false);
   assert.equal(canScanRole('sales'), false);
 
+  // User-centric scanner mode: technician gets technician only, manager gets warehouse manager only
+  const resolveScannerMode = (role, path = '') => {
+    if (role === 'technician' || (role === 'admin' && path.startsWith('/technician'))) {
+      return 'technician';
+    }
+    return 'warehouse_manager';
+  };
+
+  assert.equal(resolveScannerMode('technician'), 'technician');
+  assert.equal(resolveScannerMode('warehouse_manager'), 'warehouse_manager');
+  assert.equal(resolveScannerMode('warehouse_staff'), 'warehouse_manager');
+  assert.equal(resolveScannerMode('admin', '/admin'), 'warehouse_manager');
+  assert.equal(resolveScannerMode('admin', '/warehouse'), 'warehouse_manager');
+  assert.equal(resolveScannerMode('admin', '/technician'), 'technician');
+
   // Technician BOM serial verification logic
   const bomTargets = [
     { targetSerial: 'INV-HYB5K-2026-041', status: 'pending' },
