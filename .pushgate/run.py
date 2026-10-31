@@ -118,10 +118,11 @@ def mandatory_campaigns(root, folder, api_python):
         ("customer-warranty-browser", "E04", "e2e/release/customer-warranty.spec.ts"),
         ("accessibility-compatibility", "Y01", "e2e/release/accessibility.spec.ts"),
     ):
-        campaigns.append((name, family, "P0", "apps/web",
-                          ["npx", "--no-install", "playwright", "test", path,
-                           "--config=playwright.release.config.ts", "--reporter=junit"],
-                          [f"apps/web/{path}", "apps/web/playwright.release.config.ts"]))
+        campaigns.append((name, family, "P0", ".",
+                          ["node", ".pushgate/campaigns/browser_campaign.cjs", Path(path).name,
+                           str(folder / f"{name}.xml")],
+                          [f"apps/web/{path}", "apps/web/playwright.release.config.ts",
+                           ".pushgate/campaigns/browser_campaign.cjs"]))
     for name, family, path in (
         ("outgoing-secret-history", "Z01", ".pushgate/campaigns/secret_history.py"),
         ("mutation-diff-coverage", "S03", ".pushgate/campaigns/coverage_quality.py"),
