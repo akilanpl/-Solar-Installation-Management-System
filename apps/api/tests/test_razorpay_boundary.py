@@ -301,3 +301,72 @@ def test_ambiguous_order_cannot_be_retried_under_new_idempotency_key(
     )
     assert blocked.status_code == 409
     assert blocked.json()["error"]["code"] == "payment_reconciliation_required"
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "processed",
+        "missing-entity",
+        "not-processed",
+        "unknown-payment",
+        "provider-timeout",
+        "provider-mismatch",
+    ],
+)
+def test_refund_webhook_requires_authenticated_cumulative_payment_facts(
+    client, application, monkeypatch, case
+):
+    quote, headers, body = _setup(client, application, monkeypatch)
+    order = _order(client, headers, body)
+    assert _send(client, _event(order)).status_code == 200
+    payload = {
+        "event": "refund.processed",
+        "payload": {"refund": {"entity": {"payment_id": "pay_Test001", "status": "processed"}}},
+    }
+    expected = 200
+    if case == "missing-entity":
+        payload["payload"] = {}
+        expected = 400
+    if case == "not-processed":
+        payload["payload"]["refund"]["entity"]["status"] = "pending"
+        expected = 409
+    if case == "unknown-payment":
+        payload["payload"]["refund"]["entity"]["payment_id"] = "pay_Unknown"
+        expected = 409
+    if case == "provider-timeout":
+        expected = 503
+    if case == "provider-mismatch":
+        expected = 409
+
+    def fetch(settings, method, path, payload=None):
+        assert method == "GET" and path == "/payments/pay_Test001"
+        if case == "provider-timeout":
+            raise httpx.ReadTimeout("isolated refund timeout")
+        payment = _event(order, refunded=100)["payload"]["payment"]["entity"]
+        if case == "provider-mismatch":
+            payment["currency"] = "USD"
+        return payment
+
+    monkeypatch.setattr(razorpay_service, "provider_request", fetch)
+    result = _send(client, payload, "evt_actual_refund_fixture")
+    assert result.status_code == expected, result.text
+    requirement = client.get(f"/api/v1/quotations/{quote['id']}/payment-requirement").json()
+    assert requirement["verified_minor"] == body["amount_minor"] - (
+        100 if case == "processed" else 0
+    )
+    with Session(application.state.engine) as db:
+        assert db.scalar(select(ProviderPaymentOrder.refunded_minor)) == (
+            100 if case == "processed" else 0
+        )
+        assert db.scalar(select(func.count()).select_from(ProviderEvent)) == (
+            2 if case == "processed" else 1
+        )
+    if case == "processed":
+        assert _send(client, payload, "evt_actual_refund_fixture").status_code == 200
+        assert (
+            client.get(f"/api/v1/quotations/{quote['id']}/payment-requirement").json()[
+                "verified_minor"
+            ]
+            == body["amount_minor"] - 100
+        )

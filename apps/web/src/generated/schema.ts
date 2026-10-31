@@ -1833,6 +1833,8 @@ export interface components {
             name: string;
             /** Unit */
             unit: string;
+            /** Requires Serial Tracking */
+            requires_serial_tracking: boolean;
         };
         /** CsrfResponse */
         CsrfResponse: {
@@ -1883,6 +1885,8 @@ export interface components {
             id: string;
             /** Location Code */
             location_code: string;
+            /** Serial Numbers */
+            serial_numbers?: string[];
             /** Component Code */
             component_code: string;
             /** Quantity */
@@ -3244,6 +3248,8 @@ export interface components {
         StockOperationLineInput: {
             /** Component Code */
             component_code: string;
+            /** Serial Ids */
+            serial_ids?: string[];
             /** Quantity */
             quantity: number | string;
             /** From Location */
@@ -3253,6 +3259,8 @@ export interface components {
         };
         /** StockOperationLineResponse */
         StockOperationLineResponse: {
+            /** Serial Numbers */
+            serial_numbers?: string[];
             /** Component Code */
             component_code: string;
             /** Quantity */

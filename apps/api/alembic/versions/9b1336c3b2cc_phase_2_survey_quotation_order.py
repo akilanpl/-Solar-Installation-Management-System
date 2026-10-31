@@ -370,13 +370,12 @@ def upgrade() -> None:
         'enquiries',
         'shadow_free_area_sqm IS NULL OR (shadow_free_area_sqm >= 0 AND shadow_free_area_sqm <= 100000)',
     )
-    from sqlalchemy.orm import Session
+    # Load the immutable seed by file, avoiding imports of future application ORM.
+    import runpy
+    from pathlib import Path
 
-    from app.domain.catalogue import seed_package_templates
-
-    session = Session(bind=op.get_bind())
-    seed_package_templates(session)
-    session.flush()
+    seed = runpy.run_path(str(Path(__file__).resolve().parents[1] / "catalogue_v1.py"))["seed"]
+    seed(op.get_bind())
     # ### end Alembic commands ###
 
 

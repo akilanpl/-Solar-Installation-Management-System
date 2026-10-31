@@ -14,6 +14,7 @@ from tests.test_phase3_warehouse_installation import (
     _order_material,
     _receipt_material,
     _receipt_validate,
+    _register_received_units,
     _staff,
     _warehouse,
 )
@@ -59,6 +60,7 @@ def test_serial_policy_snapshot_activation_return_and_customer_isolation(client,
         },
         headers=wh,
     ).json()
+    _register_received_units(client, wh, receipt, "PANEL-550", skip=1)
     assert (
         client.post(
             "/api/v1/serials/" + serial["id"] + "/assign",
@@ -82,7 +84,8 @@ def test_serial_policy_snapshot_activation_return_and_customer_isolation(client,
         )
     _login(client, "customer", "leela@example.com", "Solarops123")
     coverage = client.get("/api/v1/orders/" + order["id"] + "/unit-warranties").json()
-    assert len(coverage) == 1
+    assert len(coverage) == 6
+    coverage.sort(key=lambda row: row["serial_number"] != "TEST-COVERAGE-PANEL-1")
     assert coverage[0]["serial_number"] == "TEST-COVERAGE-PANEL-1"
     assert coverage[0]["policy"]["months"] == 12
     assert coverage[0]["policy"]["id"] == first.json()["id"]
@@ -110,11 +113,13 @@ def test_serial_policy_snapshot_activation_return_and_customer_isolation(client,
     assert inspected.status_code == 200, inspected.text
     _login(client, "customer", "leela@example.com", "Solarops123")
     rows = client.get("/api/v1/orders/" + order["id"] + "/unit-warranties").json()
+    rows.sort(key=lambda row: row["serial_number"] != "TEST-COVERAGE-PANEL-1")
     assert rows[0]["status"] == "void"
+    assert sum(row["status"] == "active" for row in rows) == 5
     assert rows[0]["void_reason"]
     with Session(application.state.engine) as db:
         assert db.get(ProductWarrantyPolicy, uuid.UUID(first.json()["id"])).months == 12
-        assert len(list(db.scalars(select(SerialWarranty)))) == 1
+        assert len(list(db.scalars(select(SerialWarranty)))) == 6
 
 
 def test_recorded_receipts_are_owner_scoped_and_not_provider_claims(client, application):

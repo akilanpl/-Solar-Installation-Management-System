@@ -46,7 +46,7 @@ def test_phase3_round_trip_keeps_existing_phase1_record(client, application):
         _assert_safe(TEST_DATABASE_URL)
         command.upgrade(config, "head")
     with application.state.engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "e2a8b9c0d1f2"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "f3b9c0d1e2a3"
     schema = inspect(application.state.engine)
     for name in (
         "stock_ledger",
@@ -101,6 +101,7 @@ def test_forward_hardening_migration_preserves_financial_and_ledger_records(clie
 
     def snapshot():
         with application.state.engine.connect() as conn:
+            conn.execute(text("SET TIME ZONE 'UTC'"))
             result = {}
             for table in tables:
                 rows = sorted(

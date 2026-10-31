@@ -6,7 +6,12 @@ import pytest
 from app.models.phase3 import StockLedger
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-from tests.test_phase3_warehouse_installation import _all_staff, _receipt_validate, _warehouse
+from tests.test_phase3_warehouse_installation import (
+    _all_staff,
+    _manager,
+    _receipt_validate,
+    _warehouse,
+)
 
 pytestmark = pytest.mark.database
 
@@ -20,10 +25,15 @@ def test_duplicate_lines_cannot_overdraw_location(client, application, operation
     if operation_type == "transfer":
         line["to_location"] = "SITE"
     if operation_type == "adjustment":
+        headers = _manager(client)
         line["quantity"] = "-6"
     created = client.post(
         "/api/v1/stock/operations",
-        json={"operation_type": operation_type, "lines": [line, line]},
+        json={
+            "operation_type": operation_type,
+            "lines": [line, line],
+            "note": "Test counted-stock reconciliation",
+        },
         headers={**headers, "Idempotency-Key": uuid.uuid4().hex},
     )
     assert created.status_code == 201, created.text

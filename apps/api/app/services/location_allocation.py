@@ -65,6 +65,10 @@ def allocate(db, user, order_id, lines):
         r = reservations[code]
         if r.status != "reserved":
             raise AppError(409, "reservation_closed", "Reservation is closed.")
+        from app.services.serial_custody import require_registered_balance
+
+        if qty:
+            require_registered_balance(db, code, loc)
         total = int(
             db.scalar(
                 select(func.coalesce(func.sum(StockAllocation.quantity), 0)).where(

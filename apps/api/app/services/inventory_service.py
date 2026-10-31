@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.core.errors import AppError
 from app.core.security import utcnow
+from app.models.custody import StockSerialMovement
 from app.models.identity import User
 from app.models.phase3 import (
     EquipmentSerial,
@@ -44,13 +45,14 @@ def _hash(operation_type: str, lines: list[dict]) -> str:
 
 
 def _line_payload(
-    component: str, quantity: str, from_location: str | None, to_location: str | None
+    component: str, quantity: str, from_location: str | None, to_location: str | None, serials=None
 ) -> dict:
     return {
         "component": component,
         "quantity": quantity,
         "from": from_location,
         "to": to_location,
+        "serials": sorted(str(value) for value in (serials or [])),
     }
 
 
@@ -109,12 +111,32 @@ def create_operation(
         raise AppError(400, "invalid_operation_type", "Unknown operation type.")
     if not lines:
         raise AppError(400, "empty_operation", "An operation needs at least one line.")
+    if operation_type == "adjustment" and (
+        user.role_code not in MANAGER or not note or len(note.strip()) < 5
+    ):
+        raise AppError(
+            403,
+            "adjustment_approval_required",
+            "A manager and recorded count/reconciliation reason are required for adjustments.",
+        )
+    selected = [str(serial) for line in lines for serial in line.get("serial_ids", [])]
+    if len(selected) > 500 or len(selected) != len(set(selected)):
+        raise AppError(
+            422, "duplicate_serial", "Select at most 500 distinct units in one operation."
+        )
+    if operation_type == "receipt" and selected:
+        raise AppError(
+            422,
+            "receipt_serial_registration",
+            "Register new unit identities after validating the goods receipt.",
+        )
     payload = [
         _line_payload(
             str(item["component_code"]).upper(),
             str(item["quantity"]),
             item.get("from_location"),
             item.get("to_location"),
+            item.get("serial_ids", []),
         )
         for item in lines
     ]
@@ -133,7 +155,7 @@ def create_operation(
         loaded = db.scalar(
             select(StockOperation)
             .where(StockOperation.id == existing.id)
-            .options(selectinload(StockOperation.lines))
+            .options(selectinload(StockOperation.lines).selectinload(StockOperationLine.serials))
         )
         assert loaded is not None
         return loaded, True
@@ -176,16 +198,32 @@ def create_operation(
             raise AppError(400, "location_required", "Deliveries need a source location.")
         if operation_type == "adjustment" and to_location is None and from_location is None:
             raise AppError(400, "location_required", "Adjustments need a location.")
-        db.add(
-            StockOperationLine(
-                operation_id=operation.id,
-                component_code=code,
-                quantity=quantity,
-                from_location=from_location,
-                to_location=to_location,
-                sort_order=position,
-            )
+        line = StockOperationLine(
+            operation_id=operation.id,
+            component_code=code,
+            quantity=quantity,
+            from_location=from_location,
+            to_location=to_location,
+            sort_order=position,
         )
+        db.add(line)
+        db.flush()
+        for serial_id in item.get("serial_ids", []):
+            serial = db.get(EquipmentSerial, serial_id)
+            if serial is None or serial.component_code != code:
+                raise AppError(
+                    422,
+                    "serial_component_mismatch",
+                    "Selected serial must belong to this component.",
+                )
+            db.add(
+                StockSerialMovement(
+                    operation_id=operation.id,
+                    line_id=line.id,
+                    serial_id=serial.id,
+                    serial_number=serial.serial_number,
+                )
+            )
     db.flush()
     add_audit(
         db,
@@ -199,7 +237,7 @@ def create_operation(
     loaded = db.scalar(
         select(StockOperation)
         .where(StockOperation.id == operation.id)
-        .options(selectinload(StockOperation.lines))
+        .options(selectinload(StockOperation.lines).selectinload(StockOperationLine.serials))
     )
     assert loaded is not None
     return loaded, False
@@ -211,7 +249,7 @@ def mark_ready(db: Session, user: User, operation_id: uuid.UUID) -> StockOperati
     operation = db.scalar(
         select(StockOperation)
         .where(StockOperation.id == operation_id)
-        .options(selectinload(StockOperation.lines))
+        .options(selectinload(StockOperation.lines).selectinload(StockOperationLine.serials))
         .with_for_update()
     )
     if operation is None:
@@ -237,7 +275,7 @@ def cancel_operation(db: Session, user: User, operation_id: uuid.UUID) -> StockO
     operation = db.scalar(
         select(StockOperation)
         .where(StockOperation.id == operation_id)
-        .options(selectinload(StockOperation.lines))
+        .options(selectinload(StockOperation.lines).selectinload(StockOperationLine.serials))
         .with_for_update()
     )
     if operation is None:
@@ -276,7 +314,7 @@ def validate_operation(db: Session, user: User, operation_id: uuid.UUID) -> Stoc
     operation = db.scalar(
         select(StockOperation)
         .where(StockOperation.id == operation_id)
-        .options(selectinload(StockOperation.lines))
+        .options(selectinload(StockOperation.lines).selectinload(StockOperationLine.serials))
         .with_for_update()
     )
     if operation is None:
@@ -324,17 +362,30 @@ def validate_operation(db: Session, user: User, operation_id: uuid.UUID) -> Stoc
             deltas.append((line.component_code, location, quantity))
     # Every line was checked against the same starting balance above. Check the
     # combined operation too: duplicate lines must never collectively overdraw.
+    gross_debits: dict[tuple[str, str], Decimal] = {}
     net: dict[tuple[str, str], Decimal] = {}
     for code, location, delta in deltas:
         key = (code, location)
         net[key] = net.get(key, ZERO) + delta
+        if delta < ZERO:
+            gross_debits[key] = gross_debits.get(key, ZERO) - delta
     from app.services.location_allocation import outstanding
 
+    for (code, location), debit in gross_debits.items():
+        if on_hand(db, code, location) - debit < outstanding(db, code, location):
+            raise AppError(
+                409,
+                "insufficient_stock",
+                "Outgoing stock exceeds the unallocated starting balance.",
+            )
     for (code, location), delta in net.items():
         if delta < ZERO and on_hand(db, code, location) + delta < outstanding(db, code, location):
             raise AppError(
                 409, "insufficient_stock", f"Operation would drive {code} at {location} negative."
             )
+    from app.services.serial_custody import validate_movement
+
+    serial_changes = validate_movement(db, operation)
     for component_code, location_code, delta in deltas:
         db.add(
             StockLedger(
@@ -344,6 +395,9 @@ def validate_operation(db: Session, user: User, operation_id: uuid.UUID) -> Stoc
                 quantity_delta=delta,
             )
         )
+    for serial, state, location in serial_changes:
+        serial.status = state
+        serial.location_code = location
     operation.status = "done"
     operation.validated_at = utcnow()
     add_audit(
@@ -358,7 +412,7 @@ def validate_operation(db: Session, user: User, operation_id: uuid.UUID) -> Stoc
     loaded = db.scalar(
         select(StockOperation)
         .where(StockOperation.id == operation.id)
-        .options(selectinload(StockOperation.lines))
+        .options(selectinload(StockOperation.lines).selectinload(StockOperationLine.serials))
     )
     assert loaded is not None
     return loaded
@@ -370,7 +424,7 @@ def get_operation(db: Session, user: User, operation_id: uuid.UUID) -> StockOper
     operation = db.scalar(
         select(StockOperation)
         .where(StockOperation.id == operation_id)
-        .options(selectinload(StockOperation.lines))
+        .options(selectinload(StockOperation.lines).selectinload(StockOperationLine.serials))
     )
     if operation is None:
         raise AppError(404, "not_found", "Stock operation not found.")
@@ -479,6 +533,24 @@ def scan_serial(
                 "Receipt must contain an unregistered unit of this component at one location.",
             )
         location = next(iter(locations))
+        usable = int(
+            db.scalar(
+                select(func.count())
+                .select_from(EquipmentSerial)
+                .where(
+                    EquipmentSerial.component_code == component_code,
+                    EquipmentSerial.location_code == location,
+                    EquipmentSerial.status.in_(("in_stock", "reserved")),
+                )
+            )
+            or 0
+        )
+        if Decimal(usable + 1) > on_hand(db, component_code, location):
+            raise AppError(
+                409,
+                "serial_stock_mismatch",
+                "No unidentified received unit remains in stock at this location.",
+            )
     else:
         location = None
     row = EquipmentSerial(
@@ -491,6 +563,11 @@ def scan_serial(
     )
     db.add(row)
     db.flush()
+    if operation:
+        from app.services.serial_custody import attach_received_unit
+
+        attach_received_unit(db, operation, row, component_code, location)
+        db.flush()
     add_audit(
         db,
         actor_user_id=user.id,

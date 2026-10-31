@@ -269,6 +269,34 @@ def _receipt_validate(
     return validated.json()
 
 
+def _register_received_units(client, headers, receipt, component, skip=0):
+    """Declare labelled synthetic unit identities only inside the disposable test DB."""
+    catalogue = client.get("/api/v1/workspace/warehouse-catalogue", headers=headers)
+    assert catalogue.status_code == 200, catalogue.text
+    choice = next(row for row in catalogue.json()["components"] if row["code"] == component)
+    if not choice["requires_serial_tracking"]:
+        return []
+    quantity = sum(
+        int(float(line["quantity"]))
+        for line in receipt["lines"]
+        if line["component_code"] == component
+    )
+    units = []
+    for _ in range(quantity - skip):
+        result = client.post(
+            "/api/v1/serials/scan",
+            json={
+                "serial_number": "TEST-" + uuid.uuid4().hex,
+                "component_code": component,
+                "operation_id": receipt["id"],
+            },
+            headers=headers,
+        )
+        assert result.status_code == 201, result.text
+        units.append(result.json())
+    return units
+
+
 def test_stock_receipt_validates_and_reports_on_hand(client, application):
     _all_staff(application)
     _customer(client, application)
@@ -320,9 +348,14 @@ def test_failed_transfer_and_delivery_leave_ledger_unchanged(client, application
         before = db.scalar(select(func.count()).select_from(StockLedger))
 
     def _draft_validate(operation_type: str, line: dict) -> dict:
+        warehouse = _manager(client) if operation_type == "adjustment" else _warehouse(client)
         created = client.post(
             "/api/v1/stock/operations",
-            json={"operation_type": operation_type, "lines": [line]},
+            json={
+                "operation_type": operation_type,
+                "lines": [line],
+                "note": "Test counted-stock reconciliation",
+            },
             headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex},
         )
         assert created.status_code == 201, created.text
@@ -366,12 +399,12 @@ def test_concurrent_validation_has_a_single_winner(client, application):
     _all_staff(application)
     _customer(client, application)
     warehouse = _warehouse(client)
-    _receipt_validate(client, warehouse, "PANEL-550", "50.0000", "MAIN")
+    _receipt_validate(client, warehouse, "CONN-MC4", "50.0000", "MAIN")
     created = client.post(
         "/api/v1/stock/operations",
         json={
             "operation_type": "delivery",
-            "lines": [{"component_code": "PANEL-550", "quantity": "5", "from_location": "MAIN"}],
+            "lines": [{"component_code": "CONN-MC4", "quantity": "5", "from_location": "MAIN"}],
         },
         headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex},
     )
@@ -515,7 +548,8 @@ def test_delivery_confirm_activates_warranty_and_blocks_replay(client, applicati
         ]
     for component_code, quantity in material:
         assert component_code is not None
-        _receipt_validate(client, warehouse, component_code, f"{quantity}.0000", "MAIN")
+        receipt = _receipt_validate(client, warehouse, component_code, f"{quantity}.0000", "MAIN")
+        _register_received_units(client, warehouse, receipt, component_code)
     created = client.post(
         "/api/v1/deliveries",
         json={"order_id": order["id"]},
@@ -574,6 +608,7 @@ def test_picking_without_stock_fails(client, application):
 def test_job_completion_requires_otp_evidence_and_signature(client, application):
     _all_staff(application)
     order = _confirmed_order(client, application)
+    _deliver_material(client, application, order["id"])
     sales = _sales(client)
     with Session(application.state.engine) as db:
         tech = db.scalar(select(User).where(User.email == "tech@example.com"))
@@ -693,7 +728,8 @@ def test_cross_phase_order_to_completed_installation(client, application):
     assert material
     for component_code, quantity in material:
         assert component_code is not None
-        _receipt_validate(client, warehouse, component_code, f"{quantity}.0000", "MAIN")
+        receipt = _receipt_validate(client, warehouse, component_code, f"{quantity}.0000", "MAIN")
+        _register_received_units(client, warehouse, receipt, component_code)
     delivery = client.post(
         "/api/v1/deliveries",
         json={"order_id": order["id"]},
@@ -787,7 +823,25 @@ def _receipt_material(
     client, warehouse: dict, material: list[tuple[str, int]], location: str = "MAIN"
 ) -> None:
     for component_code, quantity in material:
-        _receipt_validate(client, warehouse, component_code, f"{quantity}.0000", location)
+        receipt = _receipt_validate(client, warehouse, component_code, f"{quantity}.0000", location)
+        _register_received_units(client, warehouse, receipt, component_code)
+
+
+def _deliver_material(client, application, order_id):
+    headers = _warehouse(client)
+    _receipt_material(client, headers, _order_material(application, order_id))
+    delivery = client.post(
+        "/api/v1/deliveries",
+        json={"order_id": order_id},
+        headers={**headers, "Idempotency-Key": uuid.uuid4().hex},
+    )
+    assert delivery.status_code == 201, delivery.text
+    for action in ("transit", "deliver", "confirm"):
+        result = client.post(
+            f"/api/v1/deliveries/{delivery.json()['id']}/{action}", headers=headers
+        )
+        assert result.status_code == 200, result.text
+    return delivery.json()
 
 
 def test_competing_orders_cannot_pick_the_same_stock(client, application):
@@ -907,6 +961,11 @@ def test_explicit_main_pick_cannot_use_site_stock_before_transfer(client, applic
                     "component_code": code,
                     "quantity": str(quantity),
                     "from_location": "SITE",
+                    "serial_ids": [
+                        unit["id"]
+                        for unit in client.get("/api/v1/serials", headers=warehouse).json()
+                        if unit["component_code"] == code and unit["location_code"] == "SITE"
+                    ],
                     "to_location": "MAIN",
                 }
                 for code, quantity in material
@@ -962,6 +1021,10 @@ def test_serial_assign_deliver_and_component_mismatch(client, application):
     )
     assert scanned.status_code == 201, scanned.text
     serial_id = scanned.json()["id"]
+    for code, receipt in receipts.items():
+        _register_received_units(
+            client, warehouse, receipt, code, skip=1 if code == component else 0
+        )
     with Session(application.state.engine) as db:
         from app.models.workflow import CatalogueComponent
 
@@ -1184,7 +1247,7 @@ def test_concurrent_picks_serialize_on_component_locks(client, application):
     _all_staff(application)
     _customer(client, application)
     warehouse = _warehouse(client)
-    _receipt_validate(client, warehouse, "PANEL-550", "10.0000", "MAIN")
+    _receipt_validate(client, warehouse, "CONN-MC4", "10.0000", "MAIN")
     operation_ids: list[str] = []
     for _ in range(2):
         created = client.post(
@@ -1192,7 +1255,7 @@ def test_concurrent_picks_serialize_on_component_locks(client, application):
             json={
                 "operation_type": "delivery",
                 "lines": [
-                    {"component_code": "PANEL-550", "quantity": "10", "from_location": "MAIN"}
+                    {"component_code": "CONN-MC4", "quantity": "10", "from_location": "MAIN"}
                 ],
             },
             headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex},
@@ -1238,7 +1301,7 @@ def test_concurrent_picks_serialize_on_component_locks(client, application):
     with Session(application.state.engine) as db:
         total = db.scalar(
             select(func.coalesce(func.sum(StockLedger.quantity_delta), 0)).where(
-                StockLedger.component_code == "PANEL-550", StockLedger.location_code == "MAIN"
+                StockLedger.component_code == "CONN-MC4", StockLedger.location_code == "MAIN"
             )
         )
     assert int(total or 0) == 0

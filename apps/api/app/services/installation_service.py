@@ -326,6 +326,26 @@ def work_summary(db: Session, user: User, job_id: uuid.UUID) -> dict:
         raise AppError(409, "invalid_evidence", "Recorded photos have no upload custody record.")
     for row in selected:
         verify_file(row)
+    if job.status == "completed":
+        acceptance = dict(job.signature or {})
+        payload_hmac = acceptance.pop("payload_hmac", "")
+        recorded = acceptance.get("summary")
+        digest = hashlib.sha256(
+            json.dumps(recorded, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+        if (
+            not secrets_match(
+                payload_hmac,
+                json.dumps(acceptance, sort_keys=True, separators=(",", ":")),
+                get_settings().secret_key,
+            )
+            or digest != acceptance.get("summary_hash")
+            or not recorded
+            or recorded.get("files")
+            != [{"key": row.storage_key, "sha256": row.sha256} for row in selected]
+        ):
+            raise AppError(409, "acceptance_invalid", "Completed acknowledgment integrity failed.")
+        return {"summary": recorded, "summary_hash": digest}
     arrival = job.arrival_at.astimezone(UTC).isoformat() if job.arrival_at else None
     if job.signature and job.signature.get("summary_version", 1) == 1:
         historical = job.signature.get("summary", {}).get("arrival_at")
@@ -438,6 +458,10 @@ def complete_job(db: Session, user: User, job_id: uuid.UUID) -> InstallationJob:
         or acceptance.get("summary_hash") != summary["summary_hash"]
     ):
         raise AppError(409, "acceptance_invalid", "Customer acknowledgment integrity failed.")
+    from app.services.serial_custody import require_order_delivered
+
+    db.scalar(select(SalesOrder.id).where(SalesOrder.id == job.order_id).with_for_update())
+    require_order_delivered(db, job.order_id)
     job.status = "completed"
     job.completed_at = utcnow()
     for unit in db.scalars(

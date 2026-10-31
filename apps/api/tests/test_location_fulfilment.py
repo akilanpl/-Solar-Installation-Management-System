@@ -13,11 +13,20 @@ from tests.test_phase3_warehouse_installation import (
     _customer,
     _manager,
     _order_material,
-    _receipt_validate,
+    _register_received_units,
     _warehouse,
+)
+from tests.test_phase3_warehouse_installation import (
+    _receipt_validate as _raw_receipt_validate,
 )
 
 pytestmark = pytest.mark.database
+
+
+def _receipt_validate(client, headers, component, quantity, location="MAIN"):
+    receipt = _raw_receipt_validate(client, headers, component, quantity, location)
+    _register_received_units(client, headers, receipt, component)
+    return receipt
 
 
 def _post(client, path, data, headers, key=None):
@@ -137,6 +146,11 @@ def test_inspected_return_compensates_once_and_enforces_role(
     _finish(client, picked, wh)
     payload = {
         "delivery_line_id": picked["lines"][0]["id"],
+        "serial_id": next(
+            unit["id"]
+            for unit in client.get("/api/v1/serials", headers=wh).json()
+            if unit["serial_number"] == picked["lines"][0]["serial_numbers"][0]
+        ),
         "quantity": 1,
         "reason": "Test inspection fixture",
     }

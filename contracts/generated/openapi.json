@@ -5243,13 +5243,18 @@
           "unit": {
             "type": "string",
             "title": "Unit"
+          },
+          "requires_serial_tracking": {
+            "type": "boolean",
+            "title": "Requires Serial Tracking"
           }
         },
         "type": "object",
         "required": [
           "code",
           "name",
-          "unit"
+          "unit",
+          "requires_serial_tracking"
         ],
         "title": "ComponentChoice"
       },
@@ -5367,6 +5372,13 @@
           "location_code": {
             "type": "string",
             "title": "Location Code"
+          },
+          "serial_numbers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Serial Numbers"
           },
           "component_code": {
             "type": "string",
@@ -8667,6 +8679,15 @@
             "minLength": 2,
             "title": "Component Code"
           },
+          "serial_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Serial Ids"
+          },
           "quantity": {
             "anyOf": [
               {
@@ -8713,6 +8734,13 @@
       },
       "StockOperationLineResponse": {
         "properties": {
+          "serial_numbers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Serial Numbers"
+          },
           "component_code": {
             "type": "string",
             "title": "Component Code"

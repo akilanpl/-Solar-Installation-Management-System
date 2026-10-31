@@ -24,8 +24,8 @@ from tests.test_phase3_warehouse_installation import (
 pytestmark = pytest.mark.database
 
 
-def prepared(client, application):
-    job, order = _job(client, application)
+def prepared(client, application, *, delivered=True):
+    job, order = _job(client, application, delivered=delivered)
     code = application.state.email_sender.messages[-1].code
     tech = _technician(client)
     assert client.post(f"/api/v1/jobs/{job['id']}/arrival", headers=tech).status_code == 200
@@ -336,7 +336,7 @@ def test_equipment_swap_after_customer_acknowledgment_invalidates_completion(cli
     )
     customer_headers = customer(client)
     summary = client.get(f"/api/v1/jobs/{job['id']}/work-summary").json()
-    assert summary["summary"]["equipment"] == []
+    assert len(summary["summary"]["equipment"]) == 7
     signed = client.post(
         f"/api/v1/jobs/{job['id']}/signature",
         json={
@@ -413,3 +413,84 @@ def test_historical_signed_summary_survives_timezone_normalization(client, appli
     )
     completed = client.post(f"/api/v1/jobs/{job['id']}/completion", headers=_technician(client))
     assert completed.status_code == 200, completed.text
+
+
+def test_completion_rejects_undelivered_material_even_with_valid_customer_proof(
+    client, application
+):
+    job, code, _, _ = prepared(client, application, delivered=False)
+    tech = _technician(client)
+    assert (
+        client.post(
+            f"/api/v1/jobs/{job['id']}/customer-otp", json={"code": code}, headers=tech
+        ).status_code
+        == 200
+    )
+    owner = customer(client)
+    summary = client.get(f"/api/v1/jobs/{job['id']}/work-summary").json()
+    assert (
+        client.post(
+            f"/api/v1/jobs/{job['id']}/signature",
+            json={
+                "signature_ref": "Customer fixture",
+                "customer_confirmed": True,
+                "summary_hash": summary["summary_hash"],
+            },
+            headers=owner,
+        ).status_code
+        == 200
+    )
+    result = client.post(f"/api/v1/jobs/{job['id']}/completion", headers=_technician(client))
+    assert result.status_code == 409, result.text
+    assert result.json()["error"]["code"] == "delivery_required"
+    with Session(application.state.engine) as db:
+        assert db.get(InstallationJob, uuid.UUID(job["id"])).completed_at is None
+
+
+def test_completed_summary_survives_later_serial_return_without_rewriting_acceptance(
+    client, application
+):
+    from app.models.phase3 import EquipmentSerial
+
+    job, code, _, _ = prepared(client, application)
+    tech = _technician(client)
+    assert (
+        client.post(
+            f"/api/v1/jobs/{job['id']}/customer-otp", json={"code": code}, headers=tech
+        ).status_code
+        == 200
+    )
+    owner = customer(client)
+    original = client.get(f"/api/v1/jobs/{job['id']}/work-summary").json()
+    assert (
+        client.post(
+            f"/api/v1/jobs/{job['id']}/signature",
+            json={
+                "signature_ref": "Customer fixture",
+                "customer_confirmed": True,
+                "summary_hash": original["summary_hash"],
+            },
+            headers=owner,
+        ).status_code
+        == 200
+    )
+    result = client.post(f"/api/v1/jobs/{job['id']}/completion", headers=_technician(client))
+    assert result.status_code == 200, result.text
+    # Model the mutable current-asset view after a legitimate post-completion return.
+    # The signed historical proof must still identify what was accepted at completion.
+    with Session(application.state.engine) as db:
+        serial = db.scalar(
+            select(EquipmentSerial).where(EquipmentSerial.order_id == uuid.UUID(job["order_id"]))
+        )
+        serial.order_id = None
+        serial.status = "in_stock"
+        db.commit()
+    customer(client)
+    assert client.get(f"/api/v1/jobs/{job['id']}/work-summary").json() == original
+    with Session(application.state.engine) as db:
+        row = db.get(InstallationJob, uuid.UUID(job["id"]))
+        changed = dict(row.signature)
+        changed["summary_hash"] = "0" * 64
+        row.signature = changed
+        db.commit()
+    assert client.get(f"/api/v1/jobs/{job['id']}/work-summary").status_code == 409

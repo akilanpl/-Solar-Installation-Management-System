@@ -1,15 +1,7 @@
-"""Deliveries, picking and warranty activation.
+"""Transactional per-location picking with exact recorded serial custody.
 
-A delivery is the picking record: creation checks MAIN on-hand under a
-component lock and deducts it through an internal delivery stock
-operation in the same transaction, so two orders cannot pick the same
-goods and a failed pick leaves no delivery and no ledger rows. The
-delivery moves prepared -> in_transit -> delivered -> confirmed.
-Confirmation consumes reservations, marks assigned serials installed,
-and activates the five-year warranty in the same transaction.
-Cancelling a prepared or in-transit delivery restocks MAIN.
-Picks deduct from MAIN only; stage SITE stock there with a transfer
-operation first.
+Partial deliveries consume actual location allocations. Confirmed custody is
+separate from installation; only a prepared pick can be automatically cancelled.
 """
 
 import hashlib
@@ -61,7 +53,7 @@ def _main_on_hand(db: Session, component_code: str) -> int:
 
 def _deduct_pick(
     db: Session, user: User, order: SalesOrder, delivery: Delivery, picks: list[dict]
-) -> None:
+) -> StockOperation:
     operation = StockOperation(
         reference=next_reference(db, "stock_operation", "STK"),
         operation_type="delivery",
@@ -103,6 +95,7 @@ def _deduct_pick(
         metadata={"delivery_id": str(delivery.id)},
     )
     db.flush()
+    return operation
 
 
 def _restock_cancelled_pick(db: Session, user: User, delivery: Delivery) -> None:
@@ -137,16 +130,30 @@ def _restock_cancelled_pick(db: Session, user: User, delivery: Delivery) -> None
         )
         if allocation is not None:
             allocation.picked_quantity -= line.quantity
-        db.add(
-            StockOperationLine(
-                operation_id=operation.id,
-                component_code=line.component_code,
-                quantity=Decimal(line.quantity),
-                from_location=None,
-                to_location=line.location_code,
-                sort_order=position,
-            )
+        stock_line = StockOperationLine(
+            operation_id=operation.id,
+            component_code=line.component_code,
+            quantity=Decimal(line.quantity),
+            from_location=None,
+            to_location=line.location_code,
+            sort_order=position,
         )
+        db.add(stock_line)
+        db.flush()
+        from app.models.custody import StockSerialMovement
+
+        for unit in db.scalars(
+            select(EquipmentSerial).where(EquipmentSerial.delivery_line_id == line.id)
+        ):
+            db.add(
+                StockSerialMovement(
+                    operation_id=operation.id,
+                    line_id=stock_line.id,
+                    serial_id=unit.id,
+                    serial_number=unit.serial_number,
+                    delivery_line_id=line.id,
+                )
+            )
         db.add(
             StockLedger(
                 operation_id=operation.id,
@@ -302,6 +309,63 @@ def create_delivery(
         raise AppError(
             409, "duplicate_delivery", "No remaining order material is available to pick."
         )
+    from app.services.serial_custody import require_registered_balance, tracked
+
+    # Allocate recorded received identities under the same component lock.
+    # This chooses known stock; it never invents serial numbers or a receipt.
+    for (code, loc), qty in sorted(wanted.items()):
+        require_registered_balance(db, code, loc)
+        own = list(
+            db.scalars(
+                select(EquipmentSerial).where(
+                    EquipmentSerial.order_id == order.id,
+                    EquipmentSerial.component_code == code,
+                    EquipmentSerial.location_code == loc,
+                    EquipmentSerial.status == "reserved",
+                    EquipmentSerial.delivery_line_id.is_(None),
+                )
+            )
+        )
+        known = int(
+            db.scalar(
+                select(func.count())
+                .select_from(EquipmentSerial)
+                .where(
+                    EquipmentSerial.component_code == code,
+                    EquipmentSerial.location_code == loc,
+                    EquipmentSerial.status.in_(("in_stock", "reserved")),
+                )
+            )
+            or 0
+        )
+        anonymous = max(0, int(on_hand(db, code, loc)) - known)
+        needed = max(0, qty - len(own) - (0 if tracked(db, code) else anonymous))
+        candidates = (
+            list(
+                db.scalars(
+                    select(EquipmentSerial)
+                    .where(
+                        EquipmentSerial.component_code == code,
+                        EquipmentSerial.location_code == loc,
+                        EquipmentSerial.status == "in_stock",
+                        EquipmentSerial.order_id.is_(None),
+                    )
+                    .order_by(EquipmentSerial.created_at, EquipmentSerial.serial_number)
+                    .limit(needed)
+                    .with_for_update()
+                )
+            )
+            if needed
+            else []
+        )
+        if len(candidates) < needed:
+            raise AppError(
+                409,
+                "serials_required",
+                "Record received serials for every hardware unit before picking.",
+            )
+        for unit in candidates:
+            assign_serial(db, user, unit.id, order.id)
     # Existing physical allocations constrain a pick to its reserved locations.
     for code in totals:
         r = reservations[code]
@@ -348,7 +412,7 @@ def create_delivery(
         {"component_code": c, "location_code": location, "quantity": q}
         for (c, location), q in sorted(wanted.items())
     ]
-    _deduct_pick(db, user, order, delivery, picks)
+    pick_operation = _deduct_pick(db, user, order, delivery, picks)
     for i, item in enumerate(picks):
         line = DeliveryLine(delivery_id=delivery.id, sort_order=i, **item)
         db.add(line)
@@ -368,7 +432,24 @@ def create_delivery(
                 .with_for_update()
             )
         )
+        from app.models.custody import StockSerialMovement
+
+        stock_line = db.scalar(
+            select(StockOperationLine).where(
+                StockOperationLine.operation_id == pick_operation.id,
+                StockOperationLine.sort_order == i,
+            )
+        )
         for serial in serials:
+            db.add(
+                StockSerialMovement(
+                    operation_id=pick_operation.id,
+                    line_id=stock_line.id,
+                    delivery_line_id=line.id,
+                    serial_id=serial.id,
+                    serial_number=serial.serial_number,
+                )
+            )
             serial.delivery_line_id = line.id
             serial.status = "in_transit"
     add_audit(
@@ -388,7 +469,9 @@ def create_delivery(
 
 def _load(db: Session, delivery_id: uuid.UUID) -> Delivery:
     loaded = db.scalar(
-        select(Delivery).where(Delivery.id == delivery_id).options(selectinload(Delivery.lines))
+        select(Delivery)
+        .where(Delivery.id == delivery_id)
+        .options(selectinload(Delivery.lines).selectinload(DeliveryLine.serials))
     )
     if loaded is None:
         raise AppError(500, "delivery_missing", "The delivery could not be reloaded.")
@@ -398,7 +481,7 @@ def _load(db: Session, delivery_id: uuid.UUID) -> Delivery:
 def transition(db: Session, user: User, delivery_id: uuid.UUID, to_status: str) -> Delivery:
     allowed = {
         "prepared": {"in_transit", "cancelled"},
-        "in_transit": {"delivered", "cancelled"},
+        "in_transit": {"delivered"},
         "delivered": {"confirmed"},
     }
     order_id = db.scalar(select(Delivery.order_id).where(Delivery.id == delivery_id))
@@ -407,7 +490,7 @@ def transition(db: Session, user: User, delivery_id: uuid.UUID, to_status: str) 
     delivery = db.scalar(
         select(Delivery)
         .where(Delivery.id == delivery_id)
-        .options(selectinload(Delivery.lines))
+        .options(selectinload(Delivery.lines).selectinload(DeliveryLine.serials))
         .with_for_update()
     )
     if delivery is None:
@@ -637,7 +720,9 @@ def _activate_warranty(db: Session, user: User, order_id: uuid.UUID) -> Warranty
 
 def get_delivery(db: Session, user: User, delivery_id: uuid.UUID) -> Delivery:
     delivery = db.scalar(
-        select(Delivery).where(Delivery.id == delivery_id).options(selectinload(Delivery.lines))
+        select(Delivery)
+        .where(Delivery.id == delivery_id)
+        .options(selectinload(Delivery.lines).selectinload(DeliveryLine.serials))
     )
     if delivery is None:
         raise AppError(404, "not_found", "Delivery not found.")
@@ -655,7 +740,11 @@ def get_delivery(db: Session, user: User, delivery_id: uuid.UUID) -> Delivery:
 
 def list_deliveries(db: Session, user: User) -> list[Delivery]:
     if user.role_code in READ_ROLES:
-        query = select(Delivery).options(selectinload(Delivery.lines)).order_by(Delivery.created_at)
+        query = (
+            select(Delivery)
+            .options(selectinload(Delivery.lines).selectinload(DeliveryLine.serials))
+            .order_by(Delivery.created_at)
+        )
         return list(db.scalars(query))
     if user.role_code == "customer":
         orders = set(
@@ -667,7 +756,7 @@ def list_deliveries(db: Session, user: User) -> list[Delivery]:
             db.scalars(
                 select(Delivery)
                 .where(Delivery.order_id.in_(orders))
-                .options(selectinload(Delivery.lines))
+                .options(selectinload(Delivery.lines).selectinload(DeliveryLine.serials))
                 .order_by(Delivery.created_at)
             )
         )

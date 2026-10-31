@@ -91,7 +91,11 @@ def authorize_return(db, user, payload, key):
                 "invalid_serial",
                 "Return an assigned serial of this component/order, quantity one.",
             )
-        if db.scalar(select(GoodsReturn.id).where(GoodsReturn.serial_id == serial_id)):
+        if db.scalar(
+            select(GoodsReturn.id).where(
+                GoodsReturn.serial_id == serial_id, GoodsReturn.delivery_line_id == line.id
+            )
+        ):
             raise AppError(
                 409, "duplicate_serial_return", "Serial already has a return authorization."
             )
@@ -139,16 +143,16 @@ def inspect_return(db, user, return_id, disposition, note):
     )
     db.add(operation)
     db.flush()
-    db.add(
-        StockOperationLine(
-            operation_id=operation.id,
-            component_code=line.component_code,
-            quantity=row.quantity,
-            from_location=None,
-            to_location=location,
-            sort_order=0,
-        )
+    stock_line = StockOperationLine(
+        operation_id=operation.id,
+        component_code=line.component_code,
+        quantity=row.quantity,
+        from_location=None,
+        to_location=location,
+        sort_order=0,
     )
+    db.add(stock_line)
+    db.flush()
     db.add(
         StockLedger(
             operation_id=operation.id,
@@ -158,6 +162,18 @@ def inspect_return(db, user, return_id, disposition, note):
         )
     )
     if row.serial_id:
+        from app.models.custody import StockSerialMovement
+
+        unit = db.get(EquipmentSerial, row.serial_id)
+        db.add(
+            StockSerialMovement(
+                operation_id=operation.id,
+                line_id=stock_line.id,
+                serial_id=unit.id,
+                serial_number=unit.serial_number,
+                delivery_line_id=line.id,
+            )
+        )
         from app.services.coverage_service import void_return
 
         void_return(db, user, row.serial_id, row.id)
@@ -168,6 +184,7 @@ def inspect_return(db, user, return_id, disposition, note):
         serial.status = "faulty" if disposition == "damaged" else "in_stock"
         if disposition == "restock":
             serial.order_id = None
+            serial.delivery_line_id = None
     row.status = "inspected"
     row.disposition = disposition
     row.inspection_note = note

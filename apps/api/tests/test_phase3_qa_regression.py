@@ -19,6 +19,7 @@ from tests.test_phase3_warehouse_installation import (
     _all_staff,
     _confirmed_order,
     _customer,
+    _deliver_material,
     _login,
     _order_material,
     _receipt_material,
@@ -33,9 +34,11 @@ from tests.test_phase3_warehouse_installation import (
 pytestmark = pytest.mark.database
 
 
-def _job(client, application):
+def _job(client, application, *, delivered=True):
     _all_staff(application)
     order = _confirmed_order(client, application)
+    if delivered:
+        _deliver_material(client, application, order["id"])
     with Session(application.state.engine) as db:
         technician_id = db.scalar(select(User.id).where(User.email == "tech@example.com"))
     response = client.post(

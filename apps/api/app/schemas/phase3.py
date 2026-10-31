@@ -23,6 +23,7 @@ class StockOperationLineInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     component_code: str = Field(min_length=2, max_length=32)
+    serial_ids: list[uuid.UUID] = Field(default_factory=list, max_length=200)
     quantity: Decimal = Field(max_digits=14, decimal_places=4, allow_inf_nan=False)
     from_location: str | None = Field(default=None, max_length=32)
     to_location: str | None = Field(default=None, max_length=32)
@@ -48,6 +49,7 @@ class StockOperationCreate(BaseModel):
 
 
 class StockOperationLineResponse(BaseModel):
+    serial_numbers: list[str] = Field(default_factory=list)
     component_code: str
     quantity: Decimal
     from_location: str | None
@@ -182,6 +184,7 @@ class DeliveryCreate(BaseModel):
 class DeliveryLineResponse(BaseModel):
     id: uuid.UUID
     location_code: str
+    serial_numbers: list[str] = Field(default_factory=list)
     component_code: str
     quantity: int
     sort_order: int

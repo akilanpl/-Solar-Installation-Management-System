@@ -51,6 +51,10 @@ class DocumentCounter(Base):
 class CatalogueComponent(Base):
     __tablename__ = "catalogue_components"
 
+    requires_serial_tracking: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=text("false")
+    )
+
     code: Mapped[str] = mapped_column(String(32), primary_key=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     unit: Mapped[str] = mapped_column(String(16), nullable=False)

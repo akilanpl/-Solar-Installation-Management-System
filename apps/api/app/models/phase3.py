@@ -30,11 +30,21 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+from app.models.custody import StockSerialMovement
 
 OPERATION_TYPES = ("receipt", "transfer", "delivery", "adjustment")
 OPERATION_STATUSES = ("draft", "ready", "done", "cancelled")
 RESERVATION_STATUSES = ("reserved", "consumed", "released")
-SERIAL_STATUSES = ("registered", "in_stock", "reserved", "in_transit", "delivered", "installed", "faulty")
+SERIAL_STATUSES = (
+    "registered",
+    "in_stock",
+    "reserved",
+    "in_transit",
+    "delivered",
+    "installed",
+    "faulty",
+    "missing",
+)
 DELIVERY_STATUSES = ("prepared", "in_transit", "delivered", "confirmed", "cancelled")
 REPLENISHMENT_STATUSES = ("proposed", "approved", "rejected", "ordered", "received", "cancelled")
 JOB_STATUSES = ("created", "scheduled", "en_route", "on_site", "completed", "cancelled")
@@ -96,6 +106,9 @@ class StockOperationLine(Base):
     from_location: Mapped[str | None] = mapped_column(ForeignKey("warehouse_locations.code"))
     to_location: Mapped[str | None] = mapped_column(ForeignKey("warehouse_locations.code"))
     sort_order: Mapped[int] = mapped_column(Integer, nullable=False)
+    serials: Mapped[list["StockSerialMovement"]] = relationship(
+        order_by="StockSerialMovement.serial_number"
+    )
 
 
 class StockLedger(Base):
@@ -146,7 +159,7 @@ class EquipmentSerial(Base):
     __tablename__ = "equipment_serials"
     __table_args__ = (
         CheckConstraint(
-            "status IN ('registered', 'in_stock', 'reserved', 'in_transit', 'delivered', 'installed', 'faulty')",
+            "status IN ('registered', 'in_stock', 'reserved', 'in_transit', 'delivered', 'installed', 'faulty', 'missing')",
             name="serial_status",
         ),
     )
@@ -178,9 +191,7 @@ class Delivery(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     reference: Mapped[str] = mapped_column(String(20), nullable=False, unique=True)
-    order_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("sales_orders.id"), nullable=False
-    )
+    order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("sales_orders.id"), nullable=False)
     status: Mapped[str] = mapped_column(String(16), nullable=False)
     created_by_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
     confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
@@ -206,9 +217,14 @@ class DeliveryLine(Base):
     component_code: Mapped[str] = mapped_column(
         ForeignKey("catalogue_components.code"), nullable=False
     )
-    location_code: Mapped[str] = mapped_column(ForeignKey("warehouse_locations.code"), nullable=False, server_default="MAIN")
+    location_code: Mapped[str] = mapped_column(
+        ForeignKey("warehouse_locations.code"), nullable=False, server_default="MAIN"
+    )
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     sort_order: Mapped[int] = mapped_column(Integer, nullable=False)
+    serials: Mapped[list[StockSerialMovement]] = relationship(
+        order_by="StockSerialMovement.serial_number"
+    )
 
 
 class ReplenishmentRequest(Base):
@@ -320,10 +336,14 @@ class InstallationEvidence(Base):
     __tablename__ = "installation_evidence"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    job_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("installation_jobs.id"), nullable=False, index=True)
+    job_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("installation_jobs.id"), nullable=False, index=True
+    )
     uploaded_by_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
     storage_key: Mapped[str] = mapped_column(String(32), nullable=False, unique=True)
     content_type: Mapped[str] = mapped_column(String(80), nullable=False)
     size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
     sha256: Mapped[str] = mapped_column(String(64), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )

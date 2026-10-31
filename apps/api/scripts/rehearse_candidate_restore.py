@@ -1,5 +1,6 @@
 """Restore a private candidate backup into a new owned DB, compare, then clean up."""
 
+import argparse
 import hashlib
 import json
 import subprocess
@@ -11,7 +12,10 @@ from sqlalchemy import create_engine, inspect, text
 
 source = "solarops_ultimate_preview_20261031"
 target = "solarops_restorecheck_" + uuid.uuid4().hex[:10]
-archive = Path("../../var/ultimate-before-serial-custody.dump").resolve()
+parser = argparse.ArgumentParser()
+parser.add_argument("--archive", default="../../var/ultimate-before-serial-custody.dump")
+args = parser.parse_args()
+archive = Path(args.archive).resolve()
 if not archive.is_file():
     raise RuntimeError("Create the named private candidate backup first.")
 started = time.monotonic()
