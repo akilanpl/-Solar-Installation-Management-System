@@ -97,7 +97,10 @@ export function Sidebar() {
 
   return (
     <>
-      <aside className={`dock-sidebar-container ${isChatOpen ? 'chat-expanded' : ''}`} aria-label="Quick Dock Navigation">
+      <aside className={`dock-sidebar-container liquid-glass-dock ${isChatOpen ? 'chat-expanded' : ''}`} aria-label="Quick Dock Navigation">
+        {/* Liquid Glass Ambient Specular Sheen */}
+        <div className="liquid-glass-specular-sheen" />
+
         {/* Top Nav Column */}
         <div className="dock-nav-column">
           {navItems.map((item, idx) => {

@@ -1,29 +1,77 @@
 /* ==========================================================================
-   SOLARFLOW / SOLAROPS - FIXED ORGANIC CURVED DOCK SIDEBAR
-   Fixed to viewport (completely unaffected by page scrolling)
+   SOLARFLOW / SOLAROPS - LIQUID GLASS FIXED DOCK SIDEBAR
+   Powered by dashersw/liquid-glass-js Apple VisionOS Design Principles
+   Features real-time optical refraction, specular rim lights, & nested glass lenses
    ========================================================================== */
 
 .dock-sidebar-container {
   width: 76px;
   height: 100vh;
-  background: linear-gradient(180deg, #605DEC 0%, #5B5FC7 50%, #4F46E5 100%);
-  border-radius: 0 32px 32px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  user-select: none;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding: 24px 0 28px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 0 28px 0;
-  box-sizing: border-box;
-  position: fixed; /* FIXED - immune to page scrolling! */
-  top: 0;
-  left: 0;
-  z-index: 100;
-  box-shadow: 4px 0 24px rgba(79, 70, 229, 0.15);
-  user-select: none;
-  flex-shrink: 0;
+
+  /* Liquid Glass Geometry & Specular Rim Borders */
+  border-radius: 0 32px 32px 0;
+  border-right: 1.5px solid rgba(255, 255, 255, 0.65);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  border-left: none;
+
+  /* Multi-layer Optical Glass Tint (Light iridescent gradient) */
+  background: linear-gradient(
+    175deg,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(235, 240, 255, 0.25) 25%,
+    rgba(99, 102, 241, 0.16) 60%,
+    rgba(79, 70, 229, 0.26) 100%
+  );
+
+  /* Real-time Optical Refraction & Defocus Blurring */
+  backdrop-filter: blur(28px) saturate(210%) brightness(1.08) contrast(102%);
+  -webkit-backdrop-filter: blur(28px) saturate(210%) brightness(1.08) contrast(102%);
+
+  /* Inset Caustic Highlights & Outer Ambient Glass Glow */
+  box-shadow:
+    inset 0 2px 3px 0 rgba(255, 255, 255, 0.85),
+    inset -2px 0 4px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 5px 0 rgba(99, 102, 241, 0.22),
+    inset 2px 0 3px 0 rgba(255, 255, 255, 0.5),
+    8px 0 36px 0 rgba(79, 70, 229, 0.18),
+    2px 0 10px 0 rgba(0, 0, 0, 0.04);
+
+  transition: backdrop-filter 0.3s ease, background 0.3s ease;
+  overflow: visible;
 }
 
-/* Organic curved flare on the dock edge */
+/* Ambient Specular Sheen (Curved Top-Down Glass Reflection) */
+.liquid-glass-specular-sheen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 220px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 100%
+  );
+  border-radius: 0 32px 0 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Organic curved glass meniscus on dock edge */
 .dock-sidebar-container::after {
   content: '';
   position: absolute;
@@ -31,76 +79,106 @@
   right: -14px;
   width: 28px;
   height: 90px;
-  background: #5B5FC7;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0%, rgba(99, 102, 241, 0.22) 100%);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1.5px solid rgba(255, 255, 255, 0.65);
+  border-left: none;
   border-radius: 0 28px 28px 0;
   z-index: -1;
   pointer-events: none;
+  box-shadow:
+    inset -1px 0 3px rgba(255, 255, 255, 0.6),
+    6px 0 20px rgba(79, 70, 229, 0.16);
 }
 
-/* Nav Icons Column */
+/* Nav Column */
 .dock-nav-column {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
   width: 100%;
+  position: relative;
+  z-index: 2;
 }
 
-/* Active Top Dashboard Icon (White rounded square pill) */
+/* Nested Glass: Active Lens Pill */
 .dock-item-active {
-  width: 44px;
-  height: 44px;
-  background-color: #ffffff;
-  color: #5B5FC7;
-  border-radius: 14px;
+  width: 46px;
+  height: 46px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px) saturate(190%);
+  -webkit-backdrop-filter: blur(14px) saturate(190%);
+  color: #4f46e5;
+  border: 1.5px solid rgba(255, 255, 255, 0.98);
+  border-radius: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
+    inset 0 -1.5px 2px rgba(79, 70, 229, 0.15),
+    0 8px 24px rgba(79, 70, 229, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.08);
   cursor: pointer;
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   text-decoration: none;
+  z-index: 2;
+  transform: scale(1.05);
 }
 
 .dock-item-active:hover {
-  transform: scale(1.06);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  transform: scale(1.1);
+  background: #ffffff;
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 1),
+    0 10px 28px rgba(79, 70, 229, 0.42),
+    0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
-/* Standard Nav Icons */
+.dock-active-glow {
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 20px;
+  border-radius: 0 4px 4px 0;
+  background: #4f46e5;
+  box-shadow: 0 0 10px #4f46e5;
+}
+
+/* Nested Glass: Standard Lens Buttons */
 .dock-nav-btn {
   width: 42px;
   height: 42px;
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.82);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #1e1b4b;
+  border-radius: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 180ms ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   text-decoration: none;
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.4), 0 2px 6px rgba(0, 0, 0, 0.04);
+  z-index: 2;
 }
 
 .dock-nav-btn:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.18);
-  transform: translateY(-1px);
-}
-
-/* Small Status Indicator */
-.dock-status-dot {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #10b981;
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
+  color: #4f46e5;
+  background: rgba(255, 255, 255, 0.45);
+  border-color: rgba(255, 255, 255, 0.85);
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.85),
+    0 6px 18px rgba(79, 70, 229, 0.24);
+  transform: translateY(-1.5px) scale(1.08);
 }
 
 /* Bottom Actions Column */
@@ -109,53 +187,71 @@
   flex-direction: column;
   align-items: center;
   gap: 14px;
+  position: relative;
+  z-index: 2;
 }
 
 .dock-bottom-btn {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  border: none;
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #334155;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 180ms ease;
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.6);
+  z-index: 2;
 }
 
 .dock-bottom-btn:hover {
-  background: rgba(239, 68, 68, 0.28);
-  color: #ffffff;
-  transform: translateY(-1px);
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.55);
+  color: #dc2626;
+  transform: translateY(-1px) scale(1.08);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.28);
 }
 
 /* AI Assistant Dock Button with 3D Speech Bubble Icon */
 .dock-ai-btn {
   position: relative;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.32);
+  border: 1.5px solid rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px) saturate(200%);
+  -webkit-backdrop-filter: blur(12px) saturate(200%);
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.8),
+    0 4px 16px rgba(79, 70, 229, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: visible;
   padding: 4px;
+  z-index: 2;
 }
 
 .dock-ai-btn:hover {
-  background: rgba(255, 255, 255, 0.22);
-  border-color: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18), 0 0 16px rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px) scale(1.08);
+  background: rgba(255, 255, 255, 0.55);
+  border-color: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.9),
+    0 8px 24px rgba(79, 70, 229, 0.35);
+  transform: translateY(-2px) scale(1.1);
 }
 
 .dock-ai-btn.active {
   background: #ffffff;
   border-color: #ffffff;
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25), 0 0 20px rgba(96, 93, 236, 0.5);
-  transform: scale(1.1);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 1),
+    0 8px 26px rgba(79, 70, 229, 0.45),
+    0 0 20px rgba(99, 102, 241, 0.5);
+  transform: scale(1.12);
 }
 
 .dock-ai-png-icon {

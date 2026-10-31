@@ -2438,3 +2438,43 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+--------------------------------------------------------------------------------
+45. LIQUID GLASS EFFECT FOR SIDE NAVIGATION DOCK & LIQUID-GLASS SKILL INTEGRATION
+--------------------------------------------------------------------------------
+- Date & Context:
+  Implemented the Apple visionOS-inspired Liquid Glass optical refraction effect
+  exclusively for the fixed sidebar navigation dock (Sidebar.jsx, Sidebar.css),
+  adhering to the architecture of `dashersw/liquid-glass-js`. Created and registered
+  the `liquid-glass` skill both globally and in the workspace repository.
+
+- Key Architecture & Visual Elements:
+  1. Liquid Glass Optical Composition (.dock-sidebar-container):
+     - Surface Tint: Translucent iridescent glass gradient
+       (`linear-gradient(175deg, rgba(255, 255, 255, 0.42) 0%, rgba(235, 240, 255, 0.25) 25%, rgba(99, 102, 241, 0.16) 60%, rgba(79, 70, 229, 0.26) 100%)`).
+     - Optical Refraction & Defocus Kernel: `backdrop-filter: blur(28px) saturate(210%) brightness(1.08) contrast(102%)`.
+     - Specular Rim Light & Bevels: Continuous 1.5px luminous rim borders (`border-right: 1.5px solid rgba(255, 255, 255, 0.65)`,
+       `border-top: 1.5px solid rgba(255, 255, 255, 0.8)`).
+     - Inset Caustic Highlights: Multi-level inset lighting simulating Snell's law edge refraction.
+     - Ambient Specular Sheen: Curved top-down glass reflection overlay (`.liquid-glass-specular-sheen`).
+     - Liquid Meniscus Flare: Refractive curved meniscus on the dock right edge (`.dock-sidebar-container::after`).
+  2. Nested Glass Hierarchy (dashersw/liquid-glass-js model):
+     - Active Lens Pill (`.dock-item-active`): Floating white glass lens with specular bevel,
+       nested blur (`blur(14px)`), and indigo elevation halo.
+     - Child Nav Lens Buttons (`.dock-nav-btn`): Translucent lens capsules with inner specular
+       reflection, smooth hover lift, and fluid interaction.
+     - AI Copilot Lens (`.dock-ai-btn`): High-index glass lens framing the 3D speech bubble icon.
+  3. Custom Skill Definition:
+     - Created `liquid-glass` skill at `.agents/skills/liquid-glass/SKILL.md` (Workspace) and
+       `~/.gemini/config/skills/liquid-glass/SKILL.md` (Global).
+     - Documented WebGL shader models, Snell's law refraction normals, SVG displacement
+       alternatives, design tokens, and accessibility standards.
+
+- Files Modified:
+  * apps/web/src/components/Sidebar/Sidebar.jsx (Modified)
+  * apps/web/src/components/Sidebar/Sidebar.css (Modified)
+  * .agents/skills/liquid-glass/SKILL.md (Added)
+  * C:\Users\ASHWIN KUMAR K\.gemini\config\skills\liquid-glass\SKILL.md (Added)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================
