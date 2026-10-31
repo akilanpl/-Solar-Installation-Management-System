@@ -305,6 +305,21 @@ test('Equipment Scanner: role-based visibility and BOM serial match verification
   };
   assert.ok(techPhoto.tag.includes('Rooftop'));
   assert.ok(techPhoto.url.startsWith('data:image'));
+
+  // Optical HUD & Viewport controls cleanliness verification
+  const scannerJsxPath = path.join(__dirname, '../src/components/EquipmentScannerModal/EquipmentScannerModal.jsx');
+  const scannerCssPath = path.join(__dirname, '../src/components/EquipmentScannerModal/EquipmentScannerModal.css');
+  const scannerJsx = fs.readFileSync(scannerJsxPath, 'utf8');
+  const scannerCss = fs.readFileSync(scannerCssPath, 'utf8');
+
+  // Verify green laser sweep is active for warehouse manager and excluded from technician mode
+  assert.ok(scannerJsx.includes('!isTechnician && <div className="laser-sweep-beam"'), 'Laser beam must be for warehouse manager only');
+  assert.ok(scannerCss.includes('#22c55e'), 'Laser beam must be bright vibrant green');
+
+  // Verify extra fittings (flip, torch, laser toggle buttons) are removed
+  assert.ok(!scannerJsx.includes('camera-viewport-controls'), 'Viewport controls (torch/flip/laser buttons) must be removed');
+  assert.ok(!scannerJsx.includes('handleToggleTorch'), 'Torch toggle handler must be removed');
+  assert.ok(!scannerJsx.includes('handleToggleFacingMode'), 'Flip toggle handler must be removed');
 });
 
 test('Customer Dashboard: technician verification PIN OTP format and parsing', () => {

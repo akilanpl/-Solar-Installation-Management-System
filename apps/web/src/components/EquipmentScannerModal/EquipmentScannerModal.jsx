@@ -11,12 +11,10 @@ import {
   Plus,
   ArrowRight,
   RefreshCw,
-  Flashlight,
   Sparkles,
   Image as ImageIcon,
   Trash2,
   AlertCircle,
-  FlipHorizontal,
   Sliders,
   ShieldCheck,
   MapPin,
@@ -35,9 +33,7 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
 
   // Camera Hardware State
   const [cameraStatus, setCameraStatus] = useState('idle'); // 'idle' | 'requesting' | 'active' | 'denied' | 'unsupported'
-  const [facingMode, setFacingMode] = useState('environment'); // 'environment' (back) | 'user' (front)
-  const [torchOn, setTorchOn] = useState(false);
-  const [laserActive, setLaserActive] = useState(true);
+  const [facingMode] = useState('environment'); // default back-facing camera for real mobile scanning
 
   // Warehouse Mode: QR & Barcode Scanning State
   const [stockMode, setStockMode] = useState('inward'); // 'inward' | 'dispatch'
@@ -134,37 +130,7 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
     return () => {
       stopCamera();
     };
-  }, [isOpen, facingMode]);
-
-  // Toggle Camera Facing Mode (Front / Back)
-  const handleToggleFacingMode = () => {
-    const nextMode = facingMode === 'environment' ? 'user' : 'environment';
-    setFacingMode(nextMode);
-    startCamera(nextMode);
-  };
-
-  // Toggle Flashlight (Torch)
-  const handleToggleTorch = async () => {
-    if (!streamRef.current) return;
-    const track = streamRef.current.getVideoTracks()[0];
-    if (track && track.getCapabilities && track.getCapabilities().torch) {
-      try {
-        await track.applyConstraints({
-          advanced: [{ torch: !torchOn }],
-        });
-        setTorchOn(!torchOn);
-      } catch (e) {
-        setTorchOn(!torchOn);
-      }
-    } else {
-      setTorchOn(!torchOn);
-      showToast({
-        type: 'info',
-        title: 'Torch Simulator',
-        message: torchOn ? 'Flashlight disabled' : 'Flashlight beam active',
-      });
-    }
-  };
+  }, [isOpen]);
 
   // =========================================================================
   // WAREHOUSE MANAGER ACTIONS (Scan Barcode / QR Code)
@@ -454,8 +420,8 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
             <div className="reticle-bracket bottom-left" />
             <div className="reticle-bracket bottom-right" />
 
-            {/* Scanning Laser Sweep Beam */}
-            {laserActive && <div className="laser-sweep-beam" />}
+            {/* Scanning Laser Sweep Beam: ALWAYS on screen for Warehouse Manager, removed for Technician */}
+            {!isTechnician && <div className="laser-sweep-beam" />}
 
             {/* Center Focus Box */}
             <div className="center-target-box">
@@ -493,39 +459,6 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Camera Viewport Floating Controls */}
-          <div className="camera-viewport-controls">
-            <button
-              type="button"
-              className={`viewport-ctrl-btn ${torchOn ? 'active' : ''}`}
-              onClick={handleToggleTorch}
-              title="Toggle Flashlight / Torch"
-            >
-              <Flashlight size={17} />
-              <span>{torchOn ? 'Torch On' : 'Torch'}</span>
-            </button>
-
-            <button
-              type="button"
-              className="viewport-ctrl-btn"
-              onClick={handleToggleFacingMode}
-              title="Flip Camera (Front / Back)"
-            >
-              <FlipHorizontal size={17} />
-              <span>Flip</span>
-            </button>
-
-            <button
-              type="button"
-              className={`viewport-ctrl-btn ${laserActive ? 'active' : ''}`}
-              onClick={() => setLaserActive(!laserActive)}
-              title="Toggle Laser Sweep Beam"
-            >
-              <RefreshCw size={17} />
-              <span>Laser</span>
-            </button>
           </div>
         </div>
 

@@ -2955,3 +2955,40 @@ Scope: apps/web/src/components/MultiCardWallet/MultiCardWallet.jsx,
    - Verified all 17 unit tests pass (17/17).
    - Verified Vite production build completes cleanly in 2.50s without warnings.
 ================================================================================
+================================================================================
+SECTION 56: OPTICAL SCANNER STREAMLINING: GREEN CONTINUOUS LASER & VIEWPORT CONTROLS CLEANUP
+================================================================================
+Date: 31-Oct-2026
+Author: Antigravity Assistant & Engineering Team
+Scope: apps/web/src/components/EquipmentScannerModal/EquipmentScannerModal.jsx,
+       apps/web/src/components/EquipmentScannerModal/EquipmentScannerModal.css,
+       apps/web/test/app.test.js
+
+1. Executive Summary & Design System Refinement:
+   - Streamlined the equipment scanner viewfinder for both Field Technicians and Warehouse Managers.
+   - Removed all distracting/redundant floating viewport controls (Torch, Flip, Laser buttons)
+     to maintain an uncluttered, distraction-free viewfinder focused strictly on role tasks.
+   - For Warehouse Managers: Transitioned the optical barcode laser to an always-on continuous
+     sweep line rendered in high-visibility vibrant green (#22c55e) with glowing drop shadows.
+   - For Field Technicians: Eliminated laser lines and extra fittings entirely, providing a pure,
+     unobstructed optical camera framing view tailored strictly to installation evidence photography.
+
+2. Technical Implementation Details:
+   - Warehouse Manager Mode:
+     * Green Laser Sweep: Configured @keyframes laserSweep with a high-contrast emerald/mint
+       laser beam (#22c55e with box-shadow: 0 0 14px #22c55e, 0 0 28px rgba(34, 197, 94, 0.8)).
+     * Always-on visibility: The laser is rendered continuously on screen ({!isTechnician && <div className="laser-sweep-beam" />}).
+     * Removed the laser toggle button, flashlight torch toggle, and camera flip button from the viewfinder.
+   - Field Technician Mode:
+     * Removed all laser animations, torch toggles, and flip buttons.
+     * Clean optical viewfinder with 4 corner reticle brackets (#38bdf8), live 1080p HUD telemetry badges,
+       and center camera guide ("FRAME INSTALLATION WORK IN CENTER").
+     * Tactile primary actions below the viewport: Shutter snap button ("Capture Live Photo"),
+       file picker ("Upload From Device"), and interactive photo evidence bundle management.
+
+3. Testing & Verification:
+   - Updated Unit Test #14 in apps/web/test/app.test.js validating the green laser beam styling (#22c55e),
+     warehouse-only laser rendering (!isTechnician), and complete absence of .camera-viewport-controls.
+   - All 17 unit tests passing (17/17).
+   - Production Vite build verified: 0 errors, built in 2.30s.
+================================================================================

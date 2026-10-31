@@ -331,22 +331,42 @@
   border-bottom-right-radius: 8px;
 }
 
-/* Scanning Laser Sweep Beam */
+/* Scanning Laser Sweep Beam (Green Always-On Optical Sweep for Warehouse Manager) */
 .laser-sweep-beam {
   position: absolute;
   left: 18px;
   right: 18px;
   height: 2.5px;
-  background: linear-gradient(90deg, transparent 0%, #38bdf8 20%, #ef4444 50%, #38bdf8 80%, transparent 100%);
-  box-shadow: 0 0 12px #ef4444, 0 0 24px #38bdf8;
-  animation: laserSweep 2.2s infinite ease-in-out alternate;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(34, 197, 94, 0.3) 15%,
+    #22c55e 50%,
+    rgba(34, 197, 94, 0.3) 85%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 14px #22c55e,
+    0 0 28px rgba(34, 197, 94, 0.8),
+    0 0 4px #86efac;
+  animation: laserSweep 2s infinite ease-in-out alternate;
   pointer-events: none;
+  z-index: 4;
 }
 
 @keyframes laserSweep {
-  0% { top: 15%; opacity: 0.8; }
-  50% { opacity: 1; }
-  100% { top: 85%; opacity: 0.8; }
+  0% {
+    top: 14%;
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px #22c55e);
+  }
+  100% {
+    top: 86%;
+    opacity: 0.85;
+  }
 }
 
 /* Center Target Box */
@@ -457,40 +477,6 @@
   font-size: 11px;
   color: #38bdf8;
   font-family: monospace;
-}
-
-/* Camera Viewport Floating Controls */
-.camera-viewport-controls {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  z-index: 5;
-}
-
-.viewport-ctrl-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #ffffff;
-  padding: 5px 9px;
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 130ms ease;
-}
-
-.viewport-ctrl-btn:hover,
-.viewport-ctrl-btn.active {
-  background: #38bdf8;
-  color: #0f172a;
-  border-color: #38bdf8;
 }
 
 /* ==========================================================================
