@@ -55,7 +55,7 @@ def intent_response(intent: PaymentIntent) -> PaymentIntentResponse:
 def read_requirement(
     quotation_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> PaymentRequirementResponse:
     requirement, verified = payment_service.get_requirement(db, user, quotation_id)
     return PaymentRequirementResponse(
@@ -74,7 +74,7 @@ def create_intent(
     payload: PaymentIntentCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     settings: Settings = Depends(get_settings),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> PaymentIntentResponse:
@@ -90,7 +90,7 @@ def sandbox_outcome(
     intent_id: UUID,
     payload: SandboxOutcome,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     settings: Settings = Depends(get_settings),
 ) -> PaymentIntentResponse:
     return intent_response(
@@ -103,7 +103,7 @@ def cash_receipt(
     payload: CashReceiptCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> PaymentIntentResponse:
     intent, replayed = payment_service.record_cash_receipt(db, user, payload, _key(idempotency_key))
@@ -121,7 +121,7 @@ class ReceiptResponse(BaseModel):
 
 
 @router.get("/payments/receipts", response_model=list[ReceiptResponse])
-def receipts(user: User = Depends(current_user), db: Session = Depends(get_db)):
+def receipts(user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     if user.role_code not in {"customer", "sales", "admin"}:
         raise AppError(403, "forbidden", "You cannot view receipts.")
     query = (
@@ -160,6 +160,6 @@ def receipts(user: User = Depends(current_user), db: Session = Depends(get_db)):
 def read_payment(
     intent_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> PaymentIntentResponse:
     return intent_response(payment_service.get_intent(db, user, intent_id))

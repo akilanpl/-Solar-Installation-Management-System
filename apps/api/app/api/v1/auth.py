@@ -41,7 +41,7 @@ def read_csrf(response: Response, settings: Settings = Depends(get_settings)) ->
 def signup(
     payload: SignupRequest,
     request: Request,
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
     sender=Depends(get_email_sender),
@@ -57,7 +57,7 @@ def signup(
 def verify_email(
     payload: VerifyEmailRequest,
     request: Request,
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> MessageResponse:
@@ -76,7 +76,7 @@ def verify_email(
 def resend_verification(
     payload: ResendVerificationRequest,
     request: Request,
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
     sender=Depends(get_email_sender),
@@ -95,7 +95,7 @@ def login(
     payload: LoginRequest,
     request: Request,
     response: Response,
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> LoginResponse:
@@ -129,7 +129,7 @@ def login(
 def logout(
     request: Request,
     response: Response,
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
 ) -> Response:
     auth_service.logout(db, settings, request.cookies.get(SESSION_COOKIE))

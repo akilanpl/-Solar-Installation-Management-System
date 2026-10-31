@@ -61,7 +61,7 @@ class ReconcileInput(BaseModel):
 def create_order(
     payload: RazorpayOrderInput,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     settings: Settings = Depends(get_settings),
     key: str | None = Header(default=None, alias="Idempotency-Key"),
 ):
@@ -80,7 +80,7 @@ def reconcile(
     intent_id: UUID,
     payload: ReconcileInput,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     settings: Settings = Depends(get_settings),
 ):
     return intent_response(
@@ -98,7 +98,7 @@ class ProviderEventResponse(BaseModel):
 @webhook_router.post("/payments/razorpay/webhook", response_model=ProviderEventResponse)
 async def webhook(
     request: Request,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     settings: Settings = Depends(get_settings),
     signature: str = Header(default="", alias="X-Razorpay-Signature"),
     event_id: str = Header(default="", alias="X-Razorpay-Event-Id"),

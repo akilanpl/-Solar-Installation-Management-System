@@ -49,7 +49,10 @@ class WarehouseCatalogue(BaseModel):
 
 
 @router.get("/workspace/technicians", response_model=list[TechnicianChoice])
-def technicians(_: User = Depends(require_role("sales", "admin")), db: Session = Depends(get_db)):
+def technicians(
+    _: User = Depends(require_role("sales", "admin")),
+    db: Session = Depends(get_db, scope="function"),
+):
     rows = db.execute(
         select(User, EmployeeProfile)
         .join(EmployeeProfile, EmployeeProfile.user_id == User.id)
@@ -65,7 +68,7 @@ def technicians(_: User = Depends(require_role("sales", "admin")), db: Session =
 
 
 @router.get("/workspace/warehouse-catalogue", response_model=WarehouseCatalogue)
-def catalogue(_: User = Depends(warehouse), db: Session = Depends(get_db)):
+def catalogue(_: User = Depends(warehouse), db: Session = Depends(get_db, scope="function")):
     return WarehouseCatalogue(
         components=[
             ComponentChoice(
@@ -84,7 +87,7 @@ def catalogue(_: User = Depends(warehouse), db: Session = Depends(get_db)):
 
 
 @router.get("/stock/operations", response_model=list[StockOperationResponse])
-def operations(_: User = Depends(warehouse), db: Session = Depends(get_db)):
+def operations(_: User = Depends(warehouse), db: Session = Depends(get_db, scope="function")):
     rows = db.scalars(
         select(StockOperation)
         .options(selectinload(StockOperation.lines).selectinload(StockOperationLine.serials))
@@ -95,7 +98,7 @@ def operations(_: User = Depends(warehouse), db: Session = Depends(get_db)):
 
 
 @router.get("/replenishment/requests", response_model=list[ReplenishmentResponse])
-def replenishments(_: User = Depends(warehouse), db: Session = Depends(get_db)):
+def replenishments(_: User = Depends(warehouse), db: Session = Depends(get_db, scope="function")):
     rows = db.scalars(
         select(ReplenishmentRequest).order_by(ReplenishmentRequest.created_at.desc()).limit(200)
     )
@@ -116,7 +119,7 @@ def replenishments(_: User = Depends(warehouse), db: Session = Depends(get_db)):
 
 
 @router.get("/serials", response_model=list[SerialResponse])
-def serials(_: User = Depends(warehouse), db: Session = Depends(get_db)):
+def serials(_: User = Depends(warehouse), db: Session = Depends(get_db, scope="function")):
     rows = db.scalars(
         select(EquipmentSerial).order_by(EquipmentSerial.created_at.desc()).limit(200)
     )

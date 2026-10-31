@@ -77,7 +77,7 @@ def survey_response(survey: Survey) -> SurveyResponse:
 def create_survey(
     payload: SurveyCreate,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> SurveyResponse:
     return survey_response(survey_service.create_survey(db, user, payload.enquiry_id))
 
@@ -85,7 +85,7 @@ def create_survey(
 @router.get("", response_model=SurveyList)
 def list_surveys(
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
 ) -> SurveyList:
@@ -102,7 +102,7 @@ def list_surveys(
 def read_survey(
     survey_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> SurveyResponse:
     return survey_response(survey_service.get_survey(db, user, survey_id))
 
@@ -112,7 +112,7 @@ def assign_survey(
     survey_id: UUID,
     payload: SurveyAssignment,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> SurveyResponse:
     return survey_response(survey_service.assign_survey(db, user, survey_id, payload))
 
@@ -121,7 +121,7 @@ def assign_survey(
 def start_survey(
     survey_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> SurveyResponse:
     return survey_response(survey_service.start_survey(db, user, survey_id))
 
@@ -131,7 +131,7 @@ def submit_survey(
     survey_id: UUID,
     payload: SurveySubmit,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> SurveyResponse:
     return survey_response(survey_service.submit_survey(db, user, survey_id, payload))
 
@@ -141,7 +141,7 @@ def decide_survey(
     survey_id: UUID,
     payload: SurveyDecision,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> SurveyResponse:
     return survey_response(survey_service.decide_survey(db, user, survey_id, payload))
 
@@ -150,7 +150,7 @@ def decide_survey(
 def resurvey(
     survey_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> SurveyResponse:
     return survey_response(survey_service.resurvey(db, user, survey_id))
 
@@ -160,7 +160,7 @@ def upload_evidence(
     survey_id: UUID,
     upload: UploadFile = File(...),
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     settings: Settings = Depends(get_settings),
 ) -> EvidenceResponse:
     payload = upload.file.read(settings.evidence_max_bytes + 1)
@@ -192,7 +192,7 @@ def download_evidence(
     survey_id: UUID,
     evidence_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     settings: Settings = Depends(get_settings),
 ) -> FileResponse:
     survey = survey_service.get_survey(db, user, survey_id)

@@ -14,6 +14,6 @@ def health() -> HealthResponse:
 
 
 @router.get("/ready", response_model=ReadyResponse)
-def ready(db: Session = Depends(get_db)) -> ReadyResponse:
+def ready(db: Session = Depends(get_db, scope="function")) -> ReadyResponse:
     db.execute(text("SELECT 1"))
     return ReadyResponse(status="ready", database="up")

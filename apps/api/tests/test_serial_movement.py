@@ -177,3 +177,79 @@ def test_duplicate_lines_cannot_hide_known_untracked_identity(client, applicatio
     with Session(application.state.engine) as db:
         assert db.get(EquipmentSerial, uuid.UUID(scanned.json()["id"])).location_code == "MAIN"
         assert db.scalar(select(func.sum(StockLedger.quantity_delta))) == 10
+
+
+@pytest.mark.parametrize(
+    "case,code",
+    [
+        ("fraction", "serialized_quantity"),
+        ("too-many", "serial_quantity_mismatch"),
+        ("wrong-component", "serial_component_mismatch"),
+        ("quarantine", "quarantine_blocked"),
+        ("duplicate", "duplicate_serial"),
+        ("receipt-identity", "receipt_serial_registration"),
+    ],
+)
+def test_invalid_identity_movements_fail_without_ledger_or_unit_change(
+    client, application, case, code
+):
+    headers, units = received(client, application)
+    line = {
+        "component_code": "PANEL-550",
+        "quantity": "1",
+        "from_location": "MAIN",
+        "to_location": "SITE",
+        "serial_ids": [units[0]["id"]],
+    }
+    kind = "transfer"
+    if case == "fraction":
+        line["quantity"] = "0.5"
+    if case == "too-many":
+        # An untracked component can still have explicit known identities.
+        line["component_code"] = "CONN-MC4"
+        receipt = _receipt_validate(client, headers, "CONN-MC4", "2")
+        ids = []
+        for index in range(2):
+            result = client.post(
+                "/api/v1/serials/scan",
+                json={
+                    "serial_number": f"TEST-CONN-{index}",
+                    "component_code": "CONN-MC4",
+                    "operation_id": receipt["id"],
+                },
+                headers=headers,
+            )
+            assert result.status_code == 201
+            ids.append(result.json()["id"])
+        line["serial_ids"] = ids
+    if case == "wrong-component":
+        line["component_code"] = "CONN-MC4"
+    if case == "quarantine":
+        _receipt_validate(client, headers, "PANEL-550", "1", "QUARANTINE")
+        line["from_location"] = "QUARANTINE"
+        line["to_location"] = "MAIN"
+    if case == "duplicate":
+        line["serial_ids"] *= 2
+    if case == "receipt-identity":
+        kind = "receipt"
+        line.pop("from_location")
+    with Session(application.state.engine) as db:
+        before = db.scalar(select(func.count()).select_from(StockLedger))
+    created = client.post(
+        "/api/v1/stock/operations",
+        json={"operation_type": kind, "lines": [line]},
+        headers={**headers, "Idempotency-Key": uuid.uuid4().hex},
+    )
+    if created.status_code == 201:
+        oid = created.json()["id"]
+        assert (
+            client.post(f"/api/v1/stock/operations/{oid}/ready", headers=headers).status_code == 200
+        )
+        result = client.post(f"/api/v1/stock/operations/{oid}/validate", headers=headers)
+    else:
+        result = created
+    assert result.status_code in {409, 422}, result.text
+    assert result.json()["error"]["code"] == code
+    with Session(application.state.engine) as db:
+        assert db.scalar(select(func.count()).select_from(StockLedger)) == before
+        assert db.get(EquipmentSerial, uuid.UUID(units[0]["id"])).location_code == "MAIN"

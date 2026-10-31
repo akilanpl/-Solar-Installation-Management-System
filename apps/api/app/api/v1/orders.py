@@ -74,7 +74,7 @@ def create_order(
     payload: OrderCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> OrderResponse:
     order, replayed = order_service.confirm_order(
@@ -87,7 +87,7 @@ def create_order(
 @router.get("/orders", response_model=OrderList)
 def list_orders(
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
 ) -> OrderList:
@@ -104,7 +104,7 @@ def list_orders(
 def read_order(
     order_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> OrderResponse:
     return order_response(db, order_service.get_order(db, user, order_id))
 
@@ -112,7 +112,7 @@ def read_order(
 @router.get("/warehouse/preparation", response_model=list[WarehouseRequestResponse])
 def warehouse_queue(
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> list[WarehouseRequestResponse]:
     return [
         WarehouseRequestResponse(
@@ -138,7 +138,7 @@ def warehouse_queue(
 @router.get("/scheduling/installations", response_model=list[SchedulingRequestResponse])
 def scheduling_queue(
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> list[SchedulingRequestResponse]:
     return [
         SchedulingRequestResponse(

@@ -74,14 +74,20 @@ def _context(db, enquiry_id, order=None):
 
 @router.get("/surveys/{survey_id}/site-context", response_model=AssignedWorkContext)
 def survey_context(
-    survey_id: UUID, user: User = Depends(current_user), db: Session = Depends(get_db)
+    survey_id: UUID,
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db, scope="function"),
 ):
     survey = survey_service.get_survey(db, user, survey_id)
     return _context(db, survey.enquiry_id)
 
 
 @router.get("/jobs/{job_id}/site-context", response_model=AssignedWorkContext)
-def job_context(job_id: UUID, user: User = Depends(current_user), db: Session = Depends(get_db)):
+def job_context(
+    job_id: UUID,
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db, scope="function"),
+):
     job = installation_service.get_job(db, user, job_id)
     order = db.get(SalesOrder, job.order_id)
     if order is None:

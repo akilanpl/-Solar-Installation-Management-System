@@ -42,7 +42,9 @@ class AllocationResponse(BaseModel):
 
 @router.post("/stock/allocations", response_model=list[AllocationResponse])
 def allocate(
-    payload: AllocationCreate, user: User = Depends(current_user), db: Session = Depends(get_db)
+    payload: AllocationCreate,
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return location_allocation.allocate(
         db, user, payload.order_id, [line.model_dump() for line in payload.lines]
@@ -50,7 +52,11 @@ def allocate(
 
 
 @router.get("/stock/allocations", response_model=list[AllocationResponse])
-def allocations(order_id: UUID, user: User = Depends(current_user), db: Session = Depends(get_db)):
+def allocations(
+    order_id: UUID,
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db, scope="function"),
+):
     operational_records.permit(user, operational_records.WAREHOUSE)
     return list(
         db.scalars(
@@ -89,14 +95,14 @@ class ReturnResponse(ReturnCreate):
 def authorize_return(
     payload: ReturnCreate,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     key: str | None = Header(default=None, alias="Idempotency-Key"),
 ):
     return operational_records.authorize_return(db, user, payload.model_dump(), _key(key))
 
 
 @router.get("/stock/returns", response_model=list[ReturnResponse])
-def returns(user: User = Depends(current_user), db: Session = Depends(get_db)):
+def returns(user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     operational_records.permit(user, operational_records.WAREHOUSE)
     return list(db.scalars(select(GoodsReturn).order_by(GoodsReturn.created_at.desc()).limit(200)))
 
@@ -106,7 +112,7 @@ def inspect_return(
     return_id: UUID,
     payload: ReturnInspection,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return operational_records.inspect_return(
         db, user, return_id, payload.disposition, payload.note
@@ -134,7 +140,9 @@ class SupplierReceiptLink(BaseModel):
 
 @router.post("/procurement/orders", response_model=SupplierOrderResponse)
 def supplier_order(
-    payload: SupplierOrderCreate, user: User = Depends(current_user), db: Session = Depends(get_db)
+    payload: SupplierOrderCreate,
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return operational_records.supplier_order(
         db,
@@ -146,7 +154,9 @@ def supplier_order(
 
 
 @router.get("/procurement/orders", response_model=list[SupplierOrderResponse])
-def supplier_orders(user: User = Depends(current_user), db: Session = Depends(get_db)):
+def supplier_orders(
+    user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")
+):
     operational_records.permit(user, operational_records.WAREHOUSE)
     return list(
         db.scalars(select(SupplierOrder).order_by(SupplierOrder.created_at.desc()).limit(200))
@@ -158,6 +168,6 @@ def supplier_receipt(
     order_id: UUID,
     payload: SupplierReceiptLink,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return operational_records.link_supplier_receipt(db, user, order_id, payload.operation_id)

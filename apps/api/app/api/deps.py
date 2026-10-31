@@ -64,7 +64,7 @@ def issue_csrf() -> str:
 
 def current_user(
     request: Request,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     settings: Settings = Depends(get_settings),
 ) -> User:
     return user_from_session_token(db, settings, request.cookies.get(SESSION_COOKIE))

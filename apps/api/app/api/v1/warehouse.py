@@ -84,7 +84,7 @@ def _delivery_payload(delivery) -> DeliveryResponse:
 
 
 @router.get("/stock", response_model=list[StockLevelResponse])
-def read_stock(user: User = Depends(current_user), db: Session = Depends(get_db)):
+def read_stock(user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return [
         StockLevelResponse(
             component_code=row["component_code"],
@@ -100,7 +100,7 @@ def create_stock_operation(
     payload: StockOperationCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ):
     operation, replayed = inventory_service.create_operation(
@@ -120,7 +120,7 @@ def create_stock_operation(
 def read_stock_operation(
     operation_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return _operation_payload(inventory_service.get_operation(db, user, operation_id))
 
@@ -129,7 +129,7 @@ def read_stock_operation(
 def ready_stock_operation(
     operation_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return _operation_payload(inventory_service.mark_ready(db, user, operation_id))
 
@@ -138,7 +138,7 @@ def ready_stock_operation(
 def validate_stock_operation(
     operation_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return _operation_payload(inventory_service.validate_operation(db, user, operation_id))
 
@@ -147,7 +147,7 @@ def validate_stock_operation(
 def cancel_stock_operation(
     operation_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return _operation_payload(inventory_service.cancel_operation(db, user, operation_id))
 
@@ -156,7 +156,7 @@ def cancel_stock_operation(
 def create_reservations(
     payload: ReservationCreate,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     from app.models.workflow import SalesOrder
 
@@ -182,7 +182,7 @@ def create_reservations(
 @router.get("/stock/reservations", response_model=list[ReservationResponse])
 def read_reservations(
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     order_id: UUID | None = Query(default=None),
 ):
     return [
@@ -203,7 +203,7 @@ def scan_serial(
     payload: SerialScanCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     row = inventory_service.scan_serial(
         db, user, payload.serial_number, payload.component_code, payload.operation_id
@@ -226,7 +226,7 @@ def assign_serial(
     serial_id: UUID,
     payload: SerialAssign,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     row = fulfillment_service.assign_serial(db, user, serial_id, payload.order_id)
     return SerialResponse(
@@ -246,7 +246,7 @@ def request_replenishment(
     payload: ReplenishmentCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     row = inventory_service.request_replenishment(
         db, user, payload.component_code, payload.location_code, payload.quantity
@@ -270,7 +270,7 @@ def decide_replenishment(
     request_id: UUID,
     payload: ReplenishmentDecision,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     row = inventory_service.decide_replenishment(db, user, request_id, payload.decision)
     return ReplenishmentResponse(
@@ -291,7 +291,7 @@ def create_delivery(
     payload: DeliveryCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ):
     delivery, replayed = fulfillment_service.create_delivery(
@@ -306,7 +306,9 @@ def create_delivery(
 
 
 @router.get("/deliveries", response_model=list[DeliveryResponse])
-def list_deliveries(user: User = Depends(current_user), db: Session = Depends(get_db)):
+def list_deliveries(
+    user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")
+):
     return [_delivery_payload(row) for row in fulfillment_service.list_deliveries(db, user)]
 
 
@@ -314,7 +316,7 @@ def list_deliveries(user: User = Depends(current_user), db: Session = Depends(ge
 def read_delivery(
     delivery_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return _delivery_payload(fulfillment_service.get_delivery(db, user, delivery_id))
 
@@ -323,7 +325,7 @@ def read_delivery(
 def delivery_in_transit(
     delivery_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return _delivery_payload(fulfillment_service.transition(db, user, delivery_id, "in_transit"))
 
@@ -332,7 +334,7 @@ def delivery_in_transit(
 def delivery_delivered(
     delivery_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return _delivery_payload(fulfillment_service.transition(db, user, delivery_id, "delivered"))
 
@@ -341,7 +343,7 @@ def delivery_delivered(
 def delivery_confirm(
     delivery_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return _delivery_payload(fulfillment_service.transition(db, user, delivery_id, "confirmed"))
 
@@ -350,6 +352,6 @@ def delivery_confirm(
 def delivery_cancel(
     delivery_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return _delivery_payload(fulfillment_service.transition(db, user, delivery_id, "cancelled"))

@@ -15,7 +15,7 @@ router = APIRouter(prefix="/packages", tags=["packages"])
 @router.get("", response_model=list[PackageResponse])
 def read_packages(
     _: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> list[PackageResponse]:
     return [
         PackageResponse(
@@ -36,7 +36,7 @@ def read_packages(
 def read_current_version(
     package_code: str,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> TemplateVersionResponse:
     return _version_response(db, user, package_code, None)
 
@@ -46,7 +46,7 @@ def read_version(
     package_code: str,
     version_number: int,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> TemplateVersionResponse:
     return _version_response(db, user, package_code, version_number)
 

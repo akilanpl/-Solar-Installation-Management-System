@@ -76,7 +76,7 @@ def create_quotation(
     payload: QuotationCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     settings: Settings = Depends(get_settings),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> QuotationResponse:
@@ -90,7 +90,7 @@ def create_quotation(
 @router.get("", response_model=QuotationList)
 def list_quotations(
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
 ) -> QuotationList:
@@ -107,7 +107,7 @@ def list_quotations(
 def read_quotation(
     quotation_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> QuotationResponse:
     return quotation_response(db, quotation_service.get_quotation(db, user, quotation_id))
 
@@ -118,7 +118,7 @@ def revise_quotation(
     payload: QuotationRevisionCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     settings: Settings = Depends(get_settings),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> QuotationResponse:
@@ -136,7 +136,7 @@ def request_revision(
     quotation_id: UUID,
     payload: RevisionRequestCreate,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> RevisionRequestResponse:
     row = quotation_service.request_revision(db, user, quotation_id, payload)
     return RevisionRequestResponse(
@@ -153,7 +153,7 @@ def request_revision(
 def list_revision_requests(
     quotation_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> list[RevisionRequestResponse]:
     return [
         RevisionRequestResponse(
@@ -172,7 +172,7 @@ def list_revision_requests(
 def accept_quotation(
     quotation_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> QuotationResponse:
     return quotation_response(db, quotation_service.accept_quotation(db, user, quotation_id))
 
@@ -181,6 +181,6 @@ def accept_quotation(
 def withdraw_quotation(
     quotation_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> QuotationResponse:
     return quotation_response(db, quotation_service.withdraw_quotation(db, user, quotation_id))

@@ -6,8 +6,9 @@ covers migrations, tests, and HTTP handlers. Async sessions would not remove
 a real bottleneck at the current scale (about 40 installations a month) and
 would force a second database driver pattern.
 
-Each HTTP request gets one session. The dependency commits if the handler
-returns and rolls back if it raises. Services flush inside that transaction.
+Each HTTP request gets one session. Every consumer uses function scope, so the
+dependency commits before success headers/cookies leave the app, and rolls back
+if the handler or commit fails. Services flush inside that transaction.
 The one exception is a failed OTP attempt, which must persist and is documented
 in the auth service.
 """

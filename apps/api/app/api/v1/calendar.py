@@ -84,7 +84,7 @@ def availability(
     tech_id: UUID,
     payload: AvailabilityInput,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     if user.role_code != "admin":
         raise AppError(
@@ -115,7 +115,9 @@ def availability(
 
 @router.get("/scheduling/availability/{tech_id}", response_model=AvailabilityResponse)
 def read_availability(
-    tech_id: UUID, user: User = Depends(current_user), db: Session = Depends(get_db)
+    tech_id: UUID,
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db, scope="function"),
 ):
     if user.role_code not in {"sales", "admin"} and not (
         user.role_code == "technician" and user.id == tech_id
@@ -132,7 +134,7 @@ def leave(
     tech_id: UUID,
     payload: LeaveInput,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     if user.role_code not in {"admin", "sales"}:
         raise AppError(403, "forbidden", "Only operations can record approved leave.")
@@ -168,13 +170,17 @@ def leave(
 
 @router.post("/scheduling/appointments", response_model=AppointmentResponse)
 def book(
-    payload: AppointmentInput, user: User = Depends(current_user), db: Session = Depends(get_db)
+    payload: AppointmentInput,
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return calendar_service.book(db, user, payload)
 
 
 @router.get("/scheduling/appointments", response_model=list[AppointmentResponse])
-def appointments(user: User = Depends(current_user), db: Session = Depends(get_db)):
+def appointments(
+    user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")
+):
     if user.role_code not in {"sales", "admin", "technician"}:
         raise AppError(403, "forbidden", "Calendar access denied.")
     query = select(TechnicianAppointment)
@@ -195,7 +201,9 @@ class EligibilityResponse(BaseModel):
 
 @router.post("/scheduling/eligibility", response_model=list[EligibilityResponse])
 def eligibility(
-    payload: EligibilityInput, user: User = Depends(current_user), db: Session = Depends(get_db)
+    payload: EligibilityInput,
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db, scope="function"),
 ):
     if user.role_code not in {"sales", "admin"}:
         raise AppError(403, "forbidden", "Only operations can evaluate assignment.")

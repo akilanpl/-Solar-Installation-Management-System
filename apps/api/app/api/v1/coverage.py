@@ -36,13 +36,15 @@ class PolicyResponse(PolicyInput):
 
 @router.post("/warranty-policies", response_model=PolicyResponse)
 def create_policy(
-    payload: PolicyInput, user: User = Depends(current_user), db: Session = Depends(get_db)
+    payload: PolicyInput,
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return coverage_service.create_policy(db, user, payload)
 
 
 @router.get("/warranty-policies", response_model=list[PolicyResponse])
-def policies(user: User = Depends(current_user), db: Session = Depends(get_db)):
+def policies(user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     if user.role_code not in {"admin", "sales", "support", "warehouse_manager"}:
         raise AppError(403, "forbidden", "Product policy access denied.")
     return list(
@@ -68,7 +70,9 @@ class UnitCoverageResponse(BaseModel):
 
 @router.get("/orders/{order_id}/unit-warranties", response_model=list[UnitCoverageResponse])
 def unit_warranties(
-    order_id: UUID, user: User = Depends(current_user), db: Session = Depends(get_db)
+    order_id: UUID,
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db, scope="function"),
 ):
     order = db.get(SalesOrder, order_id)
     if order is None or user.role_code == "customer" and order.customer_user_id != user.id:
