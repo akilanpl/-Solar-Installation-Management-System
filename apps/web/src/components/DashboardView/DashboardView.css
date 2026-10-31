@@ -18,13 +18,19 @@
 }
 
 /* ==========================================================================
-   ROW 1: HERO GREETING & TOP FEATURE CARDS
+   ROW 1: HERO GREETING, WEATHER MODULE & TOP FEATURE CARDS
    ========================================================================== */
 .dash-hero-row {
   display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 24px;
-  align-items: stretch;
+  grid-template-columns: 320px auto 1fr;
+  gap: 22px;
+  align-items: center;
+}
+
+.dash-weather-slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .dash-greeting-box {
@@ -130,10 +136,16 @@
 /* ==========================================================================
    ROW 2 & ROW 3: BENTO GRID LAYOUTS
    ========================================================================== */
-.dash-middle-grid,
-.dash-bottom-grid {
+.dash-middle-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.dash-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
   gap: 20px;
   align-items: stretch;
 }
@@ -669,7 +681,16 @@
 }
 
 /* Responsive */
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
+  .dash-hero-row {
+    grid-template-columns: 1fr auto;
+  }
+  .dash-feature-cards-grid {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 1024px) {
   .dash-hero-row {
     grid-template-columns: 1fr;
   }

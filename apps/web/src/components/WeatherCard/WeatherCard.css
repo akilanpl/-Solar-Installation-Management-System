@@ -1,0 +1,214 @@
+/* ==========================================================================
+   SOLARFLOW / SOLAROPS - WEATHER MODULE CARD STYLES
+   Exact SVGs, mesh gradients, sun ray optics & cloud physics
+   Variants: Sunny | Mid Rain | Cloudy
+   ========================================================================== */
+
+.solar-weather-card {
+  width: 342px;
+  min-width: 320px;
+  height: 184px;
+  position: relative;
+  isolation: isolate;
+  padding: 22px 24px 20px 24px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.solar-weather-card:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
+}
+
+/* --------------------------------------------------------------------------
+   Background SVG Gradient
+   -------------------------------------------------------------------------- */
+.weather-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Illustrations
+   -------------------------------------------------------------------------- */
+/* Sunny Illustration */
+.weather-sun {
+  position: absolute;
+  right: 12px;
+  top: -12px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.weather-sun svg {
+  height: 124px;
+  width: 124px;
+  overflow: visible;
+  filter: drop-shadow(0 0 16px rgba(255, 224, 102, 0.75));
+}
+
+.sun-rays {
+  transform-origin: 32px 32px;
+  animation: solarRayRotate 24s linear infinite;
+}
+
+@keyframes solarRayRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mid Rain Illustration */
+.weather-cloud-rain {
+  position: absolute;
+  right: 0;
+  top: -10px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.weather-cloud-rain svg {
+  height: 122px;
+  width: 122px;
+  overflow: visible;
+  filter: drop-shadow(0 6px 14px rgba(30, 20, 70, 0.4));
+}
+
+/* Cloudy Illustration */
+.weather-cloud-double {
+  position: absolute;
+  right: 0;
+  top: -10px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.weather-cloud-double svg {
+  height: 122px;
+  width: 122px;
+  overflow: visible;
+  filter: drop-shadow(0 6px 12px rgba(30, 40, 70, 0.28));
+}
+
+.cloud-behind {
+  fill: #d3dbe8;
+  stroke: #8f9db8;
+}
+
+.cloud-front {
+  fill: #ffffff;
+  stroke: #b6c1d1;
+}
+
+.cloud-fill-path {
+  fill: #ffffff;
+}
+
+.cloud-edge-path {
+  fill: #b6c1d1;
+}
+
+/* --------------------------------------------------------------------------
+   Typography & Info Layout
+   -------------------------------------------------------------------------- */
+.weather-main-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  z-index: 2;
+}
+
+.weather-main-temp {
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1;
+  margin: 0;
+  letter-spacing: -1.5px;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.weather-refresh-indicator {
+  opacity: 0.65;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.weather-refresh-indicator:hover {
+  opacity: 1;
+  transform: rotate(45deg);
+}
+
+.spinning {
+  animation: weatherSpin 0.8s linear infinite;
+}
+
+@keyframes weatherSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.weather-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  z-index: 2;
+  margin-top: auto;
+}
+
+.weather-info-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.weather-text-range {
+  font-size: 13.5px;
+  font-weight: 600;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  letter-spacing: 0.2px;
+}
+
+.weather-location-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin: 0;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+.weather-info-condition {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+  color: #ffffff;
+  align-self: flex-end;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 640px) {
+  .solar-weather-card {
+    width: 100%;
+    min-width: unset;
+  }
+}

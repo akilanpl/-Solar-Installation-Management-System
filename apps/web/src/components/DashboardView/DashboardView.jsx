@@ -38,6 +38,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from '../../router/Router';
 import { formatCapacity, formatInrFromPaise } from '../../lib/format';
+import { WeatherCard } from '../WeatherCard/WeatherCard';
 import './DashboardView.css';
 
 export function DashboardView({
@@ -468,6 +469,11 @@ export function DashboardView({
             <span>{config.greetingQuestion[1]}</span>
           </h1>
           <p className="dash-greeting-sub">{config.greetingSub}</p>
+        </div>
+
+        {/* Live Weather & Solar Irradiance Module */}
+        <div className="dash-weather-slot">
+          <WeatherCard />
         </div>
 
         {/* Right: 4 Tailored Quick-Action / Stat Cards */}
@@ -1676,35 +1682,7 @@ export function DashboardView({
           )}
         </div>
 
-        {/* Column 2: Role Focus Card (REPLACED "Go premium!") */}
-        <div className="dash-focus-card">
-          <div className="focus-illustration-box">
-            {activeRole === 'sales' ? (
-              <TrendingUp size={36} color="#ffffff" />
-            ) : activeRole === 'technician' ? (
-              <Wrench size={36} color="#ffffff" />
-            ) : activeRole.startsWith('warehouse') ? (
-              <Package size={36} color="#ffffff" />
-            ) : activeRole === 'support' ? (
-              <Headphones size={36} color="#ffffff" />
-            ) : activeRole === 'admin' ? (
-              <Shield size={36} color="#ffffff" />
-            ) : (
-              <Sun size={36} color="#ffffff" />
-            )}
-          </div>
-          <h3 className="focus-title">{config.focusCard.title}</h3>
-          <p className="focus-sub">{config.focusCard.sub}</p>
-          <button
-            type="button"
-            className="focus-cta-btn"
-            onClick={config.focusCard.action}
-          >
-            {config.focusCard.buttonText}
-          </button>
-        </div>
-
-        {/* Column 3: Metrics & Upcoming Meeting */}
+        {/* Column 2: Metrics & Upcoming Meeting */}
         <div className="dash-col-metrics">
           {/* Upper: 2 Circular Progress Gauges */}
           <div className="gauges-card">

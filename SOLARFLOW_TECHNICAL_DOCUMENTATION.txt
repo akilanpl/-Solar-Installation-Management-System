@@ -1497,3 +1497,49 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+24. WEATHER MODULE INTEGRATION & TOP HERO DASHBOARD RESTRUCTURE
+--------------------------------------------------------------------------------
+- Date & Context:
+  Integrated a dynamic, real-time Weather and Solar Irradiance module (`WeatherCard.jsx`,
+  `WeatherCard.css`) powered by WeatherAPI (`key=e1fdacf45084462c99561513263110`).
+  Replaced the bottom-row focus card (`dash-focus-card`) and elevated the weather radar
+  to the premier top hero row beside the greeting headline and quick-action cards.
+  Restructured the bottom row into a spacious, balanced 2-column layout.
+
+- Key Architecture & Visual Elements:
+  1. Multi-Condition Weather Card Architecture (`WeatherCard.jsx`, `WeatherCard.css`):
+     - Three Exact SVG Vector & Gradient Visualizations:
+       * Mid Rain: Deep purple gradient mesh (`#5936B4` to `#362A84`), illustrated cloud
+         with cyan rain droplets and vivid yellow lightning strike.
+       * Sunny: Warm golden/amber gradient mesh (`#F9A03F` to `#E8590C`), animated radiant
+         sun core with rotating 8-ray optical diffraction.
+       * Cloudy: Steel blue-grey gradient mesh (`#6C7A96` to `#3F4A66`), dual-layered
+         depth cloud vectors.
+     - Live WeatherAPI Integration:
+       * Queries `https://api.weatherapi.com/v1/forecast.json?key=e1fdacf45084462c99561513263110&q=Bengaluru&days=1&aqi=no`.
+       * Dynamically maps condition codes and textual forecasts to condition variants.
+       * Displays real-time temperature, high/low range (`H:34° L:18°`), and location.
+       * Interactive Click / Refresh: Supports 1-click state cycling and instant API refresh.
+       * Seamless fallback handling for offline or sandbox environments.
+  2. Top Hero Row Layout Restructure (`DashboardView.jsx`, `DashboardView.css`):
+     - Elevated weather radar to Row 1: `.dash-hero-row` now features a 3-column desktop layout
+       (`320px auto 1fr`):
+       * Left: Personalized greeting headline & subtext.
+       * Center: Live Weather Card (342px × 184px).
+       * Right: Tailored role quick-action / stat cards.
+     - Bottom Row Balance (`.dash-bottom-grid`):
+       * Converted from 3 columns to an optimized 2-column grid (`1.55fr 1fr`).
+       * Left (1.55fr): Expansive operational tasks, milestone subsidy claims, or inspection queues.
+       * Right (1fr): Performance circular gauges & briefing schedule.
+
+- Files Created or Modified:
+  * apps/web/src/components/WeatherCard/WeatherCard.jsx (Created)
+  * apps/web/src/components/WeatherCard/WeatherCard.css (Created)
+  * apps/web/src/components/DashboardView/DashboardView.jsx (Modified)
+  * apps/web/src/components/DashboardView/DashboardView.css (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================
