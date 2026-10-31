@@ -174,25 +174,15 @@ def baseline_score(root, repository, sha):
     return main_sha, report["score"]
 
 
-def execute_two_orders(root, folder, sha):
-    url = os.environ.get("SOLAROPS_TEST_DATABASE_URL", "")
-    from sqlalchemy.engine import make_url
-
-    parsed = make_url(url)
-    if (
-        parsed.host not in {"127.0.0.1", "localhost"}
-        or parsed.database != "solarops_test"
-    ):
-        raise ValueError(
-            "CI order campaign requires workflow-owned local solarops_test PostgreSQL service"
-        )
-    api_dir = root / "apps/api"
+def collect_nodes(api_dir):
     collected = execute(
         api_dir,
         [
             sys.executable,
             "-m",
             "pytest",
+            "-o",
+            "addopts=",
             "--collect-only",
             "-q",
             "--ignore=tests/release_campaigns",
@@ -206,40 +196,124 @@ def execute_two_orders(root, folder, sha):
     ]
     if len(nodes) < 100 or len(nodes) != len(set(nodes)):
         raise ValueError("Unable to discover at least100 distinct exact test node IDs")
-    for name, order in (
-        ("source-order", nodes),
-        ("reverse-order", list(reversed(nodes))),
-    ):
-        output = folder / f"ci-{name}.xml"
-        output.unlink(missing_ok=True)
-        result = subprocess.run(
-            [sys.executable, "-m", "pytest", *order, f"--junitxml={output}"],
-            cwd=api_dir,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            timeout=240,
-            check=False,
+    return nodes
+
+
+def node_tuple(node):
+    filename, *parts = node.split("::")
+    return (
+        filename.removesuffix(".py").replace("/", ".")
+        + ("." + ".".join(parts[:-1]) if len(parts) > 1 else ""),
+        parts[-1],
+    )
+
+
+def passed_junit_nodes(output, nodes):
+    tree = ET.parse(output)
+    cases = list(tree.iter("testcase"))
+    suites = [
+        suite for suite in tree.iter("testsuite") if not suite.findall("testsuite")
+    ]
+    declared = sum(int(suite.get("tests", "0")) for suite in suites)
+    observed = [(case.get("classname"), case.get("name")) for case in cases]
+    if (
+        declared != len(nodes)
+        or observed != [node_tuple(node) for node in nodes]
+        or any(
+            case.find("failure") is not None
+            or case.find("error") is not None
+            or case.find("skipped") is not None
+            for case in cases
         )
-        (folder / f"ci-{name}.log").write_text(result.stdout)
-        cases = list(ET.parse(output).iter("testcase")) if output.exists() else []
-        if (
-            result.returncode
-            or len(cases) != len(nodes)
-            or any(
-                case.find("failure") is not None
-                or case.find("error") is not None
-                or case.find("skipped") is not None
-                for case in cases
-            )
-        ):
-            raise ValueError(
-                f"Actual exact-SHA {name} campaign failed or emitted incomplete/skipped JUnit"
-            )
-        if execute(root, ["git", "rev-parse", "HEAD"]) != sha or execute(
-            root, ["git", "status", "--porcelain"]
-        ):
-            raise ValueError("Source changed during actual CI two-order campaign")
+    ):
+        raise ValueError(
+            "JUnit does not match the full discovered exact node inventory/order with all passes"
+        )
+    return len(cases)
+
+
+def verify_normal_order(root, folder, sha, nodes, gate_started_at):
+    output = folder / "backend.xml"
+    log = folder / "backend.log"
+    header = json.loads(log.read_text().splitlines()[0])
+    expected = [
+        "-m",
+        "coverage",
+        "run",
+        "--branch",
+        "--source=app",
+        f"--data-file={folder / 'backend.coverage'}",
+        "-m",
+        "pytest",
+        "--ignore=tests/release_campaigns",
+        f"--junitxml={output}",
+    ]
+    if header.get("sha") != sha or header.get("command", [])[1:] != expected:
+        raise ValueError(
+            "Normal-order backend log is not the fixed exact-SHA full coverage command"
+        )
+    started_at = header.get("started_at", 0)
+    now = time.time()
+    if (
+        not 0 <= now - gate_started_at <= 3600
+        or not gate_started_at <= started_at <= now
+        or not started_at <= output.stat().st_mtime <= now
+        or not started_at <= log.stat().st_mtime <= now
+    ):
+        raise ValueError(
+            "Normal-order backend evidence is stale or predates this gate invocation"
+        )
+    return passed_junit_nodes(output, nodes)
+
+
+def execute_two_orders(root, folder, sha):
+    url = os.environ.get("SOLAROPS_TEST_DATABASE_URL", "")
+    from sqlalchemy.engine import make_url
+
+    parsed = make_url(url)
+    if (
+        parsed.host not in {"127.0.0.1", "localhost"}
+        or parsed.database != "solarops_test"
+    ):
+        raise ValueError(
+            "CI order campaign requires workflow-owned local solarops_test PostgreSQL service"
+        )
+    api_dir = root / "apps/api"
+    nodes = collect_nodes(api_dir)
+    context = json.loads((folder / "campaign-context.json").read_text())
+    verify_normal_order(root, folder, sha, nodes, context["gate_started_at"])
+    # Normal order already executed in this gate. Reuse only its verified fresh
+    # exact inventory, then run the opposite order once on CI's private service.
+    reverse = list(reversed(nodes))
+    output = folder / "ci-reverse-order.xml"
+    output.unlink(missing_ok=True)
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-o",
+            "addopts=",
+            *reverse,
+            f"--junitxml={output}",
+        ],
+        cwd=api_dir,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        timeout=900,
+        check=False,
+    )
+    (folder / "ci-reverse-order.log").write_text(result.stdout)
+    if result.returncode or not output.is_file():
+        raise ValueError(
+            "Actual exact-SHA reverse-order campaign failed or emitted no JUnit"
+        )
+    passed_junit_nodes(output, reverse)
+    if execute(root, ["git", "rev-parse", "HEAD"]) != sha or execute(
+        root, ["git", "status", "--porcelain"]
+    ):
+        raise ValueError("Source changed during actual CI two-order campaign")
     return len(nodes)
 
 
@@ -357,6 +431,81 @@ def self_test():
                 )
                 with self.assertRaisesRegex(ValueError, "exact clean"):
                     checked_context(folder, folder, "a" * 40)
+
+        def test_collection_overrides_double_quiet_project_addopts(self):
+            nodes = [
+                f"tests/test_collection.py::test_case_{index}" for index in range(100)
+            ]
+            with patch(__name__ + ".execute", return_value="\n".join(nodes)) as command:
+                self.assertEqual(collect_nodes(Path(".")), nodes)
+                arguments = command.call_args.args[1]
+                self.assertEqual(arguments[arguments.index("-o") + 1], "addopts=")
+                self.assertEqual(arguments.count("-q"), 1)
+
+        def normal_fixture(self, folder):
+            nodes = [
+                "tests/test_example.py::test_first[a]",
+                "tests/test_example.py::test_second",
+            ]
+            suite = ET.Element("testsuite", tests="2")
+            for node in nodes:
+                classname, name = node_tuple(node)
+                ET.SubElement(suite, "testcase", classname=classname, name=name)
+            output = folder / "backend.xml"
+            ET.ElementTree(suite).write(output)
+            began = time.time() - 2
+            command = [
+                sys.executable,
+                "-m",
+                "coverage",
+                "run",
+                "--branch",
+                "--source=app",
+                f"--data-file={folder / 'backend.coverage'}",
+                "-m",
+                "pytest",
+                "--ignore=tests/release_campaigns",
+                f"--junitxml={output}",
+            ]
+            header = {"sha": "a" * 40, "command": command, "started_at": began + 1}
+            (folder / "backend.log").write_text(json.dumps(header) + "\n")
+            return nodes, began, header
+
+        def test_exact_fresh_normal_order_is_reused(self):
+            with tempfile.TemporaryDirectory() as directory:
+                folder = Path(directory)
+                nodes, began, _ = self.normal_fixture(folder)
+                self.assertEqual(
+                    verify_normal_order(folder, folder, "a" * 40, nodes, began), 2
+                )
+
+        def test_stale_wrong_sha_and_partial_normal_evidence_fail(self):
+            for failure in ("stale", "sha", "partial", "order", "skipped", "command"):
+                with (
+                    self.subTest(failure=failure),
+                    tempfile.TemporaryDirectory() as directory,
+                ):
+                    folder = Path(directory)
+                    nodes, began, header = self.normal_fixture(folder)
+                    if failure == "stale":
+                        began = time.time() + 1
+                    if failure == "sha":
+                        header["sha"] = "b" * 40
+                    if failure == "command":
+                        header["command"].append("-k=test_subset")
+                    (folder / "backend.log").write_text(json.dumps(header) + "\n")
+                    if failure in {"partial", "order", "skipped"}:
+                        tree = ET.parse(folder / "backend.xml")
+                        suite = tree.getroot()
+                        if failure == "partial":
+                            suite.remove(suite.findall("testcase")[-1])
+                        elif failure == "order":
+                            suite[:] = list(reversed(suite[:]))
+                        else:
+                            ET.SubElement(suite.findall("testcase")[0], "skipped")
+                        tree.write(folder / "backend.xml")
+                    with self.assertRaises(ValueError):
+                        verify_normal_order(folder, folder, "a" * 40, nodes, began)
 
     outcome = unittest.TextTestRunner().run(
         unittest.defaultTestLoader.loadTestsFromTestCase(Checks)

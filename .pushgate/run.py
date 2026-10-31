@@ -31,7 +31,7 @@ def run_stage(root, folder, name, family, sev, directory, command, *,
     before = source_state(root)
     reason = None
     with logfile.open("w", encoding="utf-8") as log:
-        log.write(json.dumps({"sha": before["sha"], "command": command}) + "\n")
+        log.write(json.dumps({"sha": before["sha"], "command": command, "started_at": time.time()}) + "\n")
         log.flush()
         missing = [path for path in prerequisites if not (root / path).is_file()]
         if missing:
@@ -135,6 +135,7 @@ def mandatory_campaigns(root, folder, api_python):
 
 def main():
     root = Path.cwd()
+    invocation_started_at = time.time()
     initial = source_state(root)
     sha = initial["sha"]
     folder = root / ".pushgate/reports" / sha
@@ -183,10 +184,12 @@ def main():
             from score import score
             context = {"sha": sha, "source_start": initial,
                        "source_now": source_state(root), "created_at": time.time(),
+                       "gate_started_at": invocation_started_at,
                        "tests": tests, "score": score(tests)}
             (folder / "campaign-context.json").write_text(json.dumps(context, indent=2) + "\n")
         rows = run_stage(root, folder, name, family, sev, directory, command,
-                         require_junit=True, prerequisites=prerequisites)
+                         require_junit=True, prerequisites=prerequisites,
+                         timeout=1200 if name == "main-ratchet-two-order-ci" else 600)
         tests.extend(rows)
         if rows[0]["status"] != "pass":
             missing.append(f"{name}: {rows[0]['status']} ({rows[0]['reason']})")
