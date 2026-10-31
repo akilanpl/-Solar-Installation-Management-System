@@ -10,6 +10,7 @@ import "@/styles/teammate-dashboard.css";
 import "@/styles/teammate-records.css";
 import "@/styles/teammate-transaction.css";
 import "@/styles/teammate-receipt.css";
+import "@/styles/teammate-surveys.css";
 import "@/styles/integration.css";
 
 export const metadata: Metadata = {

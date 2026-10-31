@@ -11,8 +11,8 @@ Fetched 2026-10-31. Candidate starts at `7f7b3883c1bcbd4da21146c197cc4067ee2909b
 | `feature/phase3-warehouse-installation` | `ae212b2cdfce755b69ec9a73df15f3907873bf0d` | `ae212b2cdfce755b69ec9a73df15f3907873bf0d` | 0 | Already reachable; retain original history, no duplicate merge |
 | `test/qa-integration` | `c83bd1150d07e26e9fc8769cc7ea52a9a49a016e` | `c83bd1150d07e26e9fc8769cc7ea52a9a49a016e` | 0 | Already reachable; retain original history, no duplicate merge |
 | `feature/frontend-workspaces` | `81addc8539d69e5d39df3db545567c833350a87a` | `81addc8539d69e5d39df3db545567c833350a87a` | 0 | Already reachable; retain original history, no duplicate merge |
-| `feature/frontend-workplaces` | `dcd36a06327b20d4b739503426ddc810b3ff9dae` | `unrelated` | 23 | Unrelated Vite design: adapt selected components; exclude fake auth/payment/weather fallback |
-| `integration/final-release` | `0bdd9536dfc6a9da224ef84849dcff21e98832eb` | `0bdd9536dfc6a9da224ef84849dcff21e98832eb` | 0 | Already reachable; retain original history, no duplicate merge |
+| `feature/frontend-workplaces` | `72db4a19dd3f4ee1495dd111f6636bbf6eb4309d` | `unrelated` | 38 | Unrelated Vite design: adapt selected components; exclude fake auth/payment/weather fallback |
+| `integration/final-release` | `ebf107be1cc6996306b5756ccba42a1d96f087dc` | `ebf107be1cc6996306b5756ccba42a1d96f087dc` | 0 | New QA coverage enforcement merged through 6ec961c; preserve all thresholds and original author |
 | `fix/actual-frontend-integration` | `7f7b3883c1bcbd4da21146c197cc4067ee2909bb` | `7f7b3883c1bcbd4da21146c197cc4067ee2909bb` | 0 | Already reachable; retain original history, no duplicate merge |
 
 ## Review findings
@@ -164,4 +164,86 @@ None.
 Changed paths relative to common base:
 ```
 
+```
+
+
+## Follow-up fetch: 2026-10-31 16:01 UTC
+
+Main and the published draft head remain unchanged. The frontend advanced to
+72db4a1 and integration advanced to ebf107b. The table above reflects these
+fetched refs; the original per-branch inspection below retains its audit baseline.
+
+The QA commit adds actual coverage export/checks, stale-evidence removal,
+stage-exit preservation and ten gate self-tests. Merged normally with author
+attribution in 6ec961c. Conflict resolution retains pytest-cov AND coverage/PyYAML;
+all dependencies remain locked. `uv lock --check --offline` verifies consistency.
+
+| New frontend contribution | Disposition |
+|---|---|
+| 339edb9 receipt data | Chassis/LCD/tear design retained. Local-storage defaults (₹78,000, fabricated invoice, UTR, subsidy and customer) excluded; authenticated persisted receipts and explicit preview remain authoritative. CSS has no newer receipt change. |
+| 97424aa, 7ddd09e, fc61a90, 7184ad5, b95920d maps | Inspected site navigation, static map artwork, markers and tooltips. Coordinates/routes/travel and customer fixtures are not verified data. Preserve on source branch; do not expose operational navigation claims. Real customer-provided site context remains visible. |
+| 3e99874, 511f896, 59fa6d4 store/side navigation | Inspected expandable navigation, catalogue/cart, product images, banner and checkout. Marketplace is outside the Phase 1–3 workflows and uses simulated inventory/checkout. No operational storefront imported before its backend exists. Existing authorized navigation preserved. |
+| 7bc9219, 158b578 chatbot/drawers | Inspected revised chatbot/cart UI. Synthetic assistant responses and Phase 4 intelligence stay excluded under the explicit Phase 4 entry gate. |
+| 819dda2 transaction card | Port latest POS CSS and removal of settlement card; retain a plain truthful provider capability notice. |
+| 4d156a1 dock AI icon | Inspected supplied speech-bubble art. AI action is unavailable in Phase 1–3; source asset remains attributed on teammate branch for the gated future module. |
+| a52f967 survey workbench | Port authentic workbench CSS/header/filter/card presentation into PostgreSQL-backed SurveysBoard. Counts/filter states derive from authorized API records. Do not import fake checklist completion, fallback customers/sites, quick-verify shortcuts, GPS navigation or unsupported engineering assertions. |
+| 72db4a1 checkout | No crypto payment option exists in canonical checkout; supported methods remain provider controlled in test mode. No simulated success imported. |
+
+### Every newly inspected unique commit
+
+- `339edb98fd576fd72f6044ab78ebb820d4e27e03` feat(receipt): display actual website local DB stats and ₹78,000 amount on receipt machine screen
+- `97424aa1c839a899fd4e9bbb20ee8e54a98a8431` feat(technician): add interactive customer site route & GPS navigation map section
+- `3e998746e6f6622e6efe1ac378993ce44b985f7e` feat: add expandable side nav AI chatbot and solar hardware ecommerce marketplace
+- `7ddd09e76139cdcef4a1a1d04c56117ac2e7fcd6` feat(technician): redesign map UI with dark theme straight city grid and add dedicated full-page map screen
+- `511f896e227ab9531bb51f9c22ed0f740f55bf0e` feat(store): integrate razorpay checkout route and add generated product photography
+- `fc61a900accade5d73881fea1d536997991e122c` feat(technician): integrate uploaded city street map asset into navigation interfaces
+- `7bc92198acba23e22ab2a73e9ac4ae6679cc0517` feat(ui-ux): enhance solar order cart and ai copilot drawers using ui-ux-pro-max standards
+- `7184ad5b28582a731b846a94c8c4a28a8c98893c` feat(map): restore natural aspect ratio, align with dashboard color theme, and use thin continuous guide lines
+- `59fa6d4604c4d5c186d0dbc68cd74ad97eedb662` feat(store): integrate official solar-store-hero banner background image and quick cart ergonomics
+- `158b5789a4f7b020ff8cd61b835d6fefd1791e39` feat(chatbot): redesign chat interface matching reference layout in dashboard color theme
+- `819dda2a9e4d8ea49a85ba1d7d8fe0ed964931de` refactor(payments): remove rzp-settlement-card from transaction component
+- `b95920d88d9012685e731584270c217b4684dc8a` feat(map): redesign 3D navigation pins with anchored caret tooltips and eliminate transform glitches
+- `4d156a154705d2885e7c0cce52ccc4c73fceba52` feat(dock): use 3D speech bubble icon for dock AI navigation button
+- `a52f9670c02d66a0317e0d3d3120baa0b8c610fa` feat(technician): redesign Assigned Rooftop Field Surveys workbench UI
+- `72db4a19dd3f4ee1495dd111f6636bbf6eb4309d` feat(payment): remove Crypto option from customer Razorpay checkout
+
+### Changed paths reviewed
+
+```text
+ SOLARFLOW_TECHNICAL_DOCUMENTATION.txt              |  672 ++++++++++
+ apps/web/public/dock-ai-icon.png                   |  Bin 0 -> 125139 bytes
+ apps/web/public/maps/dispatch-map.jpg              |  Bin 0 -> 130568 bytes
+ apps/web/public/products/distribution-box-spd.jpg  |  Bin 0 -> 648351 bytes
+ apps/web/public/products/smart-net-meter.jpg       |  Bin 0 -> 597452 bytes
+ apps/web/public/products/solar-battery-5kwh.jpg    |  Bin 0 -> 603438 bytes
+ apps/web/public/products/solar-inverter-5kw.jpg    |  Bin 0 -> 578088 bytes
+ apps/web/public/products/solar-panel-540w.jpg      |  Bin 0 -> 649094 bytes
+ .../web/public/products/sprinkler-cleaning-kit.jpg |  Bin 0 -> 988339 bytes
+ apps/web/public/solar-store-hero.png               |  Bin 0 -> 598639 bytes
+ apps/web/src/App.jsx                               |    4 +
+ apps/web/src/assets/dock-ai-icon.png               |  Bin 0 -> 125139 bytes
+ apps/web/src/assets/solar-store-hero.png           |  Bin 0 -> 598639 bytes
+ .../src/components/DashboardView/DashboardView.css |    4 +
+ .../src/components/DashboardView/DashboardView.jsx |   54 +-
+ .../components/ReceiptPrinter/ReceiptPrinter.jsx   |  117 +-
+ apps/web/src/components/Sidebar/Sidebar.css        |   63 +
+ apps/web/src/components/Sidebar/Sidebar.jsx        |   36 +-
+ .../src/components/SolarChatbot/SolarChatbot.css   |  544 ++++++++
+ .../src/components/SolarChatbot/SolarChatbot.jsx   |  557 ++++++++
+ .../TechnicianSiteMap/TechnicianSiteMap.css        |  600 +++++++++
+ .../TechnicianSiteMap/TechnicianSiteMap.jsx        |  617 +++++++++
+ .../components/TransactionCard/TransactionCard.css |  192 ---
+ .../components/TransactionCard/TransactionCard.jsx |   84 +-
+ apps/web/src/lib/access.js                         |    2 +-
+ apps/web/src/pages/Customer/CustomerPayments.jsx   |   10 +-
+ .../web/src/pages/Customer/RazorpayPaymentPage.css |   31 -
+ .../web/src/pages/Customer/RazorpayPaymentPage.jsx |  155 ++-
+ apps/web/src/pages/Customer/SolarStore.css         | 1399 ++++++++++++++++++++
+ apps/web/src/pages/Customer/SolarStore.jsx         | 1003 ++++++++++++++
+ .../src/pages/Technician/TechnicianDashboard.css   |  711 +++++++++-
+ .../src/pages/Technician/TechnicianDashboard.jsx   |  354 +++--
+ .../web/src/pages/Technician/TechnicianMapPage.css |  603 +++++++++
+ .../web/src/pages/Technician/TechnicianMapPage.jsx |  593 +++++++++
+ apps/web/test/app.test.js                          |   99 ++
+ 35 files changed, 7991 insertions(+), 513 deletions(-)
 ```
