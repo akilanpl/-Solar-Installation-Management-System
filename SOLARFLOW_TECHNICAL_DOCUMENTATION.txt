@@ -1811,3 +1811,63 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+31. EXPANDABLE AI COPILOT CHATBOT & HARDWARE ECOMMERCE MARKETPLACE
+--------------------------------------------------------------------------------
+- Date & Context:
+  Implemented an interactive AI Copilot Chatbot integrated directly into the
+  fixed organic curved dock side navigation, featuring smooth side drawer expansion
+  on click (`SolarChatbot.jsx`, `SolarChatbot.css`).
+  Implemented an enterprise-grade Solar Hardware Ecommerce Marketplace (`SolarStore.jsx`,
+  `SolarStore.css`) allowing residential and commercial solar customers to order Tier-1
+  modules, hybrid inverters, lithium batteries, automated rooftop sprinkler washers,
+  and maintenance services with live cart calculation, 12% solar GST, and 24h delivery.
+
+- Key Architecture & Visual Elements:
+  1. Expandable Side Nav Chatbot (`SolarChatbot.jsx`, `SolarChatbot.css`):
+     - Triggered from the quick dock navigation via a dedicated AI button with pulsing
+       badge (`.dock-ai-btn`).
+     - Expanding side panel attached to the 76px dock bar (`left: 76px; width: 390px; height: 100vh`).
+     - Problem Diagnostics & Solution Engine:
+       * Inverter Red Alarm / E-04 DC Ground Leakage & grid disconnect safety isolation.
+       * Low solar generation dust / soiling index diagnostics.
+       * BESCOM net-metering synchronization delays.
+     - Complaint Filing Automation:
+       * Formulates official warranty complaints and registers ticket into `solarops_tickets`
+         (e.g. `TK-1088`), assigning to on-duty Field Technician `Karthik Raja`.
+       * Embedded Ticket Confirmation Card with live dispatch status.
+     - Booking & Ordering Assistant:
+       * Rooftop maintenance & thermographic drone scan booking with slot scheduling.
+       * Direct in-chat ordering of accessories (Sprinkler Cleaning Kit, LiFePO4 battery, etc.)
+         with instant order reference generation and store redirection.
+  2. Solar Hardware Marketplace (`SolarStore.jsx`, `SolarStore.css`):
+     - Product Catalog across 5 categories:
+       * Solar PV Panels: Waaree 540W Mono-PERC Bifacial (₹13,500), Adani 580W TopCon (₹15,200).
+       * Inverters: Solis 5kW Hybrid Grid-Tie (₹68,000), Growatt 10kW 3-Phase Commercial (₹1,18,000).
+       * Energy Storage: SolarFlow PowerWall 5.12kWh LiFePO4 (₹1,24,000), 10.24kWh Stack (₹2,35,000).
+       * BOS & Accessories: Automated Rooftop Sprinkler Cleaning Kit (₹4,999), 3-Phase Net Meter (₹6,800),
+         AC/DC Protection DB with Type 2 SPD (₹8,500).
+       * AMC Services: 1-Year Comprehensive AMC with 4 Inspections (₹3,999).
+     - Interactive Shopping Cart Drawer:
+       * Quantity steppers, thumbnail preview, price breakdown, 12% solar GST, free delivery threshold.
+       * Prefilled customer delivery address and multiple payment modes (UPI / Razorpay, Subsidy Escrow, COD).
+       * Order confirmation modal with unique order reference (`ORD-2026-XXXX`) and persistent storage in `solarops_orders`.
+  3. Routing & Access Integration (`App.jsx`, `lib/access.js`, `Sidebar.jsx`, `DashboardView.jsx`):
+     - Added `/customer/store` and `/store` routes.
+     - Added Solar Store navigation link with `ShoppingBag` icon to Sidebar for customers and admin.
+     - Added one-click "Solar Store" shortcut button in Dashboard Installed Equipment card.
+
+- Files Created & Modified:
+  * apps/web/src/components/SolarChatbot/SolarChatbot.jsx (Created)
+  * apps/web/src/components/SolarChatbot/SolarChatbot.css (Created)
+  * apps/web/src/pages/Customer/SolarStore.jsx (Created)
+  * apps/web/src/pages/Customer/SolarStore.css (Created)
+  * apps/web/src/components/Sidebar/Sidebar.jsx (Modified)
+  * apps/web/src/components/Sidebar/Sidebar.css (Modified)
+  * apps/web/src/components/DashboardView/DashboardView.jsx (Modified)
+  * apps/web/src/lib/access.js (Modified)
+  * apps/web/src/App.jsx (Modified)
+  * apps/web/test/app.test.js (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================

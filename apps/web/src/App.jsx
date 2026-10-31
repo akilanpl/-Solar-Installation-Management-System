@@ -16,6 +16,7 @@ import { CustomerQuotations } from './pages/Customer/CustomerQuotations';
 import { CustomerPayments } from './pages/Customer/CustomerPayments';
 import { RazorpayPaymentPage } from './pages/Customer/RazorpayPaymentPage';
 import { CustomerSupport } from './pages/Customer/CustomerSupport';
+import { SolarStore } from './pages/Customer/SolarStore';
 
 // Sales Pages
 import { SalesDashboard } from './pages/Sales/SalesDashboard';
@@ -68,6 +69,7 @@ export function App() {
 
   // Customer Routes
   if (path === '/customer') return <CustomerDashboard />;
+  if (path === '/customer/store' || path === '/customer/ecommerce' || path === '/store') return <SolarStore />;
   if (path === '/customer/enquiries/new') return <NewEnquiry />;
   if (path.startsWith('/customer/enquiries/')) {
     const enquiryId = path.split('/customer/enquiries/')[1];

@@ -131,6 +131,41 @@
   transform: translateY(-1px);
 }
 
+/* AI Assistant Dock Button */
+.dock-ai-btn {
+  position: relative;
+  background: rgba(251, 191, 36, 0.16);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.2);
+}
+
+.dock-ai-btn:hover,
+.dock-ai-btn.active {
+  background: #fbbf24;
+  color: #1e1b4b;
+  border-color: #fbbf24;
+  box-shadow: 0 0 18px rgba(251, 191, 36, 0.55);
+  transform: scale(1.08);
+}
+
+.dock-ai-btn.active svg {
+  color: #1e1b4b !important;
+}
+
+.dock-ai-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.58rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
 /* Responsive adjustment for Mobile */
 @media (max-width: 1024px) {
   .dock-sidebar-container {

@@ -3,6 +3,7 @@ import { Link, useRouter } from '../../router/Router';
 import { useAuth } from '../../context/AuthContext';
 import { homeForRole } from '../../lib/access';
 import { FakeLoginModal } from '../FakeLoginModal/FakeLoginModal';
+import { SolarChatbot } from '../SolarChatbot/SolarChatbot';
 import {
   LayoutDashboard,
   FileText,
@@ -16,6 +17,8 @@ import {
   PlusCircle,
   Zap,
   LogOut,
+  ShoppingBag,
+  Sparkles,
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -23,6 +26,7 @@ export function Sidebar() {
   const { user, logout, showToast } = useAuth();
   const { path, navigate } = useRouter();
   const [fakeModalOpen, setFakeModalOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const homePath = user ? homeForRole(user.role) : '/login';
   const role = user?.role || 'customer';
@@ -57,6 +61,7 @@ export function Sidebar() {
       case 'admin':
         return [
           { href: '/admin', label: 'Administration & Roster', icon: LayoutDashboard },
+          { href: '/customer/store', label: 'Hardware Marketplace', icon: ShoppingBag },
           { href: '/sales', label: 'Sales Operations', icon: Layers },
           { href: '/sales/surveys', label: 'Surveys Schedule', icon: Calendar },
           { href: '/warehouse', label: 'Inventory Logistics', icon: Package },
@@ -67,6 +72,7 @@ export function Sidebar() {
       default:
         return [
           { href: '/customer', label: 'Solar Dashboard', icon: LayoutDashboard },
+          { href: '/customer/store', label: 'Solar Store & Hardware', icon: ShoppingBag },
           { href: '/customer/enquiries/new', label: 'New Solar Enquiry', icon: PlusCircle },
           { href: '/customer/quotations', label: 'Proposals & BOM', icon: FileText },
           { href: '/customer/payments', label: 'Milestone Payments', icon: CreditCard },
@@ -89,7 +95,7 @@ export function Sidebar() {
 
   return (
     <>
-      <aside className="dock-sidebar-container" aria-label="Quick Dock Navigation">
+      <aside className={`dock-sidebar-container ${isChatOpen ? 'chat-expanded' : ''}`} aria-label="Quick Dock Navigation">
         {/* Top Nav Column */}
         <div className="dock-nav-column">
           {navItems.map((item, idx) => {
@@ -108,6 +114,17 @@ export function Sidebar() {
               </Link>
             );
           })}
+
+          {/* AI Copilot & Problem Resolver Button */}
+          <button
+            type="button"
+            className={`dock-nav-btn dock-ai-btn ${isChatOpen ? 'active' : ''}`}
+            title="SolarFlow AI Assistant (Diagnostics, Complaints & Orders)"
+            onClick={() => setIsChatOpen(!isChatOpen)}
+          >
+            <Sparkles size={20} color="#fbbf24" strokeWidth={2.4} />
+            <span className="dock-ai-badge">AI</span>
+          </button>
         </div>
 
         {/* Bottom Actions Column: Role Switcher & Logout */}
@@ -133,6 +150,16 @@ export function Sidebar() {
           </button>
         </div>
       </aside>
+
+      {/* Expandable Chat Section Attached to Side Nav */}
+      <SolarChatbot
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        onOpenStore={() => {
+          setIsChatOpen(false);
+          navigate('/customer/store');
+        }}
+      />
 
       {/* Role Switcher Modal */}
       <FakeLoginModal

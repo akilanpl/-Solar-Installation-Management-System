@@ -46,7 +46,7 @@ export function destinationAfterLogin(role, next) {
 export function canAccessPath(role, path) {
   if (role === 'admin') return true;
   if (!role) return false;
-  if (path.startsWith('/customer') && role === 'customer') return true;
+  if ((path.startsWith('/customer') || path === '/store') && role === 'customer') return true;
   if (path.startsWith('/sales') && (role === 'sales' || role === 'admin')) return true;
   if (path.startsWith('/technician') && (role === 'technician' || role === 'admin')) return true;
   if (path.startsWith('/warehouse') && (role.startsWith('warehouse') || role === 'admin')) return true;

@@ -34,6 +34,7 @@ import {
   Phone,
   ExternalLink,
   Award,
+  ShoppingBag,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from '../../router/Router';
@@ -1410,20 +1411,30 @@ export function DashboardView({
                   <h3 className="bento-card-title">Installed Equipment & Warranties</h3>
                   <span style={{ fontSize: '11px', color: '#64748b' }}>Delivery-activated warranty records</span>
                 </div>
-                <button
-                  type="button"
-                  className="bento-header-btn"
-                  onClick={() =>
-                    showToast({
-                      type: 'success',
-                      title: 'Warranty Certificate',
-                      message: 'Official 25-Year Warranty PDF downloaded.',
-                    })
-                  }
-                >
-                  <Award size={13} />
-                  <span>Download Cert</span>
-                </button>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button
+                    type="button"
+                    className="bento-header-btn"
+                    onClick={() => navigate('/customer/store')}
+                  >
+                    <ShoppingBag size={13} />
+                    <span>Solar Store</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="bento-header-btn"
+                    onClick={() =>
+                      showToast({
+                        type: 'success',
+                        title: 'Warranty Certificate',
+                        message: 'Official 25-Year Warranty PDF downloaded.',
+                      })
+                    }
+                  >
+                    <Award size={13} />
+                    <span>Download Cert</span>
+                  </button>
+                </div>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

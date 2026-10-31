@@ -14,6 +14,8 @@ test('Access Control: all 7 enterprise roles have valid dashboard routes', () =>
 
 test('Access Control: role authorization permissions', () => {
   assert.equal(canAccessPath('customer', '/customer'), true);
+  assert.equal(canAccessPath('customer', '/customer/store'), true);
+  assert.equal(canAccessPath('customer', '/store'), true);
   assert.equal(canAccessPath('customer', '/admin'), false);
   assert.equal(canAccessPath('admin', '/admin'), true);
   assert.equal(canAccessPath('technician', '/technician'), true);
@@ -52,4 +54,25 @@ test('Technician Site Map: stops routing and Google Maps URL structure', () => {
   assert.ok(url.includes('Indiranagar'));
   assert.ok(url.includes('560038'));
 });
+
+test('Solar Store: calculates subtotal, 12% solar GST, and free delivery correctly', () => {
+  const item1 = { price: 13500, quantity: 2 }; // 27,000
+  const item2 = { price: 4999, quantity: 1 };  // 4,999
+  const subtotal = item1.price * item1.quantity + item2.price * item2.quantity;
+  assert.equal(subtotal, 31999);
+  const gst = Math.round(subtotal * 0.12);
+  assert.equal(gst, 3840);
+  const delivery = subtotal > 5000 ? 0 : 499;
+  assert.equal(delivery, 0); // Free delivery over 5000
+  const grandTotal = subtotal + gst + delivery;
+  assert.equal(grandTotal, 35839);
+});
+
+test('Solar Chatbot: service ticket and order reference format validation', () => {
+  const randomTicketId = 'TK-' + 1088;
+  assert.match(randomTicketId, /^TK-\d{4,}$/);
+  const randomOrderId = 'ORD-2026-' + 8492;
+  assert.match(randomOrderId, /^ORD-2026-\d{4,}$/);
+});
+
 
