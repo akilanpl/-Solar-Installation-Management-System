@@ -5,14 +5,12 @@ import { canAccessPath, homeForRole } from '../../lib/access';
 import { Header } from '../Header/Header';
 import { Sidebar } from '../Sidebar/Sidebar';
 import { LoadingState } from '../LoadingState/LoadingState';
-import { Button } from '../Button/Button';
 import { ShieldAlert } from 'lucide-react';
 import './AppShell.css';
 
 export function AppShell({ children, requiredRole = null }) {
   const { user, loading } = useAuth();
   const { path, navigate } = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -22,7 +20,7 @@ export function AppShell({ children, requiredRole = null }) {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f6f7fb' }}>
         <LoadingState label="Verifying SolarOps Session…" />
       </div>
     );
@@ -38,19 +36,24 @@ export function AppShell({ children, requiredRole = null }) {
   if (!hasAccess) {
     return (
       <div className="app-shell-layout">
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <Sidebar />
         <div className="app-shell-main">
-          <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+          <Header />
           <div className="app-shell-content">
             <div className="access-denied-box">
-              <ShieldAlert size={48} color="var(--color-danger)" style={{ marginBottom: '16px' }} />
-              <h2 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>Access Restricted</h2>
-              <p style={{ color: 'var(--color-white-dim)', marginBottom: '24px', fontSize: '14px' }}>
+              <ShieldAlert size={48} color="#ef4444" style={{ marginBottom: '16px' }} />
+              <h2 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '8px', color: '#111827' }}>Access Restricted</h2>
+              <p style={{ color: '#64748b', marginBottom: '24px', fontSize: '14px', lineHeight: '1.5' }}>
                 Your current account ({user.role}) is not authorized to view this operational zone.
               </p>
-              <Button onClick={() => navigate(homeForRole(user.role))}>
+              <button
+                type="button"
+                className="primary-board-btn"
+                style={{ margin: '0 auto' }}
+                onClick={() => navigate(homeForRole(user.role))}
+              >
                 Return to My Dashboard
-              </Button>
+              </button>
             </div>
           </div>
         </div>
@@ -60,12 +63,13 @@ export function AppShell({ children, requiredRole = null }) {
 
   return (
     <div className="app-shell-layout">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar />
       <div className="app-shell-main">
-        <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+        <Header />
         <main className="app-shell-content">{children}</main>
       </div>
     </div>
   );
 }
 
+export default AppShell;

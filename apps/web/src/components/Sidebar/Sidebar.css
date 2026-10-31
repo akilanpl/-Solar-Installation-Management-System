@@ -1,183 +1,149 @@
-/* Sidebar Component Styles */
-.sidebar-container {
-  width: 260px;
-  background-color: var(--color-black-deep);
-  border-right: 1px solid var(--color-border);
+/* ==========================================================================
+   SOLARFLOW / SOLAROPS - ORGANIC CURVED DOCK SIDEBAR
+   Faithful recreation of the purple organic dock from the reference image
+   ========================================================================== */
+
+.dock-sidebar-container {
+  width: 76px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #605DEC 0%, #5B5FC7 50%, #4F46E5 100%);
+  border-radius: 0 32px 32px 0;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0 28px 0;
+  box-sizing: border-box;
   position: sticky;
   top: 0;
-  z-index: 110;
+  left: 0;
+  z-index: 100;
+  box-shadow: 4px 0 24px rgba(79, 70, 229, 0.15);
   user-select: none;
+  flex-shrink: 0;
 }
 
-.sidebar-brand-box {
-  padding: 24px 20px 20px;
-  border-bottom: 1px solid var(--color-border-subtle);
+/* Organic curved flare on the dock edge */
+.dock-sidebar-container::after {
+  content: '';
+  position: absolute;
+  top: 22%;
+  right: -14px;
+  width: 28px;
+  height: 90px;
+  background: #5B5FC7;
+  border-radius: 0 28px 28px 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Nav Icons Column */
+.dock-nav-column {
   display: flex;
   flex-direction: column;
-}
-
-.sidebar-logo {
-  display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--color-white);
-  text-decoration: none;
+  gap: 16px;
+  width: 100%;
 }
 
-.sidebar-logo-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, var(--color-violet), var(--color-lime));
+/* Active Top Dashboard Icon (White rounded square pill) */
+.dock-item-active {
+  width: 44px;
+  height: 44px;
+  background-color: #ffffff;
+  color: #5B5FC7;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-black);
-  box-shadow: 0 0 12px rgba(198, 255, 52, 0.4);
-}
-
-.sidebar-tagline {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-white-dim);
-  margin-top: 6px;
-  padding-left: 44px;
-}
-
-.sidebar-nav {
-  flex: 1;
-  padding: 20px 14px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.sidebar-section-title {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--color-white-faint);
-  padding: 12px 12px 6px;
-}
-
-.sidebar-nav-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 13.5px;
-  font-weight: 500;
-  color: var(--color-white-dim);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  position: relative;
   text-decoration: none;
-  transition: all var(--transition-fast);
-  border-left: 3px solid transparent;
 }
 
-.sidebar-nav-item:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--color-white);
-  border-left-color: var(--color-violet);
+.dock-item-active:hover {
+  transform: scale(1.06);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
-.sidebar-nav-item.active {
-  background: linear-gradient(90deg, var(--color-violet-subtle), transparent);
-  color: var(--color-white);
-  font-weight: 600;
-  border-left-color: var(--color-lime);
-  box-shadow: inset 0 0 12px rgba(126, 59, 237, 0.1);
-}
-
-.sidebar-nav-item-left {
+/* Standard Nav Icons */
+.dock-nav-btn {
+  width: 42px;
+  height: 42px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.82);
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 180ms ease;
+  position: relative;
+  text-decoration: none;
 }
 
-.sidebar-nav-item.active .sidebar-nav-icon {
-  color: var(--color-lime);
+.dock-nav-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
 }
 
-.sidebar-nav-icon {
-  color: var(--color-white-dim);
-  display: flex;
-  align-items: center;
-  transition: color var(--transition-fast);
-}
-
-.sidebar-planned-tag {
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--color-white-faint);
-  border: 1px solid var(--color-border);
-}
-
-.sidebar-footer {
-  padding: 16px 20px;
-  border-top: 1px solid var(--color-border-subtle);
-  font-size: 11px;
-  color: var(--color-white-faint);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.sidebar-system-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--color-lime);
-  font-weight: 600;
-}
-
-.sidebar-system-status-dot {
+/* Small Green Status Dot for Workflow / Live Sync */
+.dock-status-dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--color-lime);
-  box-shadow: 0 0 6px var(--color-lime);
+  background-color: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
 }
 
-/* Mobile responsive drawer overlay */
-.sidebar-overlay {
-  display: none;
+/* Bottom Actions Column */
+.dock-bottom-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
 }
 
-@media (max-width: 900px) {
-  .sidebar-container {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    transform: translateX(-100%);
-    transition: transform var(--transition-normal);
-  }
-
-  .sidebar-container.open {
-    transform: translateX(0);
-  }
-
-  .sidebar-overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
-    z-index: 105;
-  }
+.dock-bottom-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 180ms ease;
 }
 
+.dock-bottom-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(45deg);
+}
+
+/* Responsive adjustment for Mobile */
+@media (max-width: 1024px) {
+  .dock-sidebar-container {
+    width: 60px;
+    padding: 16px 0;
+  }
+
+  .dock-item-active {
+    width: 38px;
+    height: 38px;
+  }
+
+  .dock-nav-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
