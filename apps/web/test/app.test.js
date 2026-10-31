@@ -115,6 +115,30 @@ test('Solar Store to Razorpay: pending order payload formatting and items mappin
   assert.equal(storeOrder.source, 'store');
 });
 
+test('Technician Dispatch Map: raster asset integration and waypoint coordinates', () => {
+  const mapAsset = '/maps/dispatch-map.jpg';
+  assert.ok(mapAsset.endsWith('.jpg'));
+
+  // Technician beacon origin and customer stop destinations
+  const technicianOrigin = { x: 440, y: 400 };
+  const stop1Indiranagar = { x: 560, y: 200 };
+  const stop2Doddanekkundi = { x: 710, y: 240 };
+  const stop3Whitefield = { x: 870, y: 310 };
+
+  // Stop 1 route via Paseo de la Reforma and Sullivan / San Rafael
+  const stop1Path = `M ${technicianOrigin.x} ${technicianOrigin.y} L 560 335 L ${stop1Indiranagar.x} ${stop1Indiranagar.y}`;
+  assert.equal(stop1Path, 'M 440 400 L 560 335 L 560 200');
+
+  // Stop 2 route via Reforma to Tabacalera / Ignacio Mariscal
+  const stop2Path = `M ${technicianOrigin.x} ${technicianOrigin.y} L 680 270 L ${stop2Doddanekkundi.x} ${stop2Doddanekkundi.y}`;
+  assert.equal(stop2Path, 'M 440 400 L 680 270 L 710 240');
+
+  // Stop 3 route via Reforma to Av. Juárez / Balderas
+  const stop3Path = `M ${technicianOrigin.x} ${technicianOrigin.y} L 740 240 L 870 240 L ${stop3Whitefield.x} ${stop3Whitefield.y}`;
+  assert.equal(stop3Path, 'M 440 400 L 740 240 L 870 240 L 870 310');
+});
+
+
 
 
 

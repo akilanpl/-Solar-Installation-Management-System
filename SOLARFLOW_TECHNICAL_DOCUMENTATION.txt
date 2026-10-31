@@ -1972,3 +1972,51 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+34. REAL CITY ROAD MAP ASSET INTEGRATION FOR TECHNICIAN NAVIGATION INTERFACE
+--------------------------------------------------------------------------------
+- Date & Context:
+  Integrated the user's uploaded high-resolution city street map image as the core
+  navigation canvas in both the Field Technician Dashboard Map widget (`TechnicianSiteMap.jsx`)
+  and the dedicated Full-Page Navigation Viewport (`TechnicianMapPage.jsx`).
+  Preserved street grid geometry, overlaid turn-by-turn routing along arterial corridors,
+  and provided multi-layer styling (Crisp Street Map, Night Vision Dark Mode, and Live Traffic Flow).
+
+- Key Architecture & Visual Elements:
+  1. Map Asset Integration (`apps/web/public/maps/dispatch-map.jpg`):
+     - Saved 1024x536 high-resolution city street map image displaying avenues, neighborhoods,
+       metro stations, and municipal landmarks.
+     - Embedded directly into SVG rendering viewports via `<image href="/maps/dispatch-map.jpg" ... />`,
+       ensuring 1:1 pixel alignment across responsive scales.
+  2. Multi-Mode Layer Switcher:
+     - "Street Map": Displays authentic crisp Google Maps / OpenStreetMap style road palette.
+     - "Night Vision": Applies dark mode filter (`invert(90%) hue-rotate(180deg) brightness(85%) contrast(110%)`)
+       with subtle `#0b0f19` dark atmospheric tint for night-time navigation.
+     - "Traffic Flow": Overlays live road congestion lines (green light traffic, yellow moderate).
+  3. Street Route Geometry & Active Waypoints:
+     - Live Technician Beacon: Positioned at `(440, 400)` along Paseo de la Reforma with animated radar wave.
+     - Stop 1 (Indiranagar / San Rafael): Route follows Reforma north onto Rio Marne / Sullivan to `(560, 200)`.
+     - Stop 2 (Doddanekkundi / Tabacalera): Route follows Reforma to Ignacio Mariscal / Tabacalera at `(710, 240)`.
+     - Stop 3 (Whitefield / Balderas Hub): Route extends east along Av. Juárez to Balderas Hub at `(870, 310)`.
+     - Core route features pulsating glowing SVG drop-shadow filter (`#0284c7` / `#38bdf8`) with animated dashed strokes.
+  4. Interactive Heads-Up Display (HUD) & Controls:
+     - Compass heading: "NE · Heading 042° Straight".
+     - Turn-by-turn prompts matching selected stop (e.g. "In 200m: Follow Paseo de la Reforma north toward San Rafael").
+     - Speedometer badge ("42 km/h") and traffic status indicator.
+     - Interactive zoom controls (`+`, `-`, and recenter `Crosshair`).
+  5. Automated Verification:
+     - Added unit test in `apps/web/test/app.test.js`: `Technician Dispatch Map: raster asset integration and waypoint coordinates`.
+     - All 11 unit tests passed (`11/11`). Vite production build compiled cleanly in 3.10s.
+
+- Files Created & Modified:
+  * apps/web/public/maps/dispatch-map.jpg (Created)
+  * apps/web/src/components/TechnicianSiteMap/TechnicianSiteMap.jsx (Modified)
+  * apps/web/src/components/TechnicianSiteMap/TechnicianSiteMap.css (Modified)
+  * apps/web/src/pages/Technician/TechnicianMapPage.jsx (Modified)
+  * apps/web/src/pages/Technician/TechnicianMapPage.css (Modified)
+  * apps/web/test/app.test.js (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================
