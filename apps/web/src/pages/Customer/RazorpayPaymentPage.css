@@ -1,0 +1,622 @@
+/* ==========================================================================
+   RAZORPAY CHECKOUT & PAYMENT GATEWAY STYLES
+   Authentic Razorpay UI with Navy/Electric Blue accents, 3D secure flow & QR
+   ========================================================================== */
+
+.rzp-checkout-page {
+  min-height: 100vh;
+  background-color: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #0c2340;
+}
+
+/* --------------------------------------------------------------------------
+   Top Razorpay Header Bar
+   -------------------------------------------------------------------------- */
+.rzp-top-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 14px 24px;
+}
+
+.rzp-top-container {
+  max-width: 920px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rzp-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.rzp-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rzp-back-btn:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.rzp-logo-lockup {
+  display: flex;
+  align-items: center;
+}
+
+.rzp-security-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 9999px;
+}
+
+/* --------------------------------------------------------------------------
+   Main Checkout Card
+   -------------------------------------------------------------------------- */
+.rzp-checkout-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.rzp-checkout-card {
+  width: 100%;
+  max-width: 860px;
+  min-height: 520px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 16px 45px rgba(12, 35, 64, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: flex;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+/* --------------------------------------------------------------------------
+   Left Summary Panel (Navy Blue Header / Dark Accents)
+   -------------------------------------------------------------------------- */
+.rzp-summary-panel {
+  width: 320px;
+  background: linear-gradient(180deg, #0c2340 0%, #07192e 100%);
+  color: #ffffff;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.rzp-merchant-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rzp-merchant-avatar {
+  width: 42px;
+  height: 42px;
+  background: #0284c7;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+}
+
+.rzp-merchant-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.rzp-merchant-desc {
+  font-size: 11.5px;
+  color: #94a3b8;
+  margin-top: 2px;
+  display: block;
+}
+
+.rzp-order-details-box {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.rzp-order-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rzp-order-label {
+  font-size: 11px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rzp-order-val {
+  font-size: 12.5px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.rzp-order-val.mono {
+  font-family: monospace;
+}
+
+.rzp-amount-highlight {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.rzp-amount-caption {
+  font-size: 11.5px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.rzp-amount-large {
+  font-size: 32px;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: -0.5px;
+}
+
+.rzp-amount-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  width: fit-content;
+  margin-top: 4px;
+}
+
+.rzp-trust-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 11px;
+  color: #cbd5e1;
+}
+
+.rzp-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   Right Interaction Panel
+   -------------------------------------------------------------------------- */
+.rzp-interaction-panel {
+  flex: 1;
+  padding: 36px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #ffffff;
+}
+
+/* Payment Method Tabs */
+.rzp-method-nav {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #edf0f5;
+  padding-bottom: 12px;
+}
+
+.rzp-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rzp-nav-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.rzp-nav-btn.active {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.rzp-tab-content {
+  padding: 24px 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Sub-toggle for QR / ID */
+.rzp-upi-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.rzp-sub-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #475569;
+}
+
+.rzp-sub-toggle.active {
+  background: #e0f2fe;
+  border-color: #38bdf8;
+  color: #0369a1;
+}
+
+/* QR Code Box */
+.rzp-qr-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.rzp-qr-frame {
+  padding: 12px;
+  background: #ffffff;
+  border: 2px solid #0c2340;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+}
+
+.rzp-qr-hint {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Form inputs */
+.rzp-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rzp-input-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rzp-input-field {
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.rzp-input-field:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.rzp-input-hint {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.rzp-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Bank Grid */
+.rzp-bank-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.rzp-bank-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  gap: 4px;
+}
+
+.rzp-bank-card:hover {
+  border-color: #0284c7;
+  background: #f0f9ff;
+}
+
+.rzp-bank-card.selected {
+  border-color: #0284c7;
+  background: #e0f2fe;
+}
+
+.rzp-bank-code {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0c2340;
+}
+
+.rzp-bank-name {
+  font-size: 11px;
+  color: #64748b;
+  text-align: center;
+}
+
+/* Submit Action Button */
+.rzp-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.3);
+  transition: all 0.15s ease;
+}
+
+.rzp-submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(2, 132, 199, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   State Screens: Spinner, OTP, Success
+   -------------------------------------------------------------------------- */
+.rzp-state-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.rzp-spinner-ring {
+  width: 52px;
+  height: 52px;
+  border: 4px solid #e0f2fe;
+  border-top-color: #0284c7;
+  border-radius: 50%;
+  animation: rzpSpin 0.9s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes rzpSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rzp-state-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0c2340;
+  margin: 0 0 8px 0;
+}
+
+.rzp-state-desc {
+  font-size: 13px;
+  color: #64748b;
+  max-width: 380px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* 3D Secure OTP */
+.rzp-otp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.rzp-otp-input-box {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.rzp-otp-field {
+  padding: 14px;
+  border: 2px solid #0284c7;
+  border-radius: 10px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 6px;
+  text-align: center;
+  font-family: monospace;
+  outline: none;
+}
+
+/* Success Screen */
+.rzp-state-screen.success {
+  animation: rzpFadeIn 0.3s ease-out;
+}
+
+@keyframes rzpFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.rzp-success-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #ecfdf5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.12);
+}
+
+.rzp-success-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #065f46;
+  margin: 0 0 6px 0;
+}
+
+.rzp-success-amount {
+  font-size: 28px;
+  font-weight: 800;
+  color: #047857;
+  margin-bottom: 12px;
+}
+
+.rzp-success-sub {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.rzp-redirect-bar {
+  margin-top: 28px;
+  width: 100%;
+  max-width: 320px;
+  font-size: 12px;
+  color: #64748b;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rzp-progress-fill {
+  width: 100%;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  position: relative;
+  overflow: hidden;
+}
+
+.rzp-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: #10b981;
+  animation: rzpProgress 2.2s forwards linear;
+}
+
+@keyframes rzpProgress {
+  to {
+    width: 100%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Razorpay Footer
+   -------------------------------------------------------------------------- */
+.rzp-bottom-footer {
+  padding: 16px;
+  text-align: center;
+  border-top: 1px solid #e2e8f0;
+  background-color: #ffffff;
+}
+
+.rzp-footer-content {
+  font-size: 11.5px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}

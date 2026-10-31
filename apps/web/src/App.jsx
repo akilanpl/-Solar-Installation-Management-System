@@ -14,6 +14,7 @@ import { NewEnquiry } from './pages/Customer/NewEnquiry';
 import { EnquiryDetail } from './pages/Customer/EnquiryDetail';
 import { CustomerQuotations } from './pages/Customer/CustomerQuotations';
 import { CustomerPayments } from './pages/Customer/CustomerPayments';
+import { RazorpayPaymentPage } from './pages/Customer/RazorpayPaymentPage';
 import { CustomerSupport } from './pages/Customer/CustomerSupport';
 
 // Sales Pages
@@ -73,6 +74,7 @@ export function App() {
     return <EnquiryDetail enquiryId={enquiryId} />;
   }
   if (path === '/customer/quotations') return <CustomerQuotations />;
+  if (path === '/customer/payments/razorpay') return <RazorpayPaymentPage />;
   if (path === '/customer/payments') return <CustomerPayments />;
   if (path === '/customer/support') return <CustomerSupport />;
 

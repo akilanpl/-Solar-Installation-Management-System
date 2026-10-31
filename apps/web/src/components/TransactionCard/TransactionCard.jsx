@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CheckCircle2, ArrowRight, Zap, ShieldCheck } from 'lucide-react';
+import { useRouter } from '../../router/Router';
 import { useAuth } from '../../context/AuthContext';
 import './TransactionCard.css';
 
@@ -17,21 +18,17 @@ export function TransactionCard({
   beneficiary = 'Arun Kumar',
   currencySymbol = '₹',
 }) {
+  const { navigate } = useRouter();
   const { showToast } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const [settledTime, setSettledTime] = useState('Just now');
 
   const handleTriggerTransaction = () => {
     setIsProcessing(true);
+    // Play terminal swipe animation, then redirect to Razorpay payment page
     setTimeout(() => {
-      setIsProcessing(false);
-      setSettledTime('Just now');
-      showToast({
-        type: 'success',
-        title: 'Razorpay Settlement Complete',
-        message: `${amount} credited directly to Aadhaar-linked bank A/C (${accountNumber}).`,
-      });
-    }, 600);
+      navigate('/customer/payments/razorpay');
+    }, 420);
   };
 
   return (
@@ -153,3 +150,4 @@ export function TransactionCard({
 }
 
 export default TransactionCard;
+

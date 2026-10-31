@@ -6,6 +6,8 @@
 .pos-transaction-wrapper {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 16px;
   width: 100%;
 }
@@ -17,7 +19,7 @@
   background-color: #ffffff;
   display: flex;
   width: 100%;
-  max-width: 460px;
+  max-width: 440px;
   height: 116px;
   position: relative;
   border-radius: 16px;
@@ -27,12 +29,16 @@
   cursor: pointer;
   overflow: hidden;
   box-sizing: border-box;
+  margin: 0 auto;
+  align-self: center;
 }
 
 .pos-container:hover,
 .pos-container.active-swipe {
   transform: scale(1.02);
   width: 220px;
+  margin: 0 auto;
+  align-self: center;
 }
 
 .pos-container:hover .pos-left-side,
@@ -455,3 +461,4 @@
   gap: 5px;
   font-size: 12px;
 }
+

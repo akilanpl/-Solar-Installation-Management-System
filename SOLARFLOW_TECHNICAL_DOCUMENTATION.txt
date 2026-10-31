@@ -1426,3 +1426,50 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+22. CENTERING TRANSACTION CONTAINER & RAZORPAY CHECKOUT REDIRECTION FLOW
+--------------------------------------------------------------------------------
+- Date & Context:
+  Addressed UI feedback on the Customer Payments & Escrow Schedule page (`CustomerPayments.jsx`).
+  Horizontally centered the animated POS transaction card (`TransactionCard.jsx`, `TransactionCard.css`)
+  so that both its default width and its contracted hover state (220px) remain balanced in the right-hand
+  subsidy column. Configured an interactive click handler that transitions through the terminal swipe animation
+  and smoothly redirects to a full-screen, authentic Razorpay Payment Gateway page (`/customer/payments/razorpay`).
+
+- Key Architecture & Visual Elements:
+  1. Centered Container Alignment (`TransactionCard.css`):
+     - Added `align-items: center; justify-content: center;` to `.pos-transaction-wrapper`.
+     - Added `margin: 0 auto; align-self: center;` to `.pos-container` and `.pos-container:hover`.
+     - Guarantees that when the card morphs into the green card-swipe terminal on hover or click,
+       it stays aligned under the Direct Benefit Subsidy card.
+  2. Razorpay Payment Gateway Experience (`RazorpayPaymentPage.jsx`, `RazorpayPaymentPage.css`):
+     - Built a complete, dedicated payment checkout view registered under `/customer/payments/razorpay`.
+     - Features:
+       * Razorpay Top Header: Brand emblem, 256-bit SSL padlock badge, and a "Cancel & Return" navigation control.
+       * Left Summary Panel: Navy/Slate `#0c2340` backdrop with SolarOps merchant identity, order reference (`order_PMSG_2026_9912`),
+         beneficiary bank account (`A/C •••• 4921`), and large highlighted amount (`₹78,000.00`).
+       * Interactive Payment Methods:
+         - UPI & QR: Dynamic SVG QR code (featuring central currency emblem) supporting GPay, PhonePe, Paytm, BHIM,
+           and a virtual payment address (VPA) input mode.
+         - Cards: 16-digit card input, expiry, and CVV fields.
+         - Net Banking: 6 prominent Indian commercial banks (SBI, HDFC, ICICI, Axis, Kotak, BOB).
+       * 3D Secure Verification Flow:
+         - One-click authorization triggers bank gateway communication spinner.
+         - Renders 3D Secure OTP verification screen with prefilled simulation passcode (`482910`).
+         - On OTP confirmation, renders the green celebration checkmark (`Payment Settlement Successful!`).
+         - Auto-redirects back to `/customer/payments` after 2.4 seconds with a live success toast notification.
+  3. Routing & Access Control:
+     - Added route handling in `apps/web/src/App.jsx`.
+     - Validated client path matching without full-page reloads.
+
+- Files Created or Modified:
+  * apps/web/src/components/TransactionCard/TransactionCard.jsx (Modified)
+  * apps/web/src/components/TransactionCard/TransactionCard.css (Modified)
+  * apps/web/src/pages/Customer/RazorpayPaymentPage.jsx (Created)
+  * apps/web/src/pages/Customer/RazorpayPaymentPage.css (Created)
+  * apps/web/src/App.jsx (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================
