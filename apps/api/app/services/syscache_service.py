@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 
 from app.core.errors import AppError
 from app.models.enquiry import CustomerSite
+from app.models.finance import FinanceEntry, FinanceRecord
 from app.models.identity import CustomerProfile, User
 from app.models.phase3 import EquipmentSerial, InstallationJob, Warranty
 from app.models.phase4d import (
@@ -103,6 +104,19 @@ def compute_business_version(db: Session, customer_id: uuid.UUID) -> str:
         .order_by(TicketRepairJob.reference)
     ).all()
     parts.append(f"jobs:{[(j[0], j[1]) for j in jobs]}")
+    finance_records = db.execute(
+        select(FinanceRecord.id, FinanceRecord.request_hash)
+        .where(FinanceRecord.customer_id == customer_id)
+        .order_by(FinanceRecord.id)
+    ).all()
+    finance_entries = db.execute(
+        select(FinanceEntry.id, FinanceEntry.request_hash)
+        .join(FinanceRecord, FinanceRecord.id == FinanceEntry.record_id)
+        .where(FinanceRecord.customer_id == customer_id)
+        .order_by(FinanceEntry.id)
+    ).all()
+    parts.append(f"finance_records:{[(str(row[0]), row[1]) for row in finance_records]}")
+    parts.append(f"finance_entries:{[(str(row[0]), row[1]) for row in finance_entries]}")
     digest = hashlib.sha256("|".join(parts).encode("utf-8")).hexdigest()
     return digest[:32]
 
@@ -153,7 +167,22 @@ def build_snapshot_payload(db: Session, customer_id: uuid.UUID) -> dict[str, Any
             ).all()
         )
     open_tickets = [t for t in tickets if t.status not in ("closed", "cancelled")]
+    # This shared support/customer scope is not a finance authorization grant.
+    # Expose only operational document counts, never ledger/payroll amounts,
+    # banking references, uploaded evidence or unrestricted source payloads.
+    billing_counts = dict(db.execute(
+        select(FinanceRecord.kind, func.count(FinanceRecord.id))
+        .where(FinanceRecord.customer_id == customer_id,
+               FinanceRecord.kind.in_(("invoice", "credit", "receipt")))
+        .group_by(FinanceRecord.kind)
+    ).all())
     return {
+        "billing_activity": {
+            "invoice_count": billing_counts.get("invoice", 0),
+            "credit_note_count": billing_counts.get("credit", 0),
+            "has_recorded_receipts": billing_counts.get("receipt", 0) > 0,
+            "details_require_finance_access": True,
+        },
         "customer": {
             "user_id": str(customer_id),
             "full_name": profile.full_name,
@@ -496,16 +525,22 @@ def emit_invalidation(
         occurred_at=occurred_at or datetime.now(UTC),
         payload=payload or {},
     )
-    db.add(event)
     try:
-        db.flush()
+        # A replay must never roll back a caller's finance/stock transaction.
+        with db.begin_nested():
+            db.add(event)
+            db.flush()
     except IntegrityError:
-        db.rollback()
         existing = db.scalar(
             select(SysCacheOutbox).where(SysCacheOutbox.event_id == event_id)
         )
         if existing is None:
             raise
+        if (existing.aggregate_kind != aggregate_kind
+                or existing.aggregate_id != aggregate_id
+                or existing.customer_user_id != customer_id
+                or existing.payload != (payload or {})):
+            raise AppError(409, "idempotency_conflict", "Invalidation event has different content.")
         return existing
     return event
 

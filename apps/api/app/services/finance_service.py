@@ -30,6 +30,7 @@ from app.models.workflow import PaymentIntent, Quotation, QuotationAcceptance, S
 from app.schemas import finance as s
 from app.services.evidence_store import sniff_content_type
 from app.services.payment_service import quotation_family_ids
+from app.services.syscache_service import emit_invalidation
 
 
 def fail(code, message, status=409):
@@ -93,7 +94,21 @@ def record(db, user, kind, key, payload, order=None, policy_id=None):
     )
     db.add(row)
     db.flush()
+    _invalidate_customer_finance(db, row, row.id, "record_created")
     return row
+
+
+def _invalidate_customer_finance(db, source, change_id, change):
+    if source.customer_id is None:
+        return
+    emit_invalidation(
+        db,
+        event_id=uuid.uuid5(uuid.NAMESPACE_URL, f"solarops:finance:{change}:{change_id}"),
+        aggregate_kind="finance",
+        aggregate_id=str(source.id),
+        customer_id=source.customer_id,
+        payload={"change": change},
+    )
 
 
 def order_for(db, order_id):
@@ -198,6 +213,7 @@ def post(db, user, source, event, posting_date, lines, reversal_of=None):
             FinanceLine(entry_id=row.id, account=account, debit_minor=debit, credit_minor=credit)
         )
     db.flush()
+    _invalidate_customer_finance(db, source, row.id, "entry_posted")
     return row
 
 
