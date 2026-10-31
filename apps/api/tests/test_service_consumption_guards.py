@@ -144,7 +144,7 @@ def test_consumption_preserves_another_orders_allocation_then_retries_once(clien
         assert db.get(ServiceInvoice, uuid.UUID(bill["id"])).consumption_operation_id is None
     still_allocated = client.get(f"/api/v1/stock/allocations?order_id={other['id']}", headers=warehouse)
     assert still_allocated.status_code == 200, still_allocated.text
-    connector = next(row for row in still_allocated.json() if row["component_code"] == "CONN-MC4")
+    connector = next(row for row in still_allocated.json() if row["id"] == allocated.json()[0]["id"])
     assert connector["quantity"] == 1 and connector["picked_quantity"] == 0
     _receipt_validate(client, warehouse, "CONN-MC4", "1")
     consumed = client.post(path, headers=warehouse)
