@@ -13,6 +13,7 @@ from app.api.v1 import (
     health,
     installation,
     operations,
+    intelligence,
     orders,
     packages,
     payments,
@@ -51,3 +52,4 @@ api_router.include_router(billing.router)
 api_router.include_router(finance.router)
 api_router.include_router(admin.router)
 api_router.include_router(dev.router)
+api_router.include_router(intelligence.router)
