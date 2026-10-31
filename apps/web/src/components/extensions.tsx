@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 
 import { Button, Card, ErrorState, LoadingState, PageHeader, TextField } from "@/components/ui";
 import { api, ApiError, type CurrentUser } from "@/lib/api";
@@ -248,7 +248,7 @@ export function SupportExtensions({ user }: { user: CurrentUser }) {
 
   async function act(
     id: string,
-    action: "approve" | "reject" | "activate",
+    action: "approve" | "reject",
     body: Record<string, unknown>,
   ) {
     setError(null);
@@ -280,12 +280,6 @@ export function SupportExtensions({ user }: { user: CurrentUser }) {
     await act(id, approve ? "approve" : "reject", approve ? { note: note ?? null } : { note });
   }
 
-  async function activate(id: string) {
-    const reference = window.prompt("Verified payment reference (bank transfer, UPI, receipt).");
-    if (!reference) return;
-    await act(id, "activate", { payment_reference: reference.trim() });
-  }
-
   if (loading) return <LoadingState label="Loading extension reviews" />;
 
   return (
@@ -310,7 +304,7 @@ export function SupportExtensions({ user }: { user: CurrentUser }) {
               <li key={item.id} className="rounded-md border border-moss-200 px-3 py-2 text-sm">
                 <strong>{item.status.replace(/_/g, " ")}</strong> · {item.extension_days} days ·{" "}
                 {money(item.price_minor, item.currency)}
-                {item.payment_reference ? <span> · paid via {item.payment_reference}</span> : null}
+                {item.payment_reference ? <span> · recorded reference {item.payment_reference}</span> : null}
                 <span className="mt-2 flex flex-wrap gap-2">
                   {(item.status === "pending_approval" || item.status === "requested") && (
                     <>
@@ -321,7 +315,7 @@ export function SupportExtensions({ user }: { user: CurrentUser }) {
                     </>
                   )}
                   {item.status === "pending_payment" && (
-                    <Button onClick={() => activate(item.id)}>Verify payment & activate</Button>
+                    <ExtensionSettlementUnavailable />
                   )}
                 </span>
               </li>
@@ -350,4 +344,14 @@ export function SupportExtensions({ user }: { user: CurrentUser }) {
       </Card>
     </div>
   );
+}
+
+export function ExtensionSettlementUnavailable() {
+  const explanation = useId();
+  return <span>
+    <Button disabled aria-describedby={explanation}>Verify payment &amp; activate</Button>
+    <span id={explanation} className="mt-1 block text-sm text-moss-900/80">
+      Settlement verification is unavailable. This request remains pending; a payment reference alone cannot activate coverage.
+    </span>
+  </span>;
 }
