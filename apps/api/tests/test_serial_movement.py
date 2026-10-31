@@ -361,3 +361,30 @@ def test_dispatched_goods_cannot_be_auto_restocked_by_cancellation(client, appli
     with Session(application.state.engine) as db:
         assert db.scalar(select(func.count()).select_from(StockLedger)) == before
         assert all(unit.status == "in_transit" for unit in db.scalars(select(EquipmentSerial)))
+
+
+def test_positive_count_correction_cannot_invent_another_copy_of_a_present_unit(
+    client, application
+):
+    headers, units = received(client, application, 1)
+    manager = _manager(client)
+    line = {
+        "component_code": "PANEL-550",
+        "quantity": "1",
+        "to_location": "MAIN",
+        "serial_ids": [units[0]["id"]],
+    }
+    result = operation(client, manager, "adjustment", [line])
+    assert result.status_code == 409
+    assert result.json()["error"]["code"] == "invalid_serial_state"
+    for reason in (None, "x"):
+        result = client.post(
+            "/api/v1/stock/operations",
+            json={"operation_type": "adjustment", "lines": [line], "note": reason},
+            headers={**manager, "Idempotency-Key": uuid.uuid4().hex},
+        )
+        assert result.status_code == 403
+        assert result.json()["error"]["code"] == "adjustment_approval_required"
+    with Session(application.state.engine) as db:
+        assert db.scalar(select(func.sum(StockLedger.quantity_delta))) == 1
+        assert db.get(EquipmentSerial, uuid.UUID(units[0]["id"])).status == "in_stock"

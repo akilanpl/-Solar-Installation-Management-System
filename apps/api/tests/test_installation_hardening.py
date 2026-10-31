@@ -494,3 +494,47 @@ def test_completed_summary_survives_later_serial_return_without_rewriting_accept
         row.signature = changed
         db.commit()
     assert client.get(f"/api/v1/jobs/{job['id']}/work-summary").status_code == 409
+
+
+def test_completion_refuses_a_faulty_unit_even_when_identity_summary_is_unchanged(
+    client, application
+):
+    from app.models.phase3 import EquipmentSerial
+
+    job, code, _, _ = prepared(client, application)
+    tech = _technician(client)
+    assert (
+        client.post(
+            f"/api/v1/jobs/{job['id']}/customer-otp", json={"code": code}, headers=tech
+        ).status_code
+        == 200
+    )
+    owner = customer(client)
+    reviewed = client.get(f"/api/v1/jobs/{job['id']}/work-summary").json()
+    assert (
+        client.post(
+            f"/api/v1/jobs/{job['id']}/signature",
+            json={
+                "signature_ref": "Customer fixture",
+                "customer_confirmed": True,
+                "summary_hash": reviewed["summary_hash"],
+            },
+            headers=owner,
+        ).status_code
+        == 200
+    )
+    with Session(application.state.engine) as db:
+        unit = db.scalar(
+            select(EquipmentSerial).where(
+                EquipmentSerial.order_id == uuid.UUID(job["order_id"]),
+                EquipmentSerial.component_code == "PANEL-550",
+            )
+        )
+        unit.status = "faulty"
+        db.commit()
+    assert client.get(f"/api/v1/jobs/{job['id']}/work-summary").json() == reviewed
+    result = client.post(f"/api/v1/jobs/{job['id']}/completion", headers=_technician(client))
+    assert result.status_code == 409, result.text
+    assert result.json()["error"]["code"] == "serial_custody_required"
+    with Session(application.state.engine) as db:
+        assert db.get(InstallationJob, uuid.UUID(job["id"])).completed_at is None
