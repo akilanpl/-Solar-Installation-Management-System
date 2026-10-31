@@ -212,7 +212,7 @@
 /* Active Card Pill with Topographical Waves */
 .io-method-pill.card-pill.active {
   background-color: #dbeafe;
-  background-image: 
+  background-image:
     radial-gradient(circle at 35% 50%, rgba(59, 130, 246, 0.12) 0%, transparent 70%),
     radial-gradient(ellipse at 80% 30%, rgba(37, 99, 235, 0.1) 0%, transparent 60%),
     repeating-radial-gradient(circle at 30% 60%, transparent 0, transparent 9px, rgba(59, 130, 246, 0.18) 10px, transparent 11px);

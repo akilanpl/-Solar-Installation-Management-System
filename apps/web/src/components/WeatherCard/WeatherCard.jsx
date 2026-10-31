@@ -273,7 +273,7 @@ export function WeatherCard({
             role="img"
             aria-label="Cloud"
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 64 64"
+            viewBox="0 -2 68 66"
           >
             <defs>
               <g id="cloud_shape_single">
@@ -290,7 +290,7 @@ export function WeatherCard({
             {/* Smaller cloud behind */}
             <use
               href="#cloud_shape_single"
-              transform="translate(28 17) scale(0.62)"
+              transform="translate(24 16) scale(0.62)"
               className="cloud-behind"
             />
             {/* Main cloud */}

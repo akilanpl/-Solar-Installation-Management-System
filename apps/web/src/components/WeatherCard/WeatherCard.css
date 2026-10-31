@@ -48,15 +48,15 @@
 /* Sunny Illustration */
 .weather-sun {
   position: absolute;
-  right: 12px;
-  top: -12px;
+  right: 14px;
+  top: 4px;
   pointer-events: none;
   z-index: 1;
 }
 
 .weather-sun svg {
-  height: 124px;
-  width: 124px;
+  height: 116px;
+  width: 116px;
   overflow: visible;
   filter: drop-shadow(0 0 16px rgba(255, 224, 102, 0.75));
 }
@@ -78,33 +78,33 @@
 /* Mid Rain Illustration */
 .weather-cloud-rain {
   position: absolute;
-  right: 0;
-  top: -10px;
+  right: 14px;
+  top: 8px;
   pointer-events: none;
   z-index: 1;
 }
 
 .weather-cloud-rain svg {
-  height: 122px;
-  width: 122px;
+  height: 110px;
+  width: 110px;
   overflow: visible;
   filter: drop-shadow(0 6px 14px rgba(30, 20, 70, 0.4));
 }
 
-/* Cloudy Illustration */
+/* Cloudy Illustration - Fully Visible with Clear Headroom */
 .weather-cloud-double {
   position: absolute;
-  right: 0;
-  top: -10px;
+  right: 16px;
+  top: 8px;
   pointer-events: none;
   z-index: 1;
 }
 
 .weather-cloud-double svg {
-  height: 122px;
-  width: 122px;
+  height: 110px;
+  width: 110px;
   overflow: visible;
-  filter: drop-shadow(0 6px 12px rgba(30, 40, 70, 0.28));
+  filter: drop-shadow(0 6px 14px rgba(30, 40, 70, 0.28));
 }
 
 .cloud-behind {

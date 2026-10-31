@@ -90,7 +90,7 @@ export function Login({ initialMode = 'login' }) {
           LEFT HERO PANEL (Vibrant Royal Blue Gradient with 3 Step Cards)
           ================================================================ */}
       <section className="auth-hero-panel" aria-label="Hero Introduction">
-        {/* Dynamic Background Video with Royal Blue Ambient Overlay */}
+        {/* Dynamic Background Video (100% Opacity, Zero Blue Tint) */}
         <video
           className="auth-hero-video-bg"
           autoPlay
@@ -98,6 +98,7 @@ export function Login({ initialMode = 'login' }) {
           muted
           playsInline
         >
+          <source src="/solar_loop.mp4" type="video/mp4" />
           <source src="/login-bg.mp4" type="video/mp4" />
         </video>
         <div className="auth-hero-video-overlay" />

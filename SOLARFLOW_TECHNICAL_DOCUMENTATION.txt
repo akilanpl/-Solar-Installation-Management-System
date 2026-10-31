@@ -1610,3 +1610,49 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+--------------------------------------------------------------------------------
+26. CLOUD GRAPHIC CLIPPING RECTIFICATION & SOLAR LOOP AUTH VIDEO RESTYLING
+--------------------------------------------------------------------------------
+- Date & Context:
+  Resolved visual clipping on the Weather module's cloudy state and enhanced the
+  authentication (Login / Signup) background presentation per UI feedback:
+  1. The dual-cloud vector graphic in the weather card was previously positioned
+     with negative top offset (`top: -10px; right: 0;`), causing the top arc and
+     right corner to be clipped by the parent card's `overflow: hidden` boundary.
+  2. The signup/login page video required switching to `solar_loop.mp4` running
+     at full 100% opacity with all blue ambient overlays and gradients eliminated.
+
+- Key Architecture & Visual Elements:
+  1. Weather Card Cloud Graphic Visibility Rectification (`WeatherCard.jsx`, `WeatherCard.css`):
+     - Repositioned `.weather-cloud-double` from `top: -10px; right: 0;` to `top: 8px; right: 16px;`.
+     - Optimized SVG dimensions to `110px × 110px` and adjusted viewBox to `0 -2 68 66`,
+       providing 2 units of top headroom.
+     - Adjusted secondary cloud offset to `translate(24 16) scale(0.62)`.
+     - Both cloud domes and outlines now render 100% inside the card with ample breathing
+       room from the 24px border-radius curves.
+     - Similarly aligned `.weather-sun` (`top: 4px; right: 14px;`) and `.weather-cloud-rain`
+       (`top: 8px; right: 14px;`) to prevent any clipping across all 3 weather variants.
+
+  2. Solar Loop Video & Zero-Tint Authentication Canvas (`Login.jsx`, `Login.css`):
+     - Integrated `solar_loop.mp4` into `apps/web/public/` and `apps/web/src/assets/`.
+     - In `Login.jsx`, updated `<video>` sources to load `/solar_loop.mp4` with `/login-bg.mp4` fallback.
+     - In `Login.css`:
+       * Set `.auth-hero-video-bg` to 100% opacity (`opacity: 1;`).
+       * Completely removed blue tint overlay by setting `.auth-hero-video-overlay` to `display: none;`.
+       * Replaced `.auth-hero-panel` blue gradient with a neutral dark canvas (`background-color: #0b1329;`).
+       * Added crisp text-shadows to headline typography (`.auth-hero-title`, `.auth-hero-subtitle`)
+         to preserve high readability over the natural video motion.
+
+- Files Created or Modified:
+  * apps/web/public/solar_loop.mp4 (Added)
+  * apps/web/public/login-bg.mp4 (Updated)
+  * apps/web/src/assets/solar_loop.mp4 (Added)
+  * apps/web/src/assets/login-bg.mp4 (Updated)
+  * apps/web/src/components/WeatherCard/WeatherCard.jsx (Modified)
+  * apps/web/src/components/WeatherCard/WeatherCard.css (Modified)
+  * apps/web/src/pages/Login/Login.jsx (Modified)
+  * apps/web/src/pages/Login/Login.css (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================

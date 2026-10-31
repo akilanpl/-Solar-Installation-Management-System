@@ -241,3 +241,4 @@ export function ReceiptPrinter({
 }
 
 export default ReceiptPrinter;
+
