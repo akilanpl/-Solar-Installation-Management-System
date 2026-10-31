@@ -1,0 +1,13 @@
+# Final coverage and pushgate report
+
+The authoritative result is .pushgate/reports/<exact-HEAD>/report.json produced by running .pushgate/run.sh from a clean exact-source checkout. Never reuse historical success for a newer commit. Final acceptance remains BLOCKED until every mandatory campaign passes.
+
+Initial combined run:345passed109failed, with shared stale serial setup blocking downstream scenarios. After fixtures used real receipt/delivery/installation APIs, full candidate2101205ccfa4600cae13eb030135dd292b8f9087 produced473passed6failed, line89.899%, branch69.506%. Required branch70% was not lowered. Deterministic gate30.6/100 INCOMPLETE. Six failures were replacement dispatch and warranty UTC/replay defects, subsequently fixed with focused15passing regressions. A newer final-source run is required and delivered separately; earlier counts are explicitly historical.
+
+The old evidence runner always appended blanket notrun entries. The revised runner executes reviewed named command adapters, validates fresh complete JUnit, retains exit failures/timeouts even when partial XML passes, removes stale evidence, and checks exact clean source before/after. Dedicated campaign catalogs repeat real existing behavioral tests and do not inflate distinct authored-test totals. Backend core coverage and dedicated campaign execution are separate stages; no production modules are omitted from coverage.
+
+No scorer thresholds/configuration or hook controls were weakened.18 evidence/selftests pass. This session added actual migration,edge,boundary,concurrency,Phase3,secret-history and browser execution adapters. Operational/load/resilience adapters are being verified. Browser launch failures remain failures; missing mutation/diff/baseline/two-order certification remains incomplete. No external provider was substituted by a fabricated successful response.
+
+Publication-only override was explicitly authorized for five exact source commits. It did not authorize the integrated candidate or waive final release gates. Draft source PRs4–8 have API/webCI success and release-gate failure. Main protections are currently absent according to the GitHub protection endpoint; configure required checks/reviews before merge.
+
+Reproduce: create a separate disposable solarops_release_test_XXXXXXXX database, set SOLAROPS_TEST_DATABASE_URL and SOLAROPS_DISPOSABLE_TEST_DATABASE_NAME, install pinned dependencies plus officialGitleaks8.30.1 on PATH, then run .pushgate/run.sh. Never target the preview/business database. See LOCAL_SETUP_AND_RECOVERY.md.
