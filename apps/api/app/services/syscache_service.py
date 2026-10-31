@@ -75,20 +75,20 @@ def compute_business_version(db: Session, customer_id: uuid.UUID) -> str:
         select(SalesOrder).where(SalesOrder.customer_user_id == customer_id)
     ).all()
     parts.append(f"orders:{[(str(o.id), o.package_code) for o in orders]}")
-    serials = db.scalars(
+    serials = db.execute(
         select(EquipmentSerial.serial_number, EquipmentSerial.status)
         .join(SalesOrder, SalesOrder.id == EquipmentSerial.order_id)
         .where(SalesOrder.customer_user_id == customer_id)
         .order_by(EquipmentSerial.serial_number)
     ).all()
     parts.append(f"serials:{[(s[0], s[1]) for s in serials]}")
-    warranties = db.scalars(
+    warranties = db.execute(
         select(Warranty.status, Warranty.ends_at).where(
             Warranty.customer_user_id == customer_id
         )
     ).all()
     parts.append(f"warranties:{[(w[0], _iso(w[1])) for w in warranties]}")
-    tickets = db.scalars(
+    tickets = db.execute(
         select(
             ServiceTicket.reference, ServiceTicket.status, ServiceTicket.resolution_version
         )
@@ -96,7 +96,7 @@ def compute_business_version(db: Session, customer_id: uuid.UUID) -> str:
         .order_by(ServiceTicket.reference)
     ).all()
     parts.append(f"tickets:{[(t[0], t[1], t[2]) for t in tickets]}")
-    jobs = db.scalars(
+    jobs = db.execute(
         select(TicketRepairJob.reference, TicketRepairJob.status)
         .join(ServiceTicket, ServiceTicket.id == TicketRepairJob.ticket_id)
         .where(ServiceTicket.customer_user_id == customer_id)
@@ -296,6 +296,7 @@ def rebuild_snapshot(
     if (
         existing is not None
         and existing.invalidated_at is None
+        and existing.schema_version == SYSCACHE_SCHEMA_VERSION
         and existing.business_version == current_version
         and existing.expires_at > now
     ):

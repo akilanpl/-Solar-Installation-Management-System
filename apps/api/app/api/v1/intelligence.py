@@ -150,7 +150,7 @@ def cache_metrics(
 
 # ------------------------------------------------------------- AI assists
 
-@router.post("/ai-assists", response_model=AssistResponse)
+@router.post("/ai-assists", response_model=AssistResponse, status_code=201)
 def create_assist(
     body: AssistCreate,
     db: Session = Depends(get_db),
@@ -239,7 +239,7 @@ def upsert_geolocation(
     )
 
 
-@router.post("/weather/forecasts", response_model=ForecastResponse)
+@router.post("/weather/forecasts", response_model=ForecastResponse, status_code=201)
 def fetch_forecast(
     body: ForecastFetch,
     db: Session = Depends(get_db),
@@ -400,7 +400,7 @@ def generation_summary(
     return GenerationSummaryResponse(**result)
 
 
-@router.post("/generation/readings", response_model=ReadingResponse)
+@router.post("/generation/readings", response_model=ReadingResponse, status_code=201)
 def ingest_reading(
     body: ReadingCreate,
     db: Session = Depends(get_db),
