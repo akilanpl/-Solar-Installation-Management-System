@@ -169,9 +169,7 @@ def revise_quotation(
     if probe is None:
         raise AppError(404, "not_found", "Quotation not found.")
     _lock_enquiry(db, probe.enquiry_id)
-    current = db.scalar(
-        select(Quotation).where(Quotation.id == quotation_id).with_for_update()
-    )
+    current = db.scalar(select(Quotation).where(Quotation.id == quotation_id).with_for_update())
     if current is None:
         raise AppError(404, "not_found", "Quotation not found.")
     digest = _hash(
@@ -296,10 +294,7 @@ def _issue(
     )
     if version is None:
         raise AppError(409, "template_missing", "This package has no current template version.")
-    names = {
-        component.code: component
-        for component in db.scalars(select(CatalogueComponent))
-    }
+    names = {component.code: component for component in db.scalars(select(CatalogueComponent))}
     drafted = [
         BomLine(
             component_code=line.component_code,
@@ -333,10 +328,15 @@ def _issue(
         )
     except ValueError as exc:
         raise AppError(422, "validation_error", str(exc)) from exc
-    version_number = int(
-        db.scalar(select(func.max(Quotation.version_number)).where(Quotation.enquiry_id == enquiry.id))
-        or 0
-    ) + 1
+    version_number = (
+        int(
+            db.scalar(
+                select(func.max(Quotation.version_number)).where(Quotation.enquiry_id == enquiry.id)
+            )
+            or 0
+        )
+        + 1
+    )
     issued_at = utcnow()
     quotation = Quotation(
         reference=next_reference(db, "quotation", "QTN"),
@@ -497,9 +497,7 @@ def list_revision_requests(
 def accept_quotation(db: Session, user: User, quotation_id: uuid.UUID) -> Quotation:
     if user.role_code != "customer":
         raise AppError(403, "forbidden", "Only the customer can accept a quotation.")
-    quotation = db.scalar(
-        select(Quotation).where(Quotation.id == quotation_id).with_for_update()
-    )
+    quotation = db.scalar(select(Quotation).where(Quotation.id == quotation_id).with_for_update())
     if quotation is None or quotation.customer_user_id != user.id:
         raise AppError(404, "not_found", "Quotation not found.")
     if quotation.status == "accepted":
@@ -510,7 +508,9 @@ def accept_quotation(db: Session, user: User, quotation_id: uuid.UUID) -> Quotat
         raise AppError(409, "quotation_expired", "This quotation has expired.")
     survey = db.get(Survey, quotation.survey_id)
     if survey is None or survey.status != "approved":
-        raise AppError(409, "survey_not_approved", "The survey behind this quotation is not approved.")
+        raise AppError(
+            409, "survey_not_approved", "The survey behind this quotation is not approved."
+        )
     db.add(
         QuotationAcceptance(
             quotation_id=quotation.id,
@@ -537,9 +537,7 @@ def accept_quotation(db: Session, user: User, quotation_id: uuid.UUID) -> Quotat
 def withdraw_quotation(db: Session, user: User, quotation_id: uuid.UUID) -> Quotation:
     if user.role_code not in SALES:
         raise AppError(403, "forbidden", "Only sales can withdraw a quotation.")
-    quotation = db.scalar(
-        select(Quotation).where(Quotation.id == quotation_id).with_for_update()
-    )
+    quotation = db.scalar(select(Quotation).where(Quotation.id == quotation_id).with_for_update())
     if quotation is None:
         raise AppError(404, "not_found", "Quotation not found.")
     if quotation.status != "issued":
@@ -561,7 +559,12 @@ def withdraw_quotation(db: Session, user: User, quotation_id: uuid.UUID) -> Quot
 
 
 def template_version(db: Session, user: User, package_code_value: str, version_number: int | None):
-    if user.role_code not in SALES | {"customer", "technician", "warehouse_staff", "warehouse_manager"}:
+    if user.role_code not in SALES | {
+        "customer",
+        "technician",
+        "warehouse_staff",
+        "warehouse_manager",
+    }:
         raise AppError(403, "forbidden", "You cannot view package templates.")
     package = db.scalar(select(SolarPackage).where(SolarPackage.code == package_code_value))
     if package is None:

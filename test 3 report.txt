@@ -1,0 +1,146 @@
+SOLAROPS - TEST 3 REPORT
+Date: 2026-10-31 (Asia/Calcutta)
+Repository: akilanpl/-Solar-Installation-Management-System
+QA branch: test/qa-integration
+Starting QA commit: 7b0e80742e47c3b612e455a8839b138061760320
+Source: origin/feature/phase3-warehouse-installation
+Source head: ae212b2cdfce755b69ec9a73df15f3907873bf0d
+Phase3 feature commits: 2e4ec90 and ae212b2
+Phase2 prerequisites: b979ec6 and 32cdc24 via main integration history
+Ordinary merge: aba0169ca6d6da80ef36ff29b695b7916e3a170c
+
+VERDICT: FAIL - product acceptance is incomplete; QA findings are preserved.
+No failing assertion was skipped, marked xfail or weakened to obtain green.
+No push was attempted. Fresh destination confirmation/authorization is required.
+
+FEATURES DISCOVERED
+- Warehouse receipt/transfer/adjustment operations and ledger-based stock.
+- Automatic order reservations; MAIN-only atomic picking and deliveries.
+- Serial scan/assignment and install-on-handover; replenishment approval.
+- Installation scheduling, workload recommendations, technician jobs,
+  customer OTP, evidence, signature and completion.
+- Warranty activation at delivery confirmation and support/admin voiding.
+- Required Phase2 survey/quotation/payment/order workflow and integrity fixes.
+- 32 Phase3 API operations. New warehouse/job UI journeys remain placeholders.
+- Separate frontend redesign/bypass-login branch was NOT integrated.
+
+FINAL EXECUTED RESULTS
+Backend non-database:   25 passed, 0 failed (2.96s JUnit).
+Backend PostgreSQL:     94 passed, 3 failed; 97 executed (105.03s JUnit).
+Full backend suite:    119 passed, 3 failed; 122 executed (86.65s).
+Backend errors/skips:    0 errors, 0 skipped, 0 environment-blocked cases.
+Preserved Phase1:       56 passed within the full suite.
+Phase2 prerequisites:   22 passed within the full suite.
+Source Phase3 tests:    21 passed within the full suite.
+New QA/migration tests: 20 passed, 3 failed within the full suite.
+Frontend unit tests:     7 passed.
+Chromium regression:     3 passed, 1 failed; 4 executed (50.2s).
+Ruff lint/format:       PASS; 77 Python files formatted.
+Python compile:        PASS.
+TypeScript/ESLint:      PASS.
+Next production build: PASS; 26 pages, isolated .next-qa output.
+Live OpenAPI check:    PASS.
+Generated API types:   PASS after adding missing Phase3 types; deterministic.
+
+Marker/subset runs overlap the full suite. There are 122 distinct backend cases,
+not the sum of all command counts. All99 integrated pre-existing cases passed
+before the new independent tests were added. No numeric line/branch coverage
+was measured because coverage.py/pytest-cov were unavailable.
+
+MIGRATIONS AND DEVELOPMENT SAFETY
+- Reused portable PostgreSQL16.15 on 127.0.0.1:55432.
+- Tested chain: 68d7cd857e38 -> 9b1336c3b2cc -> c4e8a1b27d90 -> d5f1a2b3c4e5.
+- solarops_test reached Phase3 head: 44 tables, 104 indexes.
+- Clean migration, SQLAlchemy metadata comparison, and guarded Phase3
+  downgrade/upgrade round-trip with a persisted Phase1 enquiry passed.
+- solarops_dev was NOT migrated/reset/seeded by this cycle. It remains at
+  68d7cd857e38, with 13 tables and 27 indexes.
+- Development user/enquiry/history fingerprint unchanged: 16 users,
+  8 enquiries, 14 history rows. Test role cannot CONNECT to development.
+- Browser QA reset/seeded only solarops_test, used API8001/UI3001 and
+  .next-qa output, and never reused the live demo API/frontend.
+- Original development API/schema intentionally remain historical. A restart
+  of the merged backend against development requires an authorized upgrade.
+
+VERIFIED OPEN DEFECTS
+P3-001 HIGH - Installation OTP wrong-attempt counter rolls back on errors.
+  Expected after5 wrong codes: attempts5; sixth409 otp_locked.
+  Actual: attempts0; sixth400 invalid_customer_code.
+  Cause: flush then AppError, followed by request transaction rollback.
+  Proposed: persist the security counter in an appropriate transaction boundary.
+
+P3-002 MEDIUM - Inactive technician accepted for new job.
+  Expected400 without job creation; actual201.
+  Cause: create_job checks role/existence but omits is_active.
+  Proposed: enforce active technician before job/OTP writes.
+
+P3-003 MEDIUM - Completion succeeds without recorded arrival.
+  After OTP/evidence/signature but no arrival, expected409/en_route.
+  Actual200/completed, with arrival_at NULL persisted.
+  Proposed: enforce documented on-site/arrival prerequisite.
+
+P3-004 HIGH INTEGRATION - Sales UI cannot qualify a new enquiry.
+  Browser expected PATCH200; received422. Backend requires shadow-free area
+  and grid suitability; current UI sends only status/note and has no inputs.
+  Proposed: frontend adds required validated inputs; keep backend validation.
+  Later qualified-status/relogin steps were not executed after this failure.
+
+QA-FLAKE-001 - Historical email-OTP flake did not recur in this cycle.
+  Root cause is still unknown; issue remains OPEN, not resolved by green runs.
+  It is separate from the deterministic installation OTP-counter defect.
+
+QA CORRECTIONS
+- Applied database markers to imported integration tests for existing cleanup.
+- Corrected retry-conflict test to use a different VALID order; nonexistent
+  order404 was legitimate and is not a product bug.
+- Added isolated browser runner/config and migration preservation checks.
+- Regenerated missing Phase3 API types and checked generation repeatability.
+- Formatter-only changes to14 production files were verified AST-identical
+  to merged source; product behavior/security was not rewritten.
+
+COMMANDS (from apps/api unless indicated)
+  uv sync --frozen
+  uv run alembic heads
+  uv run alembic history
+  uv run python scripts/check_local_db.py record
+  uv run pytest -m "not database" -vv
+  uv run pytest -m database -vv
+  uv run pytest -vv
+  uv run ruff check app tests scripts
+  uv run ruff format --check app tests scripts
+  uv run python -m compileall -q app tests scripts
+  uv run python scripts/export_openapi.py
+  uv run python scripts/check_local_db.py verify
+  uv run python scripts/run_browser_qa.py
+  uv run python scripts/check_local_db.py verify
+Final backend commands also used --tb=short --show-capture=no and ignored
+JUnit files under var/phase3-*.xml. Do not run browser QA concurrently with
+pytest; both own the disposable database. Do not run a development-configured
+alembic upgrade as part of this procedure.
+
+From apps/web:
+  npm test
+  Set SOLAROPS_NEXT_DIST_DIR=.next-qa and NEXT_TELEMETRY_DISABLED=1 locally.
+  npm run typecheck
+  npm run lint
+  npm run build
+  npm run generate:api
+
+REPORTS AND GIT STATUS
+Detailed results/reproductions: docs/qa/PHASE3_BACKEND_QA_REPORT.md
+Technical walkthrough: docs/qa/TESTING_EXPLAINED.md (Phase3 appended).
+Chronological operations: QA_ACTION_LOG.txt (history preserved).
+test 1 report.txt is byte-for-byte unchanged; SHA256:
+DB54A48B965D1D6CD9DDBDC754D27023CDF36B385DE694729E9E9FD949BDE41E
+
+At report preparation: ordinary source merge committed on test/qa-integration;
+new QA tests/docs/configuration await the final QA commit. Final commit SHA
+and working-tree status are reported in chat. No main merge, history rewrite,
+force push or push was performed.
+
+UNVERIFIED / NOT IMPLEMENTED
+Phase3 UI journeys; exhaustive role/state/input matrices; production SMTP or
+live payments; skill/location matching; customer self-scheduling; automatic
+procurement receipt; partial deliveries/returns; populated production downgrade;
+remote CI/deployment and numeric coverage. Infrastructure and data isolation
+PASS; product acceptance FAILS pending the four findings above.

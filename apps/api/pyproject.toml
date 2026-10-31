@@ -27,6 +27,7 @@ dev = [
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-q"
+markers = ["database: requires the disposable PostgreSQL solarops_test database"]
 
 [tool.ruff]
 line-length = 100

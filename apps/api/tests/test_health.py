@@ -1,6 +1,9 @@
+import pytest
 from app.core.config import Settings
 from app.main import create_app
 from fastapi.testclient import TestClient
+
+pytestmark = pytest.mark.database
 
 
 def test_health_does_not_require_a_database_session_cookie(client):

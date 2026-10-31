@@ -2,10 +2,13 @@
 
 from datetime import timedelta
 
+import pytest
 from app.core.security import utcnow
 from app.models.identity import EmailVerificationChallenge, User
 from sqlalchemy.orm import Session
 from tests.conftest import csrf_headers, login, signup_and_verify
+
+pytestmark = pytest.mark.database
 
 
 def test_valid_signup(client, application):
@@ -92,10 +95,12 @@ def test_invalid_otp_fails(client, application):
             "password": "Solarops123",
         },
     )
+    actual_code = application.state.email_sender.messages[-1].code
+    wrong_code = "000000" if actual_code != "000000" else "111111"
     response = client.post(
         "/api/v1/auth/verify-email",
         headers=csrf_headers(client),
-        json={"email": "otp@example.com", "code": "000000"},
+        json={"email": "otp@example.com", "code": wrong_code},
     )
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "invalid_verification_code"

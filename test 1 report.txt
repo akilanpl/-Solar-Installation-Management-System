@@ -1,0 +1,98 @@
+SOLAROPS - TEST 1 REPORT
+Date: 2026-10-31 (Asia/Calcutta)
+Repository: akilanpl/-Solar-Installation-Management-System
+Branch: test/qa-integration
+Implementation tested: local QA commits a6698c7 and 30437a5
+
+FINAL RESULTS
+Backend runtime tests:       PASS - 21 passed
+PostgreSQL integration:     PASS - 35 passed
+Complete backend suite:     PASS - 56 passed, 0 failed/skipped/blocked (11.16s)
+Frontend unit tests:        PASS - 7 passed
+Chromium browser E2E:       PASS - 4 passed (44.1s)
+Python Ruff lint/format:    PASS - 47 files formatted
+Python compilation:        PASS
+Frontend ESLint:            PASS
+TypeScript checking:        PASS
+Next.js production build:   PASS - 26 pages generated
+OpenAPI contract check:     PASS
+Generated API type check:   PASS
+
+The runtime and integration counts are subsets of the complete backend suite,
+not additional distinct tests. All 31 previously blocked database cases were
+actually executed and passed before four additional staff-role cases were added.
+Results describe the executed runs; this report-only change did not rerun tests.
+
+DATABASE AND DEMO VERIFICATION
+- PostgreSQL 16.15 installed as an isolated portable local cluster.
+- Server binds only to 127.0.0.1:55432.
+- solarops_dev holds application/demo data.
+- solarops_test is disposable and is the only database allowed by pytest reset.
+- Separate database owners and generated passwords are used.
+- Actual test-role connection to solarops_dev was denied by PostgreSQL.
+- Both databases reached Alembic revision 68d7cd857e38.
+- Both had 13 public tables and 27 indexes, with FK/unique/check constraints.
+- Development user/enquiry/history fingerprints were unchanged after PostgreSQL
+  restart and destructive test-schema resets (16 users, 8 enquiries, 14 history
+  rows at the recorded snapshot).
+- Seeded three customer personas plus demo sales/admin accounts, alongside six
+  original staff accounts. Accounts use normal authentication and are verified.
+- Four stable seed enquiries cover Chennai, Hyderabad and Bengaluru, with one
+  each of submitted, under_review, qualified and not_qualified statuses.
+- Repeated seeds created zero duplicate accounts/enquiries.
+- Development seed/reset commands correctly rejected the test database.
+- Passwords, environment configuration and database files are ignored locally;
+  no generated credentials are included in this report or the Git commits.
+
+WORKFLOWS EXERCISED
+- Signup, OTP verification, login, session validation and logout.
+- Customer creates enquiry; PostgreSQL persists it; reload retrieves it.
+- Sales reviews and updates qualification with history/audit records.
+- Customer logs back in, sees the updated status, refreshes and retains it.
+- Seeded admin authenticates through the normal employee login flow.
+- Anonymous access, customer-to-customer isolation, non-sales staff denial,
+  customer mutation denial, invalid status transitions and CSRF rejection.
+- Duplicate retry/idempotency, login/OTP rate limits, revoked-cookie replay,
+  invalid database writes and rollback, safe error responses.
+
+CORRECTIONS MADE
+- Unblocked PostgreSQL; separated development/test configuration and owners.
+- Changed test schema grants to CURRENT_USER and rechecked the reset target.
+- Strengthened local-development guards for seed/reset scripts.
+- Added idempotent demo seed and database isolation/preservation verifier.
+- Corrected browser document-load synchronization, ambiguous locators and a
+  response-body read that raced full-page navigation. Assertions remain intact.
+
+OPEN FINDING - QA-FLAKE-001 (MEDIUM)
+One intermediate full run returned 55 passes and 1 failure: a correct captured
+OTP was rejected with HTTP400 invalid_verification_code during setup for
+test_missing_csrf_rejected. The individual test, auth module and final complete
+suite subsequently passed. Root cause is not established or claimed fixed.
+Failure-only boolean diagnostics were added without printing secret values.
+Existing Starlette/HTTPX and next-lint deprecation warnings remain.
+
+REPRODUCTION
+From apps/api:
+  uv run pytest -m "not database" -vv
+  uv run pytest -m database -vv
+  uv run pytest -vv
+  uv run ruff check app tests scripts
+  uv run ruff format --check app tests scripts
+
+From apps/web, after local seed/setup described in the documentation:
+  npm test
+  npm run e2e -- --workers=1
+  npm run typecheck
+  npm run lint
+  npm run build
+  npm run generate:api
+
+DETAILED EVIDENCE AND LIMITATIONS
+docs/qa/PHASE1_POSTGRESQL_INTEGRATION_REPORT.md
+docs/qa/LOCAL_POSTGRESQL.md
+docs/qa/TESTING_EXPLAINED.md
+QA_ACTION_LOG.txt
+
+Final local checks passed and PostgreSQL is unblocked. The intermittent OTP
+finding remains open. Remote CI, production SMTP, concurrency races, Linux,
+Python 3.12 and Node 22 were not newly verified in this local run.

@@ -3,6 +3,7 @@
 import threading
 import uuid
 
+import pytest
 from app.core.config import get_settings
 from app.core.errors import AppError
 from app.models.audit import AuditEvent
@@ -30,6 +31,8 @@ from tests.test_phase2_workflow import (
     _staff,
     _survey_to_approved,
 )
+
+pytestmark = pytest.mark.database
 
 
 def _ready(client, application) -> tuple[dict, str]:
@@ -160,14 +163,22 @@ def test_verified_payment_follows_a_revision_without_a_second_charge(client, app
         assert original is not None and original.status == "superseded"
         assert original_line is not None
         assert original.material_total_minor == first["material_total_minor"]
-        assert db.scalar(
-            select(func.count()).select_from(AuditEvent).where(AuditEvent.action == "quotation.issued")
-        ) == 2
-        assert db.scalar(
-            select(func.count())
-            .select_from(AuditEvent)
-            .where(AuditEvent.action == "quotation.superseded")
-        ) == 1
+        assert (
+            db.scalar(
+                select(func.count())
+                .select_from(AuditEvent)
+                .where(AuditEvent.action == "quotation.issued")
+            )
+            == 2
+        )
+        assert (
+            db.scalar(
+                select(func.count())
+                .select_from(AuditEvent)
+                .where(AuditEvent.action == "quotation.superseded")
+            )
+            == 1
+        )
     customer = _login(client, "customer", "leela@example.com", "Solarops123")
     accepted = client.post(f"/api/v1/quotations/{body['id']}/acceptance", headers=customer)
     assert accepted.status_code == 200, accepted.text
@@ -272,6 +283,9 @@ def test_withdrawn_quotation_can_be_replaced(client, application):
     assert replacement["id"] != first["id"]
     assert replacement["status"] == "issued"
     with Session(application.state.engine) as db:
-        assert db.scalar(
-            select(func.count()).select_from(Quotation).where(Quotation.status == "issued")
-        ) == 1
+        assert (
+            db.scalar(
+                select(func.count()).select_from(Quotation).where(Quotation.status == "issued")
+            )
+            == 1
+        )

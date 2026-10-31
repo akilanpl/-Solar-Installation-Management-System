@@ -4,6 +4,7 @@ import threading
 import uuid
 from datetime import timedelta
 
+import pytest
 from app.core.errors import AppError
 from app.core.security import hash_password, utcnow
 from app.models.identity import EmployeeProfile, User
@@ -20,6 +21,8 @@ from app.services.quotation_service import accept_quotation
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from tests.conftest import csrf_headers, login, signup_and_verify
+
+pytestmark = pytest.mark.database
 
 ENQUIRY = {
     "contact_name": "Leela Nair",
@@ -207,7 +210,9 @@ def test_only_assigned_technician_submits_and_bad_measurements_fail(client, appl
     enquiry = _enquiry(client, customer)
     _qualify(client, enquiry["id"])
     sales = _sales(client)
-    survey = client.post("/api/v1/surveys", json={"enquiry_id": enquiry["id"]}, headers=sales).json()
+    survey = client.post(
+        "/api/v1/surveys", json={"enquiry_id": enquiry["id"]}, headers=sales
+    ).json()
     with Session(application.state.engine) as db:
         tech = db.scalar(select(User).where(User.email == "tech@example.com"))
         assert tech is not None
@@ -269,7 +274,9 @@ def test_rejected_survey_cannot_be_quoted_and_resurvey_keeps_history(client, app
     enquiry = _enquiry(client, customer)
     _qualify(client, enquiry["id"])
     sales = _sales(client)
-    survey = client.post("/api/v1/surveys", json={"enquiry_id": enquiry["id"]}, headers=sales).json()
+    survey = client.post(
+        "/api/v1/surveys", json={"enquiry_id": enquiry["id"]}, headers=sales
+    ).json()
     with Session(application.state.engine) as db:
         tech = db.scalar(select(User).where(User.email == "tech@example.com"))
         assert tech is not None
@@ -361,7 +368,9 @@ def test_revision_history_acceptance_and_foreign_customer(client, application):
     _qualify(client, enquiry["id"])
     survey = _survey_to_approved(client, application, enquiry["id"])
     first = _quote(client, survey["id"])
-    first_panel = next(line["line_total_minor"] for line in first["lines"] if line["component_code"] == "PANEL-550")
+    first_panel = next(
+        line["line_total_minor"] for line in first["lines"] if line["component_code"] == "PANEL-550"
+    )
     customer = _login(client, "customer", "leela@example.com", "Solarops123")
     change = client.post(
         f"/api/v1/quotations/{first['id']}/revision-requests",
@@ -400,7 +409,9 @@ def test_revision_history_acceptance_and_foreign_customer(client, application):
     foreign = client.post(f"/api/v1/quotations/{revised.json()['id']}/acceptance", headers=other)
     assert foreign.status_code == 404
     customer = _login(client, "customer", "leela@example.com", "Solarops123")
-    accepted = client.post(f"/api/v1/quotations/{revised.json()['id']}/acceptance", headers=customer)
+    accepted = client.post(
+        f"/api/v1/quotations/{revised.json()['id']}/acceptance", headers=customer
+    )
     assert accepted.status_code == 200, accepted.text
     assert accepted.json()["status"] == "accepted"
     again = client.post(f"/api/v1/quotations/{revised.json()['id']}/acceptance", headers=customer)
@@ -514,7 +525,10 @@ def test_unverified_payment_blocks_order_and_sandbox_is_test_only(client, applic
     assert queue.status_code == 200, queue.text
     assert queue.json()[0]["order_id"] == body["id"]
     assert queue.json()[0]["status"] == "pending_preparation"
-    assert any(line["component_code"] == "PANEL-550" and line["quantity"] == 6 for line in queue.json()[0]["lines"])
+    assert any(
+        line["component_code"] == "PANEL-550" and line["quantity"] == 6
+        for line in queue.json()[0]["lines"]
+    )
     hidden = client.get("/api/v1/scheduling/installations", headers=warehouse)
     assert hidden.status_code == 403
     sales = _sales(client)
@@ -766,7 +780,9 @@ def test_evidence_upload_and_role_guards(client, application):
     assert forbidden.status_code == 403
     _qualify(client, enquiry["id"])
     sales = _sales(client)
-    survey = client.post("/api/v1/surveys", json={"enquiry_id": enquiry["id"]}, headers=sales).json()
+    survey = client.post(
+        "/api/v1/surveys", json={"enquiry_id": enquiry["id"]}, headers=sales
+    ).json()
     with Session(application.state.engine) as db:
         tech = db.scalar(select(User).where(User.email == "tech@example.com"))
         assert tech is not None

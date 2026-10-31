@@ -129,7 +129,9 @@ def revise_quotation(
     return quotation_response(db, quotation)
 
 
-@router.post("/{quotation_id}/revision-requests", response_model=RevisionRequestResponse, status_code=201)
+@router.post(
+    "/{quotation_id}/revision-requests", response_model=RevisionRequestResponse, status_code=201
+)
 def request_revision(
     quotation_id: UUID,
     payload: RevisionRequestCreate,

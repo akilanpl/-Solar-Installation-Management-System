@@ -26,11 +26,11 @@ Docker is optional. `docker-compose.yml` starts PostgreSQL 16. This machine was 
 
 ```sql
 CREATE ROLE solarops LOGIN PASSWORD 'solarops';
-CREATE DATABASE solarops OWNER solarops;
+CREATE DATABASE solarops_dev OWNER solarops;
 CREATE DATABASE solarops_test OWNER solarops;
 ```
 
-The password above is a local development password published in `.env.example`. It is not a production secret.
+The password above is a local development password published in `.env.example`. It is not a production secret. Keep `solarops_dev` and `solarops_test` separate: pytest drops the test database's public schema. For the isolated Windows cluster with generated credentials, follow [local PostgreSQL setup](docs/qa/LOCAL_POSTGRESQL.md).
 
 ## Start the stack
 
@@ -76,7 +76,7 @@ Reset the development database:
 cd apps/api && uv run python scripts/reset_dev_db.py --yes
 ```
 
-That command refuses to run unless the environment is `development` and the database name is exactly `solarops`.
+That command refuses to run unless the environment is `development` and the database name is exactly `solarops_dev`. It deletes development data; it is not part of normal startup.
 
 Browser test, after the staff password exists:
 
@@ -84,6 +84,8 @@ Browser test, after the staff password exists:
 cd apps/web
 SOLAROPS_SEED_PASSWORD="$(tr -d '\n' < ../../var/dev-seed-password.txt)" npm run e2e
 ```
+
+The seeded-account browser scenarios also require `uv run python scripts/seed_demo.py` from `apps/api`. It creates verified local demo accounts and realistic enquiries in `solarops_dev`; generated passwords remain in ignored `var/demo-credentials.json`.
 
 ## Layout
 
