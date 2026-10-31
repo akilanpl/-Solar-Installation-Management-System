@@ -247,3 +247,21 @@ all dependencies remain locked. `uv lock --check --offline` verifies consistency
  apps/web/test/app.test.js                          |   99 ++
  35 files changed, 7991 insertions(+), 513 deletions(-)
 ```
+
+## Local integration and hardening history through tested candidate 8876636
+
+- `d80ade570fda387910893c4f90467b46c7b9c413` integration: reconcile current frontend and QA contributions
+- `14e03e613b0dc3f7dfab373ea5f92fa289f43d52` fix: enforce location custody, calendar booking and signed equipment evidence
+- `ebf107be1cc6996306b5756ccba42a1d96f087dc` Measure backend coverage and preserve release gate evidence
+- `0a2ea94d2b1b901a4e15133250822cbc6be74d7a` security: share abuse counters and protect allocated serial custody
+- `9dba461ac921464064bd1bd3fd00c0701b68a710` integration: preserve latest receipt design and expose real operations
+- `be2b24569a4d1040ed7c39945068ecd2a1b658c6` fix: expose authorized work context and verify preserved business records
+- `dfc4be7b58da6e1d837e4354e078119078ca215c` fix: preserve exact serial movements and require delivered installation custody
+- `6ec961c12ac67d5a9b3c581cf3b8296297781be2` integration: retain QA coverage gate and locked test tooling
+- `7e63c78dcd2b52a11076396d845f037b700dcf87` fix: commit request transactions before sending success responses
+- `56fb7c5d8f0cd344d57f4c1abeec0bf108b5843e` integration: adapt latest teammate survey workbench and payment visuals
+- `ebbb3843f1bc570c396dad52845ac6fa6efc4aca` fix: retain unique delivery identities and emit sanitized request traces
+- `3d73ed2cdc44346e1601987f84bec47dd407d2f5` test: reject duplicate stock corrections and faulty installation custody
+- `88766362fb7842b2da12be73d254d81cd627c9c8` test: preserve ledger immutability across stock cancellation retries
+
+No new candidate commits were pushed while the mandatory gate remained incomplete.

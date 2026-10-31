@@ -49,3 +49,8 @@ SOLAROPS_TEST_DATABASE_URL=postgresql+psycopg:///solarops_release_test_20261031 
 Result: all available executed gate stages pass; aggregate remains INCOMPLETE 55.4/100 because ten required campaign entries are not run. Migration head e6a2b3c4d5f6. Two attempted browser tests failed at Chromium launch due sandbox permission, zero browser passes. Final npm audit 18 moderate/zero high/critical; Python audit 44 packages/zero known findings. Frozen dependency sync, contract regeneration and production build executed. Complete browser/operational requirements, coverage/mutation/load/restore and exact-head GitHub CI are not verified.
 
 Historical QA CI success: https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41193327252. Latest unrelated frontend CI: https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41195733652; source inspection found success-printing lint/generator scripts, so its green result is not lint/contract evidence. No CI URL exists for the unpushed integration commit. Remote main remains a95533838fd4413233ed69edf2ce671260ea8c3a.
+
+
+## Subsequent acceptance checkpoint — 2026-10-31
+
+The historical result above is preserved. See RELEASE_GATE_RESULTS.md and FULL_BROWSER_ACCEPTANCE.md for tested candidate 8876636: 269 backend/27 frontend tests, 90.794% backend lines, 70.39% backend branches, and INCOMPLETE 57.8/100. Main is not merged and Phase 4 has not started.
