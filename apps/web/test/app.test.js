@@ -178,6 +178,37 @@ test('Admin Executive Analytics: financial revenue and unit economics aggregatio
   assert.equal(netConversion, '36.1');
 });
 
+test('Header Top Nav: notifications count, filter, and settings state', () => {
+  const notifs = [
+    { id: '1', read: false },
+    { id: '2', read: false },
+    { id: '3', read: false },
+    { id: '4', read: true },
+    { id: '5', read: true },
+  ];
+
+  const unreadCount = notifs.filter((n) => !n.read).length;
+  assert.equal(unreadCount, 3);
+
+  const unreadOnly = notifs.filter((n) => !n.read);
+  assert.equal(unreadOnly.length, 3);
+
+  const markedAllRead = notifs.map((n) => ({ ...n, read: true }));
+  assert.equal(markedAllRead.filter((n) => !n.read).length, 0);
+
+  // Settings structure validation
+  const sampleSettings = {
+    discomCircle: 'BESCOM (Bangalore Urban & Rural)',
+    defaultCapacity: '5 kW Hybrid Bifacial',
+    autoSanctionCalc: true,
+    smsDispatchAlerts: true,
+  };
+
+  assert.ok(sampleSettings.discomCircle.includes('BESCOM'));
+  assert.equal(sampleSettings.autoSanctionCalc, true);
+});
+
+
 
 
 

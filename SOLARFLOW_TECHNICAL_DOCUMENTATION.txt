@@ -2548,3 +2548,21 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+================================================================================
+47. SIDEBAR MENISCUS REMOVAL, USER PILL CLEANUP, INTERACTIVE NOTIFICATIONS & WORKSPACE SETTINGS (SECTION 47)
+================================================================================
+- Context & Requirements:
+  1. Remove protruding trailing meniscus/lip (.dock-sidebar-container::after) from the fixed dock navigation bar.
+  2. Remove the .top-user-pill from the top navigation bar to streamline header space.
+  3. Implement fully functional interactive Notifications Center (dropdown popover with unread counter, category icons, filter pills, mark all read, and click-away backdrop).
+  4. Implement fully functional interactive Workspace & Operational Settings Modal (DISCOM utility circle selection, standard inverter architecture, auto sanction ratio calculation, field SMS dispatch toggles, WhatsApp milestone alerts, low-stock reorder thresholds, and live telemetry refresh rates).
+
+- Files Modified:
+  * apps/web/src/components/Sidebar/Sidebar.css (Removed .dock-sidebar-container::after)
+  * apps/web/src/components/Header/Header.jsx (Removed .top-user-pill, added Notifications Dropdown & Settings Modal)
+  * apps/web/src/components/Header/Header.css (Updated layout, added dropdown and settings styling)
+  * apps/web/test/app.test.js (Added Unit Test #13)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================
