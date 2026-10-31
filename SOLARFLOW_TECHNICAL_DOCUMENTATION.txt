@@ -2376,3 +2376,26 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+--------------------------------------------------------------------------------
+43. REMOVAL OF CRYPTO PAYMENT METHOD FROM RAZORPAY CHECKOUT
+--------------------------------------------------------------------------------
+- Date & Context:
+  Removed the "Crypto" payment method pill and its cryptocurrency badges (BTC, ETH, LTC)
+  from the dedicated customer Razorpay checkout page (/customer/payments/razorpay)
+  in RazorpayPaymentPage.jsx and RazorpayPaymentPage.css.
+
+- Key Architecture & Visual Elements:
+  1. Component Alignment (RazorpayPaymentPage.jsx):
+     - Removed `<div className="io-method-pill">` for Crypto and its associated badges.
+     - Updated `selectedMethod` state definition to strictly toggle between `card` and `paypal`.
+  2. Stylesheet Cleanup (RazorpayPaymentPage.css):
+     - Removed `.io-crypto-badges`, `.crypto-badge`, `.crypto-badge.btc`,
+       `.crypto-badge.eth`, and `.crypto-badge.ltc` CSS rules.
+
+- Files Modified:
+  * apps/web/src/pages/Customer/RazorpayPaymentPage.jsx (Modified)
+  * apps/web/src/pages/Customer/RazorpayPaymentPage.css (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================

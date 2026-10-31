@@ -9,7 +9,7 @@ export function RazorpayPaymentPage() {
   const { navigate, query } = useRouter();
   const { showToast } = useAuth();
 
-  // Selected payment method pill: 'card' (default as per design) | 'paypal' | 'crypto'
+  // Selected payment method pill: 'card' (default as per design) | 'paypal'
   const [selectedMethod, setSelectedMethod] = useState('card');
 
   // Interactive Card Form inputs (matching the underline fields on the blue card)
@@ -274,24 +274,6 @@ export function RazorpayPaymentPage() {
                     <span className="circle yellow" />
                   </div>
                   <span className="brand-badge discover">DISCOVER</span>
-                </div>
-                <ChevronRight size={18} className="io-pill-arrow" />
-              </div>
-            </div>
-
-            {/* Pill 3: Crypto / Bank Transfer */}
-            <div
-              className={`io-method-pill ${selectedMethod === 'crypto' ? 'active' : ''}`}
-              onClick={() => setSelectedMethod('crypto')}
-              role="button"
-              tabIndex={0}
-            >
-              <span className="io-pill-label">Crypto</span>
-              <div className="io-pill-right">
-                <div className="io-crypto-badges">
-                  <span className="crypto-badge btc">₿</span>
-                  <span className="crypto-badge eth">♦</span>
-                  <span className="crypto-badge ltc">Ł</span>
                 </div>
                 <ChevronRight size={18} className="io-pill-arrow" />
               </div>

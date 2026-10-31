@@ -317,37 +317,6 @@
   font-style: italic;
 }
 
-/* Crypto badges */
-.io-crypto-badges {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.crypto-badge {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.crypto-badge.btc {
-  background: #f7931a;
-}
-
-.crypto-badge.eth {
-  background: #627eea;
-}
-
-.crypto-badge.ltc {
-  background: #bebebe;
-}
-
 /* Proceed payment Button */
 .io-proceed-wrapper {
   margin-top: 8px;
