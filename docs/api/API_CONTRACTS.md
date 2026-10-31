@@ -46,7 +46,7 @@ Planned routes below are not registered. Calling them returns 404 `not_found`.
 | POST | `/api/v1/surveys/{id}/resurvey` | Cookie | sales, admin | Only from `rejected`. |
 | POST | `/api/v1/surveys/{id}/evidence` | Cookie | assigned technician | JPEG, PNG, WebP, or PDF, at most 5 MB. |
 | GET | `/api/v1/surveys/{id}/evidence/{evidence_id}` | Cookie | same as the survey | Stored file, not a guessed URL. |
-| POST | `/api/v1/quotations` | Cookie | sales, admin | Approved survey only. Totals are computed here. Idempotency-Key required. |
+| POST | `/api/v1/quotations` | Cookie | sales, admin | Approved survey only. One `issued` or `accepted` quotation per enquiry. Idempotency-Key required. |
 | GET | `/api/v1/quotations` | Cookie | owner, sales, admin | |
 | GET | `/api/v1/quotations/{id}` | Cookie | owner, sales, admin | Other customers get 404. |
 | POST | `/api/v1/quotations/{id}/revision-requests` | Cookie | owning customer | Durable change request. Does not edit the quote. |
