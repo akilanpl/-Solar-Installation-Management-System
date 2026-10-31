@@ -400,7 +400,7 @@ def inspect_return(db: Session, user: User, replacement_id: uuid.UUID, verdict: 
 def list_replacements(db: Session, user: User,
                       ticket_id: uuid.UUID | None) -> list[ReplacementDecision]:
     statement = select(ReplacementDecision).order_by(ReplacementDecision.created_at.desc())
-    if user.role_code in SUPPORT:
+    if user.role_code in SUPPORT or user.role_code in WAREHOUSE:
         pass
     elif user.role_code == TECHNICIAN:
         statement = statement.where(
@@ -434,7 +434,7 @@ def get_replacement(db: Session, user: User,
         raise AppError(404, "not_found", "Replacement decision not found.")
     ticket = db.get(ServiceTicket, row.ticket_id)
     assert ticket is not None
-    if user.role_code in SUPPORT:
+    if user.role_code in SUPPORT or user.role_code in WAREHOUSE:
         return row
     if user.role_code == "customer" and ticket.customer_user_id == user.id:
         return row

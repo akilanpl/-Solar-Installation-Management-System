@@ -10,10 +10,7 @@ import uuid
 from datetime import UTC, datetime, timedelta
 
 import pytest
-from sqlalchemy import select
 from sqlalchemy.orm import Session
-from app.models.identity import User
-from tests.conftest import csrf_headers, login
 from tests.test_phase4a_support import (
     _all_staff,
     _confirmed_order,
@@ -21,10 +18,8 @@ from tests.test_phase4a_support import (
     _customer,
     _installed_order,
     _login,
-    _sales,
     _support,
     _triage,
-    _warehouse,
 )
 
 pytestmark = pytest.mark.database

@@ -4982,6 +4982,1604 @@
         }
       }
     },
+    "/api/v1/warranty/policies": {
+      "get": {
+        "tags": [
+          "warranty"
+        ],
+        "summary": "List Policies",
+        "operationId": "list_policies_api_v1_warranty_policies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PolicyResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Policies Api V1 Warranty Policies Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "warranty"
+        ],
+        "summary": "Create Policy",
+        "operationId": "create_policy_api_v1_warranty_policies_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/policies/{policy_id}/versions": {
+      "post": {
+        "tags": [
+          "warranty"
+        ],
+        "summary": "Create Policy Version",
+        "operationId": "create_policy_version_api_v1_warranty_policies__policy_id__versions_post",
+        "parameters": [
+          {
+            "name": "policy_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Policy Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyVersionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyVersionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "warranty"
+        ],
+        "summary": "List Policy Versions",
+        "operationId": "list_policy_versions_api_v1_warranty_policies__policy_id__versions_get",
+        "parameters": [
+          {
+            "name": "policy_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Policy Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PolicyVersionResponse"
+                  },
+                  "title": "Response List Policy Versions Api V1 Warranty Policies  Policy Id  Versions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/orders/{order_id}/activate-coverages": {
+      "post": {
+        "tags": [
+          "warranty"
+        ],
+        "summary": "Activate Coverages",
+        "operationId": "activate_coverages_api_v1_warranty_orders__order_id__activate_coverages_post",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CoverageResponse"
+                  },
+                  "title": "Response Activate Coverages Api V1 Warranty Orders  Order Id  Activate Coverages Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/coverage-decisions": {
+      "post": {
+        "tags": [
+          "warranty"
+        ],
+        "summary": "Decide Coverage",
+        "operationId": "decide_coverage_api_v1_warranty_coverage_decisions_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "warranty"
+        ],
+        "summary": "List Ticket Decisions",
+        "operationId": "list_ticket_decisions_api_v1_warranty_coverage_decisions_get",
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Ticket Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DecisionResponse"
+                  },
+                  "title": "Response List Ticket Decisions Api V1 Warranty Coverage Decisions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/serials/mine": {
+      "get": {
+        "tags": [
+          "warranty"
+        ],
+        "summary": "My Coverages",
+        "operationId": "my_coverages_api_v1_warranty_serials_mine_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CoverageResponse"
+                  },
+                  "type": "array",
+                  "title": "Response My Coverages Api V1 Warranty Serials Mine Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/serials/lookup": {
+      "get": {
+        "tags": [
+          "warranty"
+        ],
+        "summary": "Lookup Serial",
+        "operationId": "lookup_serial_api_v1_warranty_serials_lookup_get",
+        "parameters": [
+          {
+            "name": "serial_number",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "title": "Serial Number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/exceptions": {
+      "post": {
+        "tags": [
+          "warranty"
+        ],
+        "summary": "Create Exception",
+        "operationId": "create_exception_api_v1_warranty_exceptions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExceptionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/coverages/{coverage_id}/void": {
+      "post": {
+        "tags": [
+          "warranty"
+        ],
+        "summary": "Void Coverage",
+        "operationId": "void_coverage_api_v1_warranty_coverages__coverage_id__void_post",
+        "parameters": [
+          {
+            "name": "coverage_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Coverage Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoidCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoverageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/replacements": {
+      "post": {
+        "tags": [
+          "replacements"
+        ],
+        "summary": "Propose",
+        "operationId": "propose_api_v1_replacements_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplacementCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplacementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "replacements"
+        ],
+        "summary": "List All",
+        "operationId": "list_all_api_v1_replacements_get",
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ticket Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReplacementResponse"
+                  },
+                  "title": "Response List All Api V1 Replacements Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/replacements/{replacement_id}": {
+      "get": {
+        "tags": [
+          "replacements"
+        ],
+        "summary": "Read One",
+        "operationId": "read_one_api_v1_replacements__replacement_id__get",
+        "parameters": [
+          {
+            "name": "replacement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Replacement Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplacementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/replacements/{replacement_id}/approve": {
+      "post": {
+        "tags": [
+          "replacements"
+        ],
+        "summary": "Approve",
+        "operationId": "approve_api_v1_replacements__replacement_id__approve_post",
+        "parameters": [
+          {
+            "name": "replacement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Replacement Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplacementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/replacements/{replacement_id}/manufacturer-auth": {
+      "post": {
+        "tags": [
+          "replacements"
+        ],
+        "summary": "Manufacturer Auth",
+        "operationId": "manufacturer_auth_api_v1_replacements__replacement_id__manufacturer_auth_post",
+        "parameters": [
+          {
+            "name": "replacement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Replacement Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManufacturerAuth"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplacementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/replacements/{replacement_id}/reserve": {
+      "post": {
+        "tags": [
+          "replacements"
+        ],
+        "summary": "Reserve",
+        "operationId": "reserve_api_v1_replacements__replacement_id__reserve_post",
+        "parameters": [
+          {
+            "name": "replacement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Replacement Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplacementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/replacements/{replacement_id}/issue": {
+      "post": {
+        "tags": [
+          "replacements"
+        ],
+        "summary": "Issue",
+        "operationId": "issue_api_v1_replacements__replacement_id__issue_post",
+        "parameters": [
+          {
+            "name": "replacement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Replacement Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplacementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/replacements/{replacement_id}/install": {
+      "post": {
+        "tags": [
+          "replacements"
+        ],
+        "summary": "Install",
+        "operationId": "install_api_v1_replacements__replacement_id__install_post",
+        "parameters": [
+          {
+            "name": "replacement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Replacement Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplacementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/replacements/{replacement_id}/inspect": {
+      "post": {
+        "tags": [
+          "replacements"
+        ],
+        "summary": "Inspect Return",
+        "operationId": "inspect_return_api_v1_replacements__replacement_id__inspect_post",
+        "parameters": [
+          {
+            "name": "replacement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Replacement Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InspectionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/replacements/{replacement_id}/cancel": {
+      "post": {
+        "tags": [
+          "replacements"
+        ],
+        "summary": "Cancel",
+        "operationId": "cancel_api_v1_replacements__replacement_id__cancel_post",
+        "parameters": [
+          {
+            "name": "replacement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Replacement Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReasonedAction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplacementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/service-price-books": {
+      "get": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "List Price Books",
+        "operationId": "list_price_books_api_v1_service_price_books_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PriceBookResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Price Books Api V1 Service Price Books Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Create Price Book",
+        "operationId": "create_price_book_api_v1_service_price_books_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PriceBookCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PriceBookResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/service-tax-policies": {
+      "get": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "List Tax Policies",
+        "operationId": "list_tax_policies_api_v1_service_tax_policies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TaxPolicyResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Tax Policies Api V1 Service Tax Policies Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Create Tax Policy",
+        "operationId": "create_tax_policy_api_v1_service_tax_policies_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaxPolicyCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaxPolicyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{ticket_id}/estimates": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Create Estimate",
+        "operationId": "create_estimate_api_v1_tickets__ticket_id__estimates_post",
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Ticket Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstimateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "List Estimates",
+        "operationId": "list_estimates_api_v1_tickets__ticket_id__estimates_get",
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Ticket Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EstimateResponse"
+                  },
+                  "title": "Response List Estimates Api V1 Tickets  Ticket Id  Estimates Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/estimates/{estimate_id}": {
+      "get": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Read Estimate",
+        "operationId": "read_estimate_api_v1_estimates__estimate_id__get",
+        "parameters": [
+          {
+            "name": "estimate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Estimate Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstimateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/estimates/{estimate_id}/decision": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Decide Estimate",
+        "operationId": "decide_estimate_api_v1_estimates__estimate_id__decision_post",
+        "parameters": [
+          {
+            "name": "estimate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Estimate Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstimateDecisionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstimateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/service-invoices": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Create Invoice",
+        "operationId": "create_invoice_api_v1_service_invoices_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "List Invoices",
+        "operationId": "list_invoices_api_v1_service_invoices_get",
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ticket Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvoiceResponse"
+                  },
+                  "title": "Response List Invoices Api V1 Service Invoices Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/service-invoices/{invoice_id}": {
+      "get": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Read Invoice",
+        "operationId": "read_invoice_api_v1_service_invoices__invoice_id__get",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/service-invoices/{invoice_id}/consume": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Consume Parts",
+        "operationId": "consume_parts_api_v1_service_invoices__invoice_id__consume_post",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/service-invoices/{invoice_id}/credit-notes": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Create Credit Note",
+        "operationId": "create_credit_note_api_v1_service_invoices__invoice_id__credit_notes_post",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreditNoteCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditNoteResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "List Credit Notes",
+        "operationId": "list_credit_notes_api_v1_service_invoices__invoice_id__credit_notes_get",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CreditNoteResponse"
+                  },
+                  "title": "Response List Credit Notes Api V1 Service Invoices  Invoice Id  Credit Notes Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/employees": {
       "get": {
         "tags": [
@@ -5278,6 +6876,150 @@
         ],
         "title": "ConfirmationCreate"
       },
+      "CoverageResponse": {
+        "properties": {
+          "coverage_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Coverage Id"
+          },
+          "serial_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Serial Number"
+          },
+          "component_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Code"
+          },
+          "policy_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Code"
+          },
+          "policy_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "starts_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Starts At"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ends At"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "coverage_id",
+          "status",
+          "starts_at",
+          "ends_at",
+          "order_id"
+        ],
+        "title": "CoverageResponse"
+      },
+      "CreditNoteCreate": {
+        "properties": {
+          "amount_minor": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Amount Minor"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "amount_minor",
+          "reason"
+        ],
+        "title": "CreditNoteCreate"
+      },
+      "CreditNoteResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "invoice_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Invoice Id"
+          },
+          "amount_minor": {
+            "type": "integer",
+            "title": "Amount Minor"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "reference",
+          "invoice_id",
+          "amount_minor",
+          "reason",
+          "created_at"
+        ],
+        "title": "CreditNoteResponse"
+      },
       "CsrfResponse": {
         "properties": {
           "csrf_token": {
@@ -5366,6 +7108,132 @@
           "message"
         ],
         "title": "CustomerReply"
+      },
+      "DecisionCreate": {
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Ticket Id"
+          },
+          "serial_number": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Serial Number"
+          },
+          "fault_category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fault Category"
+          },
+          "evaluated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluated At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "ticket_id",
+          "serial_number"
+        ],
+        "title": "DecisionCreate"
+      },
+      "DecisionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "ticket_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Ticket Id"
+          },
+          "serial_number": {
+            "type": "string",
+            "title": "Serial Number"
+          },
+          "policy_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Version"
+          },
+          "fault_category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fault Category"
+          },
+          "evaluated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Evaluated At"
+          },
+          "verdict": {
+            "type": "string",
+            "title": "Verdict"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "coverage_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ticket_id",
+          "serial_number",
+          "evaluated_at",
+          "verdict",
+          "reason",
+          "created_at"
+        ],
+        "title": "DecisionResponse"
       },
       "DeliveryCreate": {
         "properties": {
@@ -6044,6 +7912,142 @@
         ],
         "title": "EscalationCreate"
       },
+      "EstimateDecisionCreate": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "pattern": "^(accepted|rejected)$",
+            "title": "Decision"
+          },
+          "estimate_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Estimate Version"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "decision",
+          "estimate_version"
+        ],
+        "title": "EstimateDecisionCreate"
+      },
+      "EstimateResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "ticket_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Ticket Id"
+          },
+          "repair_job_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Repair Job Id"
+          },
+          "coverage_decision_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Coverage Decision Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "lines": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Lines"
+          },
+          "parts_minor": {
+            "type": "integer",
+            "title": "Parts Minor"
+          },
+          "labour_minor": {
+            "type": "integer",
+            "title": "Labour Minor"
+          },
+          "tax_minor": {
+            "type": "integer",
+            "title": "Tax Minor"
+          },
+          "covered_minor": {
+            "type": "integer",
+            "title": "Covered Minor"
+          },
+          "customer_payable_minor": {
+            "type": "integer",
+            "title": "Customer Payable Minor"
+          },
+          "price_book_version": {
+            "type": "integer",
+            "title": "Price Book Version"
+          },
+          "tax_policy_version": {
+            "type": "integer",
+            "title": "Tax Policy Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "valid_until": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Valid Until"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "reference",
+          "ticket_id",
+          "repair_job_id",
+          "coverage_decision_id",
+          "version",
+          "lines",
+          "parts_minor",
+          "labour_minor",
+          "tax_minor",
+          "covered_minor",
+          "customer_payable_minor",
+          "price_book_version",
+          "tax_policy_version",
+          "status",
+          "valid_until",
+          "created_at"
+        ],
+        "title": "EstimateResponse"
+      },
       "EvidenceResponse": {
         "properties": {
           "id": {
@@ -6078,6 +8082,100 @@
           "created_at"
         ],
         "title": "EvidenceResponse"
+      },
+      "ExceptionCreate": {
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Ticket Id"
+          },
+          "serial_number": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Serial Number"
+          },
+          "decision": {
+            "type": "string",
+            "pattern": "^(covered|not_covered)$",
+            "title": "Decision"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Reason"
+          },
+          "evidence_ref": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Ref"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "ticket_id",
+          "serial_number",
+          "decision",
+          "reason"
+        ],
+        "title": "ExceptionCreate"
+      },
+      "ExceptionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "ticket_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Ticket Id"
+          },
+          "decision": {
+            "type": "string",
+            "title": "Decision"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "evidence_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Ref"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ticket_id",
+          "decision",
+          "reason",
+          "created_at"
+        ],
+        "title": "ExceptionResponse"
       },
       "HTTPValidationError": {
         "properties": {
@@ -6176,6 +8274,76 @@
         ],
         "title": "InfoRequest"
       },
+      "InspectionCreate": {
+        "properties": {
+          "verdict": {
+            "type": "string",
+            "pattern": "^(quarantined|restocked|scrapped)$",
+            "title": "Verdict"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Note"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "verdict",
+          "note"
+        ],
+        "title": "InspectionCreate"
+      },
+      "InspectionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "replacement_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Replacement Id"
+          },
+          "verdict": {
+            "type": "string",
+            "title": "Verdict"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "restock_operation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Restock Operation Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "replacement_id",
+          "verdict",
+          "note",
+          "created_at"
+        ],
+        "title": "InspectionResponse"
+      },
       "InstallationUploadResponse": {
         "properties": {
           "storage_key": {
@@ -6199,6 +8367,119 @@
           "uploaded_at"
         ],
         "title": "InstallationUploadResponse"
+      },
+      "InvoiceCreate": {
+        "properties": {
+          "estimate_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Estimate Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "estimate_id"
+        ],
+        "title": "InvoiceCreate"
+      },
+      "InvoiceResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "estimate_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Estimate Id"
+          },
+          "estimate_version": {
+            "type": "integer",
+            "title": "Estimate Version"
+          },
+          "ticket_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Ticket Id"
+          },
+          "lines": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Lines"
+          },
+          "parts_minor": {
+            "type": "integer",
+            "title": "Parts Minor"
+          },
+          "labour_minor": {
+            "type": "integer",
+            "title": "Labour Minor"
+          },
+          "tax_minor": {
+            "type": "integer",
+            "title": "Tax Minor"
+          },
+          "covered_minor": {
+            "type": "integer",
+            "title": "Covered Minor"
+          },
+          "customer_payable_minor": {
+            "type": "integer",
+            "title": "Customer Payable Minor"
+          },
+          "credited_minor": {
+            "type": "integer",
+            "title": "Credited Minor"
+          },
+          "consumption_operation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consumption Operation Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "reference",
+          "estimate_id",
+          "estimate_version",
+          "ticket_id",
+          "lines",
+          "parts_minor",
+          "labour_minor",
+          "tax_minor",
+          "covered_minor",
+          "customer_payable_minor",
+          "credited_minor",
+          "status",
+          "created_at"
+        ],
+        "title": "InvoiceResponse"
       },
       "JobCreate": {
         "properties": {
@@ -6571,6 +8852,22 @@
           "user"
         ],
         "title": "LoginResponse"
+      },
+      "ManufacturerAuth": {
+        "properties": {
+          "evidence_ref": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Evidence Ref"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "evidence_ref"
+        ],
+        "title": "ManufacturerAuth"
       },
       "MessageResponse": {
         "properties": {
@@ -7022,6 +9319,401 @@
           "outstanding_minor"
         ],
         "title": "PaymentRequirementResponse"
+      },
+      "PolicyCreate": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 3,
+            "title": "Code"
+          },
+          "issuer": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Issuer"
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 2,
+            "title": "Category"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "issuer",
+          "category",
+          "description"
+        ],
+        "title": "PolicyCreate"
+      },
+      "PolicyResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "issuer": {
+            "type": "string",
+            "title": "Issuer"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "issuer",
+          "category",
+          "description",
+          "created_at"
+        ],
+        "title": "PolicyResponse"
+      },
+      "PolicyVersionCreate": {
+        "properties": {
+          "duration_days": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Duration Days"
+          },
+          "applicable_components": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Applicable Components"
+          },
+          "covered_fault_categories": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Covered Fault Categories"
+          },
+          "covered_components": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Covered Components"
+          },
+          "covered_repair_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Covered Repair Types"
+          },
+          "exclusions": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Exclusions"
+          },
+          "labour_covered": {
+            "type": "boolean",
+            "title": "Labour Covered",
+            "default": false
+          },
+          "replacement_allowed": {
+            "type": "boolean",
+            "title": "Replacement Allowed",
+            "default": false
+          },
+          "replacement_continuation": {
+            "type": "string",
+            "pattern": "^(remainder|fixed_days)$",
+            "title": "Replacement Continuation",
+            "default": "remainder"
+          },
+          "replacement_warranty_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replacement Warranty Days"
+          },
+          "manufacturer_auth_required": {
+            "type": "boolean",
+            "title": "Manufacturer Auth Required",
+            "default": false
+          },
+          "repeat_replacement_allowed": {
+            "type": "boolean",
+            "title": "Repeat Replacement Allowed",
+            "default": false
+          },
+          "effective_from": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective To"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "duration_days",
+          "covered_fault_categories",
+          "effective_from"
+        ],
+        "title": "PolicyVersionCreate"
+      },
+      "PolicyVersionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policy Id"
+          },
+          "version_number": {
+            "type": "integer",
+            "title": "Version Number"
+          },
+          "duration_days": {
+            "type": "integer",
+            "title": "Duration Days"
+          },
+          "applicable_components": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Applicable Components"
+          },
+          "covered_fault_categories": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Covered Fault Categories"
+          },
+          "covered_components": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Covered Components"
+          },
+          "covered_repair_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Covered Repair Types"
+          },
+          "exclusions": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Exclusions"
+          },
+          "labour_covered": {
+            "type": "boolean",
+            "title": "Labour Covered"
+          },
+          "replacement_allowed": {
+            "type": "boolean",
+            "title": "Replacement Allowed"
+          },
+          "replacement_continuation": {
+            "type": "string",
+            "title": "Replacement Continuation"
+          },
+          "replacement_warranty_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replacement Warranty Days"
+          },
+          "manufacturer_auth_required": {
+            "type": "boolean",
+            "title": "Manufacturer Auth Required"
+          },
+          "repeat_replacement_allowed": {
+            "type": "boolean",
+            "title": "Repeat Replacement Allowed"
+          },
+          "effective_from": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective To"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "policy_id",
+          "version_number",
+          "duration_days",
+          "applicable_components",
+          "covered_fault_categories",
+          "covered_components",
+          "covered_repair_types",
+          "exclusions",
+          "labour_covered",
+          "replacement_allowed",
+          "replacement_continuation",
+          "replacement_warranty_days",
+          "manufacturer_auth_required",
+          "repeat_replacement_allowed",
+          "effective_from",
+          "effective_to",
+          "created_at"
+        ],
+        "title": "PolicyVersionResponse"
+      },
+      "PriceBookCreate": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Label"
+          },
+          "labour_rates": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Labour Rates"
+          },
+          "part_prices": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Part Prices"
+          },
+          "effective_from": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Effective From"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "label",
+          "effective_from"
+        ],
+        "title": "PriceBookCreate"
+      },
+      "PriceBookResponse": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "labour_rates": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Labour Rates"
+          },
+          "part_prices": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Part Prices"
+          },
+          "effective_from": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Effective From"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "label",
+          "labour_rates",
+          "part_prices",
+          "effective_from",
+          "created_at"
+        ],
+        "title": "PriceBookResponse"
       },
       "QualificationUpdate": {
         "properties": {
@@ -7675,6 +10367,110 @@
           "summary"
         ],
         "title": "RepairSubmit"
+      },
+      "ReplacementCreate": {
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Ticket Id"
+          },
+          "old_serial_number": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Old Serial Number"
+          },
+          "new_serial_number": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "New Serial Number"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "ticket_id",
+          "old_serial_number",
+          "new_serial_number"
+        ],
+        "title": "ReplacementCreate"
+      },
+      "ReplacementResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "ticket_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Ticket Id"
+          },
+          "old_serial_number": {
+            "type": "string",
+            "title": "Old Serial Number"
+          },
+          "new_serial_number": {
+            "type": "string",
+            "title": "New Serial Number"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "manufacturer_status": {
+            "type": "string",
+            "title": "Manufacturer Status"
+          },
+          "issue_operation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issue Operation Id"
+          },
+          "approved_by_user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By User Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "reference",
+          "ticket_id",
+          "old_serial_number",
+          "new_serial_number",
+          "status",
+          "manufacturer_status",
+          "created_at"
+        ],
+        "title": "ReplacementResponse"
       },
       "ReplenishmentCreate": {
         "properties": {
@@ -9170,6 +11966,69 @@
         ],
         "title": "SurveySubmit"
       },
+      "TaxPolicyCreate": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Label"
+          },
+          "rate_bps": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Rate Bps"
+          },
+          "effective_from": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Effective From"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "label",
+          "rate_bps",
+          "effective_from"
+        ],
+        "title": "TaxPolicyCreate"
+      },
+      "TaxPolicyResponse": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "rate_bps": {
+            "type": "integer",
+            "title": "Rate Bps"
+          },
+          "effective_from": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Effective From"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "label",
+          "rate_bps",
+          "effective_from",
+          "created_at"
+        ],
+        "title": "TaxPolicyResponse"
+      },
       "TemplateLineResponse": {
         "properties": {
           "component_code": {
@@ -9789,6 +12648,22 @@
           "code"
         ],
         "title": "VerifyEmailRequest"
+      },
+      "VoidCreate": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "VoidCreate"
       },
       "WarehouseLineResponse": {
         "properties": {
