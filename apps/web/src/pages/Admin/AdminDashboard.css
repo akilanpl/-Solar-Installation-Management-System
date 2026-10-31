@@ -28,3 +28,51 @@
   background: #10b981;
   box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
+
+/* Quick Section View Navigation Bar */
+.admin-view-toggle-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 18px;
+  padding: 8px 10px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.025);
+  width: fit-content;
+}
+
+.admin-view-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.admin-view-tab-btn:hover {
+  color: #1e1b4b;
+  background: #f8fafc;
+}
+
+.admin-view-tab-btn.active {
+  background: #1e1b4b;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(30, 27, 75, 0.15);
+}
+
+@media (max-width: 768px) {
+  .admin-view-toggle-bar {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

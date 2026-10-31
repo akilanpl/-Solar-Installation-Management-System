@@ -2478,3 +2478,73 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+================================================================================
+46. ADMIN EXECUTIVE ANALYTICS HUB & COMPANY-WIDE DATA PLOTS (SECTION 46)
+================================================================================
+- Context & Requirements:
+  The admin user requires high-fidelity, comprehensive visual intelligence
+  covering every nook and corner of the company's operational, financial, technical,
+  supply chain, and regulatory performance across all 512 installations and 5 regional divisions.
+
+- Core Features & Graph Plots Implemented:
+  1. Executive KPI Sparkline Strip (4 Vector Charts):
+     - Gross Revenue YTD (₹1.48 Cr, +28.4% YoY) with 12-point smooth SVG sparkline.
+     - Delivered Solar Capacity (842.5 kW, +34.2% YoY) with cumulative trajectory.
+     - Net EBITDA Margin (29.3%, +4.1% MoM) benchmarked against target.
+     - Fleet Clean Energy Generation (3.42 GWh, 2,736 t CO₂ offset, 99.9% uptime).
+
+  2. 12-Month Financial Performance & EBITDA Spline Area Plot:
+     - Multi-curve cubic Bezier spline with gradient area fill under revenue curve.
+     - Dual-series: Gross Revenue (Emerald/Indigo) vs Operating Delivery Costs (Amber dashed line).
+     - Interactive SVG hover inspection crosshair revealing month, revenue, cost, net margin, and delivered kW.
+
+  3. Quarterly Solar Capacity Delivered vs Target Quota (Grouped Bar Plot):
+     - Comparative stacked column tracks with target quota marker lines across Q1-Q4.
+     - Color-coded breakdown of Residential (🏠) vs Commercial C&I (🏢) delivered kilowatts.
+
+  4. Revenue Stream Diversity Matrix (Multi-Ring Donut Chart):
+     - Interactive SVG donut chart calculating circumference and stroke offsets.
+     - Segments: Residential Rooftops (49%), Commercial C&I (30%), LiFePO4 Storage (12%),
+       O&M Subscriptions (6%), PM Surya Ghar Portal Subsidies (3%).
+     - Center KPI readout displaying portfolio total (₹1.48 Cr) and segment details on hover.
+
+  5. Customer Project Delivery Conversion Funnel (Stepped Funnel Plot):
+     - 6-stage lifecycle tracking from Ingestion (1,420 leads) down to Commissioning (512 systems).
+     - Displays stage-by-stage progression rates and drop-off analysis.
+
+  6. Regional Territory Operations & Quota Benchmark (Horizontal Bar Plot):
+     - 5 operating circles: Bangalore Urban (104%), Bangalore Rural (93%), Mysore (89%),
+       Mangalore & Coastal (97%), Hubli-Dharwad (84%).
+     - Displays revenue, commissioned kW, and field crews deployed per territory.
+
+  7. Standard 1 kW Rooftop Cost Stack & Unit Economics (Stacked Component Plot):
+     - Cost of Goods Sold (COGS) breakdown: Tier-1 PV Modules (45%), Hybrid Inverter/DB (22%),
+       Battery Storage (16%), Civil/Labour (10%), DISCOM Net-Meter Permitting (7%).
+     - Unit margin analysis: ₹54,000 Base COGS + ₹15,800 Margin = ₹69,800 Retail Price (29.3% Margin).
+
+  8. Diurnal Irradiance & Fleet Solar Generation Curve (Multi-Wave Area Plot):
+     - 24-hour diurnal profile (06:00 to 18:00) with shaded gradient area for Solar PV output
+       (peaking at 1.84 MW at 12:30 PM) and Net Grid Export to DISCOM.
+
+  9. Warehouse Inventory Valuation & Stock Health Matrix:
+     - 5 critical equipment categories totaling ₹1.94 Cr inventory valuation with stock health bars
+       and 8.4x annual inventory turnover ratio.
+
+  10. DISCOM Net-Metering SLA & Turnaround Trend Plot:
+      - Historical reduction in BESCOM bi-directional net-meter approval (16.8 days down to 4.2 days)
+        and PM Surya Ghar DBT disbursement tracking.
+
+  11. Executive Operations Quality & CSAT Radial Gauges:
+      - 4 precision SVG circular arc gauges: Customer CSAT (96.4%), Survey Accuracy (94.2%),
+        Rooftop Safety Compliance (99.8%), Fleet Uptime (99.9%).
+
+- Files Modified & Created:
+  * apps/web/src/components/AdminAnalyticsHub/AdminAnalyticsHub.jsx (Created)
+  * apps/web/src/components/AdminAnalyticsHub/AdminAnalyticsHub.css (Created)
+  * apps/web/src/pages/Admin/AdminDashboard.jsx (Modified)
+  * apps/web/src/pages/Admin/AdminDashboard.css (Modified)
+  * apps/web/test/app.test.js (Modified - Added unit test #12)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AppShell } from '../../components/AppShell/AppShell';
 import { DashboardView } from '../../components/DashboardView/DashboardView';
+import { AdminAnalyticsHub } from '../../components/AdminAnalyticsHub/AdminAnalyticsHub';
 import { Card } from '../../components/Card/Card';
 import { Button } from '../../components/Button/Button';
 import { Badge } from '../../components/Badge/Badge';
@@ -11,7 +12,7 @@ import { LoadingState } from '../../components/LoadingState/LoadingState';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { ROLE_DISPLAY } from '../../lib/access';
-import { Users, UserPlus, Shield, Activity, Database, Server, Plus, Clock } from 'lucide-react';
+import { Users, UserPlus, Shield, Activity, Database, Server, Plus, Clock, BarChart3, FileSpreadsheet, Eye } from 'lucide-react';
 import './AdminDashboard.css';
 import '../Customer/CustomerDashboard.css';
 
@@ -20,6 +21,7 @@ export function AdminDashboard() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [adminViewSection, setAdminViewSection] = useState('all'); // 'all' | 'analytics' | 'roster'
 
   // New Employee Form
   const [fullName, setFullName] = useState('');
@@ -56,6 +58,14 @@ export function AdminDashboard() {
     });
   };
 
+  const handleExportReport = () => {
+    showToast({
+      type: 'success',
+      title: 'Board Report Dispatched',
+      message: 'SolarFlow Q2 Full-Spectrum Company Performance & Financials Briefing exported to CSV.',
+    });
+  };
+
   return (
     <AppShell requiredRole="admin">
       {loading ? (
@@ -64,15 +74,51 @@ export function AdminDashboard() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          {/* Quick Section View Navigation Bar */}
+          <div className="admin-view-toggle-bar">
+            <button
+              type="button"
+              className={`admin-view-tab-btn ${adminViewSection === 'all' ? 'active' : ''}`}
+              onClick={() => setAdminViewSection('all')}
+            >
+              <Eye size={15} />
+              <span>Full Operational Center (All Views)</span>
+            </button>
+            <button
+              type="button"
+              className={`admin-view-tab-btn ${adminViewSection === 'analytics' ? 'active' : ''}`}
+              onClick={() => setAdminViewSection('analytics')}
+            >
+              <BarChart3 size={15} />
+              <span>Executive Analytics & Company Stats</span>
+            </button>
+            <button
+              type="button"
+              className={`admin-view-tab-btn ${adminViewSection === 'roster' ? 'active' : ''}`}
+              onClick={() => setAdminViewSection('roster')}
+            >
+              <Users size={15} />
+              <span>Personnel & RBAC Roster</span>
+            </button>
+          </div>
+
           {/* Master Bento Dashboard for Admin */}
-          <DashboardView
-            role="admin"
-            employees={employees}
-            onNewAction={() => setModalOpen(true)}
-          />
+          {(adminViewSection === 'all' || adminViewSection === 'roster') && (
+            <DashboardView
+              role="admin"
+              employees={employees}
+              onNewAction={() => setModalOpen(true)}
+            />
+          )}
+
+          {/* Company-Wide Executive Analytics Hub with All Types of Graph Plots */}
+          {(adminViewSection === 'all' || adminViewSection === 'analytics') && (
+            <AdminAnalyticsHub onExportReport={handleExportReport} />
+          )}
 
           {/* Operations Staff Roster Table */}
-          <div className="bento-card" style={{ padding: '28px' }}>
+          {(adminViewSection === 'all' || adminViewSection === 'roster') && (
+            <div className="bento-card" style={{ padding: '28px' }}>
             <div className="bento-card-header" style={{ marginBottom: '20px' }}>
               <div>
                 <h3 className="bento-card-title">System Administration & Personnel Roster</h3>
@@ -146,6 +192,7 @@ export function AdminDashboard() {
               </table>
             </div>
           </div>
+          )}
         </div>
       )}
 

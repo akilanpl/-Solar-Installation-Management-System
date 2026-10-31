@@ -192,3 +192,4 @@ For persistent sidebar navigation docks:
 - [x] **Fallback Support:** Provide standard translucent solid or gradient fallback for browsers lacking `backdrop-filter` support via `@supports not (backdrop-filter: blur(10px))`.
 - [x] **Touch Targets:** Maintain minimum 44x44px interactive tap dimensions for mobile devices.
 - [x] **Nested Sampling:** Keep nested glass elements restricted to 2 hierarchy levels (Container -> Lens Button) to prevent GPU overdraw penalties.
+

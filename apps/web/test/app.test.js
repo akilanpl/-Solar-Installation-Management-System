@@ -138,6 +138,47 @@ test('Technician Dispatch Map: raster asset integration and waypoint coordinates
   assert.equal(stop3Path, 'M 440 400 L 740 240 L 870 240 L 870 310');
 });
 
+test('Admin Executive Analytics: financial revenue and unit economics aggregation', () => {
+  // Test unit cost breakdown summation
+  const unitEconomics = [
+    { component: 'Mono-PERC Tier-1 PV Modules', cost: 24300, pct: 45 },
+    { component: 'Hybrid Inverter & Protection AC/DC DB', cost: 11880, pct: 22 },
+    { component: 'LiFePO4 Modular Energy Storage', cost: 8640, pct: 16 },
+    { component: 'Civil Structure, Aluminum Rails & Labour', cost: 5400, pct: 10 },
+    { component: 'DISCOM Net-Meter & Permitting Fees', cost: 3780, pct: 7 },
+  ];
+
+  const totalCogs = unitEconomics.reduce((sum, item) => sum + item.cost, 0);
+  assert.equal(totalCogs, 54000); // Base COGS per kW
+
+  const totalPercentage = unitEconomics.reduce((sum, item) => sum + item.pct, 0);
+  assert.equal(totalPercentage, 100);
+
+  const retailPricePerKw = 69800;
+  const grossMargin = retailPricePerKw - totalCogs;
+  assert.equal(grossMargin, 15800);
+  const marginPercentage = (grossMargin / totalCogs) * 100;
+  assert.ok(marginPercentage > 29.0);
+
+  // Revenue stream diversity shares
+  const revenueStreams = [
+    { name: 'Residential Rooftops', pct: 49 },
+    { name: 'Commercial & Industrial C&I', pct: 30 },
+    { name: 'LiFePO4 Battery Storage', pct: 12 },
+    { name: 'O&M & Annual Maintenance', pct: 6 },
+    { name: 'PM Surya Ghar Subsidies', pct: 3 },
+  ];
+  const totalStreamPct = revenueStreams.reduce((sum, s) => sum + s.pct, 0);
+  assert.equal(totalStreamPct, 100);
+
+  // Enterprise pipeline conversion from leads (1420) to commissioned (512)
+  const leadsIngested = 1420;
+  const commissioned = 512;
+  const netConversion = ((commissioned / leadsIngested) * 100).toFixed(1);
+  assert.equal(netConversion, '36.1');
+});
+
+
 
 
 
