@@ -176,6 +176,15 @@ def main():
     missing = []
     for name, family, sev, directory, command, prerequisites in mandatory_campaigns(root, folder, api_python):
         print(f"Running required campaign {name}", flush=True)
+        if name == "main-ratchet-two-order-ci":
+            # This exact invocation's measured rows are available before the
+            # final report. The baseline adapter runs last; adding passing
+            # rows can only improve this conservative partial score.
+            from score import score
+            context = {"sha": sha, "source_start": initial,
+                       "source_now": source_state(root), "created_at": time.time(),
+                       "tests": tests, "score": score(tests)}
+            (folder / "campaign-context.json").write_text(json.dumps(context, indent=2) + "\n")
         rows = run_stage(root, folder, name, family, sev, directory, command,
                          require_junit=True, prerequisites=prerequisites)
         tests.extend(rows)
