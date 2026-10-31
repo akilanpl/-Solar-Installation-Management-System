@@ -1764,3 +1764,50 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+30. INTERACTIVE CUSTOMER SITE ROUTE & GPS NAVIGATION MAP (FIELD TECHNICIAN DASHBOARD)
+--------------------------------------------------------------------------------
+- Date & Context:
+  Added a dedicated, interactive customer site route & navigation map section
+  to the Field Technician Dashboard (`activeRole === 'technician'`) so on-field
+  technicians can view customer premises across Bengaluru, navigate turn-by-turn
+  via GPS, and execute on-site problem rectification directives (e.g. Inverter
+  Red LED Trip E-04 DC Ground Leakage, roof tile anchor pull tests, commercial
+  3-phase net-metering).
+
+- Key Architecture & Visual Elements:
+  1. Component Architecture (`TechnicianSiteMap.jsx`, `TechnicianSiteMap.css`):
+     - Interactive multi-stop itinerary selector tabs:
+       * Stop 1 (Urgent): Arun Kumar (Indiranagar) - TK-1088 / Inverter Red LED Trip.
+       * Stop 2 (High): Arun Kumar (Villa 12, Doddanekkundi) - WO-INST-004 / Pre-Installation Anchor Pull Test.
+       * Stop 3 (Normal): TechSpark Innovation Labs (Whitefield) - JOB-SURV-001 / 10kW Commercial Net-Metering.
+     - Responsive SVG Vector Roadmap Canvas of East Bengaluru:
+       * Ulsoor Lake, Bellandur Lake reservoirs.
+       * Outer Ring Road (ORR), Indiranagar 100 Feet Road, Old Airport Road, ITPL Whitefield corridors.
+       * Real-time GPS beacon for on-duty technician with animated pulse rings.
+       * Animated route stroke-dashoffset flow connecting technician to selected destination.
+       * Interactive site markers with ripple pulse and customer fault badges.
+     - Real-Time Navigation HUD (Heads-Up Display):
+       * Live compass heading (042° NE).
+       * Next turn prompt ("In 350m: Turn Right onto 100 Feet Rd").
+       * Traffic condition pill ("Light Traffic (Green)").
+     - Rectification Directive & Actions Panel:
+       * Displays detailed customer address, phone, work order ID, system size, and scheduled slot.
+       * Prominent rectification directive with diagnostic instructions.
+       * "Start GPS Navigation": opens Google Maps turn-by-turn directions to the site in a new tab.
+       * "Call Customer": initiates cellular call (`tel:...`).
+       * "Arrived at Customer Site": logs on-site check-in and updates status to Verified.
+  2. Integration with Dashboard Layout (`DashboardView.jsx`, `DashboardView.css`):
+     - Rendered conditionally for `activeRole === 'technician'` as a full-width section
+       between middle bento cards and bottom bento grid.
+     - Coordinated with OTP check-in and Customer Digital Signature workflow.
+
+- Files Created & Modified:
+  * apps/web/src/components/TechnicianSiteMap/TechnicianSiteMap.jsx (Created)
+  * apps/web/src/components/TechnicianSiteMap/TechnicianSiteMap.css (Created)
+  * apps/web/src/components/DashboardView/DashboardView.jsx (Modified)
+  * apps/web/src/components/DashboardView/DashboardView.css (Modified)
+  * apps/web/test/app.test.js (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================

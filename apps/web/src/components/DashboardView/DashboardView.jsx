@@ -39,6 +39,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useRouter } from '../../router/Router';
 import { formatCapacity, formatInrFromPaise } from '../../lib/format';
 import { WeatherCard } from '../WeatherCard/WeatherCard';
+import { TechnicianSiteMap } from '../TechnicianSiteMap/TechnicianSiteMap';
 import './DashboardView.css';
 
 export function DashboardView({
@@ -1381,6 +1382,20 @@ export function DashboardView({
           </>
         )}
       </section>
+
+      {/* ================================================================
+          TECHNICIAN MAP SECTION: INTERACTIVE ROUTE & CUSTOMER SITE RECTIFICATION
+          ================================================================ */}
+      {activeRole === 'technician' && (
+        <section className="dash-map-section" aria-label="Field Technician Navigation & Customer Route">
+          <TechnicianSiteMap
+            onCheckIn={(stop) => {
+              setOtpVerified(true);
+            }}
+            onToast={showToast}
+          />
+        </section>
+      )}
 
       {/* ================================================================
           ROW 3: BOTTOM BENTO GRID (SECONDARY ESSENTIALS + FOCUS CARD + GAUGES)

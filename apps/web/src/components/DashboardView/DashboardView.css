@@ -125,6 +125,10 @@
   align-items: stretch;
 }
 
+.dash-map-section {
+  margin-bottom: 20px;
+}
+
 .bento-card {
   background-color: #ffffff;
   border: 1px solid #edf0f5;

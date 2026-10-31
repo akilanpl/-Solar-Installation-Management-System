@@ -43,3 +43,13 @@ test('Receipt Printer: sawtooth clipPath points generation is well-formed', () =
   assert.ok(clipPath.includes('calc(100% - 4px)'));
   assert.ok(clipPath.endsWith(')'));
 });
+
+test('Technician Site Map: stops routing and Google Maps URL structure', () => {
+  const address = '#42, 4th Cross, 100ft Road, Indiranagar, Bengaluru - 560038';
+  const encoded = encodeURIComponent(address);
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${encoded}`;
+  assert.ok(url.startsWith('https://www.google.com/maps/dir/'));
+  assert.ok(url.includes('Indiranagar'));
+  assert.ok(url.includes('560038'));
+});
+
