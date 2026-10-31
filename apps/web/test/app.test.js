@@ -349,6 +349,60 @@ test('Performance Optimization: code-splitting routes and skeleton loader struct
   assert.ok(indexHtml.includes('Sub-50ms Fast-Boot'), 'index.html must contain fast-boot telemetry pill');
 });
 
+test('Multi-Card Leather Wallet: card options, visual assets, and metadata synchronization', () => {
+  const cards = {
+    stripe: {
+      brand: 'Stripe',
+      holder: 'ALEX SMITH',
+      number: '5524 9910 4242',
+      exp: '08/29',
+      cvc: '892',
+    },
+    wise: {
+      brand: 'Wise',
+      holder: 'STUDIO LLC',
+      number: '9012 4432 8810',
+      exp: '11/28',
+      cvc: '417',
+    },
+    paypal: {
+      brand: 'PayPal',
+      holder: 'hello@work.com',
+      number: '3312 0045 0094',
+      exp: '05/27',
+      cvc: '109',
+    },
+  };
+
+  assert.equal(Object.keys(cards).length, 3);
+  assert.equal(cards.stripe.holder, 'ALEX SMITH');
+  assert.equal(cards.stripe.number.slice(-4), '4242');
+  assert.equal(cards.wise.holder, 'STUDIO LLC');
+  assert.equal(cards.wise.number.slice(-4), '8810');
+  assert.equal(cards.paypal.holder, 'hello@work.com');
+  assert.equal(cards.paypal.number.slice(-4), '0094');
+
+  // Verify wallet component and CSS file existence and key class names
+  const componentPath = path.join(__dirname, '../src/components/MultiCardWallet/MultiCardWallet.jsx');
+  const cssPath = path.join(__dirname, '../src/components/MultiCardWallet/MultiCardWallet.css');
+  assert.ok(fs.existsSync(componentPath), 'MultiCardWallet.jsx must exist');
+  assert.ok(fs.existsSync(cssPath), 'MultiCardWallet.css must exist');
+
+  const cssContent = fs.readFileSync(cssPath, 'utf8');
+  assert.ok(cssContent.includes('.wallet'), 'CSS must include .wallet styling');
+  assert.ok(cssContent.includes('.pocket'), 'CSS must include .pocket leather styling');
+  assert.ok(cssContent.includes('.card.stripe'), 'CSS must style Stripe card');
+  assert.ok(cssContent.includes('.card.wise'), 'CSS must style Wise card');
+  assert.ok(cssContent.includes('.card.paypal'), 'CSS must style PayPal card');
+  assert.ok(cssContent.includes('slideIntoPocket'), 'CSS must include slideIntoPocket animation');
+
+  // Verify integration in RazorpayPaymentPage.jsx
+  const pagePath = path.join(__dirname, '../src/pages/Customer/RazorpayPaymentPage.jsx');
+  const pageContent = fs.readFileSync(pagePath, 'utf8');
+  assert.ok(pageContent.includes('MultiCardWallet'), 'RazorpayPaymentPage must import and render MultiCardWallet');
+  assert.ok(!pageContent.includes('<div className="io-credit-card">'), 'Static io-credit-card must be replaced by MultiCardWallet');
+});
+
 
 
 

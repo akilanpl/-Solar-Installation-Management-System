@@ -346,8 +346,16 @@
 }
 
 /* ----------------------------------------------------------------
-   RIGHT COLUMN: ROYAL BLUE CREDIT CARD GRAPHIC
+   RIGHT COLUMN: MULTI-CARD WALLET CONTAINER & CREDIT CARD GRAPHIC
    ---------------------------------------------------------------- */
+.io-card-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
 .io-credit-card {
   background: linear-gradient(135deg, #2b61ff 0%, #1e4de8 100%);
   border-radius: 28px;

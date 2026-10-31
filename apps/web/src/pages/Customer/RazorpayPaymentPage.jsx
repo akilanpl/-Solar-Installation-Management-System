@@ -3,6 +3,7 @@ import { useRouter } from '../../router/Router';
 import { useAuth } from '../../context/AuthContext';
 import { ChevronRight } from 'lucide-react';
 import ReceiptPrinter from '../../components/ReceiptPrinter/ReceiptPrinter';
+import { MultiCardWallet } from '../../components/MultiCardWallet/MultiCardWallet';
 import './RazorpayPaymentPage.css';
 
 export function RazorpayPaymentPage() {
@@ -11,12 +12,48 @@ export function RazorpayPaymentPage() {
 
   // Selected payment method pill: 'card' (default as per design) | 'paypal'
   const [selectedMethod, setSelectedMethod] = useState('card');
+  const [selectedCard, setSelectedCard] = useState('stripe');
 
-  // Interactive Card Form inputs (matching the underline fields on the blue card)
-  const [fullName, setFullName] = useState('Arun Kumar');
-  const [cardNumber, setCardNumber] = useState('4532 8920 1928 4921');
+  // Interactive Card Form inputs (matching the selected card in the multi-card wallet)
+  const [fullName, setFullName] = useState('ALEX SMITH');
+  const [cardNumber, setCardNumber] = useState('5524 9910 4242');
   const [expireDate, setExpireDate] = useState('08/29');
   const [cvc, setCvc] = useState('892');
+
+  // Multi-Card Wallet selection handler: synchronizes card credentials with checkout
+  const handleSelectCard = (cardId, cardData) => {
+    setSelectedCard(cardId);
+    if (cardId === 'paypal') {
+      setSelectedMethod('paypal');
+    } else {
+      setSelectedMethod('card');
+    }
+    if (cardData) {
+      if (cardData.holder) setFullName(cardData.holder);
+      if (cardData.number) setCardNumber(cardData.number);
+      if (cardData.exp) setExpireDate(cardData.exp);
+      if (cardData.cvc) setCvc(cardData.cvc);
+    }
+  };
+
+  const handleSelectMethod = (method) => {
+    setSelectedMethod(method);
+    if (method === 'paypal') {
+      setSelectedCard('paypal');
+      setFullName('hello@work.com');
+      setCardNumber('3312 0045 0094');
+      setExpireDate('05/27');
+      setCvc('109');
+    } else {
+      if (selectedCard === 'paypal') {
+        setSelectedCard('stripe');
+        setFullName('ALEX SMITH');
+        setCardNumber('5524 9910 4242');
+        setExpireDate('08/29');
+        setCvc('892');
+      }
+    }
+  };
 
   // Receipt Printer Animation Modal state
   const [showPrinter, setShowPrinter] = useState(false);
@@ -242,7 +279,7 @@ export function RazorpayPaymentPage() {
             {/* Pill 1: Paypal / UPI */}
             <div
               className={`io-method-pill ${selectedMethod === 'paypal' ? 'active' : ''}`}
-              onClick={() => setSelectedMethod('paypal')}
+              onClick={() => handleSelectMethod('paypal')}
               role="button"
               tabIndex={0}
             >
@@ -260,7 +297,7 @@ export function RazorpayPaymentPage() {
             {/* Pill 2: Card (ACTIVE WITH TOPOGRAPHICAL WAVE PATTERN) */}
             <div
               className={`io-method-pill card-pill ${selectedMethod === 'card' ? 'active' : ''}`}
-              onClick={() => setSelectedMethod('card')}
+              onClick={() => handleSelectMethod('card')}
               role="button"
               tabIndex={0}
             >
@@ -292,112 +329,14 @@ export function RazorpayPaymentPage() {
           </div>
 
           {/* ============================================================
-              RIGHT COLUMN: ROYAL BLUE CREDIT CARD WITH UNDERLINE INPUTS
+              RIGHT COLUMN: INTERACTIVE MULTI-CARD WALLET SELECTOR
               ============================================================ */}
           <div className="io-card-column">
-            <div className="io-credit-card">
-              {/* Decorative Subtle Wave Lines */}
-              <div className="io-card-wave-bg">
-                <svg viewBox="0 0 500 320" preserveAspectRatio="none" className="card-waves-svg">
-                  <path
-                    d="M-50,160 C120,60 280,260 550,140"
-                    fill="none"
-                    stroke="rgba(255, 255, 255, 0.16)"
-                    strokeWidth="1.6"
-                  />
-                  <path
-                    d="M-50,110 C140,20 290,210 550,90"
-                    fill="none"
-                    stroke="rgba(255, 255, 255, 0.12)"
-                    strokeWidth="1.2"
-                  />
-                  <path
-                    d="M-50,210 C100,100 270,310 550,190"
-                    fill="none"
-                    stroke="rgba(255, 255, 255, 0.14)"
-                    strokeWidth="1.4"
-                  />
-                </svg>
-              </div>
-
-              {/* Card Top Row: Brand Badges */}
-              <div className="io-card-top-row">
-                <div className="io-card-badges-group">
-                  <span className="card-top-badge visa">VISA</span>
-                  <span className="card-top-badge amex">AMEX</span>
-                  <div className="card-top-badge mc">
-                    <span className="circle red" />
-                    <span className="circle yellow" />
-                  </div>
-                  <span className="card-top-badge discover">DISCOVER</span>
-                </div>
-              </div>
-
-              {/* Interactive Card Surface Fields */}
-              <div className="io-card-fields-wrapper">
-                {/* Field 1: Your Full Name */}
-                <div className="io-card-field-group">
-                  <label className="io-card-field-label">Your Full name</label>
-                  <input
-                    type="text"
-                    className="io-card-underline-input"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Arun Kumar"
-                    spellCheck="false"
-                  />
-                </div>
-
-                {/* Field 2: Card Number */}
-                <div className="io-card-field-group">
-                  <label className="io-card-field-label">Card Number</label>
-                  <input
-                    type="text"
-                    className="io-card-underline-input"
-                    value={cardNumber}
-                    onChange={(e) => setCardNumber(e.target.value)}
-                    placeholder="4532 8920 1928 4921"
-                    maxLength={19}
-                    spellCheck="false"
-                  />
-                </div>
-
-                {/* Row with Expire Date, CVC, and EMV Chip */}
-                <div className="io-card-bottom-row">
-                  <div className="io-card-inputs-subgrid">
-                    <div className="io-card-field-group">
-                      <label className="io-card-field-label">Expire date</label>
-                      <input
-                        type="text"
-                        className="io-card-underline-input short"
-                        value={expireDate}
-                        onChange={(e) => setExpireDate(e.target.value)}
-                        placeholder="08/29"
-                        maxLength={5}
-                      />
-                    </div>
-                    <div className="io-card-field-group">
-                      <label className="io-card-field-label">CVC</label>
-                      <input
-                        type="password"
-                        className="io-card-underline-input short"
-                        value={cvc}
-                        onChange={(e) => setCvc(e.target.value)}
-                        placeholder="892"
-                        maxLength={4}
-                      />
-                    </div>
-                  </div>
-
-                  {/* EMV Smart Chip */}
-                  <div className="io-emv-chip" aria-label="EMV Smart Chip">
-                    <div className="chip-inner-trace t1" />
-                    <div className="chip-inner-trace t2" />
-                    <div className="chip-inner-trace t3" />
-                  </div>
-                </div>
-              </div>
-            </div>
+            <MultiCardWallet
+              selectedCard={selectedCard}
+              onSelectCard={handleSelectCard}
+              balance={localDbStats.amount || '$12,450.00'}
+            />
           </div>
         </div>
       </main>
