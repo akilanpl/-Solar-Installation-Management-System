@@ -1,6 +1,12 @@
 /* ==========================================================================
-   SOLARFLOW / SOLAROPS - MASTER DASHBOARD VIEW
-   Exact recreation of the reference dashboard bento grid layout & styling
+   SOLARFLOW / SOLAROPS - ROLE-TAILORED BENTO GRID STYLES
+   Tailored containers strictly derived from the Odoo Solar Problem Statement:
+   - BOM parts lists
+   - Serial number scanning
+   - SysCache instant lookup
+   - Customer digital signatures
+   - Job-level cost & profitability accounting
+   - Subsidy tracking & warranties
    ========================================================================== */
 
 .dash-container {
@@ -16,12 +22,11 @@
    ========================================================================== */
 .dash-hero-row {
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: 360px 1fr;
   gap: 24px;
   align-items: stretch;
 }
 
-/* Greeting Section */
 .dash-greeting-box {
   display: flex;
   flex-direction: column;
@@ -29,10 +34,10 @@
 }
 
 .dash-greeting-title {
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 700;
   color: #111827;
-  line-height: 1.16;
+  line-height: 1.18;
   letter-spacing: -0.6px;
   margin: 0;
   display: flex;
@@ -48,7 +53,6 @@
 .dash-avatar-cluster {
   display: inline-flex;
   align-items: center;
-  gap: -6px;
 }
 
 .dash-avatar-ring {
@@ -70,7 +74,7 @@
   color: #64748b;
   line-height: 1.5;
   margin-top: 14px;
-  max-width: 330px;
+  max-width: 340px;
 }
 
 /* Top Feature Cards (4 Columns) */
@@ -80,7 +84,6 @@
   gap: 16px;
 }
 
-/* Base Card Style */
 .dash-feature-card {
   background-color: #ffffff;
   border: 1px solid #edf0f5;
@@ -101,7 +104,6 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
-/* Card 1: Add New (Lavender Dashed) */
 .dash-feature-card.create-new {
   background-color: #eef2ff;
   border: 1.5px dashed #c7d2fe;
@@ -127,12 +129,10 @@
   transform: scale(1.1);
 }
 
-/* Illustration Box */
 .dash-feature-illustration {
-  height: 56px;
+  height: 48px;
   display: flex;
   align-items: center;
-  justify-content: center;
   color: #4f46e5;
 }
 
@@ -145,23 +145,24 @@
 }
 
 .dash-feature-sub {
-  font-size: 11.5px;
-  color: #94a3b8;
+  font-size: 12px;
+  color: #64748b;
   margin: 2px 0 0 0;
   line-height: 1.35;
+  font-weight: 600;
 }
 
 /* ==========================================================================
-   ROW 2: MIDDLE BENTO GRID (3 COLUMNS)
+   ROW 2 & ROW 3: BENTO GRID LAYOUTS
    ========================================================================== */
-.dash-middle-grid {
+.dash-middle-grid,
+.dash-bottom-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
   align-items: stretch;
 }
 
-/* Generic White Bento Card */
 .bento-card {
   background-color: #ffffff;
   border: 1px solid #edf0f5;
@@ -177,11 +178,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .bento-card-title {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   color: #111827;
   margin: 0;
@@ -192,7 +193,7 @@
   background: none;
   border: none;
   color: #64748b;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -204,419 +205,265 @@
 }
 
 .bento-header-btn:hover {
-  color: #111827;
-}
-
-/* Column 1: Notifications */
-.floating-event-card {
-  background-color: #ffffff;
-  border: 1px solid #edf0f5;
-  border-radius: 18px;
-  padding: 16px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
-  margin-bottom: 14px;
-  position: relative;
-}
-
-.event-top-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.event-title-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.event-status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: #10b981;
-}
-
-.event-actions-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #94a3b8;
-}
-
-.event-sub-info {
-  font-size: 12px;
-  color: #64748b;
-  margin: 0 0 12px 0;
-}
-
-.event-pills-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.event-pill {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 9999px;
-  padding: 4px 10px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #475569;
-}
-
-/* Secondary Notification Item */
-.notification-item-compact {
-  padding: 12px 14px;
-  background-color: #f8fafc;
-  border-radius: 14px;
-  border: 1px solid #f1f5f9;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.notif-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.notif-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.notif-desc {
-  font-size: 11.5px;
-  color: #64748b;
-  margin: 0;
-  line-height: 1.4;
-}
-
-/* Column 2: Assignments */
-.assignment-tags-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.tag-badge {
-  background-color: #f1f5f9;
-  color: #475569;
-  font-size: 11.5px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 8px;
-}
-
-.assignment-main-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #111827;
-  line-height: 1.35;
-  margin: 0 0 14px 0;
-}
-
-.priority-badge-high {
-  background-color: #ffe4e6;
-  color: #e11d48;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 9999px;
-  display: inline-block;
-  margin-left: 8px;
-}
-
-.assignment-meta-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
-}
-
-.status-chip-green {
-  background-color: #d1fae5;
-  color: #047857;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 8px;
-}
-
-.assignee-box {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #374151;
-}
-
-.assignee-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: #6366f1;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-}
-
-.add-assignment-btn {
-  margin-top: auto;
-  width: 100%;
-  height: 44px;
-  background-color: #eef2ff;
-  border: 1.5px dashed #c7d2fe;
-  border-radius: 14px;
   color: #4f46e5;
-  font-size: 13px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: all 150ms ease;
-  font-family: inherit;
-}
-
-.add-assignment-btn:hover {
-  background-color: #e0e7ff;
-  border-color: #818cf8;
-}
-
-/* Column 3: Calendar & Schedule */
-.cal-week-strip {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  margin-bottom: 18px;
-}
-
-.cal-day-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  color: #64748b;
-  cursor: pointer;
-}
-
-.cal-day-num {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-}
-
-.cal-day-cell.active .cal-day-num {
-  background-color: #5b5fc7;
-  color: #ffffff;
-  box-shadow: 0 4px 10px rgba(91, 95, 199, 0.35);
-}
-
-.cal-agenda-timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.timeline-slot-header {
-  font-size: 11px;
-  font-weight: 700;
-  color: #94a3b8;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.timeline-slot-header::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background-color: #e2e8f0;
-}
-
-.timeline-agenda-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 12px;
-  background-color: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid #f1f5f9;
-}
-
-.agenda-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.agenda-icon-box {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  background-color: #e0e7ff;
-  color: #4f46e5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.agenda-title {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0;
-}
-
-.agenda-sub {
-  font-size: 11px;
-  color: #64748b;
-  margin: 0;
 }
 
 /* ==========================================================================
-   ROW 3: BOTTOM BENTO GRID (3 COLUMNS)
+   ROLE-SPECIFIC BENTO WIDGETS
    ========================================================================== */
-.dash-bottom-grid {
-  display: grid;
-  grid-template-columns: 1.25fr 0.85fr 1fr;
-  gap: 20px;
-  align-items: stretch;
+
+/* 1. Customer Lifecycle Stepper */
+.lifecycle-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* Column 1: Today Tasks */
-.tasks-card-header-actions {
+.stepper-step {
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
 }
 
-.view-toggles-cluster {
-  display: flex;
-  align-items: center;
-  background-color: #f1f5f9;
-  border-radius: 8px;
-  padding: 2px;
-  gap: 2px;
+.stepper-step.completed {
+  background-color: #ecfdf5;
+  border-color: #d1fae5;
 }
 
-.view-toggle-btn {
-  background: none;
-  border: none;
-  color: #64748b;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
+.stepper-step.active {
+  background-color: #eef2ff;
+  border-color: #c7d2fe;
+}
+
+.stepper-icon-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-}
-
-.view-toggle-btn.active {
-  background-color: #ffffff;
-  color: #111827;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.today-tasks-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 4px;
-}
-
-.today-task-row {
-  display: grid;
-  grid-template-columns: 1.4fr 0.9fr 1fr 0.9fr;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  background-color: #f8fafc;
-  border-radius: 14px;
-  border: 1px solid #f1f5f9;
-  transition: background-color 150ms ease;
-}
-
-.today-task-row:hover {
-  background-color: #f1f5f9;
-}
-
-.task-name-col h5 {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
-  color: #111827;
-  margin: 0 0 2px 0;
 }
 
-.task-name-col span {
-  font-size: 11px;
-  color: #94a3b8;
+.stepper-step.completed .stepper-icon-circle {
+  background-color: #10b981;
+  color: #ffffff;
 }
 
-.task-duration-col {
-  font-size: 12px;
-  font-weight: 600;
-  color: #374151;
+.stepper-step.active .stepper-icon-circle {
+  background-color: #4f46e5;
+  color: #ffffff;
 }
 
-.task-progress-col {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.task-progress-track {
-  flex: 1;
-  height: 6px;
+.stepper-step.pending .stepper-icon-circle {
   background-color: #e2e8f0;
-  border-radius: 9999px;
-  overflow: hidden;
-}
-
-.task-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
-  border-radius: 9999px;
-}
-
-.task-meta-col {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  font-size: 11px;
   color: #64748b;
 }
 
-/* Column 2: Go Premium! Card */
-.go-premium-card {
+.stepper-text {
+  flex: 1;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* 2. BOM Package Itemized Breakdown Table */
+.bom-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.bom-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-radius: 10px;
+  font-size: 12.5px;
+}
+
+.bom-item-name {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.bom-item-qty {
+  color: #64748b;
+  font-size: 11.5px;
+  margin-left: 6px;
+}
+
+.bom-item-price {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.bom-summary-box {
+  margin-top: 14px;
+  padding: 12px;
+  background-color: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 3. SysCache Instant Lookup Widget */
+.syscache-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background-color: #ecfdf5;
+  color: #047857;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.syscache-search-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.syscache-input {
+  flex: 1;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  padding: 0 12px;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+}
+
+.syscache-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.syscache-result-card {
+  padding: 14px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #10b981;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12.5px;
+}
+
+/* 4. Serial Number Barcode Scanner Box */
+.serial-scanner-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scanner-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.scanned-serials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.scanned-serial-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background-color: #f1f5f9;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 12px;
+  color: #1e293b;
+}
+
+/* 5. Customer Digital Signature Box */
+.signature-preview-box {
+  height: 90px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8fafc;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 150ms ease;
+  margin-bottom: 12px;
+}
+
+.signature-preview-box:hover {
+  border-color: #4f46e5;
+  background-color: #eef2ff;
+  color: #4f46e5;
+}
+
+.signature-signed {
+  font-family: 'Brush Script MT', cursive, sans-serif;
+  font-size: 28px;
+  color: #1e1b4b;
+}
+
+/* 6. Job Profitability Accounting Table */
+.profitability-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profit-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  padding: 10px 12px;
+  background-color: #f8fafc;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.profit-row.header {
+  background-color: #f1f5f9;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.profit-margin-pill {
+  background-color: #d1fae5;
+  color: #065f46;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  display: inline-block;
+}
+
+/* 7. Focus Card (Replacing "Go Premium!") */
+.dash-focus-card {
   background: linear-gradient(150deg, #605dec 0%, #5b5fc7 50%, #4f46e5 100%);
   border-radius: 24px;
-  padding: 32px 24px;
+  padding: 30px 24px;
   color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -628,80 +475,73 @@
   overflow: hidden;
 }
 
-.premium-illustration-box {
-  width: 72px;
-  height: 72px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
+.focus-illustration-box {
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   backdrop-filter: blur(8px);
 }
 
-.premium-title {
-  font-size: 24px;
+.focus-title {
+  font-size: 20px;
   font-weight: 700;
   margin: 0 0 8px 0;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.3px;
 }
 
-.premium-sub {
+.focus-sub {
   font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.88);
   line-height: 1.45;
-  margin: 0 0 20px 0;
-  max-width: 220px;
+  margin: 0 0 18px 0;
+  max-width: 260px;
 }
 
-.premium-cta-btn {
+.focus-cta-btn {
   background-color: #111827;
   color: #ffffff;
   border: none;
   border-radius: 9999px;
-  padding: 10px 24px;
-  font-size: 13px;
+  padding: 9px 22px;
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
   transition: transform 150ms ease, box-shadow 150ms ease;
   font-family: inherit;
 }
 
-.premium-cta-btn:hover {
+.focus-cta-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
-/* Column 3: Metrics & Board Meeting */
-.dash-col-metrics {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* Upper: Circular Progress Gauges */
+/* Circular Gauges */
 .gauges-card {
   background-color: #ffffff;
   border: 1px solid #edf0f5;
   border-radius: 20px;
-  padding: 18px 20px;
+  padding: 16px 18px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 12px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
 }
 
 .gauge-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .gauge-svg-box {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   position: relative;
   flex-shrink: 0;
 }
@@ -742,108 +582,123 @@
 }
 
 .gauge-subnote {
-  font-size: 10.5px;
+  font-size: 10px;
   color: #64748b;
   line-height: 1.3;
 }
 
-.gauge-check-btn {
-  background-color: #5b5fc7;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  padding: 3px 8px;
-  font-size: 10.5px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 4px;
-  align-self: flex-start;
-}
-
-/* Lower: Board Meeting Card */
-.board-meeting-card {
-  background-color: #ffffff;
-  border: 1px solid #edf0f5;
-  border-radius: 20px;
-  padding: 18px 20px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
-}
-
-.board-meeting-header {
+/* Additional Role-Specific UI Widgets */
+.bom-pkg-selector {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
-.board-meeting-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0;
-}
-
-.board-meeting-time {
-  font-size: 11.5px;
-  color: #64748b;
-  margin: 0 0 4px 0;
-}
-
-.board-meeting-desc {
-  font-size: 12px;
-  color: #374151;
-  margin: 0 0 14px 0;
-}
-
-.board-meeting-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.btn-reschedule {
-  flex: 1;
-  height: 34px;
+.bom-pkg-btn {
   background-color: #f1f5f9;
-  border: none;
+  border: 1px solid #e2e8f0;
   border-radius: 9999px;
-  font-size: 12px;
+  padding: 5px 12px;
+  font-size: 11.5px;
   font-weight: 600;
   color: #475569;
   cursor: pointer;
-  font-family: inherit;
+  transition: all 140ms ease;
 }
 
-.btn-accept-invite {
-  flex: 1.2;
-  height: 34px;
-  background-color: #5b5fc7;
-  border: none;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 600;
+.bom-pkg-btn:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.bom-pkg-btn.active {
+  background-color: #4f46e5;
   color: #ffffff;
+  border-color: #4f46e5;
+}
+
+.tech-checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  font-size: 12.5px;
   cursor: pointer;
-  font-family: inherit;
-  transition: transform 150ms ease;
+  transition: background-color 140ms ease;
 }
 
-.btn-accept-invite:hover {
-  transform: translateY(-1px);
+.tech-checklist-item:hover {
+  background-color: #f1f5f9;
 }
 
-/* ==========================================================================
-   RESPONSIVE LAYOUT
-   ========================================================================== */
+.tech-checklist-item.checked {
+  background-color: #ecfdf5;
+  color: #065f46;
+}
+
+.otp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  background-color: #fef3c7;
+  color: #92400e;
+  border-radius: 6px;
+  border: 1px dashed #f59e0b;
+}
+
+.scan-progress-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.scan-progress-bar {
+  height: 6px;
+  background-color: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.scan-progress-fill {
+  height: 100%;
+  background-color: #10b981;
+  transition: width 200ms ease;
+}
+
+.invoice-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+
+.subsidy-claim-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+
+/* Responsive */
 @media (max-width: 1200px) {
   .dash-hero-row {
     grid-template-columns: 1fr;
   }
-
-  .dash-middle-grid {
-    grid-template-columns: 1fr;
-  }
-
+  .dash-middle-grid,
   .dash-bottom-grid {
     grid-template-columns: 1fr;
   }
@@ -853,10 +708,4 @@
   .dash-feature-cards-grid {
     grid-template-columns: 1fr 1fr;
   }
-
-  .today-task-row {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
 }
-

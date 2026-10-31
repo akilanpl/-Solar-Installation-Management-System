@@ -848,3 +848,125 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
       (like low stock warnings, offline field sync, or SLA targets) turns dead space into an active operational asset.
 
 ================================================================================
+
+--------------------------------------------------------------------------------
+16. FULL IMPLEMENTATION OF ODOO PROBLEM STATEMENT BUSINESS WORKBENCHES PER ROLE
+--------------------------------------------------------------------------------
+- Date & Context:
+  Implemented the complete suite of essential, role-tailored enterprise Bento containers
+  in `DashboardView.jsx` and `DashboardView.css`, directly operationalizing the requirements
+  defined in the official Odoo x GCET Finale Solar Installation Management System problem statement.
+  Replaced all generic placeholders, static tasks, and promotional widgets ("Go premium!") with
+  six distinct, production-grade operational workbenches.
+
+- Detailed Role-Tailored Container Architecture:
+  1. Customer Portal (`CustomerDashboard.jsx`):
+     - Personalized Greeting: "Hi, {Name}!" with avatar ring, capacity & monthly bill savings highlights.
+     - Top Stat / Action Cards: New Solar Enquiry (+), Active Enquiries, Planned Capacity (kW), Monthly Savings (INR).
+     - Middle Row Containers:
+       * Container 1: Solar Installation Lifecycle Stepper: 7-stage visual pipeline (Enquiry -> Feasibility Survey ->
+         BOM Approval -> 20% Advance -> Warehouse Staging -> Installation & Signoff -> BESCOM Net-metering).
+       * Container 2: Approved Package Quotation & Itemized BOM: 5 kW Hybrid System parts breakdown (10x 540W Mono-PERC
+         Bifacial modules, 5kW Hybrid Inverter, Aluminum mounting rails, AC/DC DB boxes, DC cables) with Central
+         Subsidy (-INR 78,000) and interactive 20% advance payment button.
+       * Container 3: Upcoming Rooftop Survey & Appointments: Field engineer details (Karthik Nair), survey time slot,
+         and customer OTP PIN (`849 201`) required for technician site entry verification.
+     - Bottom Row Containers:
+       * Container 4: Installed Equipment & Serialized Warranties: Module serial numbers (`SN-PV540-KA-0981..0990`)
+         with 25-year warranty, inverter serial with 10-year warranty, and official warranty certificate download.
+       * Container 5: Operational Focus Card: Live Solar Generation Telemetry (Estimated 620 kWh/mo, 85% grid offset).
+       * Container 6: Performance Gauges (Grid Independence 90%, Carbon Neutrality 65%) and technical consultation card.
+
+  2. Sales Feasibility Workbench (`SalesDashboard.jsx`):
+     - Personalized Greeting: "Hi, {Name}! Ready to review feasibility today?"
+     - Top Stat / Action Cards: Qualify Leads (+), Enquiry Funnel, Feasibility Quotes, Scheduled Surveys.
+     - Middle Row Containers:
+       * Container 1: Incoming Leads Queue: Fast qualification controls (sanctioned load, preferred capacity, bill analysis).
+       * Container 2: Interactive 1-5 kW Package BOM Generator: Instant selector for 1kW, 3kW, 5kW, and 10kW packages
+         that automatically explodes itemized BOM counts, package prices, subsidies, and gross margins (28% to 34%).
+       * Container 3: Survey Scheduling & Technician Dispatch: Field technician assignment with slot and address dispatch.
+     - Bottom Row Containers:
+       * Container 4: Order Confirmation & Advance Payment Tracker: Tracks 20% advance payments (UPI/NEFT) and auto-triggers
+         warehouse BOM staging once received.
+       * Container 5: Operational Focus Card: Monthly Target: 100 kW (74 kW commissioned, 74% achieved).
+       * Container 6: Sales Velocity Gauges (Lead Velocity 84%, Quote Turnaround 92%) and proposal review briefing.
+
+  3. Technician Field Operations (`TechnicianDashboard.jsx`):
+     - Personalized Greeting: "Hi, {Name}! Ready for your site surveys today?"
+     - Top Stat / Action Cards: New Inspection (+), Assigned Surveys, Shadow Checks, Offline Sync.
+     - Middle Row Containers:
+       * Container 1: Active Work Order & OTP Check-in: Customer address, contact, and OTP entry (`849201`) to unlock
+         site inspection logging.
+       * Container 2: Mandatory Technical Feasibility Checklist: Interactive items (True South 180 deg Azimuth, Shadow
+         Raytracing 9 AM - 4 PM, RCC slab integrity, AC/DC DB rating, earthing resistance < 5 Ohm, net-metering clearance)
+         with photo evidence upload.
+       * Container 3: Daily Route Schedule: Timed site route visits with navigation coordinates.
+     - Bottom Row Containers:
+       * Container 4: Customer Digital Signature Pad & Serial Verification: Interactive digital touch sign-off box with
+         SHA-256 seal and timestamp (`18 May 2026, 14:32 IST`), locking work order upon completion; verifies physical serials.
+       * Container 5: Operational Focus Card: Field Diagnostics Active (Offline cache & azimuth telemetry).
+       * Container 6: Compliance Gauges (Safety Gear 95%, Site Reports 80%) and field engineering debrief.
+
+  4. Warehouse Logistics & Staging (`WarehouseDashboard.jsx`):
+     - Personalized Greeting: "Hi, {Name}! What solar inventory needs dispatch today?"
+     - Top Stat / Action Cards: Inbound GRN (+), In-Stock Modules, Hybrid Inverters, Staging Dispatches.
+     - Middle Row Containers:
+       * Container 1: Installation Order BOM Picking Slips: Material staging kit for Order SO-2026-0042 (Crew #1 Indiranagar).
+       * Container 2: Mandatory Serial-Number Barcode Scanner Before Dispatch: Interactive serial scanning input box,
+         locked dispatch counter (`10/11 Scanned`), and locked status that prevents delivery dispatch without scanned serials.
+       * Container 3: Logistics & Crew Dispatch Schedule: Delivery carrier departure times and vehicle tracking.
+     - Bottom Row Containers:
+       * Container 4: StockSense Real-Time Inventory & Safety Reorder: In-stock vs allocated quantities with low-buffer alerts.
+       * Container 5: Operational Focus Card: Inventory Replenishment Alert (Mono-PERC 540W safety threshold alert).
+       * Container 6: Logistics Accuracy Gauges (Stock Accuracy 98%, Pick Speed 85%) and carrier sync briefing.
+
+  5. Customer Care & Technical Support (`SupportDashboard.jsx`):
+     - Personalized Greeting: "Hi, {Name}! What customer tickets need resolution today?"
+     - Top Stat / Action Cards: New Ticket (+), Open Tickets, Net-Metering, Warranty Support.
+     - Middle Row Containers:
+       * Container 1: SysCache Instant Customer Context Snapshot: < 1 second lookup by BESCOM meter number or email,
+         displaying installed system, inverter serial, warranty expiry, and live inverter power reading.
+       * Container 2: Smart Plain-Language Complaint Intake & Diagnosis: Converts customer complaints (e.g. Inverter Error E04)
+         into structured fault diagnosis (DC ground fault) with warranty coverage recommendations.
+       * Container 3: Active Service Tickets Queue & SLA Countdown: Real-time countdown badges for critical response SLAs.
+     - Bottom Row Containers:
+       * Container 4: Warranty Coverage Engine & DISCOM Grid Liaison: In-Warranty (INR 0 free repair) vs Out-of-Warranty
+         (parts & labour billing) decision rules, plus BESCOM net-metering synchronization tracker.
+       * Container 5: Operational Focus Card: DISCOM Grid Sync SLA (Karnataka BESCOM 4.2 business day average).
+       * Container 6: Support CSAT Gauges (Customer CSAT 96%, First-Contact Resolution 92%) and DISCOM coordination briefing.
+
+  6. Owner / Enterprise Admin (`AdminDashboard.jsx`):
+     - Personalized Greeting: "Hi, {Name}! Solar Operations & Job Profitability today?"
+     - Top Stat / Action Cards: Add Staff (+), Total Revenue (INR 1.48 Cr), Gross Margin (29.3%), Operations Staff (12).
+     - Middle Row Containers:
+       * Container 1: Per-Installation Job Profitability Cost Accounting Table: Full job-level cost accounting
+         (Job Profit = Revenue - Materials BOM - Technician Labour - Permits) displaying exact margins for each installation.
+       * Container 2: Customer Invoices & Advance Payment Reconciliation: 20% Booking Advance, 60% Delivery Stage, and
+         20% Commissioning stage invoices with GST breakdown.
+       * Container 3: Operations Staff Roster & Technician Commission: Staff provisioning and technician commission tracking.
+     - Bottom Row Containers:
+       * Container 4: PM Surya Ghar Subsidy Claims: National Portal Direct Benefit Transfer (DBT) claim tracking.
+       * Container 5: Operational Focus Card: Zero-Trust Security Active (PostgreSQL connection pool & HttpOnly tokens).
+       * Container 6: Admin SLA Gauges (Security Compliance 100%, API Response 99%) and operations all-hands briefing.
+
+- What Was Changed and Why:
+  * Complete removal of generic templates, placeholder tasks, and upselling widgets ("Go premium!").
+  * Total visual alignment with the Bento Grid layout from the reference design.
+  * Direct alignment with the six mandatory situations from the Odoo problem statement: BOM generation, serial
+    scanning before dispatch, delivery-activated warranties, mandatory digital signatures, SysCache instant lookup,
+    and job-level cost profitability accounting.
+
+- Technical Decisions & Interview Questions:
+  Q1: Why is barcode serial scanning enforced at the warehouse dispatch container rather than post-installation?
+  A1: In the solar supply chain, once materials leave the staging yard, tracking physical panel warranties becomes
+      error-prone. By requiring warehouse personnel to scan each PV module and inverter serial before the picking slip
+      can transition to "Dispatched", the system guarantees that the customer's delivery-activated warranty is
+      mathematically bound to the specific physical hardware deployed on their rooftop.
+
+  Q2: How does the job profitability cost accounting container differ from standard company-wide P&L accounting?
+  A2: Enterprise solar EPC operations require project-level cost tracking because margins vary drastically based on roof
+      structure, cable runs, and civil labor. The job profitability container calculates gross margin per work order
+      using the formula: Job Profit = Revenue - Materials BOM Cost - Technician Labour - Permits/Other. This gives
+      management granular visibility into which system sizes (e.g. 3kW vs 5kW) yield optimal returns.
+
+================================================================================

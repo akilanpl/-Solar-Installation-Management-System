@@ -50,6 +50,7 @@ export function CustomerDashboard() {
         <ErrorState message={error} onRetry={fetchEnquiries} />
       ) : (
         <DashboardView
+          role="customer"
           enquiries={data?.items || []}
           onNewAction={() => navigate('/customer/enquiries/new')}
         />
