@@ -2288,3 +2288,37 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+--------------------------------------------------------------------------------
+41. INTEGRATION OF 3D SPEECH BUBBLE ASSET FOR DOCK AI BUTTON
+--------------------------------------------------------------------------------
+- Date & Context:
+  Integrated the custom user-provided 3D dual speech bubble transparent PNG asset
+  (media_1793459885881_cc59568a.png) directly into the persistent sidebar dock
+  navigation button (`.dock-nav-btn.dock-ai-btn`) in Sidebar.jsx and Sidebar.css.
+
+- Key Architecture & Visual Elements:
+  1. Asset Placement & Import:
+     - Copied high-resolution 3D asset to `apps/web/public/dock-ai-icon.png` and
+       `apps/web/src/assets/dock-ai-icon.png`.
+     - Imported `dockAiIcon` into `Sidebar.jsx`, replacing the generic Lucide
+       Sparkles icon with `<img src={dockAiIcon} alt="SolarFlow AI" className="dock-ai-png-icon" draggable="false" />`.
+  2. Dock Button Aesthetics & Interactive States (Sidebar.css):
+     - Container (`.dock-ai-btn`): Refined with subtle translucent glassmorphic styling
+       (`background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25);`)
+       and soft drop shadow (`box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);`).
+     - Hover Interaction: Smooth lift and expansion (`transform: translateY(-2px) scale(1.08)`),
+       accentuated with a playful slight rotation on the 3D bubble (`scale(1.12) rotate(-3deg)`).
+     - Active / Chat Open State: Crisp white backdrop (`background: #ffffff; border-color: #ffffff;`)
+       with deep indigo glow (`box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25), 0 0 20px rgba(96, 93, 236, 0.5)`).
+     - Status Badge: Upgraded `.dock-ai-badge` to an emerald active gradient pill
+       (`linear-gradient(135deg, #10b981 0%, #059669 100%)`) with a crisp 1.5px white border.
+
+- Files Modified:
+  * apps/web/public/dock-ai-icon.png (Added)
+  * apps/web/src/assets/dock-ai-icon.png (Added)
+  * apps/web/src/components/Sidebar/Sidebar.jsx (Modified)
+  * apps/web/src/components/Sidebar/Sidebar.css (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================

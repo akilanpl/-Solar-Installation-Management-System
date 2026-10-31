@@ -18,9 +18,9 @@ import {
   Zap,
   LogOut,
   ShoppingBag,
-  Sparkles,
   Navigation,
 } from 'lucide-react';
+import dockAiIcon from '../../assets/dock-ai-icon.png';
 import './Sidebar.css';
 
 export function Sidebar() {
@@ -124,7 +124,12 @@ export function Sidebar() {
             title="SolarFlow AI Assistant (Diagnostics, Complaints & Orders)"
             onClick={() => setIsChatOpen(!isChatOpen)}
           >
-            <Sparkles size={20} color="#fbbf24" strokeWidth={2.4} />
+            <img
+              src={dockAiIcon}
+              alt="SolarFlow AI"
+              className="dock-ai-png-icon"
+              draggable="false"
+            />
             <span className="dock-ai-badge">AI</span>
           </button>
         </div>
