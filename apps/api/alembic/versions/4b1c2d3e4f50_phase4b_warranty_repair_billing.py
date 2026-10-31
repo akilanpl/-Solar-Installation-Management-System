@@ -189,6 +189,7 @@ def upgrade():
         sa.Column("consumption_operation_id", sa.Uuid(), sa.ForeignKey("stock_operations.id"), nullable=True),
         sa.Column("status", sa.String(16), nullable=False),
         sa.Column("idempotency_key", sa.String(80), nullable=False),
+        sa.Column("request_hash", sa.String(64), nullable=False),
         sa.Column("created_by_user_id", sa.Uuid(), sa.ForeignKey("users.id"), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
         sa.CheckConstraint("status IN ('outstanding', 'pending_payment', 'credited')", name="service_invoice_status"),
