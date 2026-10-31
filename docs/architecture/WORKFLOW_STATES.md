@@ -28,6 +28,46 @@ The same transaction writes `enquiries.status`, `enquiry_status_history`, and `a
 
 Idempotency: the same customer, key, and body returns the original enquiry with HTTP 200. The same key and a different body returns `idempotency_conflict` and does not insert.
 
-## Not in Phase 1
+Qualifying an enquiry also stores the shadow-free roof area in square metres, whether the grid connection is suitable, the deciding employee, and the decision time. A survey can be opened only while the enquiry is `qualified`.
 
-Survey approval, quotation acceptance, payment, picking, delivery, warranty, and ticket closure have no state machine in code yet. Their intended order is documented with the planned endpoints. Do not mark an enquiry `qualified` as if a quote had been accepted. Qualification only means sales has reviewed the request.
+If an approved survey already exists, changing the shadow-free area or the grid-suitability flag returns `qualification_locked` unless the request sets `acknowledge_downstream`. That acknowledgement updates the enquiry and the audit row only. It does not edit the survey, the quotation lines, or the order.
+
+## Survey
+
+`draft` → `assigned` → `in_progress` → `submitted` → `approved` or `rejected`.
+
+| Action | Who | Rule |
+| --- | --- | --- |
+| Open | sales, admin | Enquiry is `qualified`, and no survey for it is still open or approved. |
+| Assign | sales, admin | From `draft` or `assigned`. Appointment stays `pending` unless the request includes a real timestamp. |
+| Start and submit | assigned technician | Submit requires azimuth, tilt, shadow-free area, and cable distance. |
+| Approve or reject | sales, admin | From `submitted` only. Rejection needs a note. |
+| Resurvey | sales, admin | Only from `rejected`. The old row stays `rejected`. The new row points at it. |
+
+A rejected survey cannot be quoted. Approval writes the decision and the audit event in the same transaction.
+
+## Quotation
+
+A quotation is inserted as `issued`. There is no editable draft. Lines, template version, tax, and totals are written once.
+
+| From | To | Who |
+| --- | --- | --- |
+| `issued` | `superseded` | sales, by issuing a new revision |
+| `issued` | `withdrawn` | sales |
+| `issued` | `accepted` | the owning customer |
+
+Acceptance rejects a superseded, withdrawn, or expired revision, a quotation for another customer, and a quotation whose survey is not approved. The acceptance row is unique per quotation. Two concurrent accepts lock the quotation; one commits and the other gets `already_accepted`.
+
+## Payment
+
+`pending` → `processing` → `verified`, `failed`, or `unresolved`.
+
+A sandbox intent is `is_test_only`. Calling the sandbox outcome endpoint is the development adapter, and production refuses it. `unknown` stays `unresolved`. A cash receipt is `verified` only when sales or admin records it. Uploading a reference does not verify anything. The same idempotency key does not create a second intent.
+
+## Order
+
+Sales confirms an order only from the accepted quotation after verified payments cover the stored advance. The order, frozen lines, warehouse preparation request, and installation scheduling request are inserted in that request's transaction. The scheduling slot is null. Stock is not changed. The same quotation cannot get a second order. Repeating the same idempotency key returns the original order.
+
+## Still later
+
+Picking, serials, dispatch, delivery, warranty, and ticket closure are not states in this phase. A confirmed order is not installed equipment.

@@ -8,6 +8,7 @@ a client that skips them still cannot persist invalid rows.
 import re
 import uuid
 from datetime import datetime
+from decimal import Decimal
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
@@ -258,6 +259,10 @@ class EnquirySummary(BaseModel):
     monthly_bill_minor: int
     currency_code: str
     subsidy_interest: bool
+    shadow_free_area_sqm: Decimal | None
+    grid_connection_suitable: bool | None
+    decision_by_user_id: uuid.UUID | None
+    decision_at: datetime | None
     qualification_note: str | None
     created_at: datetime
     updated_at: datetime
@@ -282,6 +287,9 @@ class QualificationUpdate(BaseModel):
 
     status: Literal["under_review", "qualified", "not_qualified"]
     note: str | None = Field(default=None, max_length=500)
+    shadow_free_area_sqm: Decimal | None = Field(default=None, ge=0, le=100000)
+    grid_connection_suitable: bool | None = None
+    acknowledge_downstream: bool = False
 
     @field_validator("note")
     @classmethod

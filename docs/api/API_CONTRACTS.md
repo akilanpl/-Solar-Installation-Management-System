@@ -33,7 +33,37 @@ Planned routes below are not registered. Calling them returns 404 `not_found`.
 | GET | `/api/v1/enquiries` | Cookie | customer (own), sales, admin | Others 403. |
 | GET | `/api/v1/enquiries/{id}` | Cookie | owner, sales, admin | Other customers get 404. |
 | PATCH | `/api/v1/enquiries/{id}/qualification` | Cookie | sales, admin | 409 `invalid_transition`. |
-| GET | `/api/v1/packages` | Cookie | Any signed-in user | Catalogue only. No prices. |
+| GET | `/api/v1/packages` | Cookie | Any signed-in user | Catalogue identity. Prices live on template versions. |
+| GET | `/api/v1/packages/{code}/versions/current` | Cookie | signed-in staff and customers | Current BOM template. |
+| GET | `/api/v1/packages/{code}/versions/{version}` | Cookie | signed-in staff and customers | A historical template version. |
+| POST | `/api/v1/surveys` | Cookie | sales, admin | Enquiry must be `qualified`. |
+| GET | `/api/v1/surveys` | Cookie | owner, assigned technician, sales, admin | |
+| GET | `/api/v1/surveys/{id}` | Cookie | owner, assigned technician, sales, admin | Other customers get 404. |
+| POST | `/api/v1/surveys/{id}/assignment` | Cookie | sales, admin | Appointment stays pending unless a timestamp is sent. |
+| POST | `/api/v1/surveys/{id}/start` | Cookie | assigned technician | |
+| POST | `/api/v1/surveys/{id}/submission` | Cookie | assigned technician | Rejects out-of-range measurements. |
+| POST | `/api/v1/surveys/{id}/approval` | Cookie | sales, admin | `approved` or `rejected`. |
+| POST | `/api/v1/surveys/{id}/resurvey` | Cookie | sales, admin | Only from `rejected`. |
+| POST | `/api/v1/surveys/{id}/evidence` | Cookie | assigned technician | JPEG, PNG, WebP, or PDF, at most 5 MB. |
+| GET | `/api/v1/surveys/{id}/evidence/{evidence_id}` | Cookie | same as the survey | Stored file, not a guessed URL. |
+| POST | `/api/v1/quotations` | Cookie | sales, admin | Approved survey only. Totals are computed here. Idempotency-Key required. |
+| GET | `/api/v1/quotations` | Cookie | owner, sales, admin | |
+| GET | `/api/v1/quotations/{id}` | Cookie | owner, sales, admin | Other customers get 404. |
+| POST | `/api/v1/quotations/{id}/revision-requests` | Cookie | owning customer | Durable change request. Does not edit the quote. |
+| GET | `/api/v1/quotations/{id}/revision-requests` | Cookie | owner, sales, admin | |
+| POST | `/api/v1/quotations/{id}/revisions` | Cookie | sales, admin | New immutable revision. Previous becomes `superseded`. |
+| POST | `/api/v1/quotations/{id}/acceptance` | Cookie | owning customer | One exact revision. |
+| POST | `/api/v1/quotations/{id}/withdrawal` | Cookie | sales, admin | From `issued` only. |
+| GET | `/api/v1/quotations/{id}/payment-requirement` | Cookie | owner, sales, admin | Advance, verified sum, outstanding balance. |
+| POST | `/api/v1/payments/intents` | Cookie | owner, sales, admin | Sandbox intent. `is_test_only` is true. Disabled in production. |
+| POST | `/api/v1/payments/intents/{id}/sandbox-outcome` | Cookie | owner, sales, admin | `succeeded`, `failed`, or `unknown`. Unknown stays `unresolved`. |
+| POST | `/api/v1/payments/cash-receipts` | Cookie | sales, admin | Manual verified receipt. Not test-only. |
+| GET | `/api/v1/payments/{id}` | Cookie | owner, sales, admin | |
+| POST | `/api/v1/orders` | Cookie | sales, admin | Accepted quote and verified advance. Idempotent. No stock change. |
+| GET | `/api/v1/orders` | Cookie | owner, sales, admin, warehouse | |
+| GET | `/api/v1/orders/{id}` | Cookie | owner, sales, admin, warehouse | |
+| GET | `/api/v1/warehouse/preparation` | Cookie | warehouse staff, warehouse manager, sales, admin | Preparation requests only. |
+| GET | `/api/v1/scheduling/installations` | Cookie | sales, admin | Slot is null until someone selects one. |
 | GET | `/api/v1/admin/employees` | Cookie | admin | |
 | POST | `/api/v1/admin/employees` | Cookie | admin | Provisions a verified staff account. |
 | GET | `/api/v1/dev/mailbox/{email}` | No |  | 404 unless development without SMTP. Returns the captured email, including the code. |
@@ -70,24 +100,14 @@ Each row is a contract for a later phase. Authentication is a session cookie unl
 
 | Method and path | Roles | Request | Response | Rules |
 | --- | --- | --- | --- | --- |
-| POST `/api/v1/enquiries/{id}/qualification-notes` | sales, admin | note | history | Already covered in spirit by qualification; a longer note thread can be added without changing status. |
-| POST `/api/v1/surveys` | sales, admin | enquiry id, site id | survey `draft` | Enquiry must be `qualified`. |
-| POST `/api/v1/surveys/{id}/assignment` | sales, admin | technician id, slot id | assignment | Technician skill must match. Slot must already exist. |
-| POST `/api/v1/surveys/{id}/submission` | assigned technician | direction, tilt, cable distance, suitability | survey `submitted` | Measurements are required numbers with units. |
-| POST `/api/v1/surveys/{id}/approval` | sales, admin | decision | `approved` or `rejected` | Rejected surveys cannot be quoted. |
-| GET `/api/v1/packages/{id}` | signed in |  | package | |
-| POST `/api/v1/quotations` | sales, admin | survey id, package id | quotation `draft` plus BOM | BOM lines come from the package template and survey measurements. Idempotency-Key required. |
-| POST `/api/v1/quotations/{id}/revisions` | sales, admin | changed lines | new revision | Previous revision stays immutable. |
-| POST `/api/v1/quotations/{id}/acceptance` | owning customer | revision id | `accepted` | Only the current revision. One acceptance. |
-| POST `/api/v1/orders` | sales, admin | accepted quotation id | order | Idempotent. Does not itself decrement stock. |
+| POST `/api/v1/enquiries/{id}/qualification-notes` | sales, admin | note | history | A longer note thread. Qualification itself is implemented. |
 
 ### Payments
 
 | Method and path | Roles | Request | Response | Rules |
 | --- | --- | --- | --- | --- |
-| POST `/api/v1/payments/intents` | customer, sales | order id, amount minor, currency | intent `requires_action` | Amount must match the order balance. Idempotency-Key required. |
-| POST `/api/v1/payments/intents/{id}/verify` | system or sales | provider reference | intent status | Status comes from the provider adapter, which Phase 1 does not have. A timeout stays `unknown`, not `succeeded`. |
-| GET `/api/v1/payments/{id}` | owner, sales, admin |  | status | |
+| POST `/api/v1/payments/intents` | customer, sales | provider method other than sandbox | intent | UPI, cards, wallets, net banking, and EMI stay planned. No card numbers are stored. The sandbox intent above is the only adapter in this phase. |
+| POST `/api/v1/payments/intents/{id}/verify` | system or sales | provider reference | intent status | A real provider verifier. A timeout stays unresolved. The sandbox outcome route is the test stand-in and is labeled test-only. |
 | POST `/api/v1/invoices` | sales, admin | order or ticket id | invoice | Integer minor units. |
 | POST `/api/v1/refunds` | admin | payment id, amount | refund record | Cannot exceed the captured amount. |
 

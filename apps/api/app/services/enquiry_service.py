@@ -24,6 +24,7 @@ from app.models.enquiry import (
 from app.models.identity import User
 from app.repositories.queries import add_audit, enquiry_by_idempotency, get_enquiry
 from app.schemas import EnquiryCreate, QualificationUpdate
+from app.services.survey_service import approved_survey_exists
 
 
 def _request_hash(payload: EnquiryCreate) -> str:
@@ -175,9 +176,56 @@ def qualify_enquiry(
             "A short note is required when an enquiry is not qualified.",
             details=[{"field": "note", "message": "Explain why the enquiry is not qualified."}],
         )
+    if payload.status == "qualified":
+        area = (
+            payload.shadow_free_area_sqm
+            if payload.shadow_free_area_sqm is not None
+            else enquiry.shadow_free_area_sqm
+        )
+        suitable = (
+            payload.grid_connection_suitable
+            if payload.grid_connection_suitable is not None
+            else enquiry.grid_connection_suitable
+        )
+        if area is None or suitable is None:
+            raise AppError(
+                422,
+                "validation_error",
+                "Qualification needs the shadow-free area and grid suitability.",
+                details=[
+                    {
+                        "field": "shadow_free_area_sqm",
+                        "message": "Required when qualifying an enquiry.",
+                    }
+                ],
+            )
+    if approved_survey_exists(db, enquiry.id) and not payload.acknowledge_downstream:
+        area_changed = (
+            payload.shadow_free_area_sqm is not None
+            and payload.shadow_free_area_sqm != enquiry.shadow_free_area_sqm
+        )
+        grid_changed = (
+            payload.grid_connection_suitable is not None
+            and payload.grid_connection_suitable != enquiry.grid_connection_suitable
+        )
+        if area_changed or grid_changed:
+            raise AppError(
+                409,
+                "qualification_locked",
+                "An approved survey already exists. Repeat the update with "
+                "acknowledge_downstream to record the change without altering "
+                "that survey or any quotation.",
+            )
     previous = enquiry.status
     enquiry.status = payload.status
     enquiry.qualification_note = payload.note
+    if payload.shadow_free_area_sqm is not None:
+        enquiry.shadow_free_area_sqm = payload.shadow_free_area_sqm
+    if payload.grid_connection_suitable is not None:
+        enquiry.grid_connection_suitable = payload.grid_connection_suitable
+    if payload.status in {"qualified", "not_qualified"}:
+        enquiry.decision_by_user_id = user.id
+        enquiry.decision_at = utcnow()
     enquiry.updated_at = utcnow()
     db.add(
         EnquiryStatusHistory(
@@ -194,7 +242,12 @@ def qualify_enquiry(
         action="enquiry.qualification_updated",
         entity_type="enquiry",
         entity_id=enquiry.id,
-        metadata={"from_status": previous, "to_status": payload.status},
+        metadata={
+            "from_status": previous,
+            "to_status": payload.status,
+            "acknowledge_downstream": payload.acknowledge_downstream,
+            "downstream_records_rewritten": False,
+        },
     )
     db.flush()
     reloaded = get_enquiry(db, enquiry.id)

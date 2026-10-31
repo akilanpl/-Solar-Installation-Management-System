@@ -2,6 +2,7 @@
 
 import uuid
 from datetime import datetime
+from decimal import Decimal
 
 from sqlalchemy import (
     Boolean,
@@ -10,6 +11,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    Numeric,
     String,
     Text,
     UniqueConstraint,
@@ -81,6 +83,11 @@ class Enquiry(Base):
             name="status",
         ),
         CheckConstraint("char_length(currency_code) = 3", name="currency"),
+        CheckConstraint(
+            "shadow_free_area_sqm IS NULL OR "
+            "(shadow_free_area_sqm >= 0 AND shadow_free_area_sqm <= 100000)",
+            name="shadow_area",
+        ),
         UniqueConstraint("customer_user_id", "idempotency_key", name="uq_enquiries_idempotency"),
         Index("ix_enquiries_customer_created", "customer_user_id", "created_at"),
         Index("ix_enquiries_status_created", "status", "created_at"),
@@ -100,6 +107,10 @@ class Enquiry(Base):
     monthly_bill_minor: Mapped[int] = mapped_column(Integer, nullable=False)
     currency_code: Mapped[str] = mapped_column(String(3), nullable=False, default="INR")
     subsidy_interest: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    shadow_free_area_sqm: Mapped[Decimal | None] = mapped_column(Numeric(10, 2))
+    grid_connection_suitable: Mapped[bool | None] = mapped_column(Boolean)
+    decision_by_user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
+    decision_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     status: Mapped[str] = mapped_column(String(32), nullable=False)
     qualification_note: Mapped[str | None] = mapped_column(Text)
     idempotency_key: Mapped[str] = mapped_column(String(80), nullable=False)
