@@ -1,4 +1,6 @@
-import type { ComponentProps } from "react";
+"use client";
+
+import { useId, type ComponentProps } from "react";
 
 export function Button({
   variant = "primary",
@@ -26,7 +28,8 @@ export function TextField({
   id,
   ...props
 }: ComponentProps<"input"> & { label: string; error?: string; hint?: string }) {
-  const fieldId = id ?? props.name;
+  const generatedId = useId();
+  const fieldId = id ?? generatedId;
   return (
     <label className="block text-sm" htmlFor={fieldId}>
       <span className="font-medium text-ink">{label}</span>
@@ -58,19 +61,21 @@ export function SelectField({
   children,
   ...props
 }: ComponentProps<"select"> & { label: string; error?: string }) {
-  const fieldId = id ?? props.name;
+  const generatedId = useId();
+  const fieldId = id ?? generatedId;
   return (
     <label className="block text-sm" htmlFor={fieldId}>
       <span className="font-medium text-ink">{label}</span>
       <select
         id={fieldId}
         aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${fieldId}-error` : undefined}
         className="mt-1 w-full rounded-md border border-moss-200 bg-white px-3 py-2"
         {...props}
       >
         {children}
       </select>
-      {error ? <span className="mt-1 block text-xs text-clay-700">{error}</span> : null}
+      {error ? <span id={`${fieldId}-error`} className="mt-1 block text-xs text-clay-700">{error}</span> : null}
     </label>
   );
 }
