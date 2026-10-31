@@ -26,6 +26,7 @@ import { SalesQuotations } from './pages/Sales/SalesQuotations';
 
 // Technician Pages
 import { TechnicianDashboard } from './pages/Technician/TechnicianDashboard';
+import { TechnicianMapPage } from './pages/Technician/TechnicianMapPage';
 
 // Warehouse Pages
 import { WarehouseDashboard } from './pages/Warehouse/WarehouseDashboard';
@@ -91,6 +92,7 @@ export function App() {
 
   // Technician Routes
   if (path === '/technician' || path === '/technician/repairs') return <TechnicianDashboard />;
+  if (path === '/technician/map' || path === '/technician/route') return <TechnicianMapPage />;
   if (path === '/technician/surveys') return <SalesSurveys />;
 
   // Warehouse Routes

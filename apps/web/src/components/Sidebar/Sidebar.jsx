@@ -19,6 +19,7 @@ import {
   LogOut,
   ShoppingBag,
   Sparkles,
+  Navigation,
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -44,6 +45,7 @@ export function Sidebar() {
       case 'technician':
         return [
           { href: '/technician', label: 'Dashboard & Work Orders', icon: LayoutDashboard },
+          { href: '/technician/map', label: 'Field Route & GPS Map', icon: Navigation },
           { href: '/technician/surveys', label: 'Scheduled Field Surveys', icon: Calendar },
         ];
 

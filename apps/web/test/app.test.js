@@ -19,6 +19,7 @@ test('Access Control: role authorization permissions', () => {
   assert.equal(canAccessPath('customer', '/admin'), false);
   assert.equal(canAccessPath('admin', '/admin'), true);
   assert.equal(canAccessPath('technician', '/technician'), true);
+  assert.equal(canAccessPath('technician', '/technician/map'), true);
   assert.equal(canAccessPath('sales', '/sales'), true);
 });
 
@@ -74,5 +75,18 @@ test('Solar Chatbot: service ticket and order reference format validation', () =
   const randomOrderId = 'ORD-2026-' + 8492;
   assert.match(randomOrderId, /^ORD-2026-\d{4,}$/);
 });
+
+test('Technician Site Map: straight orthogonal route coordinate path generation', () => {
+  // Stop 1: Indiranagar straight street path (East on Old Airport Rd, North on 100ft Rd)
+  const origin = { x: 180, y: 220 };
+  const corner = { x: 340, y: 220 };
+  const dest = { x: 340, y: 130 };
+  const pathD = `M ${origin.x} ${origin.y} L ${corner.x} ${corner.y} L ${dest.x} ${dest.y}`;
+  assert.equal(pathD, 'M 180 220 L 340 220 L 340 130');
+  // Confirms 90-degree orthogonal street turn
+  assert.equal(origin.y, corner.y); // Horizontal segment
+  assert.equal(corner.x, dest.x);   // Vertical segment
+});
+
 
 

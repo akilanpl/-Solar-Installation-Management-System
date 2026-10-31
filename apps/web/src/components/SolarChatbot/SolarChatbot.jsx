@@ -566,3 +566,4 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
 }
 
 export default SolarChatbot;
+

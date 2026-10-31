@@ -1871,3 +1871,56 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+32. DARK-THEME STRAIGHT CITY GRID NAVIGATION MAP & DEDICATED FULL-PAGE ROUTE SCREEN
+--------------------------------------------------------------------------------
+- Date & Context:
+  Redesigned the Field Technician GPS Map UI based on user reference screenshot
+  (`media_1793454431391_d25a5cc6.jpg`). Replaced the light-mode diagonal mockup
+  with an authentic Dark Theme city street network featuring straight orthogonal
+  arteries, elevated flyover overpasses, directional one-way arrows, transit tokens,
+  and vibrant cyan neon GPS route tracking. Additionally implemented a dedicated
+  full-page navigation view at `/technician/map` with a comprehensive dispatch itinerary
+  column and interactive map controls.
+
+- Key Architecture & Visual Elements:
+  1. Dark Theme Straight City Street Vector Canvas (`TechnicianSiteMap.jsx`, `TechnicianSiteMap.css`):
+     - Aesthetic alignment with dark navigation reference (`media_1793454431391_d25a5cc6.jpg`):
+       * Deep midnight canvas: `#0b0f17` background with subtle `#101726` urban parcels.
+       * Deep slate water reservoirs: Ulsoor Lake and Bellandur Lake with `#1e2c45` borders.
+       * Straight orthogonal avenues:
+         - Old Airport Road: Dual horizontal artery (`y = 220`, `stroke="#25354e"` with lane divider).
+         - Indiranagar 100ft Road: Orthogonal vertical avenue (`x = 340`, `stroke="#2a3d59"`).
+         - Outer Ring Road (ORR) Expressway: Elevated corridor (`x = 620`) with drop-shadow overpass bridge.
+         - ITPL Main Road Whitefield: Vertical corridor (`x = 840`).
+       * Directional one-way traffic arrows (`^`, `>`, `v`).
+       * Transit Metro Station badges: White-bordered tokens `(M) Indiranagar`, `(M) Halasuru`,
+         `(M) Baiyappanahalli`, `(M) ITPL` inspired by the `(T)` station indicators in the reference image.
+       * Active GPS Navigation Route: Follows real 90-degree orthogonal street corners
+         (`M 180 220 L 340 220 L 340 130`) with neon cyan glow and animated stroke flow.
+       * Live Technician Beacon: Indiranagar Base with multi-ring radar pulse.
+       * Destination Pins: High-contrast pins (Stop 1 Urgent Inverter E-04 Red LED, Stop 2 Anchor Test, Stop 3 10kW DB Wiring).
+       * Dark glassmorphic HUD: Real-time compass heading (000° North), turn directive ("In 250m: Turn North onto 100 Feet Rd"), and traffic pill.
+  2. Standalone Full-Page Route & Navigation Screen (`TechnicianMapPage.jsx`, `TechnicianMapPage.css`):
+     - Accessible via route `/technician/map` (and `/technician/route`), linked in the dock sidebar.
+     - 2-Column Responsive Workspace:
+       * Left Column (390px): Today's itinerary stop schedule with status tags (Urgent/High/Normal),
+         customer address, scheduled slot, active problem rectification directive box,
+         and action buttons ("Start Turn-by-Turn GPS", "Call Customer", "On-Site Check-in Verified").
+       * Right Column (flex: 1): 560px-tall dark vector map with zoom/pan controls,
+         layer toggles ("Dark Street Grid" vs "Live Traffic Flow"), and live recentering.
+  3. Seamless Navigation Integration:
+     - Added "Full Page Map" shortcut button directly in the dashboard map header.
+     - Added `{ href: '/technician/map', label: 'Field Route & GPS Map', icon: Navigation }` in `Sidebar.jsx`.
+
+- Files Created & Modified:
+  * apps/web/src/components/TechnicianSiteMap/TechnicianSiteMap.jsx (Modified)
+  * apps/web/src/components/TechnicianSiteMap/TechnicianSiteMap.css (Modified)
+  * apps/web/src/pages/Technician/TechnicianMapPage.jsx (Created)
+  * apps/web/src/pages/Technician/TechnicianMapPage.css (Created)
+  * apps/web/src/components/Sidebar/Sidebar.jsx (Modified)
+  * apps/web/src/App.jsx (Modified)
+  * apps/web/test/app.test.js (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================
