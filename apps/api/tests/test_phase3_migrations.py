@@ -77,8 +77,6 @@ def test_phase3_round_trip_keeps_existing_phase1_record(client, application):
         "return_inspections",
         "phase4d_customer_snapshots",
         "phase4d_cache_outbox",
-        "phase4d_cache_consumers",
-        "phase4d_cache_metrics",
         "phase4d_ai_assists",
         "phase4d_site_geolocations",
         "phase4d_forecast_snapshots",
