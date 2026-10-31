@@ -2155,3 +2155,44 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+38. CHATBOT INTERFACE REDESIGN (REFERENCE LAYOUT & DASHBOARD THEME ALIGNMENT)
+--------------------------------------------------------------------------------
+- Date & Context:
+  Redesigned the SolarFlow AI Copilot chat interface (SolarChatbot.jsx, SolarChatbot.css)
+  to match the user's reference layout (media_1793458237770_c31756d3.png) in our
+  dashboard color theme (SolarFlow royal blue #2563eb, pure white Bento cards,
+  dark charcoal assistant bubbles #111827, and soft grey #eaedf1 drawer canvas).
+
+- Key Architecture & Visual Elements:
+  1. Top Header Card:
+     - Rounded corner banner card in SolarFlow royal blue (linear-gradient(135deg, #1d4ed8, #2563eb)).
+     - Top row: Circular avatar badge with "S" logo, "SolarFlow AI" title with "online" live green dot,
+       and two floating circular white action buttons (< for minimize, i for diagnostic info/reset).
+     - Bottom row: Bold contextual topic title ("Delayed order" / "Inverter Red Alarm E-04" /
+       "SolarFlow AI Copilot") and metadata subtitle ("#48213 · 3 items" / "#WO-2026-088 · Fault E-04").
+  2. Large Rounded White Messages Canvas:
+     - Pure white inner card (background: #ffffff; border-radius: 28px;) nested inside the soft grey drawer.
+     - User messages: Right-aligned crisp white pill bubbles (background: #ffffff; border: 1.5px solid #edf0f5;
+       color: #0f172a; border-radius: 22px 22px 4px 22px;).
+     - Assistant messages: Dark charcoal rounded card (background: #111827; color: #ffffff; border-radius: 24px;),
+       containing status capsule (background: #1f2937; border-radius: 16px;) with circular blue/emerald badge (24),
+       primary milestone text ("Today, Thu"), and secondary time window ("6-9 PM · Staged for Dispatch").
+  3. Action Pills & Suggestion Directives:
+     - Follow-up label: "A little something for the wait:" / "Recommended action directives:".
+     - Action chips: Filled accent pill (#2563eb, e.g. "300 points" / "File Urgent Ticket"),
+       white outline pill (#ffffff, e.g. "Free shipping" / "Browse Solar Store"), and dark three-dots pill (···).
+  4. Floating Bottom Input Bar:
+     - Pill-shaped input container (background: #ffffff; border-radius: 9999px; height: 48px; border: 1px solid #cbd5e1;)
+       with circular + button on the left for diagnostic attachments.
+     - Circular black send button (background: #111827; width: 48px; height: 48px; border-radius: 50%;)
+       with upward arrow ↑ activating in #2563eb upon typing.
+
+- Files Modified:
+  * apps/web/src/components/SolarChatbot/SolarChatbot.jsx (Modified)
+  * apps/web/src/components/SolarChatbot/SolarChatbot.css (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================
