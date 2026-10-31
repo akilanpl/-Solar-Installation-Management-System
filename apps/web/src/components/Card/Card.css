@@ -28,12 +28,10 @@
   transform: translateY(-2px);
 }
 
-.card-accent-violet {
-  border-top: 3px solid #5b5fc7;
-}
-
+/* Removed top colored accent line above containers */
+.card-accent-violet,
 .card-accent-lime {
-  border-top: 3px solid #10b981;
+  border-top: none;
 }
 
 .card-header {

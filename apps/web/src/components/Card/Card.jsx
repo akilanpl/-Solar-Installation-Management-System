@@ -12,7 +12,6 @@ export function Card({
 }) {
   const classNames = [
     'card',
-    accent !== 'none' ? `card-accent-${accent}` : '',
     elevated ? 'card-elevated' : '',
     interactive ? 'card-interactive' : '',
     className,

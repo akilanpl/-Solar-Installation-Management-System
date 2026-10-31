@@ -114,7 +114,7 @@ export function EnquiryReview({ enquiryId }) {
         }
       />
 
-      <Card elevated accent="lime" style={{ marginBottom: '24px' }}>
+      <Card elevated style={{ marginBottom: '24px' }}>
         <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '8px' }}>
           Lead Pipeline Stage
         </h3>
@@ -122,7 +122,7 @@ export function EnquiryReview({ enquiryId }) {
       </Card>
 
       {/* Qualification Control Center */}
-      <Card accent="violet" style={{ marginBottom: '24px' }}>
+      <Card style={{ marginBottom: '24px' }}>
         <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--color-white)', marginBottom: '8px' }}>
           Sales Qualification Decisions
         </h3>

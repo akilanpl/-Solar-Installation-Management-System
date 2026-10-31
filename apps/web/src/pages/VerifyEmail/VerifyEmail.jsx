@@ -60,7 +60,7 @@ export function VerifyEmail() {
           <p className="login-tagline">Security Verification</p>
         </div>
 
-        <Card elevated accent="violet">
+        <Card elevated>
           <h2 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>Verify Your Email</h2>
           <p style={{ color: 'var(--color-white-dim)', fontSize: '13px', marginBottom: '20px' }}>
             We dispatched a 6-digit verification code to <strong>{email}</strong>.

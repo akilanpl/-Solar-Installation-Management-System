@@ -85,7 +85,7 @@ export function EnquiryDetail({ enquiryId }) {
       />
 
       {/* Visual Status Progression */}
-      <Card elevated accent="violet">
+      <Card elevated>
         <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '8px' }}>
           Project Milestones & Deployment Phase
         </h3>
@@ -94,7 +94,7 @@ export function EnquiryDetail({ enquiryId }) {
 
       <div className="detail-grid-2">
         {/* Technical System Specs */}
-        <Card accent="lime">
+        <Card>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
             <Sun size={20} color="var(--color-lime)" />
             <h3 style={{ fontSize: '17px', fontWeight: '700' }}>System Parameters</h3>
@@ -138,7 +138,7 @@ export function EnquiryDetail({ enquiryId }) {
         </Card>
 
         {/* Site & Location Details */}
-        <Card accent="violet">
+        <Card>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
             <MapPin size={20} color="var(--color-violet-light)" />
             <h3 style={{ fontSize: '17px', fontWeight: '700' }}>Installation Site Address</h3>

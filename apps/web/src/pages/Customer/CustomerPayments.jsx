@@ -60,7 +60,7 @@ export function CustomerPayments() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
         <div>
-          <Card accent="violet">
+          <Card>
             <h3 style={{ fontSize: '17px', fontWeight: '700', marginBottom: '4px' }}>
               Installation Milestones (5 kW Hybrid Project)
             </h3>
@@ -107,7 +107,7 @@ export function CustomerPayments() {
 
         {/* Right Column: Subsidy Info & Razorpay Processed Transaction Card */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <Card accent="lime">
+          <Card>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
               <Landmark size={22} color="#10b981" />
               <h3 style={{ fontSize: '17px', fontWeight: '700', color: '#111827' }}>Direct Benefit Subsidy</h3>

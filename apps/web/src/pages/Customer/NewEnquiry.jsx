@@ -96,7 +96,7 @@ export function NewEnquiry() {
         <div className="enquiry-layout-grid">
           {/* Main Form Fields */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <Card accent="violet">
+            <Card>
               <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px' }}>
                 1. System Sizing & Energy Consumption
               </h3>
@@ -183,7 +183,7 @@ export function NewEnquiry() {
               />
             </Card>
 
-            <Card accent="lime">
+            <Card>
               <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px' }}>
                 2. Site Location & Contact Details
               </h3>

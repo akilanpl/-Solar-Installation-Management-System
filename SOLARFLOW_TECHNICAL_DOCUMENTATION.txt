@@ -1690,3 +1690,40 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+--------------------------------------------------------------------------------
+28. REMOVAL OF CONTAINER TOP COLOR ACCENT LINES
+--------------------------------------------------------------------------------
+- Date & Context:
+  Addressed visual feedback on container border styling (`media_1793452368605_3c0d7766.png`).
+  Removed the colored top accent lines (`border-top: 3px solid #5b5fc7;` / `#10b981;`)
+  from all Card components across the application, achieving a clean, unified, and
+  consistent card appearance matching the dashboard aesthetic.
+
+- Key Architecture & Visual Elements:
+  1. Card Stylesheet & Component Architecture (`Card.css`, `Card.jsx`):
+     - Set `.card-accent-violet` and `.card-accent-lime` to `border-top: none;` in `Card.css`.
+     - Removed dynamic accent class insertion from `Card.jsx`.
+     - Cards now maintain an uninterrupted, uniform `1px solid #edf0f5` boundary with
+       `20px` border-radius and soft drop shadow.
+  2. Page-Level Cleanup:
+     - Stripped `accent="violet"` and `accent="lime"` attributes across all pages:
+       * `CustomerPayments.jsx` (Installation Milestones & Direct Benefit Subsidy cards)
+       * `CustomerSupport.jsx` (Create Support Request & Hotline cards)
+       * `EnquiryDetail.jsx` (Milestones, System Parameters, & Address cards)
+       * `NewEnquiry.jsx` (Sizing & Site Location cards)
+       * `EnquiryReview.jsx` (Pipeline & Qualification Decision cards)
+       * `VerifyEmail.jsx` (Email Verification card)
+
+- Files Modified:
+  * apps/web/src/components/Card/Card.css (Modified)
+  * apps/web/src/components/Card/Card.jsx (Modified)
+  * apps/web/src/pages/Customer/CustomerPayments.jsx (Modified)
+  * apps/web/src/pages/Customer/CustomerSupport.jsx (Modified)
+  * apps/web/src/pages/Customer/EnquiryDetail.jsx (Modified)
+  * apps/web/src/pages/Customer/NewEnquiry.jsx (Modified)
+  * apps/web/src/pages/Sales/EnquiryReview.jsx (Modified)
+  * apps/web/src/pages/VerifyEmail/VerifyEmail.jsx (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================
