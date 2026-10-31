@@ -924,6 +924,367 @@ def test_cancel_before_work_and_info_roundtrip(client, application):
     assert escalated.json()["verified_priority"] == "critical"
 
 
+def test_ticket_create_requires_idempotency_key(client, application):
+    _all_staff(application)
+    order, _ = _installed_order(client, application)
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    missing = client.post("/api/v1/tickets", json=_ticket_payload(order["id"]), headers=customer)
+    assert missing.status_code == 400, missing.text
+    assert missing.json()["error"]["code"] == "idempotency_key_required"
+
+
+def test_ticket_create_with_site_and_cross_site_rejected(client, application):
+    from app.models.enquiry import CustomerSite
+
+    _all_staff(application)
+    order, _ = _installed_order(client, application)
+    with Session(application.state.engine) as db:
+        me = db.scalar(select(User).where(User.email == "leela@example.com"))
+        assert me is not None
+        site = db.scalar(select(CustomerSite).where(CustomerSite.customer_user_id == me.id))
+        assert site is not None
+        site_id = str(site.id)
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    payload = _ticket_payload(order["id"])
+    payload["site_id"] = site_id
+    created = client.post(
+        "/api/v1/tickets", json=payload, headers={**customer, "Idempotency-Key": uuid.uuid4().hex}
+    )
+    assert created.status_code == 201, created.text
+    assert created.json()["site_id"] == site_id
+    stranger = _customer(client, application, "site-stranger@example.com")
+    foreign = client.post(
+        "/api/v1/tickets", json=payload, headers={**stranger, "Idempotency-Key": uuid.uuid4().hex}
+    )
+    assert foreign.status_code == 404, foreign.text
+
+
+def test_ticket_visibility_matrix(client, application):
+    _all_staff(application)
+    order, _ = _installed_order(client, application)
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    ticket = _create_ticket(client, customer, order["id"])
+    _triage(client, ticket["id"])
+    _repair_job(client, ticket["id"], _tech_id(application, "tech@example.com"))
+    technician = _technician(client)
+    seen = client.get(f"/api/v1/tickets/{ticket['id']}", headers=technician)
+    assert seen.status_code == 200, seen.text
+    mine = client.get("/api/v1/tickets", headers=technician)
+    assert [row["id"] for row in mine.json()["items"]] == [ticket["id"]]
+    other = _technician2(client)
+    assert client.get(f"/api/v1/tickets/{ticket['id']}", headers=other).status_code == 404
+    sales = _sales(client)
+    assert client.get(f"/api/v1/tickets/{ticket['id']}", headers=sales).status_code == 404
+    assert client.get("/api/v1/tickets", headers=sales).status_code == 403
+    assert client.get(f"/api/v1/tickets/{uuid.uuid4()}", headers=_support(client)).status_code == 404
+
+
+def test_repair_job_replay_and_second_open_job(client, application):
+    _all_staff(application)
+    order, _ = _installed_order(client, application)
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    ticket = _create_ticket(client, customer, order["id"])
+    _triage(client, ticket["id"])
+    key = uuid.uuid4().hex
+    first = client.post(
+        f"/api/v1/tickets/{ticket['id']}/repair-jobs",
+        json={"technician_user_id": _tech_id(application, "tech@example.com")},
+        headers={**_support(client), "Idempotency-Key": key},
+    )
+    assert first.status_code == 201, first.text
+    replay = client.post(
+        f"/api/v1/tickets/{ticket['id']}/repair-jobs",
+        json={"technician_user_id": _tech_id(application, "tech@example.com")},
+        headers={**_support(client), "Idempotency-Key": key},
+    )
+    assert replay.status_code == 200, replay.text
+    assert replay.json()["id"] == first.json()["id"]
+    conflict = client.post(
+        f"/api/v1/tickets/{ticket['id']}/repair-jobs",
+        json={"technician_user_id": _tech_id(application, "tech2@example.com")},
+        headers={**_support(client), "Idempotency-Key": key},
+    )
+    assert conflict.status_code == 409, conflict.text
+    second = client.post(
+        f"/api/v1/tickets/{ticket['id']}/repair-jobs",
+        json={"technician_user_id": _tech_id(application, "tech2@example.com")},
+        headers={**_support(client), "Idempotency-Key": uuid.uuid4().hex},
+    )
+    assert second.status_code == 409, second.text
+    assert second.json()["error"]["code"] == "job_already_active"
+
+
+def test_technician_cap_reached(client, application):
+    _all_staff(application)
+    order, _ = _installed_order(client, application)
+    tech_id = _tech_id(application, "tech2@example.com")
+    for _ in range(5):
+        customer = _login(client, "customer", "leela@example.com", "Solarops123")
+        ticket = _create_ticket(client, customer, order["id"])
+        _triage(client, ticket["id"])
+        job = _repair_job(client, ticket["id"], tech_id)
+        assert job["technician_user_id"] == tech_id
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    ticket = _create_ticket(client, customer, order["id"])
+    _triage(client, ticket["id"])
+    capped = client.post(
+        f"/api/v1/tickets/{ticket['id']}/repair-jobs",
+        json={"technician_user_id": tech_id},
+        headers={**_support(client), "Idempotency-Key": uuid.uuid4().hex},
+    )
+    assert capped.status_code == 409, capped.text
+    assert capped.json()["error"]["code"] == "technician_unavailable"
+
+
+def test_assign_bad_owner_and_bad_technician(client, application):
+    _all_staff(application)
+    order, _ = _installed_order(client, application)
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    ticket = _create_ticket(client, customer, order["id"])
+    _triage(client, ticket["id"])
+    bad_owner = client.post(
+        f"/api/v1/tickets/{ticket['id']}/support-assignment",
+        json={"support_user_id": _tech_id(application, "tech@example.com")},
+        headers=_support(client),
+    )
+    assert bad_owner.status_code == 404, bad_owner.text
+    with Session(application.state.engine) as db:
+        me = db.scalar(select(User).where(User.email == "leela@example.com"))
+        assert me is not None
+        me_id = str(me.id)
+        tech2 = db.scalar(select(User).where(User.email == "tech2@example.com"))
+        assert tech2 is not None
+        tech2.is_active = False
+        db.commit()
+    customer_as_tech = client.post(
+        f"/api/v1/tickets/{ticket['id']}/repair-jobs",
+        json={"technician_user_id": me_id},
+        headers={**_support(client), "Idempotency-Key": uuid.uuid4().hex},
+    )
+    assert customer_as_tech.status_code == 404, customer_as_tech.text
+    inactive = client.post(
+        f"/api/v1/tickets/{ticket['id']}/repair-jobs",
+        json={"technician_user_id": _tech_id(application, "tech2@example.com")},
+        headers={**_support(client), "Idempotency-Key": uuid.uuid4().hex},
+    )
+    assert inactive.status_code == 404, inactive.text
+
+
+def test_notes_and_request_info_guards(client, application):
+    _all_staff(application)
+    order, _ = _installed_order(client, application)
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    ticket = _create_ticket(client, customer, order["id"])
+    early_info = client.post(
+        f"/api/v1/tickets/{ticket['id']}/request-info",
+        json={"message": "Asking before triage."},
+        headers=_support(client),
+    )
+    assert early_info.status_code == 409, early_info.text
+    _triage(client, ticket["id"])
+    note = client.post(
+        f"/api/v1/tickets/{ticket['id']}/notes",
+        json={"note": "Customer sounds cooperative; schedule next week."},
+        headers=_support(client),
+    )
+    assert note.status_code == 200, note.text
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    actions = [event["action"] for event in
+               client.get(f"/api/v1/tickets/{ticket['id']}/history", headers=customer).json()]
+    assert "note_added" in actions
+    wrong_state = client.post(
+        f"/api/v1/tickets/{ticket['id']}/customer-reply",
+        json={"message": "Nothing was asked yet."},
+        headers=customer,
+    )
+    assert wrong_state.status_code == 409, wrong_state.text
+    stranger = _customer(client, application, "reply-stranger@example.com")
+    assert (
+        client.post(
+            f"/api/v1/tickets/{ticket['id']}/customer-reply",
+            json={"message": "Trying to answer for someone else."},
+            headers=stranger,
+        ).status_code
+        == 404
+    )
+
+
+def test_job_update_guards_after_submit_and_cancel(client, application):
+    _all_staff(application)
+    order, _ = _installed_order(client, application)
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    ticket = _create_ticket(client, customer, order["id"])
+    _triage(client, ticket["id"])
+    job = _repair_job(client, ticket["id"], _tech_id(application, "tech@example.com"))
+    _record_full_repair(client, job["id"], _technician(client))
+    technician = _technician(client)
+    assert client.post(f"/api/v1/repair-jobs/{job['id']}/arrival", headers=technician).status_code == 409
+    assert (
+        client.post(
+            f"/api/v1/repair-jobs/{job['id']}/diagnostics",
+            json={"findings": "Late second opinion on the same unit."},
+            headers=technician,
+        ).status_code
+        == 409
+    )
+    late_cancel = client.post(
+        f"/api/v1/tickets/{ticket['id']}/cancel",
+        json={"reason": "Work already started."},
+        headers=_support(client),
+    )
+    assert late_cancel.status_code == 409, late_cancel.text
+    assert (
+        client.post(
+            f"/api/v1/tickets/{ticket['id']}/reopen",
+            json={"reason": "Nothing finished yet."},
+            headers=_support(client),
+        ).status_code
+        == 409
+    )
+
+
+def test_support_cancel_before_work_cancels_job(client, application):
+    _all_staff(application)
+    order, _ = _installed_order(client, application)
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    ticket = _create_ticket(client, customer, order["id"])
+    _triage(client, ticket["id"])
+    job = _repair_job(client, ticket["id"], _tech_id(application, "tech@example.com"))
+    cancelled = client.post(
+        f"/api/v1/tickets/{ticket['id']}/cancel",
+        json={"reason": "Duplicate of an earlier phone complaint."},
+        headers=_support(client),
+    )
+    assert cancelled.status_code == 200, cancelled.text
+    assert cancelled.json()["status"] == "cancelled"
+    technician = _technician(client)
+    assert client.post(f"/api/v1/repair-jobs/{job['id']}/arrival", headers=technician).status_code == 409
+    assert (
+        client.post(
+            f"/api/v1/tickets/{ticket['id']}/notes",
+            json={"note": "Nobody should write here now."},
+            headers=_support(client),
+        ).status_code
+        == 409
+    )
+
+
+def test_escalation_guards_and_priority_kept(client, application):
+    _all_staff(application)
+    order, _ = _installed_order(client, application)
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    ticket = _create_ticket(client, customer, order["id"])
+    early = client.post(
+        f"/api/v1/tickets/{ticket['id']}/escalation",
+        json={"reason": "Too early to escalate."},
+        headers=_support(client),
+    )
+    assert early.status_code == 409, early.text
+    _triage(client, ticket["id"])
+    kept = client.post(
+        f"/api/v1/tickets/{ticket['id']}/escalation",
+        json={"reason": "Second inverter fault on this street."},
+        headers=_support(client),
+    )
+    assert kept.status_code == 200, kept.text
+    assert kept.json()["escalated"] is True
+    assert kept.json()["verified_priority"] == "high"
+
+
+def test_cross_customer_confirmation_and_early_close(client, application):
+    _all_staff(application)
+    ticket = _run_full_ticket(client, application)
+    stranger = _customer(client, application, "confirm-stranger@example.com")
+    assert (
+        client.post(
+            f"/api/v1/tickets/{ticket['id']}/confirmation",
+            json={"decision": "confirmed", "summary_version": 1},
+            headers=stranger,
+        ).status_code
+        == 404
+    )
+    early_close = client.post(
+        f"/api/v1/tickets/{ticket['id']}/close",
+        json={"reason": "Skipping the customer verdict."},
+        headers=_support(client),
+    )
+    assert early_close.status_code == 409, early_close.text
+
+
+def test_attachment_job_link_mismatch_and_listing(client, application):
+    _all_staff(application)
+    order, _ = _installed_order(client, application)
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    ticket = _create_ticket(client, customer, order["id"])
+    _triage(client, ticket["id"])
+    job = _repair_job(client, ticket["id"], _tech_id(application, "tech@example.com"))
+    technician = _technician(client)
+    linked = client.post(
+        f"/api/v1/tickets/{ticket['id']}/attachments?repair_job_id={job['id']}",
+        files={"upload": ("site.png", PNG_BYTES, "image/png")},
+        headers=technician,
+    )
+    assert linked.status_code == 201, linked.text
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    other = _create_ticket(client, customer, order["id"])
+    technician = _technician(client)
+    mismatch = client.post(
+        f"/api/v1/tickets/{other['id']}/attachments?repair_job_id={job['id']}",
+        files={"upload": ("site.png", PNG_BYTES, "image/png")},
+        headers=technician,
+    )
+    assert mismatch.status_code == 404, mismatch.text
+    with Session(application.state.engine) as db:
+        from app.models.support import ServiceTicketAttachment
+
+        count = db.scalar(
+            select(func.count()).select_from(ServiceTicketAttachment).where(
+                ServiceTicketAttachment.ticket_id == uuid.UUID(other["id"]))
+        )
+        assert count == 0
+    listed = client.get(f"/api/v1/tickets/{ticket['id']}/attachments", headers=_support(client))
+    assert listed.status_code == 200, listed.text
+    assert [row["id"] for row in listed.json()] == [linked.json()["id"]]
+    download = client.get(
+        f"/api/v1/tickets/{ticket['id']}/attachments/{linked.json()['id']}",
+        headers=_support(client),
+    )
+    assert download.status_code == 200 and download.content == PNG_BYTES
+    assert (
+        client.get(
+            f"/api/v1/tickets/{ticket['id']}/attachments/{uuid.uuid4()}",
+            headers=_support(client),
+        ).status_code
+        == 404
+    )
+
+
+def test_repair_job_filter_and_staff_roles(client, application):
+    _all_staff(application)
+    order, _ = _installed_order(client, application)
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    ticket = _create_ticket(client, customer, order["id"])
+    _triage(client, ticket["id"])
+    job = _repair_job(client, ticket["id"], _tech_id(application, "tech@example.com"))
+    support = _support(client)
+    filtered = client.get(f"/api/v1/repair-jobs?ticket_id={ticket['id']}", headers=support)
+    assert [row["id"] for row in filtered.json()] == [job["id"]]
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    denied = client.get("/api/v1/repair-jobs", headers=customer)
+    assert denied.status_code == 403, denied.text
+    assert denied.json()["error"]["code"] == "forbidden"
+    support = _support(client)
+    assert client.get("/api/v1/support/staff?role=sales", headers=support).status_code == 422
+    admin_user = _staff_admin(client, application)
+    admins = client.get("/api/v1/support/staff?role=support", headers=admin_user)
+    assert admins.status_code == 200, admins.text
+
+
+def _staff_admin(client, application) -> dict[str, str]:
+    _staff(application, "admin", "admin4a@example.com", "EMP-ADMIN-904")
+    return _login(client, "employee", "EMP-ADMIN-904", "Staffpass123")
+
+
 def test_support_staff_directory_lists_eligible_technicians(client, application):
     _all_staff(application)
     support = _support(client)
