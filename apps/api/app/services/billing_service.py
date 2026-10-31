@@ -404,20 +404,7 @@ def consume_invoice_parts(db: Session, user: User,
         raise AppError(404, "not_found", "Invoice not found.")
     if invoice.consumption_operation_id is not None:
         return invoice
-    part_lines = [line for line in invoice.lines if line.get("kind") == "part"]
-    if not part_lines:
-        raise AppError(409, "nothing_to_consume", "This invoice has no parts to consume.")
-    ticket = db.get(ServiceTicket, invoice.ticket_id)
-    assert ticket is not None
-    operation, _ = inventory_service.create_operation(
-        db, user, "adjustment",
-        [{"component_code": line["code"], "quantity": f"-{line['quantity']}.0000",
-          "from_location": "MAIN", "to_location": None} for line in part_lines],
-        f"Repair consumption for invoice {invoice.reference}",
-        ticket.order_id, f"invoice-consume-{invoice.id}",
-    )
-    inventory_service.mark_ready(db, user, operation.id)
-    inventory_service.validate_operation(db, user, operation.id)
+    operation = inventory_service.consume_service_invoice_stock(db, user, invoice.id)
     invoice.consumption_operation_id = operation.id
     db.flush()
     add_audit(db, actor_user_id=user.id, action="billing.parts_consumed",

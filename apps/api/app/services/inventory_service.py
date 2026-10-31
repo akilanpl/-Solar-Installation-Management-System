@@ -482,6 +482,72 @@ def consume_reservations(db: Session, order_id: uuid.UUID) -> None:
     db.flush()
 
 
+def consume_service_invoice_stock(db, user, invoice_id):
+    """Consume only accepted invoice nonserialized parts; no count adjustment.
+
+    Serialized repairs use their exact replacement custody. Until an invoice
+    can bind those movements without reusing them, this path fails closed.
+    """
+    from app.models.support import ServiceTicket
+    from app.models.warranty import EstimateDecision, ServiceEstimate, ServiceInvoice
+
+    if user.role_code not in WAREHOUSE:
+        raise AppError(403, "forbidden", "Only warehouse staff can consume service parts.")
+    invoice = db.scalar(select(ServiceInvoice).where(ServiceInvoice.id == invoice_id).with_for_update())
+    if invoice is None:
+        raise AppError(404, "not_found", "Invoice not found.")
+    if invoice.consumption_operation_id is not None:
+        operation = db.get(StockOperation, invoice.consumption_operation_id)
+        if operation is None or operation.status != "done":
+            raise AppError(409, "invalid_consumption", "Invoice consumption record is invalid.")
+        return operation
+    estimate = db.scalar(select(ServiceEstimate).where(
+        ServiceEstimate.id == invoice.estimate_id).with_for_update())
+    accepted = db.scalar(select(EstimateDecision.id).where(
+        EstimateDecision.estimate_id == invoice.estimate_id,
+        EstimateDecision.estimate_version == invoice.estimate_version,
+        EstimateDecision.decision == "accepted",
+    ))
+    ticket = db.get(ServiceTicket, invoice.ticket_id)
+    if (estimate is None or ticket is None or accepted is None or estimate.status != "accepted"
+            or estimate.version != invoice.estimate_version or estimate.ticket_id != ticket.id
+            or invoice.lines != estimate.lines or invoice.status == "credited"):
+        raise AppError(409, "estimate_not_accepted", "Consumption requires the exact accepted invoice source.")
+    quantities = {}
+    for line in invoice.lines:
+        if line.get("kind") != "part":
+            continue
+        quantity, code = line.get("quantity"), line.get("code")
+        if type(quantity) is not int or quantity <= 0 or not isinstance(code, str):
+            raise AppError(422, "validation_error", "Invoice part quantities are invalid.")
+        _check_component(db, code)
+        component = db.get(CatalogueComponent, code)
+        if component.requires_serial_tracking:
+            raise AppError(409, "serialized_replacement_required",
+                           "Serialized service parts require an exact replacement custody link; "
+                           "anonymous invoice consumption is unavailable.")
+        quantities[code] = quantities.get(code, 0) + quantity
+    if not quantities:
+        raise AppError(409, "nothing_to_consume", "This invoice has no parts to consume.")
+    lock_components(db, list(quantities))
+    # A source-linked delivery of consumables retains generic balance,
+    # physical-allocation and registered-unit guards. It is never an adjustment.
+    operation, reused = create_operation(
+        db, user, "delivery", [{"component_code": code, "quantity": str(quantity),
+            "from_location": "MAIN", "to_location": None}
+            for code, quantity in sorted(quantities.items())],
+        f"Accepted service invoice {invoice.reference}", ticket.order_id,
+        f"invoice-consume-{invoice.id}",
+    )
+    if reused:
+        raise AppError(409, "invalid_consumption", "An unlinked consumption operation already exists.")
+    mark_ready(db, user, operation.id)
+    validate_operation(db, user, operation.id)
+    invoice.consumption_operation_id = operation.id
+    db.flush()
+    return operation
+
+
 def replacement_stock_movement(db, user, replacement_id, *, return_verdict=None):
     """Post one exact unit for an authorized replacement, never generic dispatch.
 

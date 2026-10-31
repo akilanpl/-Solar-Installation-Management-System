@@ -53,7 +53,7 @@ def _pricing(client, admin, labour_rate=6000, parts=None, tax_bps=1800):
     return book.json(), tax.json()
 
 
-def _ready_flow(client, application, email="leela@example.com", **policy_kw):
+def _ready_flow(client, application, email="leela@example.com", *, consumable=False, **policy_kw):
     """Installed order, triaged ticket, submitted repair job, covered decision."""
     admin = _admin(client, application)
     _policy(client, admin, **policy_kw)
@@ -66,7 +66,24 @@ def _ready_flow(client, application, email="leela@example.com", **policy_kw):
     ticket = _create_ticket(client, customer, order["id"], serial)
     _triage(client, ticket["id"])
     job = _repair_job(client, ticket["id"], _tech_id(application, "tech@example.com"))
-    _record_full_repair(client, job["id"], _technician(client))
+    if consumable:
+        technician = _technician(client)
+        path = f"/api/v1/repair-jobs/{job['id']}"
+        assert client.post(path + "/arrival", headers=technician).status_code == 200
+        assert client.post(path + "/diagnostics", json={
+            "findings": "Damaged connector needs replacement."}, headers=technician).status_code == 200
+        now = datetime.now(UTC)
+        work = client.post(path + "/work", json={
+            "work_performed": "Replaced connector and tested continuity.",
+            "work_started_at": (now - timedelta(minutes=15)).isoformat(),
+            "work_finished_at": now.isoformat(),
+            "parts_used": [{"component_code": "CONN-MC4", "quantity": 1}],
+        }, headers=technician)
+        assert work.status_code == 200, work.text
+        assert client.post(path + "/submit", json={
+            "summary": "Connector replaced; circuit verified."}, headers=technician).status_code == 200
+    else:
+        _record_full_repair(client, job["id"], _technician(client))
     decided = _decide(client, _support(client), ticket["id"], serial)
     assert decided.json()["verdict"] == "covered", decided.text
     order_detail = client.get(f"/api/v1/orders/{order['id']}", headers=_support(client)).json()
@@ -443,7 +460,7 @@ def test_consume_parts_validates_stock(client, application):
     from app.models.phase3 import StockLedger
 
     _all_staff(application)
-    ticket, _, _ = _ready_flow(client, application)
+    ticket, _, _ = _ready_flow(client, application, consumable=True)
     estimate = _estimate(client, ticket["id"]).json()
     customer = _login(client, "customer", "leela@example.com", "Solarops123")
     assert client.post(
@@ -463,7 +480,7 @@ def test_consume_parts_validates_stock(client, application):
     received = client.post(
         "/api/v1/stock/operations",
         json={"operation_type": "receipt",
-              "lines": [{"component_code": "PANEL-550", "quantity": "3.0000",
+              "lines": [{"component_code": "CONN-MC4", "quantity": "3.0000",
                          "to_location": "MAIN"}]},
         headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex})
     assert received.status_code == 201, received.text
@@ -478,8 +495,17 @@ def test_consume_parts_validates_stock(client, application):
     assert consumed.status_code == 200, consumed.text
     assert consumed.json()["consumption_operation_id"] is not None
     with Session(application.state.engine) as db:
+        from app.models.phase3 import StockOperation
+
+        operation = db.get(StockOperation, uuid.UUID(consumed.json()["consumption_operation_id"]))
+        assert operation.operation_type == "delivery" and operation.status == "done"
+        assert operation.source_order_id == uuid.UUID(ticket["order_id"])
+        assert operation.lines[0].component_code == "CONN-MC4"
+        assert operation.lines[0].quantity == 1
+        assert operation.lines[0].from_location == "MAIN"
+    with Session(application.state.engine) as db:
         total = db.scalar(select(func.coalesce(func.sum(StockLedger.quantity_delta), 0)).where(
-            StockLedger.component_code == "PANEL-550",
+            StockLedger.component_code == "CONN-MC4",
             StockLedger.location_code == "MAIN"))
         assert total == 2
     again = client.post(
@@ -536,3 +562,28 @@ def test_concurrent_invoice_creation_single_winner(client, application):
         count = db.scalar(select(func.count()).select_from(ServiceInvoice).where(
             ServiceInvoice.estimate_id == uuid.UUID(estimate["id"])))
         assert count == 1
+
+
+
+def test_consume_serialized_invoice_parts_requires_exact_replacement_link(client, application):
+    from app.models.phase3 import StockOperation
+
+    _all_staff(application)
+    ticket, _, _ = _ready_flow(client, application)
+    estimate = _estimate(client, ticket["id"]).json()
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    accepted = client.post(f"/api/v1/estimates/{estimate['id']}/decision",
+        json={"decision": "accepted", "estimate_version": estimate["version"]}, headers=customer)
+    assert accepted.status_code == 200, accepted.text
+    invoice = client.post("/api/v1/service-invoices", json={"estimate_id": estimate["id"]},
+        headers={**_support(client), "Idempotency-Key": uuid.uuid4().hex})
+    assert invoice.status_code == 201, invoice.text
+    invoice_id = invoice.json()["id"]
+    with Session(application.state.engine) as db:
+        before = db.scalar(select(func.count()).select_from(StockOperation))
+    blocked = client.post(f"/api/v1/service-invoices/{invoice_id}/consume", headers=_warehouse(client))
+    assert blocked.status_code == 409, blocked.text
+    assert blocked.json()["error"]["code"] == "serialized_replacement_required"
+    with Session(application.state.engine) as db:
+        assert db.get(ServiceInvoice, uuid.UUID(invoice_id)).consumption_operation_id is None
+        assert db.scalar(select(func.count()).select_from(StockOperation)) == before
