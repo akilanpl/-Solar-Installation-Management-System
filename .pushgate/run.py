@@ -64,8 +64,21 @@ def run_stage(root, folder, name, family, sev, directory, command, *,
             for item in cases:
                 state = ("fail" if item.find("failure") is not None or item.find("error") is not None
                          else "skip" if item.find("skipped") is not None else "pass")
-                rows.append({"id": item.get("name", ""), "family": family, "sev": sev,
-                             "status": state})
+                assigned_family = family
+                if name == "backend":
+                    module = item.get("classname", "").rsplit(".", 1)[-1]
+                    # Classify executed assertion-bearing API suites by their
+                    # real contracts; dedicated browser campaigns stay separate.
+                    if module == "test_health":
+                        assigned_family = "A01"
+                    elif module in {"test_auth", "test_phase4e_auth"}:
+                        assigned_family = "A22"
+                    elif module == "test_database" or "migration" in module:
+                        assigned_family = "D04"
+                    elif module in {"test_security_runtime_hardening", "test_runtime"}:
+                        assigned_family = "Z03"
+                rows.append({"id": item.get("name", ""), "family": assigned_family,
+                             "sev": sev, "status": state})
             if require_junit and (not cases or any(row["status"] != "pass" for row in rows)):
                 status, reason = "fail", "JUnit is empty or contains failed/skipped tests"
         except (ET.ParseError, OSError, ValueError):
@@ -137,7 +150,7 @@ def main():
     stages = [
         ("gate-selftest", "S03", "P0", ".", [api_python, "-m", "unittest", "discover", "-s", ".pushgate", "-p", "test_*.py"]),
         ("lint-api", "S02", "P1", "apps/api", [str(api_bin / ("ruff.exe" if os.name == "nt" else "ruff")), "check", "app", "tests", "scripts"]),
-        ("backend", "B03", "P0", "apps/api", [api_python, "-m", "coverage", "run", "--branch", "--source=app", f"--data-file={coverage_data}", "-m", "pytest", f"--junitxml={folder}/backend.xml"]),
+        ("backend", "B03", "P0", "apps/api", [api_python, "-m", "coverage", "run", "--branch", "--source=app", f"--data-file={coverage_data}", "-m", "pytest", "--ignore=tests/release_campaigns", f"--junitxml={folder}/backend.xml"]),
         ("backend-coverage-export", "S03", "P0", "apps/api", [api_python, "-m", "coverage", "json", f"--data-file={coverage_data}", "-o", str(coverage_json)]),
         ("backend-coverage-check", "S03", "P0", ".", [api_python, ".pushgate/check_backend_coverage.py", "--coverage", str(coverage_json), "--config", ".pushgate/config.yml", "--output", str(coverage_check)]),
         ("frontend", "F01", "P1", "apps/web", ["npm", "test", "--", "--reporter=junit", f"--outputFile={folder}/frontend.xml"]),
