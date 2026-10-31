@@ -1,5 +1,4 @@
-"use client";
-import { PlannedRoute } from "@/components/planned-route";
+import { FinanceWorkspace } from "@/components/finance";
 export default function Page() {
-  return <PlannedRoute path="/admin/reports" kind="reports" />;
+  return <FinanceWorkspace path="/admin/reports" />;
 }

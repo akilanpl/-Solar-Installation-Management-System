@@ -1,0 +1,21 @@
+{
+  "base_sha": "26a5f129e1eeea5ad772ab4e1b8c5f8f6d43bc3d",
+  "tests_passed": 203,
+  "coverage": {
+    "covered_lines": 5728,
+    "num_statements": 6434,
+    "percent_covered": 84.4178952719878,
+    "percent_covered_display": "84",
+    "missing_lines": 706,
+    "excluded_lines": 11,
+    "percent_statements_covered": 89.02704382965496,
+    "percent_statements_covered_display": "89",
+    "num_branches": 1434,
+    "num_partial_branches": 352,
+    "covered_branches": 914,
+    "missing_branches": 520,
+    "percent_branches_covered": 63.73779637377964,
+    "percent_branches_covered_display": "64"
+  },
+  "method": "Original baseline coverage arcs remapped to immutable git-archive source snapshot because reporting against changed/new source would distort the denominator. No non-baseline file had executed arcs."
+}

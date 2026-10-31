@@ -2117,6 +2117,466 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/finance/evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Evidence */
+        post: operations["upload_evidence_api_v1_finance_evidence_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/evidence/{evidence_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Evidence */
+        get: operations["download_evidence_api_v1_finance_evidence__evidence_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/records": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Records */
+        get: operations["list_records_api_v1_finance_records_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/periods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Periods */
+        get: operations["periods_api_v1_finance_periods_get"];
+        put?: never;
+        /** Create Period */
+        post: operations["create_period_api_v1_finance_periods_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/periods/{period_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Close Period */
+        post: operations["close_period_api_v1_finance_periods__period_id__close_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/policies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Policy */
+        post: operations["policy_api_v1_finance_policies_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Invoice */
+        post: operations["invoice_api_v1_finance_invoices_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/invoices/{invoice_id}/recognize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Recognize */
+        post: operations["recognize_api_v1_finance_invoices__invoice_id__recognize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/receipts/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Receipt */
+        post: operations["receipt_api_v1_finance_receipts_import_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/invoices/{invoice_id}/credits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Credit */
+        post: operations["credit_api_v1_finance_invoices__invoice_id__credits_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/journal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Journal */
+        get: operations["journal_api_v1_finance_journal_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/journal/{entry_id}/reverse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reverse */
+        post: operations["reverse_api_v1_finance_journal__entry_id__reverse_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/labour-rates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rate */
+        post: operations["rate_api_v1_finance_labour_rates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/timesheets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Timesheet */
+        post: operations["timesheet_api_v1_finance_timesheets_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/timesheets/{sheet_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Review */
+        post: operations["review_api_v1_finance_timesheets__sheet_id__review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/costs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cost */
+        post: operations["cost_api_v1_finance_costs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/payables/{payable_id}/settlements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Settle */
+        post: operations["settle_api_v1_finance_payables__payable_id__settlements_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/completeness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Attest */
+        post: operations["attest_api_v1_finance_completeness_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/subsidy-schemes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Scheme */
+        post: operations["scheme_api_v1_finance_subsidy_schemes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/subsidies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Subsidy */
+        post: operations["subsidy_api_v1_finance_subsidies_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/subsidies/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Subsidy Detail */
+        get: operations["subsidy_detail_api_v1_finance_subsidies__case_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/subsidies/{case_id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Subsidy Document */
+        post: operations["subsidy_document_api_v1_finance_subsidies__case_id__documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/subsidies/{case_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Subsidy Transition */
+        post: operations["subsidy_transition_api_v1_finance_subsidies__case_id__events_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dashboard */
+        get: operations["dashboard_api_v1_finance_dashboard_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/reports/profit.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Report */
+        get: operations["report_api_v1_finance_reports_profit_csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/advances/allocate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Allocate */
+        post: operations["allocate_api_v1_finance_advances_allocate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/payables/{payable_id}/adjustments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Adjust */
+        post: operations["adjust_api_v1_finance_payables__payable_id__adjustments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/employees": {
         parameters: {
             query?: never;
@@ -2188,6 +2648,33 @@ export interface components {
              */
             created_at: string;
         };
+        /** AdvanceAllocation */
+        AdvanceAllocation: {
+            /**
+             * Posting Date
+             * Format: date
+             */
+            posting_date: string;
+            /**
+             * Policy Id
+             * Format: uuid
+             */
+            policy_id: string;
+            /**
+             * Receipt Id
+             * Format: uuid
+             */
+            receipt_id: string;
+            /**
+             * Invoice Id
+             * Format: uuid
+             */
+            invoice_id: string;
+            /** Amount Minor */
+            amount_minor: number;
+            /** Key */
+            key: string;
+        };
         /** AttachmentResponse */
         AttachmentResponse: {
             /**
@@ -2217,6 +2704,11 @@ export interface components {
             /** Upload */
             upload: string;
         };
+        /** Body_upload_evidence_api_v1_finance_evidence_post */
+        Body_upload_evidence_api_v1_finance_evidence_post: {
+            /** File */
+            file: string;
+        };
         /** Body_upload_evidence_api_v1_surveys__survey_id__evidence_post */
         Body_upload_evidence_api_v1_surveys__survey_id__evidence_post: {
             /** Upload */
@@ -2239,6 +2731,33 @@ export interface components {
             /** Receipt Reference */
             receipt_reference: string;
         };
+        /** CompletenessCreate */
+        CompletenessCreate: {
+            /**
+             * Order Id
+             * Format: uuid
+             */
+            order_id: string;
+            /**
+             * Evidence Id
+             * Format: uuid
+             */
+            evidence_id: string;
+            /**
+             * Labour Complete
+             * @constant
+             */
+            labour_complete: true;
+            /**
+             * Expenses Complete
+             * @constant
+             */
+            expenses_complete: true;
+            /** Note */
+            note: string;
+            /** Key */
+            key: string;
+        };
         /** ConfirmationCreate */
         ConfirmationCreate: {
             /** Decision */
@@ -2247,6 +2766,42 @@ export interface components {
             summary_version: number;
             /** Note */
             note?: string | null;
+        };
+        /** CostCreate */
+        CostCreate: {
+            /**
+             * Posting Date
+             * Format: date
+             */
+            posting_date: string;
+            /**
+             * Policy Id
+             * Format: uuid
+             */
+            policy_id: string;
+            /**
+             * Order Id
+             * Format: uuid
+             */
+            order_id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "material" | "expense";
+            /** Ledger Id */
+            ledger_id?: string | null;
+            /** Amount Minor */
+            amount_minor: number;
+            /**
+             * Evidence Id
+             * Format: uuid
+             */
+            evidence_id: string;
+            /** Description */
+            description: string;
+            /** Key */
+            key: string;
         };
         /** CoverageResponse */
         CoverageResponse: {
@@ -2280,6 +2835,34 @@ export interface components {
              * Format: uuid
              */
             order_id: string;
+        };
+        /** CreditCreate */
+        CreditCreate: {
+            /**
+             * Posting Date
+             * Format: date
+             */
+            posting_date: string;
+            /**
+             * Policy Id
+             * Format: uuid
+             */
+            policy_id: string;
+            /** Source Credit Id */
+            source_credit_id?: string | null;
+            /** Amount Minor */
+            amount_minor: number;
+            /** Tax Minor */
+            tax_minor: number;
+            /** Reason */
+            reason: string;
+            /**
+             * Evidence Id
+             * Format: uuid
+             */
+            evidence_id: string;
+            /** Key */
+            key: string;
         };
         /** CreditNoteCreate */
         CreditNoteCreate: {
@@ -2346,6 +2929,39 @@ export interface components {
         CustomerReply: {
             /** Message */
             message: string;
+        };
+        /** DashboardResponse */
+        DashboardResponse: {
+            /**
+             * Currency
+             * @default INR
+             * @constant
+             */
+            currency: "INR";
+            /** Recognized Revenue Minor */
+            recognized_revenue_minor: number;
+            /** Cash Minor */
+            cash_minor: number;
+            /** Receivables Minor */
+            receivables_minor: number;
+            /** Payables Minor */
+            payables_minor: number;
+            /** Advances Minor */
+            advances_minor: number;
+            /** Deferred Revenue Minor */
+            deferred_revenue_minor: number;
+            /** Outstanding Jobs */
+            outstanding_jobs: number;
+            /** Service Liability Minor */
+            service_liability_minor: number | null;
+            /** Service Liability State */
+            service_liability_state: string;
+            /** Subsidy Status */
+            subsidy_status: {
+                [key: string]: number;
+            };
+            /** Jobs */
+            jobs: components["schemas"]["JobProfit"][];
         };
         /** DecisionCreate */
         DecisionCreate: {
@@ -2721,25 +3337,6 @@ export interface components {
              */
             created_at: string;
         };
-        /** EvidenceResponse */
-        EvidenceResponse: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Content Type */
-            content_type: string;
-            /** Size Bytes */
-            size_bytes: number;
-            /** Original Filename */
-            original_filename: string;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-        };
         /** ExceptionCreate */
         ExceptionCreate: {
             /**
@@ -2779,6 +3376,29 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /** FinanceInvoiceCreate */
+        FinanceInvoiceCreate: {
+            /**
+             * Posting Date
+             * Format: date
+             */
+            posting_date: string;
+            /**
+             * Policy Id
+             * Format: uuid
+             */
+            policy_id: string;
+            /**
+             * Source Kind
+             * @enum {string}
+             */
+            source_kind: "order" | "service_invoice";
+            /**
+             * Source Id
+             * Format: uuid
+             */
+            source_id: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -2976,6 +3596,32 @@ export interface components {
             /** Code */
             code: string;
         };
+        /** JobProfit */
+        JobProfit: {
+            /**
+             * Order Id
+             * Format: uuid
+             */
+            order_id: string;
+            /** Reference */
+            reference: string;
+            /** Revenue Minor */
+            revenue_minor: number;
+            /** Material Minor */
+            material_minor: number;
+            /** Labour Minor */
+            labour_minor: number;
+            /** Expense Minor */
+            expense_minor: number;
+            /** Profit Minor */
+            profit_minor: number;
+            /** Complete */
+            complete: boolean;
+            /** Missing */
+            missing: string[];
+            /** Source Record Ids */
+            source_record_ids: string[];
+        };
         /** JobResponse */
         JobResponse: {
             /**
@@ -3031,6 +3677,61 @@ export interface components {
             customer_confirmed: boolean;
             /** Summary Hash */
             summary_hash: string;
+        };
+        /** JournalResponse */
+        JournalResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Source Event */
+            source_event: string;
+            /**
+             * Record Id
+             * Format: uuid
+             */
+            record_id: string;
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /**
+             * Posting Date
+             * Format: date
+             */
+            posting_date: string;
+            /** Reversal Of */
+            reversal_of: string | null;
+            /** Lines */
+            lines: {
+                [key: string]: string | number;
+            }[];
+        };
+        /** LabourAdjustment */
+        LabourAdjustment: {
+            /**
+             * Posting Date
+             * Format: date
+             */
+            posting_date: string;
+            /**
+             * Policy Id
+             * Format: uuid
+             */
+            policy_id: string;
+            /** Delta Minor */
+            delta_minor: number;
+            /** Reason */
+            reason: string;
+            /**
+             * Evidence Id
+             * Format: uuid
+             */
+            evidence_id: string;
+            /** Key */
+            key: string;
         };
         /**
          * LoginRequest
@@ -3200,6 +3901,31 @@ export interface components {
             /** Is Active */
             is_active: boolean;
         };
+        /** PaymentImport */
+        PaymentImport: {
+            /**
+             * Posting Date
+             * Format: date
+             */
+            posting_date: string;
+            /**
+             * Policy Id
+             * Format: uuid
+             */
+            policy_id: string;
+            /**
+             * Payment Id
+             * Format: uuid
+             */
+            payment_id: string;
+            /**
+             * Order Id
+             * Format: uuid
+             */
+            order_id: string;
+            /** Invoice Id */
+            invoice_id?: string | null;
+        };
         /** PaymentIntentCreate */
         PaymentIntentCreate: {
             /**
@@ -3262,16 +3988,45 @@ export interface components {
             /** Outstanding Minor */
             outstanding_minor: number;
         };
-        /** PolicyCreate */
-        PolicyCreate: {
-            /** Code */
-            code: string;
-            /** Issuer */
-            issuer: string;
-            /** Category */
-            category: string;
-            /** Description */
-            description: string;
+        /** PeriodClose */
+        PeriodClose: {
+            /** Evidence */
+            evidence: string;
+        };
+        /** PeriodCreate */
+        PeriodCreate: {
+            /**
+             * Starts On
+             * Format: date
+             */
+            starts_on: string;
+            /**
+             * Ends On
+             * Format: date
+             */
+            ends_on: string;
+        };
+        /** PeriodResponse */
+        PeriodResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Starts On
+             * Format: date
+             */
+            starts_on: string;
+            /**
+             * Ends On
+             * Format: date
+             */
+            ends_on: string;
+            /** Status */
+            status: string;
+            /** Closure Evidence */
+            closure_evidence: string | null;
         };
         /** PolicyResponse */
         PolicyResponse: {
@@ -3587,6 +4342,33 @@ export interface components {
             /** Revision Request Id */
             revision_request_id?: string | null;
         };
+        /** RateCreate */
+        RateCreate: {
+            /**
+             * Technician Id
+             * Format: uuid
+             */
+            technician_id: string;
+            /**
+             * Effective From
+             * Format: date-time
+             */
+            effective_from: string;
+            /**
+             * Effective To
+             * Format: date-time
+             */
+            effective_to: string;
+            /** Hourly Minor */
+            hourly_minor: number;
+            /**
+             * Evidence Id
+             * Format: uuid
+             */
+            evidence_id: string;
+            /** Key */
+            key: string;
+        };
         /** ReadyResponse */
         ReadyResponse: {
             /**
@@ -3604,6 +4386,24 @@ export interface components {
         ReasonedAction: {
             /** Reason */
             reason: string;
+        };
+        /** RecognitionCreate */
+        RecognitionCreate: {
+            /**
+             * Posting Date
+             * Format: date
+             */
+            posting_date: string;
+            /**
+             * Policy Id
+             * Format: uuid
+             */
+            policy_id: string;
+            /**
+             * Evidence Id
+             * Format: uuid
+             */
+            evidence_id: string;
         };
         /** RecommendationRequest */
         RecommendationRequest: {
@@ -3631,6 +4431,38 @@ export interface components {
             open_jobs: number;
             /** Reason */
             reason: string;
+        };
+        /** RecordResponse */
+        RecordResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Kind */
+            kind: string;
+            /** Source Key */
+            source_key: string;
+            /** Order Id */
+            order_id: string | null;
+            /**
+             * Actor Id
+             * Format: uuid
+             */
+            actor_id: string;
+            /** Policy Id */
+            policy_id: string | null;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            /** Request Hash */
+            request_hash: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** RepairJobCreate */
         RepairJobCreate: {
@@ -3872,6 +4704,21 @@ export interface components {
              */
             technician_user_id: string;
         };
+        /** ReverseCreate */
+        ReverseCreate: {
+            /**
+             * Posting Date
+             * Format: date
+             */
+            posting_date: string;
+            /** Reason */
+            reason: string;
+            /**
+             * Evidence Id
+             * Format: uuid
+             */
+            evidence_id: string;
+        };
         /** RevisionRequestCreate */
         RevisionRequestCreate: {
             /**
@@ -3958,6 +4805,34 @@ export interface components {
              */
             slot_starts_at: string;
         };
+        /** SchemeCreate */
+        SchemeCreate: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** Official Url */
+            official_url: string;
+            /** Version */
+            version: string;
+            /**
+             * Effective From
+             * Format: date
+             */
+            effective_from: string;
+            /**
+             * Effective To
+             * Format: date
+             */
+            effective_to: string;
+            /** Required Documents */
+            required_documents: string[];
+            /**
+             * Evidence Id
+             * Format: uuid
+             */
+            evidence_id: string;
+        };
         /** SerialAssign */
         SerialAssign: {
             /**
@@ -3999,6 +4874,28 @@ export interface components {
             component_code: string;
             /** Operation Id */
             operation_id?: string | null;
+        };
+        /** SettlementCreate */
+        SettlementCreate: {
+            /**
+             * Posting Date
+             * Format: date
+             */
+            posting_date: string;
+            /**
+             * Policy Id
+             * Format: uuid
+             */
+            policy_id: string;
+            /** Amount Minor */
+            amount_minor: number;
+            /**
+             * Evidence Id
+             * Format: uuid
+             */
+            evidence_id: string;
+            /** Bank Reference */
+            bank_reference: string;
         };
         /** SignupRequest */
         SignupRequest: {
@@ -4149,6 +5046,51 @@ export interface components {
             /** Validated At */
             validated_at: string | null;
         };
+        /** SubsidyCreate */
+        SubsidyCreate: {
+            /**
+             * Order Id
+             * Format: uuid
+             */
+            order_id: string;
+            /**
+             * Scheme Id
+             * Format: uuid
+             */
+            scheme_id: string;
+            /** Consent Text */
+            consent_text: string;
+            /** Key */
+            key: string;
+        };
+        /** SubsidyDocument */
+        SubsidyDocument: {
+            /** Document Type */
+            document_type: string;
+            /**
+             * Evidence Id
+             * Format: uuid
+             */
+            evidence_id: string;
+            /** Key */
+            key: string;
+        };
+        /** SubsidyTransition */
+        SubsidyTransition: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "reviewed" | "submitted" | "approved" | "rejected" | "consent_withdrawn";
+            /** Note */
+            note: string;
+            /** Evidence Id */
+            evidence_id?: string | null;
+            /** External Reference */
+            external_reference?: string | null;
+            /** Key */
+            key: string;
+        };
         /** SupportAssignmentUpdate */
         SupportAssignmentUpdate: {
             /**
@@ -4272,7 +5214,7 @@ export interface components {
             /** Reviewed By User Id */
             reviewed_by_user_id: string | null;
             /** Evidence */
-            evidence: components["schemas"]["EvidenceResponse"][];
+            evidence: components["schemas"]["app__schemas__workflow__EvidenceResponse"][];
             /** History */
             history: components["schemas"]["SurveyHistoryResponse"][];
             /**
@@ -4535,6 +5477,60 @@ export interface components {
              */
             updated_at: string;
         };
+        /** TimesheetCreate */
+        TimesheetCreate: {
+            /**
+             * Job Kind
+             * @enum {string}
+             */
+            job_kind: "installation" | "repair";
+            /**
+             * Job Id
+             * Format: uuid
+             */
+            job_id: string;
+            /**
+             * Check In
+             * Format: date-time
+             */
+            check_in: string;
+            /**
+             * Check Out
+             * Format: date-time
+             */
+            check_out: string;
+            /** Note */
+            note: string;
+            /** Key */
+            key: string;
+        };
+        /** TimesheetReview */
+        TimesheetReview: {
+            /**
+             * Posting Date
+             * Format: date
+             */
+            posting_date: string;
+            /**
+             * Policy Id
+             * Format: uuid
+             */
+            policy_id: string;
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approved" | "rejected";
+            /** Approved Minutes */
+            approved_minutes: number;
+            /** Note */
+            note: string;
+            /**
+             * Evidence Id
+             * Format: uuid
+             */
+            evidence_id: string;
+        };
         /** TriageUpdate */
         TriageUpdate: {
             /** Category */
@@ -4696,6 +5692,82 @@ export interface components {
             parts_used?: {
                 [key: string]: unknown;
             }[];
+        };
+        /** EvidenceResponse */
+        app__schemas__finance__EvidenceResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Sha256 */
+            sha256: string;
+            /** Content Type */
+            content_type: string;
+        };
+        /** PolicyCreate */
+        app__schemas__finance__PolicyCreate: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Approval Reference */
+            approval_reference: string;
+            /**
+             * Effective From
+             * Format: date
+             */
+            effective_from: string;
+            /**
+             * Effective To
+             * Format: date
+             */
+            effective_to: string;
+            /**
+             * Recognition
+             * @constant
+             */
+            recognition: "completed_installation_and_approved_service";
+            /**
+             * Tax
+             * @constant
+             */
+            tax: "preserve_approved_source_snapshot";
+            /**
+             * Posting Rules
+             * @constant
+             */
+            posting_rules: "invoice_deferred_tax_on_issue_costs_on_approval";
+        };
+        /** PolicyCreate */
+        app__schemas__warranty__PolicyCreate: {
+            /** Code */
+            code: string;
+            /** Issuer */
+            issuer: string;
+            /** Category */
+            category: string;
+            /** Description */
+            description: string;
+        };
+        /** EvidenceResponse */
+        app__schemas__workflow__EvidenceResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Content Type */
+            content_type: string;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Original Filename */
+            original_filename: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
     };
     responses: never;
@@ -5436,7 +6508,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["EvidenceResponse"];
+                    "application/json": components["schemas"]["app__schemas__workflow__EvidenceResponse"];
                 };
             };
             /** @description Validation Error */
@@ -8121,7 +9193,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PolicyCreate"];
+                "application/json": components["schemas"]["app__schemas__warranty__PolicyCreate"];
             };
         };
         responses: {
@@ -9172,6 +10244,900 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CreditNoteResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_evidence_api_v1_finance_evidence_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_evidence_api_v1_finance_evidence_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__schemas__finance__EvidenceResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_evidence_api_v1_finance_evidence__evidence_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                evidence_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_records_api_v1_finance_records_get: {
+        parameters: {
+            query?: {
+                kind?: string | null;
+                order_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    periods_api_v1_finance_periods_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PeriodResponse"][];
+                };
+            };
+        };
+    };
+    create_period_api_v1_finance_periods_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PeriodCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PeriodResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    close_period_api_v1_finance_periods__period_id__close_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                period_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PeriodClose"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PeriodResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    policy_api_v1_finance_policies_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["app__schemas__finance__PolicyCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    invoice_api_v1_finance_invoices_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FinanceInvoiceCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    recognize_api_v1_finance_invoices__invoice_id__recognize_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecognitionCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    receipt_api_v1_finance_receipts_import_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentImport"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    credit_api_v1_finance_invoices__invoice_id__credits_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreditCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    journal_api_v1_finance_journal_get: {
+        parameters: {
+            query?: {
+                order_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JournalResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reverse_api_v1_finance_journal__entry_id__reverse_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReverseCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rate_api_v1_finance_labour_rates_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RateCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    timesheet_api_v1_finance_timesheets_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TimesheetCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_api_v1_finance_timesheets__sheet_id__review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sheet_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TimesheetReview"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cost_api_v1_finance_costs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CostCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    settle_api_v1_finance_payables__payable_id__settlements_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                payable_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SettlementCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attest_api_v1_finance_completeness_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompletenessCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    scheme_api_v1_finance_subsidy_schemes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SchemeCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    subsidy_api_v1_finance_subsidies_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubsidyCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    subsidy_detail_api_v1_finance_subsidies__case_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    subsidy_document_api_v1_finance_subsidies__case_id__documents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubsidyDocument"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    subsidy_transition_api_v1_finance_subsidies__case_id__events_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubsidyTransition"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    dashboard_api_v1_finance_dashboard_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardResponse"];
+                };
+            };
+        };
+    };
+    report_api_v1_finance_reports_profit_csv_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    allocate_api_v1_finance_advances_allocate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdvanceAllocation"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    adjust_api_v1_finance_payables__payable_id__adjustments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                payable_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LabourAdjustment"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordResponse"];
                 };
             };
             /** @description Validation Error */

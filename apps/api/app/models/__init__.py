@@ -83,3 +83,11 @@ __all__ = [
     "SolarPackage",
     "User",
 ]
+
+from app.models.finance import (  # noqa: F401, E402
+    FinanceEntry,
+    FinanceEvidence,
+    FinanceLine,
+    FinancePeriod,
+    FinanceRecord,
+)
