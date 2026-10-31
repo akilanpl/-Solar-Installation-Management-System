@@ -1,6 +1,5 @@
 """FastAPI application factory."""
 
-import logging
 import time
 import uuid
 from typing import Any
@@ -15,14 +14,16 @@ from app.api.v1.razorpay import webhook_router
 from app.api.v1.router import api_router
 from app.core.config import Settings, get_settings
 from app.core.errors import AppError, error_body
+from app.core.logging import application_logger
 from app.core.rate_limit import RateLimiter, SharedRateLimiter
 from app.db.session import build_engine, build_session_factory
 from app.services.email_sender import build_email_sender
 
-logger = logging.getLogger("solarops")
+logger = application_logger()
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
+    application_logger()
     settings = settings or get_settings()
     application = FastAPI(title="SolarOps API", version="0.1.0")
     application.state.settings = settings
@@ -51,12 +52,23 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         request_id = uuid.uuid4().hex
         request.state.request_id = request_id
         started = time.monotonic()
-        response = await call_next(request)
+        error_type = None
+        try:
+            response = await call_next(request)
+        except Exception as exc:
+            # Preserve traceability when transaction commit fails before headers.
+            # Exception strings/tracebacks may contain driver parameters or secrets.
+            error_type = type(exc).__name__
+            response = JSONResponse(
+                status_code=500,
+                content=error_body("internal_error", "The request could not be completed."),
+            )
         response.headers["X-Request-ID"] = request_id
         logger.info(
             "request_completed",
             extra={
                 "request_id": request_id,
+                "error_type": error_type,
                 "method": request.method,
                 "path": request.url.path,
                 "status": response.status_code,
@@ -109,7 +121,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @application.exception_handler(Exception)
     def _unexpected(_request: Request, exc: Exception) -> JSONResponse:
-        logger.exception("unhandled error")
+        logger.error(
+            "unhandled_error",
+            extra={
+                "request_id": getattr(_request.state, "request_id", None),
+                "error_type": type(exc).__name__,
+            },
+        )
         return JSONResponse(
             status_code=500,
             content=error_body("internal_error", "The request could not be completed."),

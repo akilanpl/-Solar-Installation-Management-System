@@ -71,7 +71,7 @@ def _delivery_payload(delivery) -> DeliveryResponse:
             DeliveryLineResponse(
                 id=line.id,
                 location_code=line.location_code,
-                serial_numbers=[unit.serial_number for unit in line.serials],
+                serial_numbers=sorted({unit.serial_number for unit in line.serials}),
                 component_code=line.component_code,
                 quantity=line.quantity,
                 sort_order=line.sort_order,
