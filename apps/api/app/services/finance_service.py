@@ -89,6 +89,7 @@ def record(db, user, kind, key, payload, order=None, policy_id=None):
         customer_id=order.customer_user_id if order else None,
         actor_id=user.id,
         policy_id=policy_id,
+        created_at=datetime.now(UTC),
     )
     db.add(row)
     db.flush()

@@ -109,3 +109,9 @@ implementation. Unsafe unsupported actions are blocked rather than fabricated.
 Recognition reversals are supported; invoice changes use credit notes and labour
 changes use explicit adjustments. Re-recognition after reversal, or reversal of
 credited recognition, requires a new approved adjustment workflow.
+
+Domain event timestamps are stamped by the service after it acquires the
+serialized finance lock. PostgreSQL transaction-start time is not used for
+domain-history ordering: a transaction that began earlier may acquire the lock
+later. A two-session regression verifies that subsidy/approval histories follow
+actual serialized append order rather than transaction creation order.

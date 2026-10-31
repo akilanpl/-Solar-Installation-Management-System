@@ -1124,3 +1124,24 @@ def test_export_escapes_formula_text_but_preserves_numeric_negative_profit(clien
     assert row["reference"] == "'\t=1+1"
     assert row["order_id"] == order["id"]
     assert response.headers["x-artifact-sha256"] == sha256(response.content).hexdigest()
+
+
+def test_history_orders_by_serialized_event_time_not_transaction_start(client, application):
+    foundation(client, application)
+    with Session(application.state.engine) as earlier_transaction:
+        actor = earlier_transaction.scalar(select(User).where(User.role_code == "admin"))
+        # The first transaction starts before B but records its event after B commits.
+        with Session(application.state.engine) as later_transaction:
+            other_actor = later_transaction.get(User, actor.id)
+            first = f.record(
+                later_transaction, other_actor, "chronology_fixture", "first", {"sequence": 1}
+            )
+            first_id = first.id
+            later_transaction.commit()
+        second = f.record(
+            earlier_transaction, actor, "chronology_fixture", "second", {"sequence": 2}
+        )
+        second_id = second.id
+        earlier_transaction.commit()
+    with Session(application.state.engine) as db:
+        assert [row.id for row in f.records(db, "chronology_fixture")] == [first_id, second_id]
