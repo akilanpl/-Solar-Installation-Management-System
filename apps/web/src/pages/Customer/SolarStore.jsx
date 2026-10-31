@@ -30,6 +30,7 @@ const PRODUCTS = [
     name: 'Waaree 540W Mono-PERC Bifacial Solar Panel',
     category: 'panels',
     brand: 'Waaree Energies',
+    image: '/products/solar-panel-540w.jpg',
     rating: 4.9,
     reviews: 128,
     specs: '540W · 21.3% Efficiency · 144 Half-Cut Cells · IP68 MC4',
@@ -47,6 +48,7 @@ const PRODUCTS = [
     name: 'Adani Solar 580W N-Type TopCon Bifacial Module',
     category: 'panels',
     brand: 'Adani Solar',
+    image: '/products/solar-panel-540w.jpg',
     rating: 4.95,
     reviews: 94,
     specs: '580W · 22.5% TopCon Tech · Dual Glass · Low LID/PID',
@@ -64,6 +66,7 @@ const PRODUCTS = [
     name: 'Solis 5kW Hybrid Grid-Tie Inverter (WiFi Integrated)',
     category: 'inverters',
     brand: 'Ginlong Solis',
+    image: '/products/solar-inverter-5kw.jpg',
     rating: 4.85,
     reviews: 156,
     specs: '5kW Single Phase · Dual MPPT · 97.8% Efficiency · Smart App Telemetry',
@@ -81,6 +84,7 @@ const PRODUCTS = [
     name: 'Growatt 10kW 3-Phase Commercial Solar Inverter',
     category: 'inverters',
     brand: 'Growatt New Energy',
+    image: '/products/solar-inverter-5kw.jpg',
     rating: 4.9,
     reviews: 73,
     specs: '10kW 3-Phase 415V · Dual MPPT · Integrated AFCI Arc Fault · IP66',
@@ -98,6 +102,7 @@ const PRODUCTS = [
     name: 'SolarFlow PowerWall 5.12 kWh LiFePO4 Battery Storage',
     category: 'batteries',
     brand: 'SolarFlow Energy',
+    image: '/products/solar-battery-5kwh.jpg',
     rating: 4.95,
     reviews: 82,
     specs: '51.2V 100Ah · 6,000 Cycles @ 80% DOD · Built-in Smart BMS with CAN/RS485',
@@ -115,6 +120,7 @@ const PRODUCTS = [
     name: 'SolarFlow Stackable 10.24 kWh High-Voltage Battery Pack',
     category: 'batteries',
     brand: 'SolarFlow Energy',
+    image: '/products/solar-battery-5kwh.jpg',
     rating: 5.0,
     reviews: 41,
     specs: '102.4V 100Ah · Modular Expansion up to 40kWh · Off-Grid UPS Instant Backup',
@@ -132,6 +138,7 @@ const PRODUCTS = [
     name: 'Automatic Solar Rooftop Sprinkler Cleaning Kit',
     category: 'accessories',
     brand: 'SolarClean Pro',
+    image: '/products/sprinkler-cleaning-kit.jpg',
     rating: 4.8,
     reviews: 215,
     specs: '10-Nozzle High Pressure · 0.5 HP Booster Pump · WiFi Timer Automation',
@@ -149,6 +156,7 @@ const PRODUCTS = [
     name: 'BESCOM Approved 3-Phase Bi-directional Net Meter',
     category: 'accessories',
     brand: 'Secure Meters',
+    image: '/products/smart-net-meter.jpg',
     rating: 4.9,
     reviews: 164,
     specs: '3-Phase 4-Wire · Class 1.0 Accuracy · DLMS Compliant with NABL Test Certificate',
@@ -166,6 +174,7 @@ const PRODUCTS = [
     name: 'AC & DC Protection Distribution Box (with Type 2 SPD)',
     category: 'accessories',
     brand: 'Hensel Solar',
+    image: '/products/distribution-box-spd.jpg',
     rating: 4.75,
     reviews: 88,
     specs: '1000V DC SPD + 415V AC SPD · 32A MCB/MCCB · IP65 Weatherproof Enclosure',
@@ -183,6 +192,7 @@ const PRODUCTS = [
     name: '1-Year Annual Maintenance Contract (AMC) - 4 Inspections',
     category: 'services',
     brand: 'SolarOps Field Engineering',
+    image: '/products/sprinkler-cleaning-kit.jpg',
     rating: 4.95,
     reviews: 310,
     specs: 'Quarterly Deep Panel Wash · Thermographic Drone Scan · Firmware Update · Priority Dispatch',
@@ -206,7 +216,7 @@ export function SolarStore() {
   const [sortBy, setSortBy] = useState('featured');
   const [cart, setCart] = useState({});
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('upi');
+  const [paymentMethod, setPaymentMethod] = useState('razorpay');
   const [deliveryAddress, setDeliveryAddress] = useState(
     '#42, 4th Cross, 100ft Road, Indiranagar, Bengaluru - 560038'
   );
@@ -317,7 +327,7 @@ export function SolarStore() {
       address: deliveryAddress,
       paymentMethod,
       orderDate: new Date().toLocaleDateString('en-IN'),
-      status: 'Confirmed · Staged at Bengaluru Warehouse',
+      status: paymentMethod === 'razorpay' ? 'Pending Razorpay Settlement' : 'Confirmed · Staged at Bengaluru Warehouse',
     };
 
     // Save order in localStorage
@@ -325,12 +335,27 @@ export function SolarStore() {
       const existing = JSON.parse(localStorage.getItem('solarops_orders') || '[]');
       existing.unshift(orderData);
       localStorage.setItem('solarops_orders', JSON.stringify(existing));
+      localStorage.setItem('solarops_pending_payment', JSON.stringify({ ...orderData, source: 'store' }));
     } catch (err) {
       // ignore
     }
 
     // Clear cart
     saveCart({});
+
+    if (paymentMethod === 'razorpay') {
+      if (showToast) {
+        showToast({
+          type: 'info',
+          title: 'Opening Razorpay Gateway',
+          message: `Redirecting to secure Razorpay checkout for Order #${orderId}...`,
+        });
+      }
+      setIsCartOpen(false);
+      navigate('/customer/payments/razorpay?source=store');
+      return;
+    }
+
     setOrderPlaced(orderData);
 
     if (showToast) {
@@ -449,8 +474,17 @@ export function SolarStore() {
                   className="product-thumbnail-box"
                   style={{ background: product.imageBg }}
                 >
+                  {product.image ? (
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="product-photo-img"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <span className="product-icon-text">{product.iconText}</span>
+                  )}
                   <span className="product-category-tag">{product.category}</span>
-                  <span className="product-icon-text">{product.iconText}</span>
                   {product.badge && (
                     <span className="product-ribbon-badge">{product.badge}</span>
                   )}
@@ -607,7 +641,15 @@ export function SolarStore() {
                           className="cart-item-thumb"
                           style={{ background: product.imageBg }}
                         >
-                          <span>{product.iconText}</span>
+                          {product.image ? (
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="cart-photo-img"
+                            />
+                          ) : (
+                            <span>{product.iconText}</span>
+                          )}
                         </div>
                         <div className="cart-item-info">
                           <h4 className="cart-item-name">{product.name}</h4>
@@ -665,16 +707,16 @@ export function SolarStore() {
                     <label>Select Payment Option</label>
                     <div className="payment-radios">
                       <label
-                        className={`payment-radio-pill ${paymentMethod === 'upi' ? 'selected' : ''}`}
+                        className={`payment-radio-pill ${paymentMethod === 'razorpay' ? 'selected' : ''}`}
                       >
                         <input
                           type="radio"
                           name="paymentMethod"
-                          value="upi"
-                          checked={paymentMethod === 'upi'}
-                          onChange={() => setPaymentMethod('upi')}
+                          value="razorpay"
+                          checked={paymentMethod === 'razorpay'}
+                          onChange={() => setPaymentMethod('razorpay')}
                         />
-                        <span>⚡ UPI / Instant QR / Cards (Razorpay)</span>
+                        <span>⚡ Razorpay Secure Checkout (Cards / UPI / Netbanking)</span>
                       </label>
                       <label
                         className={`payment-radio-pill ${paymentMethod === 'subsidy' ? 'selected' : ''}`}
@@ -727,7 +769,9 @@ export function SolarStore() {
                   <button type="submit" className="btn-confirm-checkout">
                     <CreditCard size={17} />
                     <span>
-                      Place Order · ₹{grandTotal.toLocaleString('en-IN')}
+                      {paymentMethod === 'razorpay'
+                        ? `Pay with Razorpay · ₹${grandTotal.toLocaleString('en-IN')}`
+                        : `Place Order · ₹${grandTotal.toLocaleString('en-IN')}`}
                     </span>
                     <ArrowRight size={16} />
                   </button>

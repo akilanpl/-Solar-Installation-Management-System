@@ -6,7 +6,7 @@ import ReceiptPrinter from '../../components/ReceiptPrinter/ReceiptPrinter';
 import './RazorpayPaymentPage.css';
 
 export function RazorpayPaymentPage() {
-  const { navigate } = useRouter();
+  const { navigate, query } = useRouter();
   const { showToast } = useAuth();
 
   // Selected payment method pill: 'card' (default as per design) | 'paypal' | 'crypto'
@@ -25,6 +25,24 @@ export function RazorpayPaymentPage() {
   // Load customer profile and project stats dynamically from website local DB
   const [localDbStats] = useState(() => {
     try {
+      // Check if store pending payment exists
+      const pendingStore = JSON.parse(localStorage.getItem('solarops_pending_payment') || 'null');
+      if (pendingStore && (query?.source === 'store' || pendingStore.source === 'store')) {
+        return {
+          customerName: pendingStore.customerName || 'Arun Kumar',
+          systemTitle: `Solar Hardware Order #${pendingStore.orderId}`,
+          systemSubtitle: `${pendingStore.items.length} Products · Delivery: ${pendingStore.address}`,
+          amount: `₹${pendingStore.grandTotal.toLocaleString('en-IN')}.00`,
+          refId: pendingStore.orderId,
+          isStoreOrder: true,
+          items: pendingStore.items.map((it) => ({
+            name: it.name,
+            qty: `x${it.quantity}`,
+            cost: `₹${(it.price * it.quantity).toLocaleString('en-IN')}`,
+          })),
+        };
+      }
+
       const storedEnquiries = JSON.parse(localStorage.getItem('solarops_enquiries') || '[]');
       const storedUser = JSON.parse(localStorage.getItem('solarops_current_user') || 'null');
       const activeEnquiry = storedEnquiries[0] || {};
@@ -43,6 +61,7 @@ export function RazorpayPaymentPage() {
         systemSubtitle: `Milestone 1 Advance · ${roofArea} sq.ft ${roofType}`,
         amount: '₹78,000.00',
         refId,
+        isStoreOrder: false,
         items: [
           { name: `${capacityKw} kW Bifacial Mono PERC Modules`, qty: '10x', cost: '₹1,80,000' },
           { name: `${capacityKw} kVA Solar Hybrid Inverter`, qty: '1x', cost: '₹82,000' },
@@ -57,6 +76,7 @@ export function RazorpayPaymentPage() {
         systemSubtitle: 'Milestone 1 Advance · 850 sq.ft Flat RCC Roof',
         amount: '₹78,000.00',
         refId: 'ENQ-2026-001',
+        isStoreOrder: false,
         items: [
           { name: '5 kW Bifacial Mono PERC Modules', qty: '10x', cost: '₹1,80,000' },
           { name: '5 kVA Solar Hybrid Inverter', qty: '1x', cost: '₹82,000' },
@@ -72,8 +92,8 @@ export function RazorpayPaymentPage() {
     title: localDbStats.systemTitle,
     subtitle: localDbStats.systemSubtitle,
     amount: localDbStats.amount,
-    billId: 'INV-SURYA-2026-9912',
-    orderId: 'order_PMSG_2026_9912',
+    billId: localDbStats.isStoreOrder ? `INV-${localDbStats.refId}` : 'INV-SURYA-2026-9912',
+    orderId: localDbStats.isStoreOrder ? `order_${localDbStats.refId}` : 'order_PMSG_2026_9912',
     utrNumber: 'RZP91823902381',
     customerName: fullName || localDbStats.customerName,
     accountNumber: `•••• ${cardNumber ? cardNumber.replace(/\s+/g, '').slice(-4) : '4921'}`,
@@ -93,17 +113,42 @@ export function RazorpayPaymentPage() {
 
     setTimeout(() => {
       setPrinterStage('complete');
+
+      // If store order, mark as paid in solarops_orders
+      try {
+        const pending = JSON.parse(localStorage.getItem('solarops_pending_payment') || 'null');
+        if (pending) {
+          const orders = JSON.parse(localStorage.getItem('solarops_orders') || '[]');
+          const idx = orders.findIndex((o) => o.orderId === pending.orderId);
+          if (idx >= 0) {
+            orders[idx].status = 'Paid via Razorpay · Staged at Bengaluru Warehouse';
+          } else {
+            orders.unshift({
+              ...pending,
+              status: 'Paid via Razorpay · Staged at Bengaluru Warehouse',
+            });
+          }
+          localStorage.setItem('solarops_orders', JSON.stringify(orders));
+        }
+      } catch (err) {
+        // ignore
+      }
+
       showToast({
         type: 'success',
         title: 'Settlement Confirmed',
-        message: 'Escrow payment verified via Razorpay Route.',
+        message: 'Payment verified via Razorpay Route. Receipt printed.',
       });
     }, 3400);
   };
 
   const handleClosePrinter = () => {
     setShowPrinter(false);
-    navigate('/customer/dashboard');
+    if (query?.source === 'store' || localDbStats.isStoreOrder) {
+      navigate('/customer/store');
+    } else {
+      navigate('/customer');
+    }
   };
 
   return (
@@ -146,9 +191,15 @@ export function RazorpayPaymentPage() {
         <button
           type="button"
           className="io-nav-pill-btn"
-          onClick={() => navigate('/customer/dashboard')}
+          onClick={() => {
+            if (query?.source === 'store' || localDbStats.isStoreOrder) {
+              navigate('/customer/store');
+            } else {
+              navigate('/customer');
+            }
+          }}
         >
-          Return to Dashboard
+          {query?.source === 'store' || localDbStats.isStoreOrder ? 'Back to Solar Store' : 'Return to Dashboard'}
         </button>
       </header>
 
@@ -162,10 +213,14 @@ export function RazorpayPaymentPage() {
             <span className="io-bill-heading">Your bill</span>
           </div>
           <div className="io-bill-items">
-            <span className="io-bill-tag title">SolarOps PM Surya Ghar</span>
-            <span className="io-bill-tag tier">VIP Site Commissioning</span>
+            <span className="io-bill-tag title">
+              {localDbStats.isStoreOrder ? 'SolarFlow Hardware Store' : 'SolarOps PM Surya Ghar'}
+            </span>
+            <span className="io-bill-tag tier">
+              {localDbStats.isStoreOrder ? 'Cart Checkout' : 'VIP Site Commissioning'}
+            </span>
             <span className="io-bill-tag calculation">
-              1 project × ₹78,000 (INR) = <strong>₹78,000 (INR)</strong>
+              {billInfo.title} = <strong>{billInfo.amount}</strong>
             </span>
           </div>
         </section>

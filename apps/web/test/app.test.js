@@ -88,5 +88,33 @@ test('Technician Site Map: straight orthogonal route coordinate path generation'
   assert.equal(corner.x, dest.x);   // Vertical segment
 });
 
+test('Solar Store to Razorpay: pending order payload formatting and items mapping', () => {
+  const storeOrder = {
+    orderId: 'ORD-2026-9041',
+    customerName: 'Arun Kumar',
+    address: '#42, 4th Cross, Indiranagar, Bengaluru',
+    grandTotal: 35839,
+    items: [
+      { name: 'Waaree 540W Mono-PERC Bifacial Solar Panel', price: 13500, quantity: 2 },
+      { name: 'Automatic Solar Rooftop Sprinkler Cleaning Kit', price: 4999, quantity: 1 },
+    ],
+    source: 'store',
+  };
+
+  const razorpayBillItems = storeOrder.items.map((it) => ({
+    name: it.name,
+    qty: `x${it.quantity}`,
+    cost: `₹${(it.price * it.quantity).toLocaleString('en-IN')}`,
+  }));
+
+  assert.equal(razorpayBillItems.length, 2);
+  assert.equal(razorpayBillItems[0].qty, 'x2');
+  assert.equal(razorpayBillItems[0].cost, '₹27,000');
+  assert.equal(razorpayBillItems[1].qty, 'x1');
+  assert.equal(razorpayBillItems[1].cost, '₹4,999');
+  assert.equal(storeOrder.source, 'store');
+});
+
+
 
 

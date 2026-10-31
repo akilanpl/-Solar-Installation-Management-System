@@ -1924,3 +1924,51 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+33. RAZORPAY PAYMENT GATEWAY INTEGRATION & COMMERCIAL PRODUCT IMAGERY FOR SOLAR STORE
+--------------------------------------------------------------------------------
+- Date & Context:
+  Integrated the existing Google I/O Razorpay Payment Route (`/customer/payments/razorpay`)
+  directly into the Solar Hardware Ecommerce Marketplace (`/customer/store`).
+  Generated 6 commercial product photography images using AI image generation,
+  served via `apps/web/public/products/`, providing photorealistic product showcases
+  for modules, inverters, LiFePO4 batteries, automated cleaning kits, and net meters.
+
+- Key Architecture & Visual Elements:
+  1. Solar Store Razorpay Checkout Flow (`SolarStore.jsx`, `RazorpayPaymentPage.jsx`):
+     - The store cart now features **"Razorpay Payment Gateway (Cards / UPI / Netbanking)"**
+       as the primary payment option.
+     - Upon checkout, the shopping cart serializes order items, subtotal, 12% solar GST,
+       delivery address, and grand total into `solarops_pending_payment`, then redirects
+       to `/customer/payments/razorpay?source=store`.
+     - `RazorpayPaymentPage.jsx` dynamically detects store order payloads:
+       * Formats bill capsule to reflect the specific hardware order reference (`ORD-2026-XXXX`).
+       * Maps itemized cart products directly to the POS Thermal Receipt Printer itemized table.
+       * Executes authentic Razorpay card/UPI flow and triggers mechanical receipt printing.
+       * Marks order status as `'Paid via Razorpay · Staged at Bengaluru Warehouse'` in `solarops_orders`.
+       * Adapts top navigation button to "Back to Solar Store" for intuitive return navigation.
+  2. Commercial Product Photography Assets (`apps/web/public/products/`):
+     - `solar-panel-540w.jpg`: 540W monocrystalline bifacial PV module with anodized silver frame and blue silicon cells.
+     - `solar-inverter-5kw.jpg`: Wall-mounted 5kW hybrid solar inverter with digital LCD telemetry screen and heatsink.
+     - `solar-battery-5kwh.jpg`: Minimalist 5.12 kWh LiFePO4 wall-mount battery unit with vertical cyan-green LED charge indicator.
+     - `sprinkler-cleaning-kit.jpg`: High-pressure brass spray nozzles misting water across glossy solar panels.
+     - `smart-net-meter.jpg`: Digital 3-phase bi-directional electronic net-meter with backlit LCD and terminal block.
+     - `distribution-box-spd.jpg`: IP65 AC/DC distribution protection box with DIN-rail MCBs and surge protection devices (SPD).
+  3. Responsive UI Enhancements (`SolarStore.css`):
+     - Added 180px thumbnail boxes with zoom-on-hover effects (`transform: scale(1.06)`).
+     - Added thumbnail previews inside the slide-out shopping cart drawer.
+
+- Files Created & Modified:
+  * apps/web/public/products/solar-panel-540w.jpg (Created)
+  * apps/web/public/products/solar-inverter-5kw.jpg (Created)
+  * apps/web/public/products/solar-battery-5kwh.jpg (Created)
+  * apps/web/public/products/sprinkler-cleaning-kit.jpg (Created)
+  * apps/web/public/products/smart-net-meter.jpg (Created)
+  * apps/web/public/products/distribution-box-spd.jpg (Created)
+  * apps/web/src/pages/Customer/SolarStore.jsx (Modified)
+  * apps/web/src/pages/Customer/SolarStore.css (Modified)
+  * apps/web/src/pages/Customer/RazorpayPaymentPage.jsx (Modified)
+  * apps/web/test/app.test.js (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================
