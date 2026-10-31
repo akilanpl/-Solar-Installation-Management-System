@@ -463,12 +463,7 @@ export function DashboardView({
         {/* Left: Role-Specific Greeting Headline */}
         <div className="dash-greeting-box">
           <h1 className="dash-greeting-title">
-            <span className="dash-greeting-header-line">
-              <span>Hi, {firstName}!</span>
-              <span className="dash-avatar-cluster">
-                <span className="dash-avatar-ring"> </span>
-              </span>
-            </span>
+            <span>Hi, {firstName}!</span>
             <span>{config.greetingQuestion[0]}</span>
             <span>{config.greetingQuestion[1]}</span>
           </h1>

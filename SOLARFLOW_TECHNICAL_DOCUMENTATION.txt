@@ -1473,3 +1473,27 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+23. CLEANING GREETING HEADLINE: REMOVING AVATAR CLUSTER RING
+--------------------------------------------------------------------------------
+- Date & Context:
+  Addressed visual feedback on the main dashboard overview page (`DashboardView.jsx`).
+  Removed the redundant purple circular dot element (`.dash-avatar-ring`) located directly
+  adjacent to the customer/employee name in the greeting headline ("Hi, Arun!").
+
+- Key Architecture & Visual Elements:
+  1. Greeting Typography Streamlined (`DashboardView.jsx`):
+     - Removed the inline `.dash-avatar-cluster` / `.dash-avatar-ring` container.
+     - Refactored `.dash-greeting-title` to render clean, distraction-free headline typography:
+       `<span>Hi, {firstName}!</span>` followed by the role-specific question lines.
+  2. Stylesheet Cleanup (`DashboardView.css`):
+     - Removed legacy `.dash-greeting-header-line`, `.dash-avatar-cluster`, and `.dash-avatar-ring` rules.
+
+- Files Modified:
+  * apps/web/src/components/DashboardView/DashboardView.jsx (Modified)
+  * apps/web/src/components/DashboardView/DashboardView.css (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================
