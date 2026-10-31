@@ -1,8 +1,8 @@
 """Bounded critical-guard mutation spot-check using real isolated PostgreSQL.
 
 This deliberately limited inventory is not an exhaustive mutation score.
-Every mutation runs in a fresh Git clone and a newly created, uniquely named
-PostgreSQL database owned by this invocation. No input result/command is trusted.
+The campaign uses an isolated Git clone restored between mutants. Each mutation
+runs against a newly created, uniquely named PostgreSQL database owned by this invocation. No input result/command is trusted.
 """
 
 import argparse
@@ -28,7 +28,7 @@ INVENTORY = [
     ("invoice-authorization", "services/inventory_service.py", "consume_service_invoice_stock", "if user.role_code not in WAREHOUSE:", "if False:", "test_service_consumption_guards.py::test_missing_invoice_and_nonwarehouse_command_never_write_stock"),
     ("invoice-version", "services/inventory_service.py", "consume_service_invoice_stock", "estimate.version != invoice.estimate_version", "False", "test_service_consumption_guards.py::test_persisted_invoice_source_guard_rejects_without_stock_writes"),
     ("invoice-snapshot", "services/inventory_service.py", "consume_service_invoice_stock", "invoice.lines != estimate.lines", "False", "test_service_consumption_guards.py::test_persisted_invoice_source_guard_rejects_without_stock_writes"),
-    ("invoice-quantity-type", "services/inventory_service.py", "consume_service_invoice_stock", "type(quantity) is not int", "False", "test_service_consumption_guards.py::test_invalid_legacy_parts_never_create_partial_consumption"),
+    ("invoice-quantity-type", "services/inventory_service.py", "consume_service_invoice_stock", "type(quantity) is not int", "not isinstance(quantity, int)", "test_service_consumption_guards.py::test_invalid_legacy_parts_never_create_partial_consumption"),
     ("invoice-serialization", "services/inventory_service.py", "consume_service_invoice_stock", "if component.requires_serial_tracking:", "if False:", "test_service_consumption_guards.py::test_invalid_legacy_parts_never_create_partial_consumption"),
     ("outbox-content", "services/syscache_service.py", "emit_invalidation", "existing.aggregate_id != aggregate_id", "False", "test_finance_syscache_integration.py::test_duplicate_outbox_event_preserves_callers_transaction"),
     ("outbox-duplicate-receipt", "services/syscache_service.py", "emit_invalidation", "return existing", "return event", "test_finance_syscache_integration.py::test_duplicate_outbox_event_preserves_callers_transaction"),
@@ -75,8 +75,9 @@ def classify_junit(path, returncode, *, timeout=False):
         if returncode == 1 and failures:
             # Setup/runtime exceptions are not proof that the regression killed
             # a mutant. Credit only observable assertion/expectation failures.
-            messages = [(failure.get("message", "") + " " + (failure.text or "")) for failure in failures]
-            if all("AssertionError" in msg or "DID NOT RAISE" in msg or "assert " in msg for msg in messages):
+            messages = [failure.get("message", "").lstrip() for failure in failures]
+            if all(msg.startswith("AssertionError") or msg.startswith("Failed: DID NOT RAISE")
+                   for msg in messages):
                 return "killed", len(cases)
         return "error", len(cases)
     except (OSError, ET.ParseError, ValueError):

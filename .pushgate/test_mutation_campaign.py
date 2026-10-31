@@ -24,7 +24,7 @@ class MutationEngineTests(unittest.TestCase):
 
     def test_runtime_setup_skipped_empty_and_partial_output_cannot_be_kills(self):
         for xml in (
-            '<testsuite tests="1"><testcase name="guard"><failure message="TypeError: wrong type"/></testcase></testsuite>',
+            '<testsuite tests="1"><testcase name="guard"><failure message="TypeError: wrong type">trace includes assert expected</failure></testcase></testsuite>',
             '<testsuite tests="1"><testcase name="guard"><error message="database down"/></testcase></testsuite>',
             '<testsuite tests="1"><testcase name="guard"><skipped/></testcase></testsuite>',
             '<testsuite tests="2"><testcase name="partial"/></testsuite>',
