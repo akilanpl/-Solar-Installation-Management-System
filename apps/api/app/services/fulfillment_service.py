@@ -198,7 +198,9 @@ def create_delivery(
     )
     if keyed is not None:
         if keyed.request_hash != digest:
-            raise AppError(409, "idempotency_conflict", "This key was used for a different delivery.")
+            raise AppError(
+                409, "idempotency_conflict", "This key was used for a different delivery."
+            )
         return _load(db, keyed.id), True
     reservations = list(
         db.scalars(select(StockReservation).where(StockReservation.order_id == order.id))
@@ -260,7 +262,10 @@ def transition(db: Session, user: User, delivery_id: uuid.UUID, to_status: str) 
         "delivered": {"confirmed"},
     }
     delivery = db.scalar(
-        select(Delivery).where(Delivery.id == delivery_id).options(selectinload(Delivery.lines)).with_for_update()
+        select(Delivery)
+        .where(Delivery.id == delivery_id)
+        .options(selectinload(Delivery.lines))
+        .with_for_update()
     )
     if delivery is None:
         raise AppError(404, "not_found", "Delivery not found.")
@@ -269,7 +274,11 @@ def transition(db: Session, user: User, delivery_id: uuid.UUID, to_status: str) 
     if to_status != "confirmed" and user.role_code not in WAREHOUSE:
         raise AppError(403, "forbidden", "Only warehouse staff can move a delivery.")
     if delivery.status not in allowed or to_status not in allowed[delivery.status]:
-        raise AppError(409, "invalid_transition", f"Cannot move delivery from {delivery.status} to {to_status}.")
+        raise AppError(
+            409,
+            "invalid_transition",
+            f"Cannot move delivery from {delivery.status} to {to_status}.",
+        )
     delivery.status = to_status
     if to_status == "cancelled":
         _restock_cancelled_pick(db, user, delivery)
@@ -307,10 +316,14 @@ def _install_assigned_serials(db: Session, order_id: uuid.UUID) -> None:
     db.flush()
 
 
-def assign_serial(db: Session, user: User, serial_id: uuid.UUID, order_id: uuid.UUID) -> EquipmentSerial:
+def assign_serial(
+    db: Session, user: User, serial_id: uuid.UUID, order_id: uuid.UUID
+) -> EquipmentSerial:
     if user.role_code not in WAREHOUSE:
         raise AppError(403, "forbidden", "Only warehouse staff can assign serials.")
-    serial = db.scalar(select(EquipmentSerial).where(EquipmentSerial.id == serial_id).with_for_update())
+    serial = db.scalar(
+        select(EquipmentSerial).where(EquipmentSerial.id == serial_id).with_for_update()
+    )
     if serial is None:
         raise AppError(404, "not_found", "Serial not found.")
     if serial.status != "in_stock":
@@ -322,7 +335,9 @@ def assign_serial(db: Session, user: User, serial_id: uuid.UUID, order_id: uuid.
         line.line_kind == "material" and line.component_code == serial.component_code
         for line in order.lines
     ):
-        raise AppError(409, "serial_component_mismatch", "This serial's component is not on the order.")
+        raise AppError(
+            409, "serial_component_mismatch", "This serial's component is not on the order."
+        )
     serial.order_id = order.id
     serial.status = "reserved"
     add_audit(

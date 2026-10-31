@@ -5,6 +5,8 @@ import hashlib
 import json
 
 import psycopg
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 
 from local_postgres import ROOT, connect, load_config
 
@@ -42,6 +44,9 @@ def main() -> None:
     parser.add_argument("action", choices=["record", "verify"])
     action = parser.parse_args().action
     config = load_config()
+    migrations = ScriptDirectory.from_config(Config(str(ROOT / "apps/api/alembic.ini")))
+    # Development deliberately stays at its historical revision until an
+    # explicitly authorized development upgrade. Only test must match head.
     for role, database in (("dev", "solarops_dev"), ("test", "solarops_test")):
         with connect(config, database, role) as db:
             tables = {
@@ -50,7 +55,10 @@ def main() -> None:
             }
             assert TABLES <= tables
             revision = db.execute("SELECT version_num FROM alembic_version").fetchone()[0]
-            assert revision == "68d7cd857e38"
+            if role == "test":
+                assert revision in migrations.get_heads()
+            else:
+                assert migrations.get_revision(revision) is not None
             counts = dict(
                 db.execute(
                     "SELECT contype, count(*) FROM pg_constraint WHERE connamespace='public'::regnamespace GROUP BY contype"

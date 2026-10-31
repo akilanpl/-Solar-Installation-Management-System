@@ -44,3 +44,45 @@ The browser counterpart in `apps/web/e2e/enquiry.spec.ts` also reloads the detai
 Run `uv run pytest -m "not database"` for independent runtime checks. Run `uv run pytest -m database` only with an explicitly disposable local database named `solarops_test`. The fixture drops its public schema once and migrates it, then truncates mutable tables between marked tests. New tests that need database isolation must use `pytest.mark.database`. CI runs both categories by default; unavailable PostgreSQL remains an error rather than a silently skipped success.
 
 For a failure, use `uv run pytest tests/test_enquiries.py::test_valid_enquiry_persists -x -vv --tb=short`. A fixture `OperationalError` before the test body means connectivity/schema setup must be fixed first. A 422 points to `schemas/__init__.py` and its field details; 401 to the session lookup; 403 to CSRF/role checks; 409 to constraints, idempotency or state transitions. Check the asserted response body before changing an expectation. Query only the disposable database to distinguish an uncommitted write from a presenter issue. Re-run the affected test, then its related module, and keep the assertions that protect intended behavior.
+
+## Phase 3 QA: what changed and how to explain it
+
+Phase 3 was integrated from `feature/phase3-warehouse-installation` at `ae212b2`, preserving the backend developers' history in merge `aba0169`. It includes Phase 2 prerequisites: survey measurement/approval, priced/versioned quotations, sandbox/cash payments and confirmed orders. The separate frontend redesign branch was not integrated. See `PHASE3_BACKEND_QA_REPORT.md` and root `test 3 report.txt` for the new results; the Phase 1 reports remain historical.
+
+### Warehouse receipt through PostgreSQL commit
+
+1. A warehouse user logs in normally and POSTs `/api/v1/stock/operations` with a matching CSRF token, `Idempotency-Key`, operation type and component/location/quantity lines. FastAPI's global CSRF dependency and `current_user` authenticate the request; `schemas/phase3.py:StockOperationCreate` forbids extra fields, constrains the type and uses Decimal quantities.
+2. `api/v1/warehouse.py:create_stock_operation` delegates to `services/inventory_service.py:create_operation`. The service checks the database role, component and location existence, nonzero quantities and type-specific direction. It persists a draft header/lines with a request digest and audit event. A matching replay returns the same record. No receipt stock is added at draft creation.
+3. Warehouse POSTs `/stock/operations/{id}/ready`, then `/validate`. `mark_ready` checks draft state. `validate_operation` locks the operation and component catalogue rows in stable order, verifies availability for deductions, writes ledger movements and changes the operation to done. The request's `get_db` dependency commits all writes together or rolls them back on error.
+4. GET `/stock` aggregates `StockLedger.quantity_delta`; it does not trust a cached quantity field. The source tests cover transfers, negative-stock rejection, validation races and ledger preservation. The new QA tests independently check that invalid line inputs leave no operation header or ledger writes.
+5. A confirmed sales order creates `StockReservation` rows. `test_replenishment_suggestion_uses_ledger_minus_reserved_without_writes` creates a real confirmed order and a receipt, then checks the internal `threshold_suggestion` service against on-hand minus reserved, with no extra ledger writes. This helper is not exposed as a new public route.
+
+### Picking, delivery and warranty
+
+`fulfillment_service.create_delivery` loads a real confirmed `SalesOrder`, checks warehouse roles and idempotency, locks components, subtracts other orders' reservations from MAIN availability, and creates the delivery and internal stock pick atomically. `test_delivery_retry_replays_without_second_pick_and_changed_body_conflicts` verifies HTTP201 then replay200, stable delivery ID and ledger count, and conflict409 when the same key is used for a different existing order. An unknown order legitimately returns 404 before that conflict check; the test was corrected to use two valid orders.
+
+Forward delivery transitions lead to confirmed. Confirmation consumes reservations, installs assigned serials and activates `Warranty` in one transaction. Cancellation restores stock. The imported source tests cover those paths, duplicate confirmation, serial mismatch and competing stock picks. Independent QA adds another customer's delivery/warranty 404 and empty list checks. `get_warranty` scopes customer access by the parent order; support/admin alone can void an active warranty.
+
+### Technician installation jobs and the failing regression tests
+
+`api/v1/installation.py:create_job` accepts `JobCreate` and delegates to `installation_service.create_job`. Sales/admin choose an order, technician and optional timezone-aware slot. PostgreSQL stores `InstallationJob` and `InstallationOtp`; only the creation response carries the one-time customer code. Later GETs must not repeat it. Recommendations rank active technicians by open jobs and omit five-or-more-job technicians; they do not implement skill or travel-distance matching.
+
+The normal journey records arrival using the server clock, verifies the customer code, records photo references/readings, captures confirmed signature and completes the job. The source journey test proves that happy path. The QA tests intentionally retain three failures that the happy path missed:
+
+- `test_customer_otp_wrong_attempts_persist_and_lock_after_five`: five wrong HTTP requests should persist five attempts, with the sixth locked. The service only flushes the increment, then raises `AppError`; `get_db` rolls it back. The observed counter stays zero. Phase 1 email verification already treats failed security counters specially; installation needs an equally deliberate persistence boundary.
+- `test_inactive_technician_cannot_be_assigned_to_a_new_job`: a stored inactive technician must be rejected, but the current service checks only role/existence. It creates the job for that user. The proposed correction is an active-account check before creating job/OTP rows, not a login bypass.
+- `test_completion_requires_recorded_arrival_even_after_otp_evidence_and_signature`: the documented on-site transition should be required before completion. Current code checks OTP/evidence/signature but no arrival/state gate, and persists completed with a null arrival timestamp. The test verifies both response and saved state without printing the OTP.
+
+These are product findings for the backend team. The tests are not skipped, marked xfail or relaxed. Their failures mean Phase 3 acceptance is incomplete even when all imported tests pass. The browser also detects an integration gap: qualification now requires area/grid suitability, while the original sales UI has no corresponding inputs. Backend validation must remain; the UI needs to send the required fields.
+
+### Migration and demo protection
+
+`test_phase3_migrations.py` compares Alembic's migrated schema to SQLAlchemy metadata, and downgrades only `solarops_test` to the Phase 2 integrity revision before upgrading again. A real Phase 1 enquiry must survive that round-trip. The test rechecks the database-name guard before migration commands. The ordinary session fixture proves a clean database can reach the single Phase 3 head.
+
+`scripts/check_local_db.py` requires the latest head for test but permits the known historical development revision. It fingerprints demo users/enquiries/history and verifies the test role cannot CONNECT to development. No development upgrade is performed by Phase 3 QA. Until an explicit development upgrade, do not restart the merged backend against the historical development schema expecting Phase 3 tables.
+
+For browser regression, `uv run python scripts/run_browser_qa.py` resets/seeds only the guarded test database using preverified QA factories and local ignored credentials. `playwright.qa.config.ts` rejects development database URLs, uses API8001/UI3001 and a separate `.next-qa` directory, and never reuses an existing demo server. Development mode on that isolated API enables the existing local OTP mailbox; auth, CSRF and RBAC remain enforced. Run browser QA and pytest sequentially because both own `solarops_test`.
+
+### Coverage limits
+
+The inventory maps tests to features; it is not a numeric code-coverage claim. Neither coverage.py nor pytest-cov was installed, so no line/branch percentage was measured. Warehouse/job UI pages in this integrated backend branch remain planned placeholders. New backend API workflows are tested directly; an unimplemented UI is not reported as a passing browser workflow. The historical email-OTP flake remains open unless its root cause is established, independently of the installation OTP-counter defect.

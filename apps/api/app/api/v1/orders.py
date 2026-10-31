@@ -77,7 +77,9 @@ def create_order(
     db: Session = Depends(get_db),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> OrderResponse:
-    order, replayed = order_service.confirm_order(db, user, payload.quotation_id, _key(idempotency_key))
+    order, replayed = order_service.confirm_order(
+        db, user, payload.quotation_id, _key(idempotency_key)
+    )
     response.status_code = 200 if replayed else 201
     return order_response(db, order)
 

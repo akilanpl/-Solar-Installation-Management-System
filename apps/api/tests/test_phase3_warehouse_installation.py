@@ -4,6 +4,7 @@ import threading
 import uuid
 from datetime import UTC, datetime, timedelta
 
+import pytest
 from app.core.errors import AppError
 from app.core.security import hash_password, utcnow
 from app.models.identity import EmployeeProfile, User
@@ -20,6 +21,8 @@ from app.services.inventory_service import validate_operation
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from tests.conftest import csrf_headers, login, signup_and_verify
+
+pytestmark = pytest.mark.database
 
 ENQUIRY = {
     "contact_name": "Leela Nair",
@@ -210,7 +213,9 @@ def _confirmed_order(client, application, email: str = "leela@example.com") -> d
     return created.json()
 
 
-def _receipt_validate(client, headers: dict[str, str], component: str, quantity: str, location: str = "MAIN"):
+def _receipt_validate(
+    client, headers: dict[str, str], component: str, quantity: str, location: str = "MAIN"
+):
     created = client.post(
         "/api/v1/stock/operations",
         json={
@@ -256,8 +261,16 @@ def test_draft_operation_cannot_validate_and_double_validate_fails(client, appli
     direct = client.post(f"/api/v1/stock/operations/{operation_id}/validate", headers=warehouse)
     assert direct.status_code == 409, direct.text
     assert direct.json()["error"]["code"] == "invalid_transition"
-    assert client.post(f"/api/v1/stock/operations/{operation_id}/ready", headers=warehouse).status_code == 200
-    assert client.post(f"/api/v1/stock/operations/{operation_id}/validate", headers=warehouse).status_code == 200
+    assert (
+        client.post(f"/api/v1/stock/operations/{operation_id}/ready", headers=warehouse).status_code
+        == 200
+    )
+    assert (
+        client.post(
+            f"/api/v1/stock/operations/{operation_id}/validate", headers=warehouse
+        ).status_code
+        == 200
+    )
     again = client.post(f"/api/v1/stock/operations/{operation_id}/validate", headers=warehouse)
     assert again.status_code == 409, again.text
 
@@ -278,14 +291,29 @@ def test_failed_transfer_and_delivery_leave_ledger_unchanged(client, application
         )
         assert created.status_code == 201, created.text
         operation_id = created.json()["id"]
-        assert client.post(f"/api/v1/stock/operations/{operation_id}/ready", headers=warehouse).status_code == 200
+        assert (
+            client.post(
+                f"/api/v1/stock/operations/{operation_id}/ready", headers=warehouse
+            ).status_code
+            == 200
+        )
         failed = client.post(f"/api/v1/stock/operations/{operation_id}/validate", headers=warehouse)
         assert failed.status_code == 409, failed.text
         assert failed.json()["error"]["code"] == "insufficient_stock"
         return failed.json()
 
-    _draft_validate("transfer", {"component_code": "PANEL-550", "quantity": "999", "from_location": "MAIN", "to_location": "SITE"})
-    _draft_validate("delivery", {"component_code": "PANEL-550", "quantity": "999", "from_location": "MAIN"})
+    _draft_validate(
+        "transfer",
+        {
+            "component_code": "PANEL-550",
+            "quantity": "999",
+            "from_location": "MAIN",
+            "to_location": "SITE",
+        },
+    )
+    _draft_validate(
+        "delivery", {"component_code": "PANEL-550", "quantity": "999", "from_location": "MAIN"}
+    )
     _draft_validate(
         "adjustment",
         {"component_code": "PANEL-550", "quantity": "-999", "to_location": "MAIN"},
@@ -312,7 +340,10 @@ def test_concurrent_validation_has_a_single_winner(client, application):
         headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex},
     )
     operation_id = created.json()["id"]
-    assert client.post(f"/api/v1/stock/operations/{operation_id}/ready", headers=warehouse).status_code == 200
+    assert (
+        client.post(f"/api/v1/stock/operations/{operation_id}/ready", headers=warehouse).status_code
+        == 200
+    )
     with Session(application.state.engine) as db:
         actor = db.scalar(select(User).where(User.email == "wh@example.com"))
         assert actor is not None
@@ -343,7 +374,9 @@ def test_concurrent_validation_has_a_single_winner(client, application):
     assert sorted(results) == ["invalid_transition", "ok"]
     with Session(application.state.engine) as db:
         deltas = db.scalars(
-            select(StockLedger.quantity_delta).where(StockLedger.operation_id == uuid.UUID(operation_id))
+            select(StockLedger.quantity_delta).where(
+                StockLedger.operation_id == uuid.UUID(operation_id)
+            )
         ).all()
     assert sum(float(item) for item in deltas) == -5.0
 
@@ -429,7 +462,11 @@ def test_delivery_confirm_activates_warranty_and_blocks_replay(client, applicati
     with Session(application.state.engine) as db:
         job_order = db.get(SalesOrder, uuid.UUID(order["id"]))
         assert job_order is not None
-        material = [(line.component_code, line.quantity) for line in job_order.lines if line.line_kind == "material"]
+        material = [
+            (line.component_code, line.quantity)
+            for line in job_order.lines
+            if line.line_kind == "material"
+        ]
     for component_code, quantity in material:
         assert component_code is not None
         _receipt_validate(client, warehouse, component_code, f"{quantity}.0000", "MAIN")
@@ -447,8 +484,14 @@ def test_delivery_confirm_activates_warranty_and_blocks_replay(client, applicati
         headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex},
     )
     assert replay.status_code == 409, replay.text
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/transit", headers=warehouse).status_code == 200
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/deliver", headers=warehouse).status_code == 200
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/transit", headers=warehouse).status_code
+        == 200
+    )
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/deliver", headers=warehouse).status_code
+        == 200
+    )
     technician = _technician(client)
     confirmed = client.post(f"/api/v1/deliveries/{delivery_id}/confirm", headers=technician)
     assert confirmed.status_code == 200, confirmed.text
@@ -463,7 +506,9 @@ def test_delivery_confirm_activates_warranty_and_blocks_replay(client, applicati
     voided = client.post(f"/api/v1/warranties/order/{order['id']}/void", headers=support)
     assert voided.status_code == 200, voided.text
     assert voided.json()["status"] == "void"
-    consumed = client.get(f"/api/v1/stock/reservations?order_id={order['id']}", headers=_sales(client))
+    consumed = client.get(
+        f"/api/v1/stock/reservations?order_id={order['id']}", headers=_sales(client)
+    )
     assert {row["status"] for row in consumed.json()} == {"consumed"}
 
 
@@ -501,10 +546,14 @@ def test_job_completion_requires_otp_evidence_and_signature(client, application)
     early = client.post(f"/api/v1/jobs/{job_id}/completion", headers=technician)
     assert early.status_code == 409, early.text
     assert early.json()["error"]["code"] == "otp_required"
-    wrong = client.post(f"/api/v1/jobs/{job_id}/customer-otp", json={"code": "000000"}, headers=technician)
+    wrong = client.post(
+        f"/api/v1/jobs/{job_id}/customer-otp", json={"code": "000000"}, headers=technician
+    )
     assert wrong.status_code == 400, wrong.text
     assert client.post(f"/api/v1/jobs/{job_id}/arrival", headers=technician).status_code == 200
-    verified = client.post(f"/api/v1/jobs/{job_id}/customer-otp", json={"code": customer_code}, headers=technician)
+    verified = client.post(
+        f"/api/v1/jobs/{job_id}/customer-otp", json={"code": customer_code}, headers=technician
+    )
     assert verified.status_code == 200, verified.text
     assert verified.json()["otp_verified"] is True
     now = datetime.now(UTC).isoformat()
@@ -551,7 +600,12 @@ def test_customer_cannot_touch_warehouse_and_scheduling_guards(client, applicati
     )
     assert denied.status_code == 403, denied.text
     assert client.get("/api/v1/stock", headers=customer).status_code == 403
-    assert client.get(f"/api/v1/stock/reservations?order_id={order['id']}", headers=customer).status_code == 403
+    assert (
+        client.get(
+            f"/api/v1/stock/reservations?order_id={order['id']}", headers=customer
+        ).status_code
+        == 403
+    )
     sales = _sales(client)
     scheduling = client.get("/api/v1/scheduling/installations", headers=sales)
     assert scheduling.status_code == 200, scheduling.text
@@ -581,7 +635,11 @@ def test_cross_phase_order_to_completed_installation(client, application):
     with Session(application.state.engine) as db:
         job_order = db.get(SalesOrder, uuid.UUID(order["id"]))
         assert job_order is not None
-        material = [(line.component_code, line.quantity) for line in job_order.lines if line.line_kind == "material"]
+        material = [
+            (line.component_code, line.quantity)
+            for line in job_order.lines
+            if line.line_kind == "material"
+        ]
     assert material
     for component_code, quantity in material:
         assert component_code is not None
@@ -593,9 +651,18 @@ def test_cross_phase_order_to_completed_installation(client, application):
     )
     assert delivery.status_code == 201, delivery.text
     delivery_id = delivery.json()["id"]
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/transit", headers=warehouse).status_code == 200
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/deliver", headers=warehouse).status_code == 200
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/confirm", headers=warehouse).status_code == 200
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/transit", headers=warehouse).status_code
+        == 200
+    )
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/deliver", headers=warehouse).status_code
+        == 200
+    )
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/confirm", headers=warehouse).status_code
+        == 200
+    )
     sales = _sales(client)
     warranty = client.get(f"/api/v1/warranties/order/{order['id']}", headers=sales)
     assert warranty.json()["status"] == "active"
@@ -612,18 +679,34 @@ def test_cross_phase_order_to_completed_installation(client, application):
     job_id, customer_code = job.json()["id"], job.json()["customer_code"]
     technician = _technician(client)
     assert client.post(f"/api/v1/jobs/{job_id}/arrival", headers=technician).status_code == 200
-    assert client.post(f"/api/v1/jobs/{job_id}/customer-otp", json={"code": customer_code}, headers=technician).status_code == 200
+    assert (
+        client.post(
+            f"/api/v1/jobs/{job_id}/customer-otp", json={"code": customer_code}, headers=technician
+        ).status_code
+        == 200
+    )
     now = datetime.now(UTC).isoformat()
-    assert client.post(
-        f"/api/v1/jobs/{job_id}/evidence",
-        json={"photo_refs": ["E2E-1"], "test_readings": {}, "started_at": now, "finished_at": now},
-        headers=technician,
-    ).status_code == 200
-    assert client.post(
-        f"/api/v1/jobs/{job_id}/signature",
-        json={"signature_ref": "E2E-SIG", "customer_confirmed": True},
-        headers=technician,
-    ).status_code == 200
+    assert (
+        client.post(
+            f"/api/v1/jobs/{job_id}/evidence",
+            json={
+                "photo_refs": ["E2E-1"],
+                "test_readings": {},
+                "started_at": now,
+                "finished_at": now,
+            },
+            headers=technician,
+        ).status_code
+        == 200
+    )
+    assert (
+        client.post(
+            f"/api/v1/jobs/{job_id}/signature",
+            json={"signature_ref": "E2E-SIG", "customer_confirmed": True},
+            headers=technician,
+        ).status_code
+        == 200
+    )
     done = client.post(f"/api/v1/jobs/{job_id}/completion", headers=technician)
     assert done.status_code == 200, done.text
     assert done.json()["status"] == "completed"
@@ -642,7 +725,9 @@ def _order_material(application, order_id: str) -> list[tuple[str, int]]:
         ]
 
 
-def _receipt_material(client, warehouse: dict, material: list[tuple[str, int]], location: str = "MAIN") -> None:
+def _receipt_material(
+    client, warehouse: dict, material: list[tuple[str, int]], location: str = "MAIN"
+) -> None:
     for component_code, quantity in material:
         _receipt_validate(client, warehouse, component_code, f"{quantity}.0000", location)
 
@@ -678,17 +763,32 @@ def test_competing_orders_cannot_pick_the_same_stock(client, application):
     assert second.json()["error"]["code"] == "insufficient_stock"
     with Session(application.state.engine) as db:
         assert db.scalar(select(func.count()).select_from(Delivery)) == 1
-        reserved_b = db.scalars(
-            select(StockLedger.id).where(StockLedger.quantity_delta < 0)
-        ).all()
+        reserved_b = db.scalars(select(StockLedger.id).where(StockLedger.quantity_delta < 0)).all()
         assert len(reserved_b) == len(material)
         kept = db.scalar(
-            select(StockReservation.status).where(StockReservation.order_id == uuid.UUID(order_b["id"]))
+            select(StockReservation.status).where(
+                StockReservation.order_id == uuid.UUID(order_b["id"])
+            )
         )
         assert kept == "reserved"
-    assert client.post(f"/api/v1/deliveries/{first.json()['id']}/transit", headers=warehouse).status_code == 200
-    assert client.post(f"/api/v1/deliveries/{first.json()['id']}/deliver", headers=warehouse).status_code == 200
-    assert client.post(f"/api/v1/deliveries/{first.json()['id']}/confirm", headers=warehouse).status_code == 200
+    assert (
+        client.post(
+            f"/api/v1/deliveries/{first.json()['id']}/transit", headers=warehouse
+        ).status_code
+        == 200
+    )
+    assert (
+        client.post(
+            f"/api/v1/deliveries/{first.json()['id']}/deliver", headers=warehouse
+        ).status_code
+        == 200
+    )
+    assert (
+        client.post(
+            f"/api/v1/deliveries/{first.json()['id']}/confirm", headers=warehouse
+        ).status_code
+        == 200
+    )
 
 
 def test_duplicate_delivery_confirmation_fails(client, application):
@@ -704,9 +804,18 @@ def test_duplicate_delivery_confirmation_fails(client, application):
     delivery_id = created.json()["id"]
     early = client.post(f"/api/v1/deliveries/{delivery_id}/confirm", headers=warehouse)
     assert early.status_code == 409, early.text
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/transit", headers=warehouse).status_code == 200
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/deliver", headers=warehouse).status_code == 200
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/confirm", headers=warehouse).status_code == 200
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/transit", headers=warehouse).status_code
+        == 200
+    )
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/deliver", headers=warehouse).status_code
+        == 200
+    )
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/confirm", headers=warehouse).status_code
+        == 200
+    )
     repeat = client.post(f"/api/v1/deliveries/{delivery_id}/confirm", headers=warehouse)
     assert repeat.status_code == 409, repeat.text
     assert repeat.json()["error"]["code"] == "invalid_transition"
@@ -743,8 +852,16 @@ def test_site_stock_must_transfer_to_main_before_pick(client, application):
     )
     assert moved.status_code == 201, moved.text
     operation_id = moved.json()["id"]
-    assert client.post(f"/api/v1/stock/operations/{operation_id}/ready", headers=warehouse).status_code == 200
-    assert client.post(f"/api/v1/stock/operations/{operation_id}/validate", headers=warehouse).status_code == 200
+    assert (
+        client.post(f"/api/v1/stock/operations/{operation_id}/ready", headers=warehouse).status_code
+        == 200
+    )
+    assert (
+        client.post(
+            f"/api/v1/stock/operations/{operation_id}/validate", headers=warehouse
+        ).status_code
+        == 200
+    )
     picked = client.post(
         "/api/v1/deliveries",
         json={"order_id": order["id"]},
@@ -752,7 +869,11 @@ def test_site_stock_must_transfer_to_main_before_pick(client, application):
     )
     assert picked.status_code == 201, picked.text
     levels = client.get("/api/v1/stock", headers=warehouse).json()
-    main_panel = [row for row in levels if row["component_code"] == material[0][0] and row["location_code"] == "MAIN"]
+    main_panel = [
+        row
+        for row in levels
+        if row["component_code"] == material[0][0] and row["location_code"] == "MAIN"
+    ]
     assert main_panel and float(main_panel[0]["on_hand"]) == 0.0
 
 
@@ -773,7 +894,9 @@ def test_serial_assign_install_and_mismatch(client, application):
         from app.models.workflow import CatalogueComponent
 
         other = db.scalar(
-            select(CatalogueComponent.code).where(~CatalogueComponent.code.in_([code for code, _ in material]))
+            select(CatalogueComponent.code).where(
+                ~CatalogueComponent.code.in_([code for code, _ in material])
+            )
         )
     assert other is not None
     wrong_scan = client.post(
@@ -810,11 +933,22 @@ def test_serial_assign_install_and_mismatch(client, application):
         headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex},
     )
     delivery_id = created.json()["id"]
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/transit", headers=warehouse).status_code == 200
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/deliver", headers=warehouse).status_code == 200
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/confirm", headers=warehouse).status_code == 200
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/transit", headers=warehouse).status_code
+        == 200
+    )
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/deliver", headers=warehouse).status_code
+        == 200
+    )
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/confirm", headers=warehouse).status_code
+        == 200
+    )
     with Session(application.state.engine) as db:
-        status = db.scalar(select(EquipmentSerial.status).where(EquipmentSerial.id == uuid.UUID(serial_id)))
+        status = db.scalar(
+            select(EquipmentSerial.status).where(EquipmentSerial.id == uuid.UUID(serial_id))
+        )
     assert status == "installed"
 
 
@@ -835,7 +969,12 @@ def test_foreign_technician_cannot_touch_assigned_job(client, application):
     job_id = created.json()["id"]
     intruder = _login(client, "employee", "EMP-TECH-902", "Staffpass123")
     assert client.post(f"/api/v1/jobs/{job_id}/arrival", headers=intruder).status_code == 404
-    assert client.post(f"/api/v1/jobs/{job_id}/customer-otp", json={"code": "123456"}, headers=intruder).status_code == 404
+    assert (
+        client.post(
+            f"/api/v1/jobs/{job_id}/customer-otp", json={"code": "123456"}, headers=intruder
+        ).status_code
+        == 404
+    )
     assert client.post(f"/api/v1/jobs/{job_id}/completion", headers=intruder).status_code == 404
     assert client.get(f"/api/v1/jobs/{job_id}", headers=intruder).status_code == 404
     assert client.get("/api/v1/jobs", headers=intruder).json() == []
@@ -857,21 +996,31 @@ def test_expired_and_reused_customer_otp_fail(client, application):
     job_id, customer_code = created.json()["id"], created.json()["customer_code"]
     technician = _technician(client)
     with Session(application.state.engine) as db:
-        challenge = db.scalar(select(InstallationOtp).where(InstallationOtp.job_id == uuid.UUID(job_id)))
+        challenge = db.scalar(
+            select(InstallationOtp).where(InstallationOtp.job_id == uuid.UUID(job_id))
+        )
         assert challenge is not None
         challenge.expires_at = utcnow() - timedelta(minutes=1)
         db.commit()
-    expired = client.post(f"/api/v1/jobs/{job_id}/customer-otp", json={"code": customer_code}, headers=technician)
+    expired = client.post(
+        f"/api/v1/jobs/{job_id}/customer-otp", json={"code": customer_code}, headers=technician
+    )
     assert expired.status_code == 409, expired.text
     assert expired.json()["error"]["code"] == "otp_expired"
     with Session(application.state.engine) as db:
-        challenge = db.scalar(select(InstallationOtp).where(InstallationOtp.job_id == uuid.UUID(job_id)))
+        challenge = db.scalar(
+            select(InstallationOtp).where(InstallationOtp.job_id == uuid.UUID(job_id))
+        )
         assert challenge is not None
         challenge.expires_at = utcnow() + timedelta(minutes=30)
         db.commit()
-    verified = client.post(f"/api/v1/jobs/{job_id}/customer-otp", json={"code": customer_code}, headers=technician)
+    verified = client.post(
+        f"/api/v1/jobs/{job_id}/customer-otp", json={"code": customer_code}, headers=technician
+    )
     assert verified.status_code == 200, verified.text
-    reused = client.post(f"/api/v1/jobs/{job_id}/customer-otp", json={"code": customer_code}, headers=technician)
+    reused = client.post(
+        f"/api/v1/jobs/{job_id}/customer-otp", json={"code": customer_code}, headers=technician
+    )
     assert reused.status_code == 409, reused.text
     assert reused.json()["error"]["code"] == "otp_missing"
 
@@ -899,13 +1048,25 @@ def test_warranty_void_guards_and_failed_pick_creates_nothing(client, applicatio
         headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex},
     )
     delivery_id = created.json()["id"]
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/transit", headers=warehouse).status_code == 200
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/deliver", headers=warehouse).status_code == 200
-    assert client.post(f"/api/v1/deliveries/{delivery_id}/confirm", headers=warehouse).status_code == 200
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/transit", headers=warehouse).status_code
+        == 200
+    )
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/deliver", headers=warehouse).status_code
+        == 200
+    )
+    assert (
+        client.post(f"/api/v1/deliveries/{delivery_id}/confirm", headers=warehouse).status_code
+        == 200
+    )
     staff_void = client.post(f"/api/v1/warranties/order/{order['id']}/void", headers=warehouse)
     assert staff_void.status_code == 403, staff_void.text
     support = _support(client)
-    assert client.post(f"/api/v1/warranties/order/{order['id']}/void", headers=support).status_code == 200
+    assert (
+        client.post(f"/api/v1/warranties/order/{order['id']}/void", headers=support).status_code
+        == 200
+    )
     second_void = client.post(f"/api/v1/warranties/order/{order['id']}/void", headers=support)
     assert second_void.status_code == 409, second_void.text
 
@@ -923,13 +1084,21 @@ def test_delivery_cancel_restocks_main(client, application):
     )
     delivery_id = created.json()["id"]
     levels = client.get("/api/v1/stock", headers=warehouse).json()
-    picked = [row for row in levels if row["component_code"] == material[0][0] and row["location_code"] == "MAIN"]
+    picked = [
+        row
+        for row in levels
+        if row["component_code"] == material[0][0] and row["location_code"] == "MAIN"
+    ]
     assert float(picked[0]["on_hand"]) == 0.0
     cancelled = client.post(f"/api/v1/deliveries/{delivery_id}/cancel", headers=warehouse)
     assert cancelled.status_code == 200, cancelled.text
     assert cancelled.json()["status"] == "cancelled"
     restored = client.get("/api/v1/stock", headers=warehouse).json()
-    back = [row for row in restored if row["component_code"] == material[0][0] and row["location_code"] == "MAIN"]
+    back = [
+        row
+        for row in restored
+        if row["component_code"] == material[0][0] and row["location_code"] == "MAIN"
+    ]
     assert float(back[0]["on_hand"]) == float(material[0][1])
     late = client.post(f"/api/v1/deliveries/{delivery_id}/transit", headers=warehouse)
     assert late.status_code == 409, late.text
@@ -946,13 +1115,20 @@ def test_concurrent_picks_serialize_on_component_locks(client, application):
             "/api/v1/stock/operations",
             json={
                 "operation_type": "delivery",
-                "lines": [{"component_code": "PANEL-550", "quantity": "10", "from_location": "MAIN"}],
+                "lines": [
+                    {"component_code": "PANEL-550", "quantity": "10", "from_location": "MAIN"}
+                ],
             },
             headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex},
         )
         assert created.status_code == 201, created.text
         operation_ids.append(created.json()["id"])
-        assert client.post(f"/api/v1/stock/operations/{created.json()['id']}/ready", headers=warehouse).status_code == 200
+        assert (
+            client.post(
+                f"/api/v1/stock/operations/{created.json()['id']}/ready", headers=warehouse
+            ).status_code
+            == 200
+        )
     with Session(application.state.engine) as db:
         actor = db.scalar(select(User).where(User.email == "wh@example.com"))
         assert actor is not None
@@ -975,7 +1151,9 @@ def test_concurrent_picks_serialize_on_component_locks(client, application):
         finally:
             session.close()
 
-    threads = [threading.Thread(target=_race, args=(operation_id,)) for operation_id in operation_ids]
+    threads = [
+        threading.Thread(target=_race, args=(operation_id,)) for operation_id in operation_ids
+    ]
     for thread in threads:
         thread.start()
     for thread in threads:
@@ -988,4 +1166,3 @@ def test_concurrent_picks_serialize_on_component_locks(client, application):
             )
         )
     assert int(total or 0) == 0
-

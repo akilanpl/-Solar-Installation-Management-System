@@ -290,7 +290,9 @@ def create_delivery(
     db: Session = Depends(get_db),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ):
-    delivery, replayed = fulfillment_service.create_delivery(db, user, payload.order_id, _key(idempotency_key))
+    delivery, replayed = fulfillment_service.create_delivery(
+        db, user, payload.order_id, _key(idempotency_key)
+    )
     response.status_code = 200 if replayed else 201
     return _delivery_payload(delivery)
 

@@ -104,9 +104,7 @@ def confirm_order(
         if loaded is None:
             raise AppError(500, "order_missing", "The order could not be reloaded.")
         return loaded, True
-    other_order = db.scalar(
-        select(SalesOrder).where(SalesOrder.enquiry_id == quotation.enquiry_id)
-    )
+    other_order = db.scalar(select(SalesOrder).where(SalesOrder.enquiry_id == quotation.enquiry_id))
     if other_order is not None:
         raise AppError(
             409,
@@ -114,10 +112,14 @@ def confirm_order(
             "This enquiry already has a confirmed order.",
         )
     if quotation.status != "accepted":
-        raise AppError(409, "quotation_not_accepted", "Confirm an order only from an accepted quotation.")
+        raise AppError(
+            409, "quotation_not_accepted", "Confirm an order only from an accepted quotation."
+        )
     survey = db.get(Survey, quotation.survey_id)
     if survey is None or survey.status != "approved":
-        raise AppError(409, "survey_not_approved", "The survey behind this quotation is not approved.")
+        raise AppError(
+            409, "survey_not_approved", "The survey behind this quotation is not approved."
+        )
     requirement = requirement_for(db, quotation.id)
     payments = verified_payments(db, quotation.id)
     verified = sum(item.amount_minor for item in payments)
@@ -221,7 +223,9 @@ def confirm_order(
 
 def handoff_ids(db: Session, order_id: uuid.UUID) -> tuple[uuid.UUID, uuid.UUID]:
     warehouse_id = db.scalar(
-        select(WarehousePreparationRequest.id).where(WarehousePreparationRequest.order_id == order_id)
+        select(WarehousePreparationRequest.id).where(
+            WarehousePreparationRequest.order_id == order_id
+        )
     )
     scheduling_id = db.scalar(
         select(InstallationSchedulingRequest.id).where(
@@ -246,7 +250,9 @@ def get_order(db: Session, user: User, order_id: uuid.UUID) -> SalesOrder:
     raise AppError(403, "forbidden", "You cannot view this order.")
 
 
-def list_orders(db: Session, user: User, *, page: int, page_size: int) -> tuple[list[SalesOrder], int]:
+def list_orders(
+    db: Session, user: User, *, page: int, page_size: int
+) -> tuple[list[SalesOrder], int]:
     query = select(SalesOrder).options(selectinload(SalesOrder.lines))
     count_query = select(func.count()).select_from(SalesOrder)
     if user.role_code == "customer":

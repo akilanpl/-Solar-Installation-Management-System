@@ -72,7 +72,9 @@ def _lock_enquiry(db: Session, enquiry_id: uuid.UUID) -> None:
         raise AppError(404, "not_found", "Enquiry not found.")
 
 
-def get_requirement(db: Session, user: User, quotation_id: uuid.UUID) -> tuple[PaymentRequirement, int]:
+def get_requirement(
+    db: Session, user: User, quotation_id: uuid.UUID
+) -> tuple[PaymentRequirement, int]:
     quotation = db.get(Quotation, quotation_id)
     if quotation is None:
         raise AppError(404, "not_found", "Quotation not found.")
@@ -323,7 +325,9 @@ def get_intent(db: Session, user: User, intent_id: uuid.UUID) -> PaymentIntent:
 def _guard_amount(db: Session, quotation: Quotation, amount_minor: int) -> None:
     requirement = requirement_for(db, quotation.id)
     if requirement is None:
-        raise AppError(409, "payment_requirement_missing", "This quotation has no payment requirement.")
+        raise AppError(
+            409, "payment_requirement_missing", "This quotation has no payment requirement."
+        )
     already = verified_total(db, quotation.id)
     if already + amount_minor > requirement.full_amount_minor:
         raise AppError(

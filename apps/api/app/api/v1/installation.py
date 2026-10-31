@@ -69,7 +69,9 @@ def recommend(
             open_jobs=item["open_jobs"],
             reason=item["reason"],
         )
-        for item in installation_service.recommend_technicians(db, user, payload.order_id, payload.max_results)
+        for item in installation_service.recommend_technicians(
+            db, user, payload.order_id, payload.max_results
+        )
     ]
 
 
@@ -124,7 +126,9 @@ def job_evidence(
     user: User = Depends(current_user),
     db: Session = Depends(get_db),
 ):
-    return _job_payload(installation_service.record_evidence(db, user, job_id, payload.model_dump(mode="json")))
+    return _job_payload(
+        installation_service.record_evidence(db, user, job_id, payload.model_dump(mode="json"))
+    )
 
 
 @router.post("/jobs/{job_id}/signature", response_model=JobResponse)
@@ -134,7 +138,9 @@ def job_signature(
     user: User = Depends(current_user),
     db: Session = Depends(get_db),
 ):
-    return _job_payload(installation_service.record_signature(db, user, job_id, payload.model_dump()))
+    return _job_payload(
+        installation_service.record_signature(db, user, job_id, payload.model_dump())
+    )
 
 
 @router.post("/jobs/{job_id}/completion", response_model=JobResponse)
@@ -143,7 +149,9 @@ def job_completion(job_id: UUID, user: User = Depends(current_user), db: Session
 
 
 @router.get("/warranties/order/{order_id}", response_model=WarrantyResponse)
-def read_warranty(order_id: UUID, user: User = Depends(current_user), db: Session = Depends(get_db)):
+def read_warranty(
+    order_id: UUID, user: User = Depends(current_user), db: Session = Depends(get_db)
+):
     row = fulfillment_service.get_warranty(db, user, order_id)
     return WarrantyResponse(
         id=row.id,
@@ -156,7 +164,9 @@ def read_warranty(order_id: UUID, user: User = Depends(current_user), db: Sessio
 
 
 @router.post("/warranties/order/{order_id}/void", response_model=WarrantyResponse)
-def void_warranty(order_id: UUID, user: User = Depends(current_user), db: Session = Depends(get_db)):
+def void_warranty(
+    order_id: UUID, user: User = Depends(current_user), db: Session = Depends(get_db)
+):
     row = fulfillment_service.void_warranty(db, user, order_id)
     return WarrantyResponse(
         id=row.id,

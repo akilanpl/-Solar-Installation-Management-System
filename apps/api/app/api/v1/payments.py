@@ -102,9 +102,7 @@ def cash_receipt(
     db: Session = Depends(get_db),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> PaymentIntentResponse:
-    intent, replayed = payment_service.record_cash_receipt(
-        db, user, payload, _key(idempotency_key)
-    )
+    intent, replayed = payment_service.record_cash_receipt(db, user, payload, _key(idempotency_key))
     response.status_code = 200 if replayed else 201
     return intent_response(intent)
 

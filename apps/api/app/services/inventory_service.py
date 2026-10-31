@@ -37,11 +37,15 @@ ZERO = Decimal("0")
 
 
 def _hash(operation_type: str, lines: list[dict]) -> str:
-    raw = json.dumps({"type": operation_type, "lines": lines}, sort_keys=True, separators=(",", ":"))
+    raw = json.dumps(
+        {"type": operation_type, "lines": lines}, sort_keys=True, separators=(",", ":")
+    )
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
-def _line_payload(component: str, quantity: str, from_location: str | None, to_location: str | None) -> dict:
+def _line_payload(
+    component: str, quantity: str, from_location: str | None, to_location: str | None
+) -> dict:
     return {
         "component": component,
         "quantity": quantity,
@@ -123,7 +127,9 @@ def create_operation(
     )
     if existing is not None:
         if existing.request_hash != digest:
-            raise AppError(409, "idempotency_conflict", "This key was used for a different operation.")
+            raise AppError(
+                409, "idempotency_conflict", "This key was used for a different operation."
+            )
         loaded = db.scalar(
             select(StockOperation)
             .where(StockOperation.id == existing.id)
@@ -256,7 +262,9 @@ def cancel_operation(db: Session, user: User, operation_id: uuid.UUID) -> StockO
 def lock_components(db: Session, codes: list[str]) -> None:
     """Lock catalogue rows in a stable order so concurrent stock writers serialize."""
     for code in sorted(set(codes)):
-        row = db.scalar(select(CatalogueComponent).where(CatalogueComponent.code == code).with_for_update())
+        row = db.scalar(
+            select(CatalogueComponent).where(CatalogueComponent.code == code).with_for_update()
+        )
         if row is None:
             raise AppError(400, "unknown_component", f"Unknown component {code}.")
 
@@ -277,7 +285,10 @@ def validate_operation(db: Session, user: User, operation_id: uuid.UUID) -> Stoc
         raise AppError(409, "invalid_transition", "Only ready operations validate.")
     lock_components(db, [line.component_code for line in operation.lines])
     deltas: list[tuple[str, str, Decimal]] = []
-    for line in sorted(operation.lines, key=lambda item: (item.component_code, item.from_location or "", item.to_location or "")):
+    for line in sorted(
+        operation.lines,
+        key=lambda item: (item.component_code, item.from_location or "", item.to_location or ""),
+    ):
         quantity = Decimal(str(line.quantity))
         if operation.operation_type == "receipt":
             assert line.to_location is not None
@@ -286,14 +297,18 @@ def validate_operation(db: Session, user: User, operation_id: uuid.UUID) -> Stoc
             assert line.from_location is not None and line.to_location is not None
             available = on_hand(db, line.component_code, line.from_location)
             if available < quantity:
-                raise AppError(409, "insufficient_stock", f"Insufficient stock for {line.component_code}.")
+                raise AppError(
+                    409, "insufficient_stock", f"Insufficient stock for {line.component_code}."
+                )
             deltas.append((line.component_code, line.from_location, -quantity))
             deltas.append((line.component_code, line.to_location, quantity))
         elif operation.operation_type == "delivery":
             assert line.from_location is not None
             available = on_hand(db, line.component_code, line.from_location)
             if available < quantity:
-                raise AppError(409, "insufficient_stock", f"Insufficient stock for {line.component_code}.")
+                raise AppError(
+                    409, "insufficient_stock", f"Insufficient stock for {line.component_code}."
+                )
             deltas.append((line.component_code, line.from_location, -quantity))
         else:
             location = line.to_location or line.from_location
@@ -301,7 +316,11 @@ def validate_operation(db: Session, user: User, operation_id: uuid.UUID) -> Stoc
             if quantity < ZERO:
                 available = on_hand(db, line.component_code, location)
                 if available + quantity < ZERO:
-                    raise AppError(409, "insufficient_stock", f"Adjustment would drive {line.component_code} negative.")
+                    raise AppError(
+                        409,
+                        "insufficient_stock",
+                        f"Adjustment would drive {line.component_code} negative.",
+                    )
             deltas.append((line.component_code, location, quantity))
     for component_code, location_code, delta in deltas:
         db.add(
@@ -372,7 +391,9 @@ def reserve_for_order(db: Session, order: SalesOrder) -> list[StockReservation]:
     return created
 
 
-def list_reservations(db: Session, user: User, order_id: uuid.UUID | None = None) -> list[StockReservation]:
+def list_reservations(
+    db: Session, user: User, order_id: uuid.UUID | None = None
+) -> list[StockReservation]:
     if user.role_code not in WAREHOUSE | {"sales", "admin"}:
         raise AppError(403, "forbidden", "You cannot view reservations.")
     query = select(StockReservation).order_by(StockReservation.created_at)
@@ -382,7 +403,11 @@ def list_reservations(db: Session, user: User, order_id: uuid.UUID | None = None
 
 
 def consume_reservations(db: Session, order_id: uuid.UUID) -> None:
-    rows = list(db.scalars(select(StockReservation).where(StockReservation.order_id == order_id).with_for_update()))
+    rows = list(
+        db.scalars(
+            select(StockReservation).where(StockReservation.order_id == order_id).with_for_update()
+        )
+    )
     for row in rows:
         if row.status != "reserved":
             raise AppError(409, "invalid_transition", "Reservations are no longer reserved.")
@@ -397,11 +422,16 @@ def scan_serial(
         raise AppError(403, "forbidden", "Only warehouse staff can scan serials.")
     _check_component(db, component_code)
     serial = serial_number.strip().upper()
-    if db.scalar(select(EquipmentSerial).where(EquipmentSerial.serial_number == serial)) is not None:
+    if (
+        db.scalar(select(EquipmentSerial).where(EquipmentSerial.serial_number == serial))
+        is not None
+    ):
         raise AppError(409, "serial_exists", "This serial number is already registered.")
     operation = None
     if operation_id is not None:
-        operation = db.scalar(select(StockOperation).where(StockOperation.id == operation_id).with_for_update())
+        operation = db.scalar(
+            select(StockOperation).where(StockOperation.id == operation_id).with_for_update()
+        )
         if operation is None:
             raise AppError(404, "not_found", "Stock operation not found.")
         if operation.status == "done":
@@ -463,7 +493,9 @@ def decide_replenishment(
 ) -> ReplenishmentRequest:
     if user.role_code not in MANAGER:
         raise AppError(403, "forbidden", "Only a warehouse manager can decide replenishment.")
-    row = db.scalar(select(ReplenishmentRequest).where(ReplenishmentRequest.id == request_id).with_for_update())
+    row = db.scalar(
+        select(ReplenishmentRequest).where(ReplenishmentRequest.id == request_id).with_for_update()
+    )
     if row is None:
         raise AppError(404, "not_found", "Replenishment request not found.")
     if row.status != "proposed":

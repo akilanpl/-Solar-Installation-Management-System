@@ -27,11 +27,15 @@ SALES = {"sales", "admin"}
 TECHNICIAN = "technician"
 
 
-def schedule_slot(db: Session, user: User, scheduling_id: uuid.UUID, slot) -> InstallationSchedulingRequest:
+def schedule_slot(
+    db: Session, user: User, scheduling_id: uuid.UUID, slot
+) -> InstallationSchedulingRequest:
     if user.role_code not in SALES:
         raise AppError(403, "forbidden", "Only sales can schedule installations.")
     row = db.scalar(
-        select(InstallationSchedulingRequest).where(InstallationSchedulingRequest.id == scheduling_id).with_for_update()
+        select(InstallationSchedulingRequest)
+        .where(InstallationSchedulingRequest.id == scheduling_id)
+        .with_for_update()
     )
     if row is None:
         raise AppError(404, "not_found", "Scheduling request not found.")
@@ -51,17 +55,23 @@ def schedule_slot(db: Session, user: User, scheduling_id: uuid.UUID, slot) -> In
     return row
 
 
-def recommend_technicians(db: Session, user: User, order_id: uuid.UUID, max_results: int = 5) -> list[dict]:
+def recommend_technicians(
+    db: Session, user: User, order_id: uuid.UUID, max_results: int = 5
+) -> list[dict]:
     if user.role_code not in SALES:
         raise AppError(403, "forbidden", "Only sales can request recommendations.")
     if db.get(SalesOrder, order_id) is None:
         raise AppError(404, "not_found", "Order not found.")
-    technicians = list(db.scalars(select(User).where(User.role_code == TECHNICIAN, User.is_active.is_(True))))
+    technicians = list(
+        db.scalars(select(User).where(User.role_code == TECHNICIAN, User.is_active.is_(True)))
+    )
     ranked: list[dict] = []
     for tech in technicians:
         open_jobs = int(
             db.scalar(
-                select(func.count()).select_from(InstallationJob).where(
+                select(func.count())
+                .select_from(InstallationJob)
+                .where(
                     InstallationJob.technician_user_id == tech.id,
                     InstallationJob.status.in_(("created", "scheduled", "en_route", "on_site")),
                 )
@@ -96,7 +106,9 @@ def create_job(
     if order is None:
         raise AppError(404, "not_found", "Order not found.")
     scheduling_id = db.scalar(
-        select(InstallationSchedulingRequest.id).where(InstallationSchedulingRequest.order_id == order.id)
+        select(InstallationSchedulingRequest.id).where(
+            InstallationSchedulingRequest.order_id == order.id
+        )
     )
     if scheduling_id is None:
         raise AppError(404, "not_found", "Scheduling request not found.")
@@ -230,7 +242,9 @@ def record_evidence(db: Session, user: User, job_id: uuid.UUID, evidence: dict) 
     return job
 
 
-def record_signature(db: Session, user: User, job_id: uuid.UUID, signature: dict) -> InstallationJob:
+def record_signature(
+    db: Session, user: User, job_id: uuid.UUID, signature: dict
+) -> InstallationJob:
     job = _job_for_technician(db, user, job_id)
     if not signature.get("customer_confirmed"):
         raise AppError(400, "signature_unconfirmed", "Customer confirmation is required.")
@@ -290,7 +304,9 @@ def list_jobs(db: Session, user: User) -> list[InstallationJob]:
     if user.role_code in SALES | {"warehouse_staff", "warehouse_manager", "admin", "support"}:
         return list(db.scalars(query))
     if user.role_code == "customer":
-        orders = set(db.scalars(select(SalesOrder.id).where(SalesOrder.customer_user_id == user.id)).all())
+        orders = set(
+            db.scalars(select(SalesOrder.id).where(SalesOrder.customer_user_id == user.id)).all()
+        )
         if not orders:
             return []
         return list(db.scalars(query.where(InstallationJob.order_id.in_(orders))))

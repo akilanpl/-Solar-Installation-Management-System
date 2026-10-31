@@ -83,9 +83,7 @@ class StockOperation(Base):
 
 class StockOperationLine(Base):
     __tablename__ = "stock_operation_lines"
-    __table_args__ = (
-        CheckConstraint("quantity <> 0", name="quantity_nonzero"),
-    )
+    __table_args__ = (CheckConstraint("quantity <> 0", name="quantity_nonzero"),)
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     operation_id: Mapped[uuid.UUID] = mapped_column(
@@ -95,9 +93,7 @@ class StockOperationLine(Base):
         ForeignKey("catalogue_components.code"), nullable=False
     )
     quantity: Mapped[Decimal] = mapped_column(Numeric(14, 4), nullable=False)
-    from_location: Mapped[str | None] = mapped_column(
-        ForeignKey("warehouse_locations.code")
-    )
+    from_location: Mapped[str | None] = mapped_column(ForeignKey("warehouse_locations.code"))
     to_location: Mapped[str | None] = mapped_column(ForeignKey("warehouse_locations.code"))
     sort_order: Mapped[int] = mapped_column(Integer, nullable=False)
 
@@ -232,9 +228,7 @@ class ReplenishmentRequest(Base):
     )
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[str] = mapped_column(String(16), nullable=False)
-    requested_by_user_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("users.id"), nullable=False
-    )
+    requested_by_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
     decided_by_user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
     decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(
@@ -277,7 +271,9 @@ class InstallationOtp(Base):
     __tablename__ = "installation_otps"
     __table_args__ = (
         CheckConstraint("purpose IN ('job_customer_verify')", name="otp_purpose"),
-        Index("ix_installation_otps_job_open", "job_id", postgresql_where=text("consumed_at IS NULL")),
+        Index(
+            "ix_installation_otps_job_open", "job_id", postgresql_where=text("consumed_at IS NULL")
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
