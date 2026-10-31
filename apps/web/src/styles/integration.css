@@ -149,3 +149,13 @@
   .top-nav-right { gap: 8px; }
   .actual-dashboard-overview .dash-greeting-title { font-size: 23px; line-height: 1.22; }
 }
+
+/* Phase 4 adds more workspace destinations than fit on a short desktop.
+   Scroll the navigation itself while keeping sign-out reachable. Native link
+   titles and accessible names remain available when tooltip overflow clips. */
+@media (min-width: 769px) {
+  .dock-sidebar-container { gap: 12px; }
+  .dock-nav-column { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+  .dock-nav-column > a { flex-shrink: 0; }
+  .dock-bottom-column { flex-shrink: 0; }
+}

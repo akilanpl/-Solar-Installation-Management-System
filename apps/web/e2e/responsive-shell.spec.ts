@@ -36,6 +36,12 @@ for (const width of [390, 768, 1280]) {
     } else {
       expect(bounds!.x).toBe(0);
       expect(bounds!.height).toBeGreaterThan(bounds!.width);
+      const lastLink = dock.getByRole("link").last();
+      await lastLink.focus();
+      await expect(lastLink).toBeInViewport();
+      const signOut = dock.getByRole("button", { name: "Sign out" });
+      await signOut.focus();
+      await expect(signOut).toBeInViewport();
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
   });
