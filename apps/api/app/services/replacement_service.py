@@ -415,6 +415,7 @@ def inspect_return(db: Session, user: User, replacement_id: uuid.UUID, verdict: 
     # defective unit; dispatching its replacement never implies a return.
     old.status = "returned"
     old.location_code = "MAIN"
+    db.flush()
     restock_operation_id = None
     if verdict == "restocked":
         operation = inventory_service.replacement_stock_movement(db, user, row.id, restock=True)
