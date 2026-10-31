@@ -124,7 +124,7 @@ export function EnquiryReview({ enquiryId }) {
       {/* Qualification Control Center */}
       <Card accent="violet" style={{ marginBottom: '24px' }}>
         <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--color-white)', marginBottom: '8px' }}>
-          ⚡ Sales Qualification Decisions
+          Sales Qualification Decisions
         </h3>
         <p style={{ fontSize: '13px', color: 'var(--color-white-dim)', marginBottom: '16px' }}>
           Verify shadow raytracing feasibility, transformer capacity headroom, and customer connection sanction load.

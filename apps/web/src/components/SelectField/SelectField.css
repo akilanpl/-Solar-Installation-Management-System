@@ -1,33 +1,35 @@
-/* SelectField Component Styles */
+/* SelectField Component Styles - Harmonized with Dashboard UI Theme */
 .select-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .select-input {
   width: 100%;
   padding: 10px 38px 10px 14px;
-  background-color: var(--color-black-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-white);
-  font-family: var(--font-family);
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  color: #111827;
+  font-family: inherit;
   font-size: 14px;
   appearance: none;
   cursor: pointer;
   transition: all var(--transition-fast);
+  box-sizing: border-box;
 }
 
 .select-input:focus {
   outline: none;
-  border-color: var(--color-lime);
-  box-shadow: 0 0 0 2px var(--color-lime-subtle);
+  border-color: #5b5fc7;
+  box-shadow: 0 0 0 3px rgba(91, 95, 199, 0.15);
 }
 
 .select-input option {
-  background-color: var(--color-black-elevated);
-  color: var(--color-white);
+  background-color: #ffffff;
+  color: #111827;
   padding: 10px;
 }
 
@@ -35,8 +37,7 @@
   position: absolute;
   right: 14px;
   pointer-events: none;
-  color: var(--color-white-dim);
+  color: #64748b;
   display: flex;
   align-items: center;
 }
-

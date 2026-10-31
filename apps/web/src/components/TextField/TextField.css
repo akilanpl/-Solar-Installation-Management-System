@@ -1,4 +1,4 @@
-/* TextField Component Styles */
+/* TextField Component Styles - Harmonized with Dashboard UI Theme */
 .field-group {
   display: flex;
   flex-direction: column;
@@ -10,14 +10,14 @@
 .field-label {
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-white);
+  color: #334155;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .field-required {
-  color: var(--color-lime);
+  color: #ef4444;
   margin-left: 4px;
 }
 
@@ -30,43 +30,41 @@
 .field-input {
   width: 100%;
   padding: 10px 14px;
-  background-color: var(--color-black-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-white);
-  font-family: var(--font-family);
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  color: #111827;
+  font-family: inherit;
   font-size: 14px;
   transition: all var(--transition-fast);
+  box-sizing: border-box;
 }
 
 .field-input::placeholder {
-  color: var(--color-white-faint);
+  color: #94a3b8;
 }
 
 .field-input:focus {
   outline: none;
-  border-color: var(--color-lime);
-  box-shadow: 0 0 0 2px var(--color-lime-subtle);
+  border-color: #5b5fc7;
+  box-shadow: 0 0 0 3px rgba(91, 95, 199, 0.15);
 }
 
 .field-input.has-error {
-  border-color: var(--color-danger);
-  box-shadow: 0 0 0 2px var(--color-danger-subtle);
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
 }
 
 .field-hint {
   font-size: 12px;
-  color: var(--color-white-dim);
+  color: #64748b;
 }
 
 .field-error {
   font-size: 12px;
-  color: var(--color-danger);
+  color: #ef4444;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
-
-.field-textarea {
-  min-height: 85px;
-  resize: vertical;
-}
-

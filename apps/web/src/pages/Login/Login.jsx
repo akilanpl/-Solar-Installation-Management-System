@@ -340,10 +340,10 @@ export function Login({ initialMode = 'login' }) {
             <span>{mode === 'signup' ? 'Sign up with Google' : 'Sign up with Google'}</span>
           </button>
 
-          {/* ⚡ 1-Click Instant Demo Bypass (Requirement Compliance) */}
+          {/*   1-Click Instant Demo Bypass (Requirement Compliance) */}
           <div className="auth-bypass-container">
             <div className="auth-bypass-header">
-              <span className="auth-bypass-title">⚡ Instant Demo Bypass</span>
+              <span className="auth-bypass-title">  Instant Demo Bypass</span>
               <button
                 type="button"
                 style={{

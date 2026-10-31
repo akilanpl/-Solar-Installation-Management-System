@@ -1,9 +1,9 @@
-/* SupportDashboard Styles */
+/* SupportDashboard Styles - Harmonized with Dashboard UI Theme */
 .lookup-box-card {
-  padding: 20px;
-  background: var(--color-black-elevated);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 20px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
   margin-bottom: 24px;
 }
-

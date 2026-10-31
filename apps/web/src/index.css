@@ -1,59 +1,64 @@
 /* ==========================================================================
-   SOLARFLOW / SOLAROPS - UI/UX PRO MAX ENHANCED DESIGN SYSTEM
-   Palette exact match:
-   Black:  #000000
-   Violet: #7E3BED
-   White:  #FFFFFF
-   Lime:   #C6FF34
-   Standards: WCAG 2.2 AA Contrast (4.5:1 min), Plus Jakarta Sans + JetBrains Mono
+   SOLARFLOW / SOLAROPS - LIGHT SAAS THEME DESIGN SYSTEM
+   Matches the reference dashboard UI theme & colors:
+   App Background:    #F6F8FB
+   Surface / Cards:   #FFFFFF
+   Primary Accent:    #5B5FC7 / #605DEC / #4F46E5 (Royal Periwinkle / Indigo)
+   Secondary Dark:    #111827 (Slate Charcoal)
+   Success Accent:    #10B981 / #059669 (Emerald)
+   Border / Dividers: #EDF0F5 / #E2E8F0
+   Text Primary:      #111827
+   Text Secondary:    #64748B
+   Standards: WCAG 2.2 AA Contrast, Plus Jakarta Sans
    ========================================================================== */
 
 :root {
-  /* Core Brand Tokens */
-  --color-black: #000000;
-  --color-black-deep: #06050a;
-  --color-black-surface: #0d0c14;
-  --color-black-card: #13121e;
-  --color-black-card-hover: #191827;
-  --color-black-elevated: #201e30;
+  /* Core Surface & Text Tokens */
+  --color-black: #111827;
+  --color-black-deep: #0f172a;
+  --color-black-surface: #f8fafc;
+  --color-black-card: #ffffff;
+  --color-black-card-hover: #f8fafc;
+  --color-black-elevated: #ffffff;
 
-  --color-border: #28263d;
-  --color-border-subtle: #1c1b2c;
-  --color-border-bright: #3f3c5c;
+  --color-border: #edf0f5;
+  --color-border-subtle: #f1f5f9;
+  --color-border-bright: #cbd5e1;
 
-  /* Electric Violet Accents */
-  --color-violet: #7E3BED;
-  --color-violet-light: #9f69ff;
-  --color-violet-dark: #581ac4;
-  --color-violet-subtle: rgba(126, 59, 237, 0.14);
-  --color-violet-glow: 0 0 25px rgba(126, 59, 237, 0.45);
+  /* Royal Periwinkle / Indigo Brand Accents */
+  --color-violet: #5B5FC7;
+  --color-violet-light: #605DEC;
+  --color-violet-dark: #4338CA;
+  --color-violet-subtle: #EEF2FF;
+  --color-violet-glow: 0 4px 14px rgba(91, 95, 199, 0.25);
 
-  /* High-Contrast White */
-  --color-white: #FFFFFF;
-  --color-white-muted: #e4e8f5;
-  --color-white-dim: #9aa2ba;
-  --color-white-faint: #5d637a;
+  /* High-Contrast Text Tokens */
+  --color-white: #111827;
+  --color-white-pure: #ffffff;
+  --color-white-muted: #334155;
+  --color-white-dim: #64748b;
+  --color-white-faint: #94a3b8;
 
-  /* Solar Neon Lime Highlights */
-  --color-lime: #C6FF34;
-  --color-lime-dark: #a2dc12;
-  --color-lime-subtle: rgba(198, 255, 52, 0.15);
-  --color-lime-glow: 0 0 25px rgba(198, 255, 52, 0.45);
+  /* Solar Emerald Green Highlights */
+  --color-lime: #10B981;
+  --color-lime-dark: #059669;
+  --color-lime-subtle: #ECFDF5;
+  --color-lime-glow: 0 0 14px rgba(16, 185, 129, 0.25);
 
-  /* Status Colors */
-  --color-danger: #ff4d6d;
-  --color-danger-subtle: rgba(255, 77, 109, 0.15);
-  --color-warning: #ffb703;
-  --color-warning-subtle: rgba(255, 183, 3, 0.15);
-  --color-info: #00f0ff;
-  --color-info-subtle: rgba(0, 240, 255, 0.15);
+  /* Status Semantic Colors */
+  --color-danger: #EF4444;
+  --color-danger-subtle: #FEF2F2;
+  --color-warning: #F59E0B;
+  --color-warning-subtle: #FFFBEB;
+  --color-info: #0284C7;
+  --color-info-subtle: #F0F9FF;
 
   /* Radii */
   --radius-xs: 6px;
   --radius-sm: 10px;
-  --radius-md: 14px;
+  --radius-md: 16px;
   --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
   /* Typography */
@@ -75,10 +80,10 @@
 html, body {
   min-height: 100vh;
   width: 100%;
-  background-color: var(--color-black);
-  color: var(--color-white);
+  background-color: #f6f8fb;
+  color: #111827;
   font-family: var(--font-family);
-  font-size: 15px;
+  font-size: 14.5px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -92,6 +97,7 @@ html, body {
   display: flex;
   flex-direction: column;
   position: relative;
+  background-color: #f6f8fb;
 }
 
 a {
@@ -115,8 +121,8 @@ input, select, textarea {
 
 /* Accessibility: Visible Focus Ring for Keyboard Navigation (WCAG 2.4.7) */
 :focus-visible {
-  outline: 2px solid var(--color-lime);
-  outline-offset: 3px;
+  outline: 2px solid #5b5fc7;
+  outline-offset: 2px;
   border-radius: var(--radius-xs);
 }
 
@@ -136,16 +142,16 @@ select {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-black-deep);
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border-bright);
+  background: #cbd5e1;
   border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-violet);
+  background: #5b5fc7;
 }
 
 /* Accessibility: Respect Reduced Motion */

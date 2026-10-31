@@ -1,4 +1,4 @@
-/* CustomerQuotations Styles */
+/* CustomerQuotations Styles - Harmonized with Dashboard UI Theme */
 .quotation-cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -16,62 +16,64 @@
   display: flex;
   flex-direction: column;
   padding: 24px;
-  border-radius: var(--radius-lg);
-  background: var(--color-black-card);
-  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #edf0f5;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
   position: relative;
   transition: all var(--transition-normal);
 }
 
 .package-card.popular {
-  border-color: var(--color-lime);
-  box-shadow: 0 0 25px rgba(198, 255, 52, 0.2);
+  border-color: #5b5fc7;
+  box-shadow: 0 8px 30px rgba(91, 95, 199, 0.16);
 }
 
 .popular-badge {
   position: absolute;
   top: -12px;
   right: 24px;
-  background: var(--color-lime);
-  color: var(--color-black);
-  font-size: 10px;
-  font-weight: 800;
+  background: #5b5fc7;
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(91, 95, 199, 0.3);
 }
 
 .package-name {
   font-size: 20px;
   font-weight: 800;
-  color: var(--color-white);
+  color: #111827;
   margin-bottom: 4px;
 }
 
 .package-desc {
   font-size: 13px;
-  color: var(--color-white-dim);
+  color: #64748b;
   margin-bottom: 16px;
 }
 
 .package-price-box {
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--color-border-subtle);
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .package-price {
   font-size: 28px;
   font-weight: 800;
-  color: var(--color-white);
+  color: #111827;
   font-family: var(--font-mono);
 }
 
 .package-subsidy {
   font-size: 12px;
-  color: var(--color-lime);
-  font-weight: 600;
+  color: #047857;
+  font-weight: 700;
   margin-top: 4px;
 }
 
@@ -88,6 +90,5 @@
   align-items: center;
   gap: 10px;
   font-size: 13px;
-  color: var(--color-white-muted);
+  color: #334155;
 }
-

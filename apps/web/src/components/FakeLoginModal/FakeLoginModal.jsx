@@ -70,7 +70,7 @@ export function FakeLoginModal({ isOpen, onClose }) {
       title={
         <>
           <Zap size={20} color="#C6FF34" />
-          <span>⚡ Instant Fake Login (Demo Bypass)</span>
+          <span>  Instant Fake Login (Demo Bypass)</span>
         </>
       }
       maxWidth="720px"
@@ -102,7 +102,7 @@ export function FakeLoginModal({ isOpen, onClose }) {
               {p.data.employee_code || p.data.email}
             </div>
             <div className="fake-user-hint">
-              <span>⚡ Click to Enter</span>
+              <span>  Click to Enter</span>
             </div>
           </button>
         ))}

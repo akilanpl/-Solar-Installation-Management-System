@@ -1,4 +1,4 @@
-/* AdminDashboard Styles */
+/* AdminDashboard Styles - Harmonized with Dashboard UI Theme */
 .health-metrics-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -18,14 +18,13 @@
   gap: 8px;
   font-size: 13px;
   font-weight: 700;
-  color: var(--color-lime);
+  color: #047857;
 }
 
 .health-pulse {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--color-lime);
-  box-shadow: 0 0 10px var(--color-lime);
+  background: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
-

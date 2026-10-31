@@ -1,4 +1,4 @@
-/* EmptyState Component Styles */
+/* EmptyState Component Styles - Harmonized with Dashboard UI Theme */
 .empty-state-card {
   display: flex;
   flex-direction: column;
@@ -6,41 +6,43 @@
   justify-content: center;
   text-align: center;
   padding: 48px 24px;
-  background: var(--color-black-card);
-  border: 1px dashed var(--color-border-bright);
-  border-radius: var(--radius-lg);
+  background: #ffffff;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 20px;
   margin: 20px 0;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+  box-sizing: border-box;
 }
 
 .empty-state-icon-box {
-  width: 64px;
-  height: 64px;
-  border-radius: var(--radius-md);
-  background: var(--color-violet-subtle);
-  border: 1px solid rgba(126, 59, 237, 0.3);
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-lime);
+  color: #5b5fc7;
   margin-bottom: 16px;
-  box-shadow: 0 0 20px rgba(126, 59, 237, 0.2);
 }
 
 .empty-state-title {
   font-size: 18px;
   font-weight: 700;
-  color: var(--color-white);
+  color: #111827;
   margin-bottom: 6px;
+  letter-spacing: -0.2px;
 }
 
 .empty-state-body {
-  font-size: 14px;
-  color: var(--color-white-dim);
+  font-size: 13.5px;
+  color: #64748b;
   max-width: 420px;
   margin-bottom: 20px;
+  line-height: 1.5;
 }
 
 .empty-state-action {
   margin-top: 4px;
 }
-

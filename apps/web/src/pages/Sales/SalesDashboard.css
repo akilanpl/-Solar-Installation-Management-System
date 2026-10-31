@@ -1,11 +1,11 @@
-/* SalesDashboard Styles */
-.sales-filter-bar {
+/* SalesDashboard Styles - Harmonized with Dashboard UI Theme */
+.sales-filter-bar,
+.sales-filter-tabs {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 18px;
 }
 
 .filter-pills-group {
@@ -14,28 +14,32 @@
   gap: 8px;
 }
 
-.filter-pill {
+.filter-pill,
+.sales-tab-btn {
   padding: 6px 14px;
-  background: var(--color-black-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
-  color: var(--color-white-dim);
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  color: #475569;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
+  font-family: inherit;
 }
 
-.filter-pill:hover {
-  border-color: var(--color-violet);
-  color: var(--color-white);
+.filter-pill:hover,
+.sales-tab-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
-.filter-pill.active {
-  background: var(--color-violet);
-  border-color: var(--color-violet);
-  color: var(--color-white);
-  box-shadow: var(--color-violet-glow);
+.filter-pill.active,
+.sales-tab-btn.active {
+  background: #5b5fc7;
+  border-color: #5b5fc7;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(91, 95, 199, 0.25);
 }
 
 .search-box-wrapper {
@@ -48,24 +52,24 @@
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--color-white-dim);
+  color: #94a3b8;
   pointer-events: none;
 }
 
 .search-box-input {
   width: 100%;
   padding: 8px 12px 8px 36px;
-  background: var(--color-black-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-white);
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 9999px;
+  color: #111827;
   font-size: 13px;
+  font-family: inherit;
+  outline: none;
   transition: all var(--transition-fast);
 }
 
 .search-box-input:focus {
-  outline: none;
-  border-color: var(--color-lime);
-  box-shadow: 0 0 0 2px var(--color-lime-subtle);
+  border-color: #5b5fc7;
+  box-shadow: 0 0 0 3px rgba(91, 95, 199, 0.15);
 }
-

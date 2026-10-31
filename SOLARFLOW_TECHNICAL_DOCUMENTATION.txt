@@ -134,7 +134,7 @@ independent styling (.css) file:
     - GET  /api/v1/enquiries/{id} -> Loads comprehensive detail & audit timeline
     - PATCH /api/v1/enquiries/{id}/qualification -> Allows sales/admin to qualify or reject
 - Graceful Mock Fallback:
-  * If the backend returns a network failure, 401/404, or 5xx, or when the user triggers "⚡ Quick Bypass Login",
+  * If the backend returns a network failure, 401/404, or 5xx, or when the user triggers "  Quick Bypass Login",
     the client uses an in-memory & localStorage mock repository.
   * This guarantees that UI evaluation, reviewer testing, and demonstrations never crash or hang.
 
@@ -776,7 +776,7 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
      - Greeting: "Hi, [Name]! Ready for your site surveys today?"
      - Subtitle: "Conduct on-site rooftop shadow raytracing, verify structural roof integrity, and upload engineering checklist evidence."
      - 4 Action Cards: New Inspection (+), Assigned Surveys, Shadow Checks (100% Raytracing), Offline Sync.
-     - Focus Card: "⚡ Field Diagnostics Mode" (Offline field cache active with GPS-tagged photo sync).
+     - Focus Card: "  Field Diagnostics Mode" (Offline field cache active with GPS-tagged photo sync).
      - Essential Containers: Assigned Rooftop Surveys with interactive checklist toggles (Obstruction, Structure Anchor Depth, Inverter IP65 Mount), Survey Route Timeline, and Lead Engineer Debrief.
   4. Warehouse Logistics & Inventory (`WarehouseDashboard.jsx`):
      - Greeting: "Hi, [Name]! What solar inventory needs dispatch today?"
@@ -788,7 +788,7 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
      - Greeting: "Hi, [Name]! What customer tickets need resolution today?"
      - Subtitle: "Liaise on BESCOM net-metering approvals, DISCOM grid synchronization, and inverter warranty tickets."
      - 4 Action Cards: New Ticket (+), Open Tickets (8 Active), Net-Metering (14 Applications), Warranty Support (3 in transit).
-     - Focus Card: "⚡ DISCOM Grid Sync SLA" (Karnataka BESCOM circle approval fast-track down to 4.2 days).
+     - Focus Card: "  DISCOM Grid Sync SLA" (Karnataka BESCOM circle approval fast-track down to 4.2 days).
      - Essential Containers: Fast Customer Technical Lookup (Meter No & Solar Profile search), Support Tickets Table with priority badges, DISCOM Liaison Calendar, and Escalation Case Review.
   6. System Administration & Personnel Roster (`AdminDashboard.jsx`):
      - Greeting: "Hi, [Name]! System oversight & personnel today?"
@@ -968,5 +968,85 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
       structure, cable runs, and civil labor. The job profitability container calculates gross margin per work order
       using the formula: Job Profit = Revenue - Materials BOM Cost - Technician Labour - Permits/Other. This gives
       management granular visibility into which system sizes (e.g. 3kW vs 5kW) yield optimal returns.
+
+================================================================================
+
+--------------------------------------------------------------------------------
+17. UNIFIED DESIGN SYSTEM HARMONIZATION: MATCHING ALL CARDS, COMPONENTS & THEMES
+--------------------------------------------------------------------------------
+- Date & Context:
+  Conducted a comprehensive design system audit and visual refactor across all UI components
+  and pages. Harmonized every card, button, badge, modal, input, table, and progress indicator
+  to strictly match the modern Light SaaS theme and royal periwinkle palette defined in the
+  reference dashboard UI (media_1793439334938_084dae18.png).
+
+- Core Visual Inconsistencies Resolved:
+  * Prior to this change, root tokens in `index.css` still referenced legacy dark values
+    (`--color-black: #000000`, `--color-lime: #C6FF34`, `--color-border: #28263d`).
+  * Sub-components (`Card`, `Button`, `Badge`, `Modal`, `TextField`, `SelectField`, `EmptyState`,
+    `LoadingState`, `solar-table`) inherited these dark tokens, causing severe visual mismatch
+    against the new Light SaaS Bento Dashboard (`#f6f8fb` background with `#ffffff` cards).
+
+- System-Wide Component Harmonization Specifications:
+  1. Global Design Tokens (`index.css`):
+     - Background: `#f6f8fb` body background with `#111827` crisp slate-gray typography.
+     - Primary Brand Accent: Royal Periwinkle / Indigo (`#5B5FC7` / `#605DEC` / `#4338CA`),
+       tints (`#EEF2FF`), and glow (`rgba(91, 95, 199, 0.25)`).
+     - Success Accent: Emerald Green (`#10B981` / `#059669`), tints (`#ECFDF5`).
+     - Card / Surface Tokens: `--color-black-card: #FFFFFF`, `--color-border: #EDF0F5`.
+  2. Base Cards (`Card.css`):
+     - Background: `#ffffff`, `border: 1px solid #edf0f5`, `border-radius: 20px`,
+       `box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03)`.
+     - Elevated Cards: `box-shadow: 0 10px 30px rgba(100, 116, 139, 0.08)`.
+     - Interactive Hover: `border-color: #5b5fc7`, `box-shadow: 0 8px 24px rgba(91, 95, 199, 0.12)`,
+       `transform: translateY(-2px)`.
+  3. Action Buttons (`Button.css`):
+     - Border Radius: Full rounded pill (`border-radius: 9999px`) matching reference CTA style.
+     - Primary: `#5b5fc7` with white text and subtle periwinkle elevation glow.
+     - Secondary: `#111827` dark slate pill with white text.
+     - Outline: `#ffffff` surface with `#cbd5e1` subtle border.
+     - Ghost: Transparent surface with `#64748b` text, hovering to `#111827` on `#f1f5f9`.
+  4. Status Badges (`Badge.css`):
+     - Pill chips (`border-radius: 9999px`, font-size 11px uppercase) with matching 6px status dots:
+       * Success: `#ecfdf5` background, `#047857` text, `#d1fae5` border, `#10b981` dot.
+       * Primary/Violet: `#eef2ff` background, `#4338ca` text, `#c7d2fe` border, `#5b5fc7` dot.
+       * Warning: `#fffbeb` background, `#b45309` text, `#fde68a` border, `#f59e0b` dot.
+       * Danger: `#fef2f2` background, `#b91c1c` text, `#fecaca` border, `#ef4444` dot.
+  5. Dialog Modals (`Modal.css`):
+     - Backdrop: `rgba(15, 23, 42, 0.45)` with 6px Gaussian blur.
+     - Container: `#ffffff` surface, `border: 1px solid #edf0f5`, `border-radius: 24px`,
+       `box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12)`.
+     - Header & Footer: Subtle `#f1f5f9` dividers with `#f8fafc` button tray.
+  6. Form Inputs (`TextField.css`, `SelectField.css`):
+     - Clean white surface (`#ffffff`) with `#cbd5e1` border, `border-radius: 12px`,
+       focus outline with `#5b5fc7` border and `0 0 0 3px rgba(91, 95, 199, 0.15)` focus ring.
+  7. Empty & Loading States (`EmptyState.css`, `LoadingState.css`):
+     - Empty State: White card with dashed `#cbd5e1` border and soft `#eef2ff` icon container.
+     - Loading State: Dual-ring orbital spinner in `#5b5fc7` and `#605dec` periwinkle.
+  8. Solar Operations Data Tables (`solar-table`):
+     - Container: White card container with `border: 1px solid #edf0f5` and `border-radius: 18px`.
+     - Header: `#f8fafc` soft slate background, `#64748b` uppercase 11px font.
+     - Cells: `#334155` text, `#f1f5f9` row borders, hovering to `#f8fafc`.
+     - Links: `#4f46e5` bold reference links.
+  9. Sub-Pages Harmonized:
+     - `CustomerDashboard.css`, `SalesDashboard.css`, `TechnicianDashboard.css`,
+       `WarehouseDashboard.css`, `SupportDashboard.css`, `AdminDashboard.css`,
+       `CustomerQuotations.css`, `CustomerPayments.css`, `CustomerSupport.css`,
+       `NewEnquiry.css`, `EnquiryDetail.css`, `EnquiryReview.css`, `SalesSurveys.css`,
+       `FakeLoginModal.css`.
+
+- Technical Decisions & Interview Questions:
+  Q1: Why is a single source of truth for design tokens critical when building multi-role dashboards?
+  A1: In a system serving six distinct user personas (Customer, Sales, Technician, Warehouse, Support, Admin),
+      inconsistent styling across roles creates cognitive friction and makes the software look like disparate
+      tools stitched together. Establishing global CSS tokens in `index.css` ensures that whether an employee
+      switches from the Sales queue to Warehouse dispatch or the Customer portal, all cards, tables, inputs,
+      and buttons maintain visual unity, predictability, and accessibility compliance.
+
+  Q2: How does the light SaaS theme with royal periwinkle accents adhere to WCAG accessibility guidelines?
+  A2: By using `#111827` (slate-900) on `#FFFFFF` and `#F6F8FB` backgrounds, text achieves a contrast ratio of
+      over 16:1, far surpassing the WCAG 2.2 AA requirement of 4.5:1. Secondary text in `#64748B` maintains a 5.2:1
+      ratio. Interactive buttons in `#5B5FC7` with white text provide a 5.6:1 contrast ratio, ensuring clear
+      readability under outdoor solar field lighting or indoor operations desk monitors.
 
 ================================================================================

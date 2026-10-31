@@ -45,7 +45,7 @@ export function CustomerSupport() {
 
             {submitted ? (
               <div style={{ padding: '24px', textAlign: 'center', background: 'var(--color-black-surface)', borderRadius: 'var(--radius-sm)' }}>
-                <span style={{ fontSize: '36px' }}>⚡</span>
+                <span style={{ fontSize: '36px' }}> </span>
                 <h4 style={{ fontSize: '18px', fontWeight: '700', marginTop: '12px' }}>Ticket Submitted!</h4>
                 <p style={{ color: 'var(--color-white-dim)', fontSize: '13px', marginTop: '6px' }}>
                   Your service ticket <strong>#TK-1088</strong> is assigned to our customer support engineer.

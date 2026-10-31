@@ -1,4 +1,4 @@
-/* CustomerPayments Styles */
+/* CustomerPayments Styles - Harmonized with Dashboard UI Theme */
 .payment-milestones-list {
   display: flex;
   flex-direction: column;
@@ -11,15 +11,16 @@
   align-items: center;
   justify-content: space-between;
   padding: 18px 20px;
-  background: var(--color-black-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  background: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
   transition: all var(--transition-fast);
 }
 
 .payment-milestone-card.paid {
-  border-color: rgba(198, 255, 52, 0.4);
-  background: linear-gradient(90deg, rgba(198, 255, 52, 0.05), transparent);
+  border-color: #d1fae5;
+  background: #ecfdf5;
 }
 
 .payment-info-col {
@@ -31,7 +32,7 @@
 .payment-title {
   font-size: 15px;
   font-weight: 700;
-  color: var(--color-white);
+  color: #111827;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -39,7 +40,7 @@
 
 .payment-desc {
   font-size: 13px;
-  color: var(--color-white-dim);
+  color: #64748b;
 }
 
 .payment-amount-col {
@@ -52,7 +53,6 @@
 .payment-amount {
   font-size: 18px;
   font-weight: 800;
-  color: var(--color-white);
+  color: #111827;
   font-family: var(--font-mono);
 }
-

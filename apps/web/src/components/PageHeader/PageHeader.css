@@ -1,4 +1,4 @@
-/* PageHeader Component Styles */
+/* PageHeader Component Styles - Harmonized with Dashboard UI Theme */
 .page-header {
   display: flex;
   flex-wrap: wrap;
@@ -7,7 +7,7 @@
   gap: 16px;
   margin-bottom: 28px;
   padding-bottom: 20px;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid #edf0f5;
 }
 
 .page-header-content {
@@ -18,17 +18,18 @@
   font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--color-white);
+  color: #111827;
   display: flex;
   align-items: center;
   gap: 12px;
+  margin: 0;
 }
 
 .page-header-description {
-  font-size: 14px;
-  color: var(--color-white-dim);
+  font-size: 13.5px;
+  color: #64748b;
   margin-top: 6px;
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
 .page-header-action {
@@ -36,4 +37,3 @@
   align-items: center;
   gap: 12px;
 }
-

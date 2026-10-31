@@ -466,7 +466,7 @@ export function DashboardView({
             <span className="dash-greeting-header-line">
               <span>Hi, {firstName}!</span>
               <span className="dash-avatar-cluster">
-                <span className="dash-avatar-ring">⚡</span>
+                <span className="dash-avatar-ring"> </span>
               </span>
             </span>
             <span>{config.greetingQuestion[0]}</span>
@@ -1157,7 +1157,7 @@ export function DashboardView({
                   <h3 className="bento-card-title">SysCache Instant Lookup</h3>
                   <span style={{ fontSize: '11px', color: '#64748b' }}>&lt; 1s search by meter/email</span>
                 </div>
-                <span className="syscache-badge">⚡ SysCache 18ms</span>
+                <span className="syscache-badge">  SysCache 18ms</span>
               </div>
 
               <form onSubmit={handleSysCacheSearch} className="syscache-search-form">

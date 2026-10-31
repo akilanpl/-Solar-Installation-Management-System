@@ -69,7 +69,7 @@ export function VerifyEmail() {
           {devCode && (
             <div className="dev-mailbox-helper-box">
               <span className="dev-mailbox-helper-text">
-                ⚡ Dev Mailbox OTP: <strong>{devCode}</strong>
+                Dev Mailbox OTP: <strong>{devCode}</strong>
               </span>
               <Button size="sm" variant="secondary" onClick={handleUseDevCode}>
                 Autofill

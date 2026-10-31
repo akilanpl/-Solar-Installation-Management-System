@@ -84,7 +84,7 @@ export function CustomerQuotations() {
             key={pkg.id}
             className={`package-card ${pkg.popular ? 'popular' : ''}`}
           >
-            {pkg.popular && <span className="popular-badge">⚡ Recommended</span>}
+            {pkg.popular && <span className="popular-badge">  Recommended</span>}
             <h3 className="package-name">{pkg.name}</h3>
             <p className="package-desc">{pkg.desc}</p>
 

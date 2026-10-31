@@ -1,4 +1,4 @@
-/* SalesSurveys Styles */
+/* SalesSurveys Styles - Harmonized with Dashboard UI Theme */
 .surveys-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -8,18 +8,19 @@
 
 .survey-card {
   padding: 20px;
-  background: var(--color-black-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  background: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
   transition: all var(--transition-fast);
 }
 
 .survey-card:hover {
-  border-color: var(--color-violet);
-  box-shadow: 0 0 20px rgba(126, 59, 237, 0.2);
+  border-color: #5b5fc7;
+  box-shadow: 0 8px 24px rgba(91, 95, 199, 0.12);
 }
 
 .survey-card-header {
@@ -32,13 +33,13 @@
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 700;
-  color: var(--color-lime);
+  color: #4f46e5;
 }
 
 .survey-title {
   font-size: 16px;
   font-weight: 700;
-  color: var(--color-white);
+  color: #111827;
 }
 
 .survey-meta-item {
@@ -46,6 +47,5 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: var(--color-white-dim);
+  color: #64748b;
 }
-

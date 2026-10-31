@@ -25,7 +25,7 @@ export function AuthProvider({ children }) {
       if (lower.includes('demo mode active')) {
         type = 'success';
         title = 'Demo Mode Active';
-        message = content.replace(/^⚡?\s*demo mode active:?\s*/i, '');
+        message = content.replace(/^ ?\s*demo mode active:?\s*/i, '');
       } else if (lower.includes('error') || lower.includes('failed') || lower.includes('invalid') || lower.includes('denied') || lower.includes('unable')) {
         type = 'error';
         title = options.title || 'Error message';

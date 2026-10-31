@@ -1,4 +1,4 @@
-/* NewEnquiry Form Styles */
+/* NewEnquiry Form Styles - Harmonized with Dashboard UI Theme */
 .enquiry-layout-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -19,35 +19,36 @@
 }
 
 .capacity-preset-btn {
-  padding: 8px 16px;
-  background: var(--color-black-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-white);
+  padding: 7px 16px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  color: #475569;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
+  font-family: inherit;
 }
 
 .capacity-preset-btn:hover {
-  border-color: var(--color-violet);
-  color: var(--color-white);
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 .capacity-preset-btn.selected {
-  background: var(--color-violet);
-  border-color: var(--color-violet);
-  color: var(--color-white);
-  box-shadow: var(--color-violet-glow);
+  background: #5b5fc7;
+  border-color: #5b5fc7;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(91, 95, 199, 0.25);
 }
 
 /* Solar Estimator Card */
 .estimator-summary-box {
-  background: linear-gradient(180deg, var(--color-black-card), var(--color-black-surface));
-  border: 1px solid var(--color-lime);
-  box-shadow: 0 0 20px rgba(198, 255, 52, 0.15);
-  border-radius: var(--radius-md);
+  background: #ffffff;
+  border: 1px solid #edf0f5;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border-radius: 20px;
   padding: 24px;
   position: sticky;
   top: 90px;
@@ -57,9 +58,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 16px;
+  font-size: 14.5px;
   font-weight: 800;
-  color: var(--color-lime);
+  color: #5b5fc7;
   margin-bottom: 16px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -70,40 +71,40 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 0;
-  border-bottom: 1px solid var(--color-border-subtle);
+  border-bottom: 1px solid #f1f5f9;
   font-size: 13px;
 }
 
 .estimator-metric-label {
-  color: var(--color-white-dim);
+  color: #64748b;
 }
 
 .estimator-metric-val {
   font-weight: 700;
-  color: var(--color-white);
+  color: #111827;
   font-family: var(--font-mono);
 }
 
 .estimator-highlight {
   margin-top: 20px;
   padding: 14px;
-  background: var(--color-lime-subtle);
-  border: 1px solid rgba(198, 255, 52, 0.3);
-  border-radius: var(--radius-sm);
+  background: #ecfdf5;
+  border: 1px solid #d1fae5;
+  border-radius: 14px;
   text-align: center;
 }
 
 .estimator-highlight-val {
   font-size: 24px;
   font-weight: 800;
-  color: var(--color-lime);
+  color: #047857;
 }
 
 .estimator-highlight-label {
   font-size: 11px;
-  font-weight: 600;
-  color: var(--color-white-muted);
+  font-weight: 700;
+  color: #065f46;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  margin-top: 2px;
 }
-
