@@ -1,0 +1,75 @@
+"""Executable mandatory release campaign; explicit, maintained behavioral catalog.
+
+Pytest collects the original assertion-bearing tests with their parameterization.
+No results are synthesized. These executions repeat existing regressions and
+must not be represented as newly authored distinct tests in release totals.
+Database marking here retains truncation/isolation because module-level marks
+on imported source tests do not transfer automatically.
+"""
+
+import pytest
+from tests.test_calendar_acceptance import (
+    test_only_admin_can_record_qualifications as test_only_admin_can_record_qualifications,
+)
+from tests.test_calendar_acceptance import (
+    test_unknown_availability_fails_closed as test_unknown_availability_fails_closed,
+)
+from tests.test_location_fulfilment import (
+    test_inspected_return_compensates_once_and_enforces_role as test_inspected_return_compensates_once_and_enforces_role,
+)
+from tests.test_location_fulfilment import (
+    test_location_allocation_is_idempotent_and_blocks_transfer as test_location_allocation_is_idempotent_and_blocks_transfer,
+)
+from tests.test_location_fulfilment import (
+    test_partial_multi_location_pick_confirm_cancel_and_retry as test_partial_multi_location_pick_confirm_cancel_and_retry,
+)
+from tests.test_location_fulfilment import (
+    test_supplier_chain_requires_approval_and_matching_validated_receipt as test_supplier_chain_requires_approval_and_matching_validated_receipt,
+)
+from tests.test_location_fulfilment import (
+    test_unpicked_allocation_can_be_released_but_picked_custody_cannot_be_erased as test_unpicked_allocation_can_be_released_but_picked_custody_cannot_be_erased,
+)
+from tests.test_phase3_warehouse_installation import (
+    test_confirmed_order_creates_reservations as test_confirmed_order_creates_reservations,
+)
+from tests.test_phase3_warehouse_installation import (
+    test_cross_phase_order_to_completed_installation as test_cross_phase_order_to_completed_installation,
+)
+from tests.test_phase3_warehouse_installation import (
+    test_customer_cannot_touch_warehouse_and_scheduling_guards as test_customer_cannot_touch_warehouse_and_scheduling_guards,
+)
+from tests.test_phase3_warehouse_installation import (
+    test_delivery_confirm_activates_warranty_and_blocks_replay as test_delivery_confirm_activates_warranty_and_blocks_replay,
+)
+from tests.test_phase3_warehouse_installation import (
+    test_job_completion_requires_otp_evidence_and_signature as test_job_completion_requires_otp_evidence_and_signature,
+)
+from tests.test_phase3_warehouse_installation import (
+    test_serial_scan_is_unique_and_bounded_by_validated_receipt as test_serial_scan_is_unique_and_bounded_by_validated_receipt,
+)
+from tests.test_phase3_warehouse_installation import (
+    test_stock_receipt_validates_and_reports_on_hand as test_stock_receipt_validates_and_reports_on_hand,
+)
+from tests.test_product_coverage import (
+    test_recorded_receipts_are_owner_scoped_and_not_provider_claims as test_recorded_receipts_are_owner_scoped_and_not_provider_claims,
+)
+from tests.test_product_coverage import (
+    test_serial_policy_snapshot_activation_return_and_customer_isolation as test_serial_policy_snapshot_activation_return_and_customer_isolation,
+)
+from tests.test_serial_movement import (
+    test_a_returned_unit_can_have_a_new_custody_episode_without_erasing_old_delivery as test_a_returned_unit_can_have_a_new_custody_episode_without_erasing_old_delivery,
+)
+from tests.test_serial_movement import (
+    test_count_adjustment_requires_manager_reason_and_preserves_missing_identity as test_count_adjustment_requires_manager_reason_and_preserves_missing_identity,
+)
+from tests.test_serial_movement import (
+    test_dispatched_goods_cannot_be_auto_restocked_by_cancellation as test_dispatched_goods_cannot_be_auto_restocked_by_cancellation,
+)
+from tests.test_serial_movement import (
+    test_transfer_updates_exact_unit_location_and_retains_history as test_transfer_updates_exact_unit_location_and_retains_history,
+)
+from tests.test_serial_movement import (
+    test_unidentified_hardware_cannot_allocate_or_bypass_order_dispatch as test_unidentified_hardware_cannot_allocate_or_bypass_order_dispatch,
+)
+
+pytestmark = pytest.mark.database
