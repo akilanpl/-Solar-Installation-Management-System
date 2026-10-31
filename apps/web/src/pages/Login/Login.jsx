@@ -86,11 +86,10 @@ export function Login({ initialMode = 'login' }) {
 
   return (
     <div className="auth-page-viewport">
-      <div className="auth-card-container">
-        {/* ================================================================
-            LEFT HERO PANEL (Vibrant Royal Blue Gradient with 3 Step Cards)
-            ================================================================ */}
-        <section className="auth-hero-panel" aria-label="Hero Introduction">
+      {/* ================================================================
+          LEFT HERO PANEL (Vibrant Royal Blue Gradient with 3 Step Cards)
+          ================================================================ */}
+      <section className="auth-hero-panel" aria-label="Hero Introduction">
           {/* Brand Logo & Title (Top Left) */}
           <Link href="/" className="auth-hero-brand">
             <div className="auth-hero-brand-icon">
@@ -419,7 +418,6 @@ export function Login({ initialMode = 'login' }) {
             </p>
           </div>
         </section>
-      </div>
 
       {/* Modal View for Full Persona Switcher */}
       <FakeLoginModal

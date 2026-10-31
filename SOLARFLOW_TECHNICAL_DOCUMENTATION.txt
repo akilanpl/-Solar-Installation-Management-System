@@ -570,3 +570,75 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
       switches, avoids duplicating validation logic, and keeps bundle sizes lean.
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+13. FULL-SCREEN EDGE-TO-EDGE AUTHENTICATION VIEWPORT (REMOVING CONTAINER CONSTRAINTS)
+--------------------------------------------------------------------------------
+- Date & Context:
+  Removed the constrained bounding card container (`max-width: 1160px` with outer dark
+  margins) and elevated the layout to a true full-screen, edge-to-edge dual-panel
+  experience spanning the entire 100vw x 100vh viewport.
+
+- Key Architecture & Visual Elements:
+  1. Full Viewport Canvas (100vw x 100vh):
+     - Eliminated outer dark margins, borders, and fixed container widths.
+     - Root `.auth-page-viewport` spans the entire screen with a clean white base and
+       `overflow-x: hidden`.
+  2. Left Hero Panel (Full-Height Canvas - 52% Width):
+     - Spans the full height of the viewport with a vibrant royal/electric blue gradient
+       (`linear-gradient(145deg, #1d4ed8 0%, #2563eb 35%, #1e40af 70%, #172554 100%)`).
+     - Features 28px smooth rounded corners with subtle drop shadow, ambient top lighting,
+       brand logo (connected node glyph + "ninth"), "Join Us to Build 🤩" glass pill badge,
+       large bold heading ("Start your Journey"), and the 3-step process cards.
+  3. Right Form Panel (Full-Height Canvas - 48% Width):
+     - Pure white edge-to-edge canvas with centered 420px max-width form container.
+     - Clean fields: Phone number (+374 / +91), 2-column Full Name / Role & validated Username,
+       masked password with eye toggle, full-width blue "Continue" button, "Or" divider,
+       Google SSO button, 1-Click Demo Bypass pills, and legal terms note.
+  4. Responsive Stacking:
+     - Automatically transitions to a fluid vertical stack on tablets and mobile screens (< 1024px)
+       without horizontal scrollbars.
+
+- Files Modified:
+  * apps/web/src/pages/Login/Login.jsx
+  * apps/web/src/pages/Login/Login.css
+
+- React Concepts & Hooks Used:
+  * Flattened DOM Hierarchy:
+    - Direct flex children under `.auth-page-viewport` eliminate container nesting bugs
+      and enable 100% viewport height calculations.
+  * Controlled Inputs & State Bindings:
+    - Preserved `phone`, `fullName`, `identifier`, `password`, `showPassword`, and `mode` state.
+
+- How the Code Works Step-by-Step:
+  1. When navigating to `/login` or `/signup`, the page fills 100% of the screen width and height.
+  2. The left half displays the vibrant royal blue onboarding canvas while the right half
+     centers the clean authentication form.
+  3. Form submission routes to `login()` or `signup()` via `AuthContext`, or triggers instant
+     bypass via `handleQuickBypass()`.
+
+- How the Frontend Communicates with the Backend:
+  * Requests are dispatched to the FastAPI backend at `/api/v1/auth/login` and `/api/v1/customers/register`.
+  * Real-time notifications are displayed via the wave alert component.
+
+- Important Technical Decisions & Reasons:
+  * True Edge-to-Edge Display: Prevents the interface from looking like a small floating modal
+    on high-resolution displays, creating an immersive enterprise-grade aesthetic.
+
+- Bugs Encountered & Fixes:
+  * Horizontal scrollbar artifact on viewport width: Handled by setting `overflow-x: hidden`
+    and using clean flex percentage widths (`52%` and `48%`).
+
+- Technical Interview Questions & Answers:
+  Q1: What are the layout and performance implications of using 100vw versus 100% width in full-screen web applications?
+  A1: While 100% references the parent container width excluding margins/padding, 100vw references the
+      browser window including the scrollbar gutter. If a vertical scrollbar appears, 100vw can induce
+      horizontal scroll. Combining 100vw with `overflow-x: hidden` or `width: 100%` on body guarantees
+      seamless edge-to-edge presentation.
+
+  Q2: How does a full-bleed viewport improve mobile-first responsive design?
+  A2: Without fixed-pixel constraints, the layout smoothly collapses from an expansive 50/50 horizontal
+      split on desktop to a single-column vertical stack on mobile devices with zero layout shift.
+
+================================================================================

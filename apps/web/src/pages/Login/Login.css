@@ -1,52 +1,40 @@
 /* ==========================================================================
-   SOLARFLOW / SOLAROPS - AUTHENTICATION HERO LAYOUT (LOGIN / SIGNUP)
-   Faithful dual-panel architecture matching the uploaded design reference:
-   Left: Vibrant royal/electric blue hero panel with brand, badge, heading & 3-step cards
-   Right: Clean, elegant white form panel with phone input, 2-column fields,
+   SOLARFLOW / SOLAROPS - FULL-SCREEN DUAL-PANEL AUTHENTICATION (LOGIN / SIGNUP)
+   Full viewport (100vw × 100vh) edge-to-edge layout matching the design reference:
+   Left: Full-height vibrant royal/electric blue hero panel with brand, badge,
+         heading & 3-step cards.
+   Right: Full-height clean white form panel with phone input, 2-column fields,
           password with requirements, continue CTA, Google SSO & 1-click bypass.
    ========================================================================== */
 
-/* Outer Page Viewport */
+/* Full Screen Edge-to-Edge Viewport */
 .auth-page-viewport {
+  width: 100vw;
   min-height: 100vh;
-  width: 100%;
-  background-color: #0c0d14;
-  background-image: 
-    radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.12) 0%, transparent 45%),
-    radial-gradient(circle at 85% 85%, rgba(126, 59, 237, 0.12) 0%, transparent 45%);
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 20px;
+  overflow-x: hidden;
   box-sizing: border-box;
   font-family: inherit;
-}
-
-/* Main Auth Card Container */
-.auth-card-container {
-  display: flex;
-  width: 100%;
-  max-width: 1160px;
-  min-height: 720px;
-  background-color: #ffffff;
-  border-radius: 32px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.2);
-  overflow: hidden;
   position: relative;
-  box-sizing: border-box;
 }
 
 /* ==========================================================================
-   LEFT HERO PANEL (Royal Blue / Electric Gradient Canvas)
+   LEFT HERO PANEL (Full-Height Royal Blue / Electric Gradient Canvas)
    ========================================================================== */
 .auth-hero-panel {
   flex: 1.15;
+  width: 52%;
+  min-height: calc(100vh - 28px);
+  margin: 14px 10px 14px 14px;
   background: 
-    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.2) 0%, transparent 40%),
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.22) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(30, 64, 175, 0.35) 0%, transparent 50%),
     linear-gradient(145deg, #1d4ed8 0%, #2563eb 35%, #1e40af 70%, #172554 100%);
-  border-radius: 24px;
-  margin: 14px;
-  padding: 38px 36px 34px 36px;
+  border-radius: 28px;
+  padding: 44px 44px 38px 44px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -54,30 +42,36 @@
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
+  box-shadow: 0 16px 40px rgba(29, 78, 216, 0.22);
 }
 
 /* Brand Logo (Top Left) */
 .auth-hero-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-decoration: none;
   color: #ffffff;
   z-index: 2;
+  transition: opacity 150ms ease;
+}
+
+.auth-hero-brand:hover {
+  opacity: 0.9;
 }
 
 .auth-hero-brand-icon {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .auth-hero-brand-name {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.6px;
   color: #ffffff;
 }
 
@@ -85,6 +79,7 @@
 .auth-hero-content {
   z-index: 2;
   margin-top: auto;
+  max-width: 560px;
 }
 
 /* "Join Us to Build 🤩" Pill Badge */
@@ -93,47 +88,48 @@
   align-items: center;
   gap: 8px;
   background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 9999px;
-  padding: 6px 16px;
-  font-size: 13px;
+  padding: 8px 18px;
+  font-size: 13.5px;
   font-weight: 500;
   color: #ffffff;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* Heading & Subtitle */
 .auth-hero-title {
-  font-size: 38px;
+  font-size: 44px;
   font-weight: 700;
   color: #ffffff;
-  margin: 0 0 10px 0;
-  letter-spacing: -0.8px;
-  line-height: 1.15;
+  margin: 0 0 12px 0;
+  letter-spacing: -1px;
+  line-height: 1.12;
 }
 
 .auth-hero-subtitle {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.85);
-  margin: 0 0 28px 0;
-  line-height: 1.45;
-  max-width: 420px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.88);
+  margin: 0 0 32px 0;
+  line-height: 1.5;
+  max-width: 480px;
 }
 
 /* 3-Step Process Cards Row */
 .auth-hero-steps-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 14px;
   width: 100%;
 }
 
 .auth-step-card {
-  height: 114px;
-  border-radius: 16px;
-  padding: 14px 12px;
+  height: 120px;
+  border-radius: 18px;
+  padding: 16px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -150,24 +146,24 @@
 .auth-step-card.active {
   background: #ffffff;
   color: #111827;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
 }
 
 .auth-step-card.active .auth-step-badge {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: #2563eb;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 
 .auth-step-card.active .auth-step-label {
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 600;
   color: #111827;
   line-height: 1.25;
@@ -175,23 +171,23 @@
 
 /* Steps 2 & 3: Translucent Glassmorphic Cards */
 .auth-step-card.inactive {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.22);
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .auth-step-card.inactive .auth-step-badge {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.25);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -203,32 +199,35 @@
 }
 
 /* ==========================================================================
-   RIGHT FORM PANEL (Clean White Form Architecture)
+   RIGHT FORM PANEL (Full-Height Clean White Form Canvas)
    ========================================================================== */
 .auth-form-panel {
   flex: 1;
+  width: 48%;
+  min-height: 100vh;
   background-color: #ffffff;
-  padding: 40px 48px;
+  padding: 44px 56px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .auth-form-inner {
   width: 100%;
-  max-width: 410px;
+  max-width: 420px;
 }
 
-/* Heading: "Join Us" or "Sign In" */
+/* Heading: "Join Us" */
 .auth-form-heading {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
   color: #111827;
   text-align: center;
-  margin: 0 0 24px 0;
-  letter-spacing: -0.4px;
+  margin: 0 0 26px 0;
+  letter-spacing: -0.6px;
 }
 
 /* Form Groups & Labels */
@@ -255,7 +254,7 @@
   border-radius: 12px;
   padding: 0 14px;
   height: 48px;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
   box-sizing: border-box;
 }
 
@@ -319,7 +318,7 @@
   border-radius: 12px;
   padding: 0 14px;
   height: 48px;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
   box-sizing: border-box;
   position: relative;
 }
@@ -402,7 +401,7 @@
 .auth-continue-btn:hover:not(:disabled) {
   background-color: #1d4ed8;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
 }
 
 .auth-continue-btn:active:not(:disabled) {
@@ -562,18 +561,22 @@
    RESPONSIVE DESIGN (Tablets & Mobile Viewports)
    ========================================================================== */
 @media (max-width: 1024px) {
-  .auth-card-container {
+  .auth-page-viewport {
     flex-direction: column;
-    max-width: 580px;
+    min-height: 100vh;
+    height: auto;
   }
 
   .auth-hero-panel {
+    width: auto;
     margin: 12px;
-    padding: 28px 24px;
+    padding: 32px 24px;
+    min-height: auto;
+    border-radius: 20px;
   }
 
   .auth-hero-title {
-    font-size: 30px;
+    font-size: 32px;
   }
 
   .auth-hero-steps-grid {
@@ -588,27 +591,21 @@
     align-items: center;
     justify-content: flex-start;
     gap: 12px;
-    padding: 10px 14px;
+    padding: 12px 14px;
   }
 
   .auth-form-panel {
-    padding: 32px 24px;
+    width: 100%;
+    min-height: auto;
+    padding: 36px 24px 44px 24px;
   }
 }
 
 @media (max-width: 640px) {
-  .auth-page-viewport {
-    padding: 12px;
-  }
-
-  .auth-card-container {
-    border-radius: 20px;
-  }
-
   .auth-hero-panel {
-    border-radius: 16px;
     margin: 8px;
-    padding: 22px 18px;
+    padding: 24px 18px;
+    border-radius: 16px;
   }
 
   .auth-hero-title {
@@ -620,6 +617,6 @@
   }
 
   .auth-form-panel {
-    padding: 24px 16px;
+    padding: 24px 16px 36px 16px;
   }
 }
