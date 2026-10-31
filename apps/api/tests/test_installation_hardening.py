@@ -361,3 +361,55 @@ def test_equipment_swap_after_customer_acknowledgment_invalidates_completion(cli
     response = client.post(f"/api/v1/jobs/{job['id']}/completion", headers=_technician(client))
     assert response.status_code == 409, response.text
     assert response.json()["error"]["code"] == "acceptance_invalid"
+
+
+def test_historical_signed_summary_survives_timezone_normalization(client, application):
+    """Preserved v1 fixture remains valid; current code must not rewrite its proof."""
+    import json
+    from zoneinfo import ZoneInfo
+
+    from app.core.security import hash_secret, utcnow
+
+    job, code, _, _ = prepared(client, application)
+    tech = _technician(client)
+    assert (
+        client.post(
+            f"/api/v1/jobs/{job['id']}/customer-otp", json={"code": code}, headers=tech
+        ).status_code
+        == 200
+    )
+    customer(client)
+    summary = client.get(f"/api/v1/jobs/{job['id']}/work-summary").json()["summary"]
+    summary.pop("equipment")
+    summary["arrival_at"] = (
+        datetime.fromisoformat(summary["arrival_at"])
+        .astimezone(ZoneInfo("Asia/Kolkata"))
+        .isoformat()
+    )
+    summary_hash = hashlib.sha256(
+        json.dumps(summary, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    with Session(application.state.engine) as db:
+        row = db.get(InstallationJob, uuid.UUID(job["id"]))
+        payload = {
+            "signature_ref": "Historical customer fixture",
+            "customer_confirmed": True,
+            "summary_hash": summary_hash,
+            "customer_user_id": str(
+                db.scalar(select(User.id).where(User.email == "leela@example.com"))
+            ),
+            "job_id": job["id"],
+            "accepted_at": utcnow().isoformat(),
+            "summary": summary,
+        }
+        payload["payload_hmac"] = hash_secret(
+            json.dumps(payload, sort_keys=True, separators=(",", ":")),
+            application.state.settings.secret_key,
+        )
+        row.signature = payload
+        db.commit()
+    assert (
+        client.get(f"/api/v1/jobs/{job['id']}/work-summary").json()["summary_hash"] == summary_hash
+    )
+    completed = client.post(f"/api/v1/jobs/{job['id']}/completion", headers=_technician(client))
+    assert completed.status_code == 200, completed.text

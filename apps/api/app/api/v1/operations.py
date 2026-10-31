@@ -21,10 +21,14 @@ from app.services import location_allocation, operational_records
 router = APIRouter(tags=["operational-custody"])
 
 
+class AllocationLine(DeliveryPickLine):
+    quantity: int = Field(ge=0, le=100000)
+
+
 class AllocationCreate(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     order_id: UUID
-    lines: list[DeliveryPickLine] = Field(min_length=1, max_length=200)
+    lines: list[AllocationLine] = Field(min_length=1, max_length=200)
 
 
 class AllocationResponse(BaseModel):
@@ -58,7 +62,7 @@ def allocations(order_id: UUID, user: User = Depends(current_user), db: Session 
 
 
 class ReturnCreate(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     delivery_line_id: UUID
     quantity: int = Field(gt=0, le=100000)
     reason: str = Field(min_length=5, max_length=1000)
@@ -66,7 +70,7 @@ class ReturnCreate(BaseModel):
 
 
 class ReturnInspection(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     disposition: Literal["restock", "damaged"]
     note: str = Field(min_length=5, max_length=1000)
 
@@ -110,7 +114,7 @@ def inspect_return(
 
 
 class SupplierOrderCreate(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     replenishment_request_id: UUID
     supplier_name: str = Field(min_length=2, max_length=160)
     supplier_reference: str = Field(min_length=2, max_length=160)
@@ -124,7 +128,7 @@ class SupplierOrderResponse(SupplierOrderCreate):
 
 
 class SupplierReceiptLink(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     operation_id: UUID
 
 

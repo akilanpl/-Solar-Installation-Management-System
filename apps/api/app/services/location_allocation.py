@@ -50,7 +50,7 @@ def allocate(db, user, order_id, lines):
     for item in lines:
         code, loc, qty = item["component_code"], item["location_code"], item["quantity"]
         if (
-            qty <= 0
+            qty < 0
             or code not in reservations
             or loc == "QUARANTINE"
             or db.get(WarehouseLocation, loc) is None
@@ -58,7 +58,7 @@ def allocate(db, user, order_id, lines):
             raise AppError(
                 422,
                 "invalid_allocation",
-                "Select an ordered component, positive quantity and usable location.",
+                "Select an ordered component, nonnegative allocation quantity and usable location.",
             )
         wanted[(code, loc)] += qty
     for (code, loc), qty in sorted(wanted.items()):
@@ -90,9 +90,11 @@ def allocate(db, user, order_id, lines):
             raise AppError(
                 409, "insufficient_stock", "Location stock is already allocated or insufficient."
             )
-        if row:
+        if row and qty == 0:
+            db.delete(row)
+        elif row:
             row.quantity = qty
-        else:
+        elif qty > 0:
             db.add(
                 StockAllocation(
                     reservation_id=r.id, location_code=loc, quantity=qty, picked_quantity=0

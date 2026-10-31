@@ -15,7 +15,7 @@ from app.api.v1.razorpay import webhook_router
 from app.api.v1.router import api_router
 from app.core.config import Settings, get_settings
 from app.core.errors import AppError, error_body
-from app.core.rate_limit import RateLimiter
+from app.core.rate_limit import RateLimiter, SharedRateLimiter
 from app.db.session import build_engine, build_session_factory
 from app.services.email_sender import build_email_sender
 
@@ -29,7 +29,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.state.engine = build_engine(settings.database_url)
     application.state.session_factory = build_session_factory(application.state.engine)
     application.state.email_sender = build_email_sender(settings)
-    application.state.limiter = RateLimiter()
+    application.state.limiter = (
+        SharedRateLimiter(application.state.engine, settings.secret_key)
+        if settings.app_env == "production"
+        else RateLimiter()
+    )
 
     application.add_middleware(
         CORSMiddleware,
@@ -49,9 +53,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         started = time.monotonic()
         response = await call_next(request)
         response.headers["X-Request-ID"] = request_id
-        logger.info("request_completed", extra={"request_id": request_id, "method": request.method,
-            "path": request.url.path, "status": response.status_code,
-            "duration_ms": round((time.monotonic() - started) * 1000, 2)})
+        logger.info(
+            "request_completed",
+            extra={
+                "request_id": request_id,
+                "method": request.method,
+                "path": request.url.path,
+                "status": response.status_code,
+                "duration_ms": round((time.monotonic() - started) * 1000, 2),
+            },
+        )
         return response
 
     @application.exception_handler(HTTPException)

@@ -21,7 +21,7 @@ router = APIRouter(tags=["product-warranty"])
 
 
 class PolicyInput(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     component_code: str = Field(min_length=2, max_length=32)
     months: int = Field(ge=1, le=600)
     activation_event: Literal["delivery", "installation"]

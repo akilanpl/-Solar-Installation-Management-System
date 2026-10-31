@@ -207,3 +207,97 @@ def test_browser_callback_needs_signature_and_authenticated_provider_fetch(
     _customer(client, application, "provider-other@example.com")
     other_headers = _login(client, "customer", "provider-other@example.com", "Solarops123")
     assert client.post(path, json=payload, headers=other_headers).status_code == 404
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        [],
+        {},
+        {"event": "x" * 81},
+        {"event": "payment.captured", "payload": {}},
+        {
+            "event": "payment.captured",
+            "payload": {"payment": {"entity": {"order_id": "order_Unknown"}}},
+        },
+    ],
+)
+def test_signed_malformed_webhooks_never_create_financial_records(
+    client, application, monkeypatch, payload
+):
+    _, headers, body = _setup(client, application, monkeypatch)
+    _order(client, headers, body)
+    result = _send(client, payload)
+    assert result.status_code in {400, 409}, result.text
+    with Session(application.state.engine) as db:
+        assert db.scalar(select(PaymentIntent.status)) == "pending"
+        assert db.scalar(select(func.count()).select_from(ProviderEvent)) == 0
+
+
+@pytest.mark.parametrize(
+    "failure",
+    ["noncapture", "negative-refund", "oversized-refund", "duplicate-key", "missing-event-id"],
+)
+def test_invalid_capture_metadata_cannot_verify_payment(client, application, monkeypatch, failure):
+    _, headers, body = _setup(client, application, monkeypatch)
+    order = _order(client, headers, body)
+    payload = _event(order)
+    entity = payload["payload"]["payment"]["entity"]
+    if failure == "noncapture":
+        entity["captured"] = False
+    if failure == "negative-refund":
+        entity["amount_refunded"] = -1
+    if failure == "oversized-refund":
+        entity["amount_refunded"] = body["amount_minor"] + 1
+    if failure == "duplicate-key":
+        conflicting = {**body, "amount_minor": body["amount_minor"] - 100}
+        assert (
+            client.post(
+                "/api/v1/payments/razorpay/orders",
+                json=conflicting,
+                headers={**headers, "Idempotency-Key": "provider-order-once"},
+            ).status_code
+            == 409
+        )
+        return
+    result = _send(
+        client, payload, event_id="" if failure == "missing-event-id" else "evt_invalid_meta"
+    )
+    assert result.status_code in {400, 409}
+    with Session(application.state.engine) as db:
+        assert db.scalar(select(PaymentIntent.status)) == "pending"
+
+
+def test_signed_unknown_events_are_audited_without_financial_mutation(
+    client, application, monkeypatch
+):
+    _, headers, body = _setup(client, application, monkeypatch)
+    _order(client, headers, body)
+    result = _send(client, {"event": "account.unsupported_event"})
+    assert result.status_code == 200, result.text
+    assert result.json()["status"] == "ignored"
+    with Session(application.state.engine) as db:
+        assert db.scalar(select(PaymentIntent.status)) == "pending"
+        assert db.scalar(select(ProviderEvent.status)) == "ignored"
+
+
+def test_ambiguous_order_cannot_be_retried_under_new_idempotency_key(
+    client, application, monkeypatch
+):
+    _, headers, body = _setup(client, application, monkeypatch)
+
+    def timeout(*args, **kwargs):
+        raise httpx.ReadTimeout("isolated timeout")
+
+    monkeypatch.setattr(razorpay_service, "provider_request", timeout)
+    original = _order(client, headers, body)
+    replay = _order(client, headers, body, "new-key-same-unknown-attempt")
+    assert replay["payment"]["id"] == original["payment"]["id"]
+    changed = {**body, "amount_minor": body["amount_minor"] - 100}
+    blocked = client.post(
+        "/api/v1/payments/razorpay/orders",
+        json=changed,
+        headers={**headers, "Idempotency-Key": uuid.uuid4().hex},
+    )
+    assert blocked.status_code == 409
+    assert blocked.json()["error"]["code"] == "payment_reconciliation_required"

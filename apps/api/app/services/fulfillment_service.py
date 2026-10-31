@@ -242,12 +242,16 @@ def create_delivery(
             allowed = {
                 row.location_code: row.quantity - row.picked_quantity for row in own_allocations
             }
-            # Stable actual location priority; quarantine is never saleable stock.
-            for loc in db.scalars(
-                select(WarehouseLocation.code)
-                .where(WarehouseLocation.code != "QUARANTINE")
-                .order_by(WarehouseLocation.code)
-            ):
+            # Use this order's reserved locations first, then genuinely
+            # unallocated stock. Allocation never invents on-hand goods.
+            unallocated = reservations[code].quantity - sum(row.quantity for row in own_allocations)
+            locations = list(
+                db.scalars(
+                    select(WarehouseLocation.code).where(WarehouseLocation.code != "QUARANTINE")
+                )
+            )
+            locations.sort(key=lambda loc: (allowed.get(loc, 0) <= 0, loc))
+            for loc in locations:
                 qty = min(
                     quantity,
                     max(
@@ -257,11 +261,11 @@ def create_delivery(
                             - outstanding(db, code, loc, exclude_order=order.id)
                         ),
                     ),
+                    allowed.get(loc, 0) + unallocated,
                 )
-                if own_allocations:
-                    qty = min(qty, allowed.get(loc, 0))
                 if qty:
                     wanted[(code, loc)] += qty
+                    unallocated -= max(0, qty - allowed.get(loc, 0))
                     quantity -= qty
                 if not quantity:
                     break
@@ -308,18 +312,28 @@ def create_delivery(
                 .with_for_update()
             )
         )
-        if allocated:
-            for (c, loc), qty in wanted.items():
-                if c != code:
-                    continue
-                row = next((a for a in allocated if a.location_code == loc), None)
-                if row is None or row.quantity - row.picked_quantity < qty:
-                    raise AppError(
-                        409,
-                        "allocation_mismatch",
-                        "Pick must use the order's actual location allocation.",
-                    )
-                row.picked_quantity += qty
+        unallocated = r.quantity - sum(row.quantity for row in allocated)
+        for (c, loc), qty in wanted.items():
+            if c != code:
+                continue
+            row = next((a for a in allocated if a.location_code == loc), None)
+            available = row.quantity - row.picked_quantity if row else 0
+            needed = max(0, qty - available)
+            if needed > unallocated:
+                raise AppError(
+                    409,
+                    "allocation_mismatch",
+                    "Other units are reserved at another location; release/reallocate them before picking here.",
+                )
+            if row is None:
+                row = StockAllocation(
+                    reservation_id=r.id, location_code=loc, quantity=qty, picked_quantity=0
+                )
+                db.add(row)
+            else:
+                row.quantity += needed
+            row.picked_quantity += qty
+            unallocated -= needed
     delivery = Delivery(
         reference=next_reference(db, "delivery", "DLV"),
         order_id=order.id,
@@ -469,8 +483,17 @@ def assign_serial(
     if user.role_code not in WAREHOUSE:
         raise AppError(403, "forbidden", "Only warehouse staff can assign serials.")
     db.scalar(select(SalesOrder.id).where(SalesOrder.id == order_id).with_for_update())
+    peek = db.get(EquipmentSerial, serial_id)
+    if peek is None:
+        raise AppError(404, "not_found", "Serial not found.")
+    from app.services.inventory_service import lock_components
+
+    lock_components(db, [peek.component_code])
     serial = db.scalar(
-        select(EquipmentSerial).where(EquipmentSerial.id == serial_id).with_for_update()
+        select(EquipmentSerial)
+        .where(EquipmentSerial.id == serial_id)
+        .with_for_update()
+        .execution_options(populate_existing=True)
     )
     if serial is None:
         raise AppError(404, "not_found", "Serial not found.")
@@ -517,6 +540,57 @@ def assign_serial(
     )
     if assigned >= required:
         raise AppError(409, "serial_over_assignment", "All ordered units already have serials.")
+    from app.models.operations import StockAllocation
+    from app.services.location_allocation import allocate
+
+    reservation = db.scalar(
+        select(StockReservation)
+        .where(
+            StockReservation.order_id == order.id,
+            StockReservation.component_code == serial.component_code,
+        )
+        .with_for_update()
+    )
+    if reservation is None:
+        raise AppError(409, "reservations_missing", "Order material demand is not reserved.")
+    allocation = db.scalar(
+        select(StockAllocation).where(
+            StockAllocation.reservation_id == reservation.id,
+            StockAllocation.location_code == serial.location_code,
+        )
+    )
+    units = (
+        int(
+            db.scalar(
+                select(func.count())
+                .select_from(EquipmentSerial)
+                .where(
+                    EquipmentSerial.order_id == order.id,
+                    EquipmentSerial.component_code == serial.component_code,
+                    EquipmentSerial.location_code == serial.location_code,
+                    EquipmentSerial.status == "reserved",
+                )
+            )
+            or 0
+        )
+        + 1
+    )
+    desired = max(
+        allocation.quantity if allocation else 0,
+        (allocation.picked_quantity if allocation else 0) + units,
+    )
+    allocate(
+        db,
+        user,
+        order.id,
+        [
+            {
+                "component_code": serial.component_code,
+                "location_code": serial.location_code,
+                "quantity": desired,
+            }
+        ],
+    )
     serial.order_id = order.id
     serial.status = "reserved"
     add_audit(

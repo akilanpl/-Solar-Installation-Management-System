@@ -4712,7 +4712,7 @@
           },
           "lines": {
             "items": {
-              "$ref": "#/components/schemas/DeliveryPickLine"
+              "$ref": "#/components/schemas/AllocationLine"
             },
             "type": "array",
             "maxItems": 200,
@@ -4727,6 +4727,36 @@
           "lines"
         ],
         "title": "AllocationCreate"
+      },
+      "AllocationLine": {
+        "properties": {
+          "component_code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 2,
+            "title": "Component Code"
+          },
+          "location_code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 2,
+            "title": "Location Code"
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Quantity"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "component_code",
+          "location_code",
+          "quantity"
+        ],
+        "title": "AllocationLine"
       },
       "AllocationResponse": {
         "properties": {

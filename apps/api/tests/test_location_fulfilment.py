@@ -220,3 +220,75 @@ def test_customer_cannot_read_internal_custody_records(client, application):
         "/stock/allocations?order_id=" + str(uuid.uuid4()),
     ]:
         assert client.get("/api/v1" + path).status_code == 403
+
+
+def test_concurrent_location_allocations_cannot_reserve_same_units(client, application):
+    import threading
+
+    from app.core.errors import AppError
+    from app.models.identity import User
+    from app.services.location_allocation import allocate
+
+    _all_staff(application)
+    orders = [
+        _confirmed_order(client, application, email=f"alloc-{i}@example.com") for i in range(2)
+    ]
+    wh = _warehouse(client)
+    _receipt_validate(client, wh, "PANEL-550", "6", "SITE")
+    barrier = threading.Barrier(2)
+    outcomes = []
+
+    def worker(order):
+        with Session(application.state.engine) as db:
+            actor = db.scalar(select(User).where(User.email == "wh@example.com"))
+            barrier.wait(timeout=10)
+            try:
+                allocate(
+                    db,
+                    actor,
+                    uuid.UUID(order["id"]),
+                    [{"component_code": "PANEL-550", "location_code": "SITE", "quantity": 6}],
+                )
+                db.commit()
+                outcomes.append("allocated")
+            except AppError as exc:
+                db.rollback()
+                outcomes.append(exc.code)
+
+    threads = [threading.Thread(target=worker, args=(o,)) for o in orders]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=15)
+    assert all(not t.is_alive() for t in threads)
+    assert sorted(outcomes) == ["allocated", "insufficient_stock"]
+    with Session(application.state.engine) as db:
+        assert db.scalar(select(func.sum(StockAllocation.quantity))) == 6
+
+
+def test_unpicked_allocation_can_be_released_but_picked_custody_cannot_be_erased(
+    client, application
+):
+    order, materials, wh = _setup(client, application)
+    code = next(iter(materials))
+    _receipt_validate(client, wh, code, "1", "SITE")
+    body = {
+        "order_id": order["id"],
+        "lines": [{"component_code": code, "location_code": "SITE", "quantity": 1}],
+    }
+    assert _post(client, "/stock/allocations", body, wh).status_code == 200
+    body["lines"][0]["quantity"] = 0
+    result = _post(client, "/stock/allocations", body, wh)
+    assert result.status_code == 200, result.text
+    assert result.json() == []
+    pick = _post(
+        client,
+        "/deliveries",
+        {
+            "order_id": order["id"],
+            "lines": [{"component_code": code, "location_code": "SITE", "quantity": 1}],
+        },
+        wh,
+    )
+    assert pick.status_code == 201, pick.text
+    assert _post(client, "/stock/allocations", body, wh).status_code == 409
