@@ -6,6 +6,7 @@ from app.api.v1 import (
     auth,
     calendar,
     coverage,
+    billing,
     dev,
     enquiries,
     health,
@@ -16,10 +17,13 @@ from app.api.v1 import (
     payments,
     quotations,
     razorpay,
+    replacements,
     surveys,
+    tickets,
     warehouse,
     work_context,
     workspace_reads,
+    warranty,
 )
 
 api_router = APIRouter(prefix="/api/v1", dependencies=[Depends(require_csrf)])
@@ -39,5 +43,9 @@ api_router.include_router(work_context.router)
 api_router.include_router(installation.router)
 api_router.include_router(calendar.router)
 api_router.include_router(coverage.router)
+api_router.include_router(tickets.router)
+api_router.include_router(warranty.router)
+api_router.include_router(replacements.router)
+api_router.include_router(billing.router)
 api_router.include_router(admin.router)
 api_router.include_router(dev.router)

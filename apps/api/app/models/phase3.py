@@ -35,16 +35,7 @@ from app.models.custody import StockSerialMovement
 OPERATION_TYPES = ("receipt", "transfer", "delivery", "adjustment")
 OPERATION_STATUSES = ("draft", "ready", "done", "cancelled")
 RESERVATION_STATUSES = ("reserved", "consumed", "released")
-SERIAL_STATUSES = (
-    "registered",
-    "in_stock",
-    "reserved",
-    "in_transit",
-    "delivered",
-    "installed",
-    "faulty",
-    "missing",
-)
+SERIAL_STATUSES = ("registered", "in_stock", "reserved", "in_transit", "delivered", "installed", "faulty", "missing", "returned", "quarantined")
 DELIVERY_STATUSES = ("prepared", "in_transit", "delivered", "confirmed", "cancelled")
 REPLENISHMENT_STATUSES = ("proposed", "approved", "rejected", "ordered", "received", "cancelled")
 JOB_STATUSES = ("created", "scheduled", "en_route", "on_site", "completed", "cancelled")
@@ -159,7 +150,7 @@ class EquipmentSerial(Base):
     __tablename__ = "equipment_serials"
     __table_args__ = (
         CheckConstraint(
-            "status IN ('registered', 'in_stock', 'reserved', 'in_transit', 'delivered', 'installed', 'faulty', 'missing')",
+            "status IN ('registered', 'in_stock', 'reserved', 'in_transit', 'delivered', 'installed', 'faulty', 'missing', 'returned', 'quarantined')",
             name="serial_status",
         ),
     )

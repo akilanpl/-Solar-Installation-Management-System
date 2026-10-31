@@ -25,6 +25,28 @@ from app.models.phase3 import (  # noqa: F401
     WarehouseLocation,
     Warranty,
 )
+from app.models.support import (  # noqa: F401
+    ResolutionAcknowledgment,
+    ServiceTicket,
+    ServiceTicketAttachment,
+    ServiceTicketEvent,
+    TicketRepairJob,
+)
+from app.models.warranty import (  # noqa: F401
+    CoverageDecision,
+    EstimateDecision,
+    ReplacementDecision,
+    ReturnInspection,
+    SerializedAssetCoverage,
+    ServiceCreditNote,
+    ServiceEstimate,
+    ServiceInvoice,
+    ServicePriceBook,
+    ServiceTaxPolicy,
+    WarrantyException,
+    WarrantyPolicy,
+    WarrantyPolicyVersion,
+)
 from app.models.workflow import (  # noqa: F401
     CatalogueComponent,
     DocumentCounter,

@@ -17,12 +17,17 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
     { href: "/customer/payments", label: "Payments" },
     { href: "/customer/orders", label: "Orders & warranty" },
     { href: "/customer/installations", label: "Installation work" },
-    { href: "/customer/support", label: "Support", planned: true },
+    { href: "/customer/complaints", label: "Complaints" },
+    { href: "/customer/equipment", label: "My equipment" },
+    { href: "/customer/estimates", label: "Repair estimates" },
+    { href: "/customer/bills", label: "Repair bills" },
+    { href: "/customer/replacements", label: "Replacements" },
   ],
   technician: [
     { href: "/technician", label: "Assigned jobs" },
     { href: "/technician/surveys", label: "Surveys" },
     { href: "/technician/repairs", label: "Repairs", planned: true },
+    { href: "/technician/install", label: "Replacement install" },
   ],
   sales: [
     { href: "/sales", label: "Enquiries" },
@@ -37,10 +42,21 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
   warehouse_manager: [
     { href: "/warehouse", label: "Stock" },
     { href: "/warehouse/approvals", label: "Approvals" },
+    { href: "/warehouse/picking", label: "Picking", planned: true },
+    { href: "/warehouse/replacements", label: "Replacements" },
+  ],
+  warehouse_manager: [
+    { href: "/warehouse", label: "Stock" },
+    { href: "/warehouse/approvals", label: "Approvals", planned: true },
+    { href: "/warehouse/replacements", label: "Replacements" },
   ],
   support: [
     { href: "/support", label: "Support records" },
     { href: "/support/lookup", label: "Customer lookup", planned: true },
+    { href: "/support/warranty", label: "Warranty" },
+    { href: "/support/estimates", label: "Estimates" },
+    { href: "/support/replacements", label: "Replacements" },
+    { href: "/support/billing", label: "Billing" },
   ],
   admin: [
     { href: "/admin", label: "Employees" },
@@ -50,6 +66,7 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
     { href: "/sales/installations", label: "Installation scheduling" },
     { href: "/warehouse", label: "Inventory logistics" },
     { href: "/support", label: "Customer support" },
+    { href: "/admin/pricing", label: "Warranty & pricing" },
     { href: "/admin/reports", label: "Reports", planned: true },
   ],
 };
