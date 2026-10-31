@@ -7,7 +7,8 @@ rows coverage decisions snapshot). An extension lengthens that row's
 lifecycle, so historical decisions keep pointing at unchanged snapshots.
 
 Money never moves here. A paid extension waits in ``pending_payment`` until
-support records a verified real-world payment reference. Phase 4C owns
+a source-linked settlement verifier is available. A typed reference alone
+cannot establish receipt of money. Phase 4C owns
 invoices and accounting; the offer row is the purchase contract 4C can
 consume (offer id/version, customer, serial, price, terms source).
 """
@@ -427,11 +428,12 @@ def cancel_extension(db: Session, user: User, *, extension_id: uuid.UUID) -> War
 def record_payment_and_activate(
     db: Session, user: User, *, extension_id: uuid.UUID, payment_reference: str
 ) -> WarrantyExtension:
-    """Support confirms a real-world payment, then the extension activates.
+    """Fail closed until extension-specific settlement verification is integrated.
 
-    The reference is evidence of money received outside SolarOps (bank
-    transfer, UPI, cash receipt). Nothing here settles an invoice; Phase 4C
-    owns accounting and can reconcile against the offer contract.
+    The current payment model verifies quotation payments, not an extension
+    offer. Reusing those receipts could spend the same money twice. Preserve
+    the request and coverage until a verifier can bind a settled payment to
+    this exact offer, customer, amount and currency.
     """
     if user.role_code not in SUPPORT:
         raise AppError(403, "forbidden", "Only support can verify extension payments.")
@@ -443,17 +445,12 @@ def record_payment_and_activate(
     reference = (payment_reference or "").strip()
     if len(reference) < 4:
         raise AppError(422, "validation_error", "A payment reference is required.")
-    offer = db.get(WarrantyExtensionOffer, extension.offer_id)
-    coverage = db.get(SerializedAssetCoverage, extension.coverage_id)
-    extension.payment_reference = reference[:120]
-    extension.verified_payment_at = utcnow()
-    extension.verified_payment_by = user.id
-    add_audit(db, actor_user_id=user.id, action="warranty.extension_payment_verified",
-              entity_type="warranty_extension", entity_id=extension.id,
-              metadata={"payment_reference": extension.payment_reference})
-    _activate(db, user, extension, offer, coverage)
-    db.flush()
-    return extension
+    raise AppError(
+        409,
+        "extension_settlement_unavailable",
+        "Extension payment verification is unavailable. A payment reference alone "
+        "cannot activate coverage; the request remains pending payment.",
+    )
 
 
 def list_extensions(db: Session, user: User) -> list[WarrantyExtension]:

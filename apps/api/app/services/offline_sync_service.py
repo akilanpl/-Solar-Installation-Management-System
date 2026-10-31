@@ -27,7 +27,7 @@ from app.core.errors import AppError
 from app.core.security import utcnow
 from app.models.identity import User
 from app.models.phase4e import TechnicianSyncOperation
-from app.models.support import ServiceTicket, TicketRepairJob
+from app.models.support import TicketRepairJob
 from app.models.workflow import Survey
 from app.repositories.queries import add_audit
 from app.services import survey_service, ticket_service
@@ -108,11 +108,13 @@ def submit_one(
             403, "forbidden_offline_action",
             "This action cannot be performed offline. Reconnect and use the online flow.",
         )
+    if user.role_code != "technician":
+        raise AppError(403, "forbidden", "Offline sync is available to technicians.")
+    # Serialize this user's operation keys, including the first use of a key.
+    db.scalar(select(User.id).where(User.id == user.id).with_for_update())
     existing = _get_operation(db, user.id, client_operation_id)
     if existing is not None:
         return _verdict(existing, duplicate=True)
-    if user.role_code != "technician":
-        raise AppError(403, "forbidden", "Offline sync is available to technicians.")
     operation = TechnicianSyncOperation(
         user_id=user.id,
         client_operation_id=client_operation_id,
@@ -344,27 +346,37 @@ def _apply_evidence_intent(
     target = payload.get("target")
     content_sha256 = payload.get("content_sha256")
     size_bytes = payload.get("size_bytes")
-    if target not in {"survey", "ticket"} or not content_sha256 or not size_bytes:
+    if (target not in {"survey", "ticket"}
+            or not isinstance(content_sha256, str)
+            or len(content_sha256) != 64
+            or any(char not in "0123456789abcdef" for char in content_sha256)
+            or not isinstance(size_bytes, int) or isinstance(size_bytes, bool)):
         raise AppError(422, "validation_error", "Evidence intent needs a target and checksum.")
-    if int(size_bytes) <= 0 or int(size_bytes) > settings.evidence_max_bytes:
+    if size_bytes <= 0 or size_bytes > settings.evidence_max_bytes:
         raise AppError(413, "file_too_large", "Survey evidence must be 5 MB or smaller.")
-    if target == "survey":
-        survey = _lock_survey(db, operation.entity_id)
-        _check_survey_access(user, survey)
-        if survey.status not in {"assigned", "in_progress", "submitted"}:
-            raise AppError(409, "invalid_transition", "Evidence cannot be added in this state.")
-    else:
-        ticket = db.scalar(
-            select(ServiceTicket).where(ServiceTicket.id == operation.entity_id)
-        )
-        if ticket is None:
-            raise AppError(404, "not_found", "Ticket not found.")
+    _authorize_evidence(db, user, target, operation.entity_id)
     return {
         "target": target,
         "content_sha256": content_sha256,
         "upload_url": "/api/v1/offline/evidence",
         "note": "Upload the bytes with the same client operation id to store them.",
     }
+
+
+def _authorize_evidence(
+    db: Session, user: User, target: str, entity_id: uuid.UUID | None
+) -> None:
+    if target == "survey":
+        survey = _lock_survey(db, entity_id)
+        _check_survey_access(user, survey)
+        if survey.status not in {"assigned", "in_progress", "submitted"}:
+            raise AppError(409, "invalid_transition", "Evidence cannot be added in this state.")
+    else:
+        if entity_id is None:
+            raise AppError(422, "validation_error", "A ticket id is required.")
+        ticket = ticket_service.get_ticket(db, user, entity_id)
+        if ticket.status in {"closed", "cancelled"}:
+            raise AppError(409, "invalid_transition", "This ticket is finished.")
 
 
 def upload_evidence(
@@ -384,14 +396,24 @@ def upload_evidence(
         raise AppError(403, "forbidden", "Evidence upload is available to technicians.")
     if target not in {"survey", "ticket"}:
         raise AppError(422, "validation_error", "Unknown evidence target.")
+    if not isinstance(client_operation_id, str) or not (8 <= len(client_operation_id) <= 80):
+        raise AppError(422, "validation_error", "Each upload needs a client operation id.")
+    db.scalar(select(User.id).where(User.id == user.id).with_for_update())
+    _authorize_evidence(db, user, target, entity_id)
     existing = _get_operation(db, user.id, client_operation_id)
     digest = hashlib.sha256(payload).hexdigest()
     if existing is not None:
-        if existing.status != "applied" or not existing.result:
+        if (existing.op_type != "evidence_intent" or existing.entity_id != entity_id
+                or existing.payload.get("target") != target
+                or existing.status != "applied" or not existing.result
+                or existing.result.get("content_sha256") != digest):
             raise AppError(409, "upload_conflict", "This upload id is already in use.")
-        if existing.result.get("content_sha256") != digest:
-            raise AppError(409, "upload_conflict", "The bytes differ from the first upload.")
-        return dict(existing.result, duplicate=True)
+        if existing.result.get("evidence_id"):
+            return dict(existing.result, duplicate=True)
+        # An accepted intent is not a stored evidence record. Fulfil it with
+        # the matching bytes, then replace its result with the durable receipt.
+        if existing.payload.get("size_bytes") != len(payload):
+            raise AppError(409, "upload_conflict", "The bytes differ from the evidence intent.")
     key, content_type = save_evidence(settings, payload)
     try:
         if target == "survey":
@@ -413,7 +435,7 @@ def upload_evidence(
 
         evidence_file(settings, key).unlink(missing_ok=True)
         raise
-    operation = TechnicianSyncOperation(
+    operation = existing or TechnicianSyncOperation(
         user_id=user.id,
         client_operation_id=client_operation_id,
         op_type="evidence_intent",
@@ -424,6 +446,7 @@ def upload_evidence(
         status="applied",
         result=result,
     )
+    operation.result = result
     db.add(operation)
     add_audit(
         db, actor_user_id=user.id, action="offline.evidence_uploaded",

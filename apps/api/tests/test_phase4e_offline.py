@@ -331,3 +331,75 @@ def test_offline_ticket_evidence_and_unauthenticated_rejected(client, applicatio
                      headers=csrf_headers(anon)).status_code == 401
     assert anon.get("/api/v1/offline/assignments",
                     headers=csrf_headers(anon)).status_code == 401
+
+
+
+def test_offline_evidence_intent_upload_persists_and_retries(client, application):
+    import hashlib
+
+    from app.models.phase4e import TechnicianSyncOperation
+    from app.models.workflow import SurveyEvidence
+
+    survey, technician = _assigned_survey(client, application)
+    client_id = f"intent-{uuid.uuid4().hex[:16]}"
+    verdict = _sync(client, technician, [_op(
+        "evidence_intent", survey["id"], client_id,
+        {"target": "survey", "content_sha256": hashlib.sha256(JPEG).hexdigest(),
+         "size_bytes": len(JPEG)})])[0]
+    assert verdict["status"] == "applied"
+    headers = {key: value for key, value in technician.items()
+               if key.lower() != "content-type"}
+    payload = {"client_operation_id": client_id, "target": "survey",
+               "entity_id": survey["id"]}
+    first = client.post("/api/v1/offline/evidence", data=payload,
+                        files={"upload": ("roof.jpg", JPEG, "image/jpeg")}, headers=headers)
+    assert first.status_code == 201, first.text
+    assert first.json()["duplicate"] is False
+    evidence_id = first.json()["result"]["evidence_id"]
+    retry = client.post("/api/v1/offline/evidence", data=payload,
+                        files={"upload": ("roof.jpg", JPEG, "image/jpeg")}, headers=headers)
+    assert retry.status_code == 201, retry.text
+    assert retry.json()["duplicate"] is True
+    assert retry.json()["result"]["evidence_id"] == evidence_id
+    with Session(application.state.engine) as db:
+        evidence = db.get(SurveyEvidence, uuid.UUID(evidence_id))
+        assert evidence is not None
+        assert evidence.size_bytes == len(JPEG)
+        operations = db.query(TechnicianSyncOperation).filter_by(
+            client_operation_id=client_id).all()
+        assert len(operations) == 1
+        assert operations[0].result["evidence_id"] == evidence_id
+
+
+def test_offline_evidence_intent_denies_unassigned_ticket(client, application):
+    import hashlib
+
+    from fastapi.testclient import TestClient
+    from tests.test_phase4a_support import _technician2
+
+    ticket, _, _ = _repair_setup(client, application)
+    with TestClient(application) as second:
+        other = _technician2(second)
+        verdict = _sync(second, other, [_op(
+            "evidence_intent", ticket["id"], f"intent-{uuid.uuid4().hex[:16]}",
+            {"target": "ticket", "content_sha256": hashlib.sha256(JPEG).hexdigest(),
+             "size_bytes": len(JPEG)})])[0]
+        assert verdict["status"] == "rejected"
+        assert verdict["result"]["code"] == "not_found"
+
+
+def test_offline_evidence_retry_cannot_change_entity(client, application):
+    survey, technician = _assigned_survey(client, application)
+    client_id = f"upload-{uuid.uuid4().hex[:16]}"
+    headers = {key: value for key, value in technician.items()
+               if key.lower() != "content-type"}
+    first = client.post("/api/v1/offline/evidence",
+                        files={"upload": ("roof.jpg", JPEG, "image/jpeg")},
+                        data={"client_operation_id": client_id, "target": "survey",
+                              "entity_id": survey["id"]}, headers=headers)
+    assert first.status_code == 201, first.text
+    changed = client.post("/api/v1/offline/evidence",
+                          files={"upload": ("roof.jpg", JPEG, "image/jpeg")},
+                          data={"client_operation_id": client_id, "target": "ticket",
+                                "entity_id": survey["id"]}, headers=headers)
+    assert changed.status_code == 404, changed.text

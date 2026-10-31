@@ -121,7 +121,7 @@ def _request(client, email, coverage_id):
     return response.json()
 
 
-def test_paid_extension_full_lifecycle(client, application):
+def test_paid_extension_cannot_activate_from_arbitrary_reference(client, application):
     email = "ext-paid@example.com"
     order, serial, coverage = _covered_unit(client, application, email)
     admin_client, strong = _admin_grant(application)
@@ -147,18 +147,22 @@ def test_paid_extension_full_lifecycle(client, application):
     activated = admin_client.post(
         f"/api/v1/warranty/extensions/requests/{requested['id']}/activate",
         json={"payment_reference": "UPI-2026-8841"}, headers=strong)
-    assert activated.status_code == 200, activated.text
-    assert activated.json()["status"] == "active"
-    assert activated.json()["payment_reference"] == "UPI-2026-8841"
-    assert activated.json()["original_ends_at"] == original_ends
+    assert activated.status_code == 409, activated.text
+    assert activated.json()["error"]["code"] == "extension_settlement_unavailable"
     from datetime import datetime as _dt
 
+    from app.models.phase4e import WarrantyExtension
     from app.models.warranty import CoverageDecision, SerializedAssetCoverage
 
     with Session(application.state.engine) as db:
         row = db.get(SerializedAssetCoverage, uuid.UUID(coverage["coverage_id"]))
-        assert row.status == "active"
-        assert row.ends_at == _dt.fromisoformat(activated.json()["new_ends_at"])
+        extension = db.get(WarrantyExtension, uuid.UUID(requested["id"]))
+        assert row.ends_at == _dt.fromisoformat(original_ends)
+        assert extension.status == "pending_payment"
+        assert extension.payment_reference is None
+        assert extension.verified_payment_at is None
+        assert extension.verified_payment_by is None
+        assert extension.new_ends_at is None
         assert db.query(CoverageDecision).count() == 0
     # A second extension for the same coverage is refused while one is live.
     duplicate = client.post(
