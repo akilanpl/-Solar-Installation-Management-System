@@ -196,6 +196,9 @@ def confirm_order(
         slot_starts_at=None,
     )
     db.add(scheduling)
+    from app.services.inventory_service import reserve_for_order as _reserve_for_order
+
+    _reserve_for_order(db, order)
     add_audit(
         db,
         actor_user_id=user.id,
