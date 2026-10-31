@@ -2,6 +2,8 @@
 
 No production accounts were changed and no live transaction was performed. Existing login/RBAC/ownership/CSRF protections remain. Request-scoped commits for integrated modules now occur before success responses. Security-sensitive grants and offline uploads retain reauthorization.
 
+Additional durability fixes include enhanced MFA/offline/extension commit-before-response semantics and PostgreSQL UTC persistence across pooled rollbacks. Service consumables now use exact accepted-invoice stock delivery; anonymous serialized consumption fails closed in favor of explicit unit custody.
+
 Fixed confirmed issues: arbitrary-reference paid warranty activation now fails closed; offline evidence intents/uploads persist exact bound bytes and safe retries; finance emits durable same-transaction cache invalidations; outbox duplicates no longer roll back unrelated pending finance work; replacement issue no longer fabricates installation/return; coverage decision replay normalizes UTC and invalidates after expiry or void.
 
 22 additional PostgreSQL regressions passed for concurrency/idempotency, journal atomicity and database balance guards, immutable financial records, outbox conflict preservation, snapshot privacy, evidence ownership and MFA/strong-auth failure persistence. Anonymous API audit:90 protected GET endpoints returned401; health/ready/CSRF were public as intended, local absent mailbox returned404. Generated OpenAPI operation IDs are unique.
