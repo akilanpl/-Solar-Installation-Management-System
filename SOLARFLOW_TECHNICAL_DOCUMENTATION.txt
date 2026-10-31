@@ -269,3 +269,50 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
       and retain standard browser autofill attributes (`autoComplete="current-password"`).
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+9. GIT BRANCHING & GITHUB REMOTE SYNCHRONIZATION
+--------------------------------------------------------------------------------
+- Date & Context:
+  Packaged the entire rewritten React.js frontend, dedicated component architecture,
+  cyberpunk theme, split-layout login screen, and complete documentation into Git
+  version control and pushed upstream to GitHub.
+
+- Target Repository & Branch:
+  * Remote URL: https://github.com/akilanpl/-Solar-Installation-Management-System.git
+  * Branch Name: `feature/frontend-workplaces`
+
+- Operations Executed:
+  1. Git Repository Initialization:
+     Initialized the repository workspace and verified that `.gitignore` correctly
+     excludes build outputs (`dist/`, `.next/`, `out/`) and transient dependencies
+     (`node_modules/`, `apps/web/node_modules/`).
+  2. Branch Creation:
+     Created and switched to feature branch `feature/frontend-workplaces`.
+  3. Staging & Root Commit:
+     Staged all source code, contracts, FastAPI backend assets, tests, and documentation.
+     Created commit `48fc7fa` ("feat(frontend): rewrite SolarOps frontend to React.js
+     with cyberpunk theme and instant bypass login").
+  4. Remote Configuration:
+     Configured remote origin pointing to `https://github.com/akilanpl/-Solar-Installation-Management-System.git`.
+  5. Upstream Push:
+     Pushed feature branch with tracking upstream (`git push -u origin feature/frontend-workplaces`).
+
+- Pull Request Reference:
+  * PR creation URL:
+    https://github.com/akilanpl/-Solar-Installation-Management-System/pull/new/feature/frontend-workplaces
+
+- Technical Interview Questions & Answers (Git & CI/CD Workflows):
+  Q1: Why is branch tracking (`-u` or `--set-upstream`) useful in collaborative Git workflows?
+  A1: Branch tracking links the local branch to a specific remote branch. Once configured,
+      developers can simply execute `git push` or `git pull` without specifying the remote
+      and branch names each time. It also enables Git to report branch divergence (ahead/behind counts).
+
+  Q2: Why is it crucial to verify `.gitignore` patterns before staging a major frontend rewrite?
+  A2: Modern JavaScript tooling generates large transient directories (`node_modules/`, `dist/`, `.vite/`).
+      Accidentally committing these causes repository bloat, slow clone times, binary merge conflicts,
+      and leaks platform-specific binaries. Verifying `.gitignore` ensures only canonical source
+      code, documentation, and configuration files are tracked.
+
+================================================================================
