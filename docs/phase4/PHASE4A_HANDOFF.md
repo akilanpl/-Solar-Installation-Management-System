@@ -59,7 +59,9 @@ git push origin feature/phase4a-support
 gh pr create --base main --head feature/phase4a-support --title "Phase 4A: support operations" --body-file docs/phase4/PHASE4A_HANDOFF.md
 ```
 
-No PR URL exists yet. Do not merge to `main` without review.
+No PR URL exists yet. The branch owner confirmed on 2026-10-31 that the
+branch stays local for review rather than bypassing the hook. Do not merge
+to `main` without review.
 
 ## Remaining limitations (explicit)
 
