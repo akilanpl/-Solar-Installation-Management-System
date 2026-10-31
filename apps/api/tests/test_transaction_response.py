@@ -106,3 +106,20 @@ def test_mfa_enrollment_is_durable_before_success_headers(application):
         assert result.status_code == 200
         assert result.json()["factor_id"]
     assert visible_factors == [1], "MFA enrollment must commit before response headers"
+
+
+def test_pool_rollback_keeps_utc_session_timezone():
+    from app.db.session import build_engine
+    from sqlalchemy import text
+    from tests.conftest import TEST_DATABASE_URL
+
+    engine = build_engine(TEST_DATABASE_URL)
+    try:
+        for _ in range(3):
+            with engine.connect() as connection:
+                assert connection.scalar(text("SHOW TIME ZONE")) == "UTC"
+                connection.execute(text("SELECT 1"))
+                connection.rollback()
+                assert connection.scalar(text("SHOW TIME ZONE")) == "UTC"
+    finally:
+        engine.dispose()

@@ -275,8 +275,8 @@ def _snapshot_version(version: WarrantyPolicyVersion) -> dict:
 def _snapshot_coverage(coverage: SerializedAssetCoverage) -> dict:
     return {
         "coverage_id": str(coverage.id), "serial_id": str(coverage.serial_id),
-        "status": coverage.status, "starts_at": coverage.starts_at.isoformat(),
-        "ends_at": coverage.ends_at.isoformat(),
+        "status": coverage.status, "starts_at": _as_utc(coverage.starts_at).isoformat(),
+        "ends_at": _as_utc(coverage.ends_at).isoformat(),
         "delivery_id": str(coverage.delivery_id),
     }
 
