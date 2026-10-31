@@ -90,6 +90,18 @@ export function Login({ initialMode = 'login' }) {
           LEFT HERO PANEL (Vibrant Royal Blue Gradient with 3 Step Cards)
           ================================================================ */}
       <section className="auth-hero-panel" aria-label="Hero Introduction">
+        {/* Dynamic Background Video with Royal Blue Ambient Overlay */}
+        <video
+          className="auth-hero-video-bg"
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src="/login-bg.mp4" type="video/mp4" />
+        </video>
+        <div className="auth-hero-video-overlay" />
+
         {/* Brand Logo & Title (Top Left) */}
         <Link href="/" className="auth-hero-brand">
           <div className="auth-hero-brand-icon">

@@ -1,27 +1,30 @@
 /* ==========================================================================
    SOLARFLOW / SOLAROPS - MASTER DASHBOARD APPSHELL LAYOUT
-   Hosts the organic dock on the left, top navigation bar, and main canvas
+   Hosts fixed organic dock on left, sticky top navigation, & independent scroll
    ========================================================================== */
 
 .app-shell-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   width: 100vw;
-  background-color: #f6f7fb;
+  background-color: #f6f8fb;
   position: relative;
-  overflow-x: hidden;
+  overflow: hidden; /* Viewport frame does not scroll as whole */
   box-sizing: border-box;
   font-family: inherit;
 }
 
 .app-shell-main {
   flex: 1;
+  margin-left: 76px; /* Offset for the fixed dock sidebar */
+  height: 100vh;
+  overflow-y: auto; /* Independent smooth scrolling for all content! */
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   min-width: 0;
   position: relative;
-  background-color: #f6f7fb;
-  overflow-y: auto;
+  background-color: #f6f8fb;
 }
 
 .app-shell-content {
@@ -42,9 +45,13 @@
   max-width: 500px;
   margin: 60px auto;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid #edf0f5;
 }
 
 @media (max-width: 1024px) {
+  .app-shell-main {
+    margin-left: 60px;
+  }
   .app-shell-content {
     padding: 24px 20px;
   }

@@ -1,13 +1,13 @@
 /* ==========================================================================
    SOLARFLOW / SOLAROPS - TOP NAVIGATION BAR
-   Matches the reference image header with tabs, search, theme pill & actions
+   Clean, focused navigation with Dashboard tab, user profile, notifications & bypass
    ========================================================================== */
 
 .top-nav-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 36px;
+  padding: 14px 36px;
   background-color: #ffffff;
   border-bottom: 1px solid #edf0f5;
   box-sizing: border-box;
@@ -18,144 +18,94 @@
   gap: 20px;
 }
 
-/* Left Section: Tabs + Search Bar */
+/* Left Section: Dashboard Tab */
 .top-nav-left {
   display: flex;
   align-items: center;
-  gap: 28px;
-  flex: 1;
 }
 
-/* Tab Navigation */
 .top-nav-tabs {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 
 .top-nav-tab {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #64748b;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #111827;
   text-decoration: none;
   padding: 8px 0;
   position: relative;
   cursor: pointer;
-  transition: color 150ms ease;
   background: none;
   border: none;
   font-family: inherit;
 }
 
-.top-nav-tab:hover {
-  color: #111827;
-}
-
-.top-nav-tab.active {
-  color: #111827;
-  font-weight: 700;
-}
-
 .top-nav-tab.active::after {
   content: '';
   position: absolute;
-  bottom: -1px;
+  bottom: -15px;
   left: 0;
   right: 0;
-  height: 2px;
-  background-color: #111827;
-  border-radius: 2px;
-}
-
-/* Pill Search Bar */
-.top-nav-search-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
+  height: 2.5px;
+  background-color: #5b5fc7;
   border-radius: 9999px;
-  padding: 0 16px;
-  height: 40px;
-  width: 100%;
-  max-width: 280px;
-  box-sizing: border-box;
-  transition: all 180ms ease;
 }
 
-.top-nav-search-box:focus-within {
-  background-color: #ffffff;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
-  max-width: 340px;
-}
-
-.top-nav-search-icon {
-  color: #94a3b8;
-  flex-shrink: 0;
-}
-
-.top-nav-search-input {
-  border: none;
-  background: transparent;
-  font-size: 13.5px;
-  color: #1e293b;
-  outline: none;
-  width: 100%;
-  font-family: inherit;
-}
-
-.top-nav-search-input::placeholder {
-  color: #94a3b8;
-}
-
-/* Right Section: Theme Toggle, Bell, Settings, Export, Add New */
+/* Right Section: User Profile Pill, Bell, Settings, Bypass */
 .top-nav-right {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-/* Theme Toggle Pill: Light / Dark */
-.theme-toggle-pill {
+/* User Role & Name Pill */
+.top-user-pill {
   display: flex;
   align-items: center;
-  background-color: #f1f5f9;
+  gap: 10px;
+  background-color: #f8fafc;
+  border: 1px solid #edf0f5;
   border-radius: 9999px;
-  padding: 3px;
-  gap: 2px;
+  padding: 4px 14px 4px 6px;
 }
 
-.theme-pill-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 9999px;
-  border: none;
-  cursor: pointer;
-  transition: all 150ms ease;
-  font-family: inherit;
-}
-
-.theme-pill-btn.active {
-  background-color: #5b5fc7;
+.top-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #605dec, #4f46e5);
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(91, 95, 199, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(91, 95, 199, 0.25);
 }
 
-.theme-pill-btn.inactive {
-  background: transparent;
+.top-user-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-user-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.top-user-role {
+  font-size: 10px;
+  font-weight: 600;
   color: #64748b;
-}
-
-.theme-pill-btn.inactive:hover {
-  color: #1e293b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* Icon Buttons: Bell, Settings */
@@ -189,53 +139,6 @@
   background-color: #ef4444;
 }
 
-/* Export Data Button (.xls) */
-.export-data-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background-color: #eef2ff;
-  color: #4f46e5;
-  border: 1px solid #e0e7ff;
-  border-radius: 9999px;
-  padding: 7px 16px;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 150ms ease;
-  font-family: inherit;
-}
-
-.export-data-btn:hover {
-  background-color: #e0e7ff;
-  color: #4338ca;
-  transform: translateY(-1px);
-}
-
-/* Add New Board / New Project CTA (Solid Navy/Black Pill) */
-.primary-board-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #111827;
-  color: #ffffff;
-  border: none;
-  border-radius: 9999px;
-  padding: 8px 18px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 150ms ease;
-  font-family: inherit;
-  white-space: nowrap;
-}
-
-.primary-board-btn:hover {
-  background-color: #1f2937;
-  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.25);
-  transform: translateY(-1px);
-}
-
 /* Demo Bypass Trigger */
 .bypass-trigger-pill {
   display: flex;
@@ -244,12 +147,13 @@
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 9999px;
-  padding: 6px 12px;
-  font-size: 11.5px;
+  padding: 6px 14px;
+  font-size: 12px;
   font-weight: 600;
   color: #475569;
   cursor: pointer;
   transition: all 150ms ease;
+  font-family: inherit;
 }
 
 .bypass-trigger-pill:hover {
@@ -259,17 +163,12 @@
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .top-nav-bar {
-    padding: 12px 20px;
-    flex-wrap: wrap;
+    padding: 12px 18px;
   }
 
-  .top-nav-search-box {
-    display: none;
-  }
-
-  .export-data-btn {
+  .top-user-pill {
     display: none;
   }
 }

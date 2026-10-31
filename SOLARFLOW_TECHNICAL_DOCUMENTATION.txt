@@ -1050,3 +1050,69 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
       readability under outdoor solar field lighting or indoor operations desk monitors.
 
 ================================================================================
+
+--------------------------------------------------------------------------------
+18. AUTHENTICATION VIDEO BACKGROUND, CLEANED HEADER & FIXED STATIC SIDE NAVIGATION
+--------------------------------------------------------------------------------
+- Date & Context:
+  Implemented four major UX refinements requested for the SolarOps platform:
+  1. Embedded continuous dynamic video background in the royal blue hero panel of the login/signup screens.
+  2. Streamlined the dashboard top header by completely removing extraneous controls (Workflows, Integrations,
+     search input, theme toggle, export XLS, and add new board button).
+  3. Replaced dummy placeholder buttons in the organic dock sidebar with active, role-essential operational
+     navigation routes that update based on user role and highlight the active path.
+  4. Fixed sidebar scrolling behavior so that the side navigation stays 100% frozen and static on the screen
+     while dashboard cards and content scroll independently.
+
+- Technical Implementation Specifications:
+  1. Dynamic Video Background (`Login.jsx`, `Login.css`):
+     - Source Video: `login-bg.mp4` copied to `apps/web/public/login-bg.mp4`.
+     - Markup: Embedded HTML5 `<video autoPlay loop muted playsInline>` with `.auth-hero-video-bg`.
+     - Styling: Positioned `absolute` with `object-fit: cover` and layered under `.auth-hero-video-overlay`
+       (semi-transparent royal blue gradient: `rgba(29, 78, 216, 0.74)` to `rgba(23, 37, 84, 0.90)`).
+     - Result: Dynamic motion plays continuously behind the SolarOps brand, "Join Us" pill, headline, and the 3
+       glassmorphism step cards ("1. Register your account", "2. Profile information", "3. Verify identity").
+
+  2. Streamlined Top Navigation Header (`Header.jsx`, `Header.css`):
+     - Completely removed: `Workflows`, `Integrations`, `Search or type command`, `✦ Light / 🌙 Dark`,
+       `Export data .xls`, and `Add new board`.
+     - Left Section: Clean active `Dashboard` tab with subtle indicator underline.
+     - Right Section: User role badge pill (`⚡ [Name] · [ROLE]`), notifications bell with active ping,
+       settings trigger, and 1-click Demo Persona Switcher pill (`Zap Switch Role`).
+
+  3. Functional Role-Tailored Side Navigation (`Sidebar.jsx`, `Sidebar.css`):
+     - Replaced non-functional dummy icons with real navigation paths:
+       * Customer: `/customer` (Dashboard), `/customer/enquiries/new` (New Enquiry), `/customer/quotations` (BOM Quotes),
+         `/customer/payments` (Milestone Payments), `/customer/support` (Support & Warranty).
+       * Sales: `/sales` (Dashboard & Leads), `/sales/surveys` (Surveys Schedule), `/sales/quotations` (BOM Quotes).
+       * Technician: `/technician` (Work Orders & Checklists), `/technician/surveys` (Field Surveys).
+       * Warehouse: `/warehouse` (Dashboard & Inventory).
+       * Support: `/support` (Customer Lookup & Tickets).
+       * Admin: `/admin` (Administration & Roster), plus shortcuts to Sales, Surveys, Warehouse, and Support.
+     - Active Route Highlighting: Uses `dock-item-active` (white rounded square pill with `#5B5FC7` icon) when
+       the current path matches the item.
+     - Bottom Controls: Demo role switcher modal trigger and logout button.
+
+  4. Fixed Viewport Dock & Independent Scrolling (`Sidebar.css`, `AppShell.css`):
+     - Architecture:
+       * `.dock-sidebar-container`: Changed from `sticky` to `position: fixed; top: 0; left: 0; height: 100vh; z-index: 100;`.
+       * `.app-shell-layout`: Set to `height: 100vh; overflow: hidden;`.
+       * `.app-shell-main`: Set to `margin-left: 76px; height: 100vh; overflow-y: auto;`.
+     - Result: The side navigation is mathematically locked to the browser window and remains completely unaffected
+       by vertical scrolling, while all cards, tables, and page components scroll smoothly.
+
+- Technical Decisions & Interview Questions:
+  Q1: Why is viewport-locked independent scrolling (`height: 100vh; overflow-y: auto;`) superior to `position: sticky`
+      for enterprise operational sidebars?
+  A1: While `position: sticky` works in simple layouts, it is fragile when ancestor containers have `overflow: hidden`,
+      uneven heights, or complex bento grids. Pinning the dock sidebar via `position: fixed; height: 100vh;` and
+      enforcing an independent scroll container on `.app-shell-main` guarantees zero layout shift, ensures the dock
+      never scrolls off-screen on any viewport aspect ratio, and eliminates horizontal window jitter.
+
+  Q2: Why use muted video loops with overlay masks for B2B authentication screens?
+  A2: Pure stock photography on login screens can feel static and dated. A subtle, muted ambient video loop provides
+      visual dynamism without distracting users from form completion. Applying a semi-transparent brand gradient
+      overlay ensures the video maintains high contrast ratios (>16:1 for text) and respects WCAG 2.2 accessibility
+      standards across all lighting conditions.
+
+================================================================================

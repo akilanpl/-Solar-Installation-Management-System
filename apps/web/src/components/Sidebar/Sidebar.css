@@ -1,11 +1,11 @@
 /* ==========================================================================
-   SOLARFLOW / SOLAROPS - ORGANIC CURVED DOCK SIDEBAR
-   Faithful recreation of the purple organic dock from the reference image
+   SOLARFLOW / SOLAROPS - FIXED ORGANIC CURVED DOCK SIDEBAR
+   Fixed to viewport (completely unaffected by page scrolling)
    ========================================================================== */
 
 .dock-sidebar-container {
   width: 76px;
-  min-height: 100vh;
+  height: 100vh;
   background: linear-gradient(180deg, #605DEC 0%, #5B5FC7 50%, #4F46E5 100%);
   border-radius: 0 32px 32px 0;
   display: flex;
@@ -14,7 +14,7 @@
   justify-content: space-between;
   padding: 24px 0 28px 0;
   box-sizing: border-box;
-  position: sticky;
+  position: fixed; /* FIXED - immune to page scrolling! */
   top: 0;
   left: 0;
   z-index: 100;
@@ -91,7 +91,7 @@
   transform: translateY(-1px);
 }
 
-/* Small Green Status Dot for Workflow / Live Sync */
+/* Small Status Indicator */
 .dock-status-dot {
   position: absolute;
   top: 10px;
@@ -126,8 +126,9 @@
 }
 
 .dock-bottom-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: rotate(45deg);
+  background: rgba(239, 68, 68, 0.28);
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
 /* Responsive adjustment for Mobile */
