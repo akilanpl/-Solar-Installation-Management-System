@@ -15,7 +15,7 @@ type TicketSummary = components["schemas"]["TicketSummary"];
 type Decision = components["schemas"]["DecisionResponse"];
 type Replacement = components["schemas"]["ReplacementResponse"];
 type Inspection = components["schemas"]["InspectionResponse"];
-type Policy = components["schemas"]["PolicyResponse"];
+type Policy = components["schemas"]["app__schemas__warranty__PolicyResponse"];
 type PriceBook = components["schemas"]["PriceBookResponse"];
 type TaxPolicy = components["schemas"]["TaxPolicyResponse"];
 
