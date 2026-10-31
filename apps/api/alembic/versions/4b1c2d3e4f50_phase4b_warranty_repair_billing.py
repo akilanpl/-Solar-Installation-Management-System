@@ -16,6 +16,7 @@ SERIAL_STATUSES = ("in_stock", "reserved", "in_transit", "installed", "faulty", 
 
 
 def upgrade():
+    op.execute("INSERT INTO warehouse_locations (code, name) VALUES ('QUARANTINE', 'Quarantine hold')")
     op.execute("ALTER TABLE equipment_serials DROP CONSTRAINT ck_equipment_serials_serial_status")
     op.create_check_constraint(
         op.f("ck_equipment_serials_serial_status"), "equipment_serials",
@@ -241,6 +242,7 @@ def upgrade():
 
 
 def downgrade():
+    op.execute("DELETE FROM warehouse_locations WHERE code = 'QUARANTINE'")
     op.drop_table("return_inspections")
     op.drop_index("ix_replacements_ticket", table_name="replacement_decisions")
     op.drop_table("replacement_decisions")

@@ -12,6 +12,7 @@ from app.api.v1 import (
     packages,
     payments,
     quotations,
+    replacements,
     surveys,
     tickets,
     warehouse,
@@ -31,5 +32,6 @@ api_router.include_router(warehouse.router)
 api_router.include_router(installation.router)
 api_router.include_router(tickets.router)
 api_router.include_router(warranty.router)
+api_router.include_router(replacements.router)
 api_router.include_router(admin.router)
 api_router.include_router(dev.router)
