@@ -21,9 +21,9 @@ from app.schemas.phase4d import (
     AssistCreate,
     AssistResponse,
     CacheMetricsResponse,
-    EstimateResponse,
     ForecastFetch,
     ForecastResponse,
+    GenerationEstimateResponse,
     GenerationSummaryResponse,
     GeolocationResponse,
     GeolocationUpsert,
@@ -362,7 +362,7 @@ def weather_availability(
 
 # --------------------------------------------------------------- Generation
 
-@router.get("/generation/estimates", response_model=EstimateResponse)
+@router.get("/generation/estimates", response_model=GenerationEstimateResponse)
 def generation_estimate(
     order_id: UUID = Query(),
     scenario: str = Query(default="expected"),
@@ -370,7 +370,7 @@ def generation_estimate(
     month: int | None = Query(default=None),
     db: Session = Depends(get_db),
     user: User = Depends(current_user),
-) -> EstimateResponse:
+) -> GenerationEstimateResponse:
     order = generation_service.assert_order_visible(
         db, order_id=order_id, user_id=user.id, role_code=user.role_code)
     if user.role_code == "customer" and order.customer_user_id != user.id:
@@ -378,7 +378,7 @@ def generation_estimate(
     _actor(user, STAFF_INTELLIGENCE | {"customer"})
     result = generation_service.estimate_generation(
         db, order_id=order_id, scenario=scenario, interval=interval, month=month)
-    return EstimateResponse(**result)
+    return GenerationEstimateResponse(**result)
 
 
 @router.get("/generation/summary", response_model=GenerationSummaryResponse)

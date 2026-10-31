@@ -129,7 +129,7 @@ class AdvisoryAction(BaseModel):
     action: str = Field(pattern="^(acknowledge|dismiss)$")
 
 
-class EstimateResponse(BaseModel):
+class GenerationEstimateResponse(BaseModel):
     kind: str
     order_id: UUID
     model: str

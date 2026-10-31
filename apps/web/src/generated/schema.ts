@@ -2160,6 +2160,250 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/customer-snapshots/{customer_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Snapshot */
+        get: operations["read_snapshot_api_v1_customer_snapshots__customer_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/customer-snapshots/{customer_id}/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Refresh Snapshot */
+        post: operations["refresh_snapshot_api_v1_customer_snapshots__customer_id__refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cache/invalidate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Invalidate Cache
+         * @description Phase 4C integration contract: finance/payment writers emit events here.
+         *
+         *     Idempotent on ``event_id``; the consumer cursor makes replays safe.
+         */
+        post: operations["invalidate_cache_api_v1_cache_invalidate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cache/metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cache Metrics */
+        get: operations["cache_metrics_api_v1_cache_metrics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ai-assists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Assist */
+        post: operations["create_assist_api_v1_ai_assists_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ai-assists/{session_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirm Assist */
+        post: operations["confirm_assist_api_v1_ai_assists__session_id__confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/weather/sites/{site_id}/geolocation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upsert Geolocation */
+        post: operations["upsert_geolocation_api_v1_weather_sites__site_id__geolocation_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/weather/forecasts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Fetch Forecast */
+        post: operations["fetch_forecast_api_v1_weather_forecasts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/weather/advisories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Advisories */
+        get: operations["list_advisories_api_v1_weather_advisories_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/weather/advisories/{advisory_id}/ack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ack Advisory */
+        post: operations["ack_advisory_api_v1_weather_advisories__advisory_id__ack_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/weather/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Weather Availability */
+        get: operations["weather_availability_api_v1_weather_availability_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/generation/estimates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Generation Estimate */
+        get: operations["generation_estimate_api_v1_generation_estimates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/generation/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Generation Summary */
+        get: operations["generation_summary_api_v1_generation_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/generation/readings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Readings */
+        get: operations["list_readings_api_v1_generation_readings_get"];
+        put?: never;
+        /** Ingest Reading */
+        post: operations["ingest_reading_api_v1_generation_readings_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2187,6 +2431,114 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /** AdvisoryAction */
+        AdvisoryAction: {
+            /** Action */
+            action: string;
+        };
+        /** AdvisoryResponse */
+        AdvisoryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Site Id
+             * Format: uuid
+             */
+            site_id: string;
+            /**
+             * Forecast Id
+             * Format: uuid
+             */
+            forecast_id: string;
+            /** Kind */
+            kind: string;
+            /** Severity */
+            severity: string;
+            /** Summary */
+            summary: string;
+            /**
+             * Window From
+             * Format: date-time
+             */
+            window_from: string;
+            /**
+             * Window To
+             * Format: date-time
+             */
+            window_to: string;
+            /** Status */
+            status: string;
+            /** Acknowledged At */
+            acknowledged_at: string | null;
+            /** Affected Appointments */
+            affected_appointments?: {
+                [key: string]: unknown;
+            }[];
+        };
+        /** AssistConfirm */
+        AssistConfirm: {
+            /** Decision */
+            decision: string;
+            /** Edited Summary */
+            edited_summary?: string | null;
+            /** Note */
+            note?: string | null;
+        };
+        /** AssistCreate */
+        AssistCreate: {
+            /** Complaint Text */
+            complaint_text: string;
+            /** Ticket Id */
+            ticket_id?: string | null;
+            /** Customer User Id */
+            customer_user_id?: string | null;
+            /**
+             * Mode
+             * @default auto
+             */
+            mode: string;
+        };
+        /** AssistResponse */
+        AssistResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Ticket Id */
+            ticket_id: string | null;
+            /** Customer User Id */
+            customer_user_id: string | null;
+            /** Mode */
+            mode: string;
+            /** Model Provider */
+            model_provider: string;
+            /** Model Version */
+            model_version: string;
+            /** Status */
+            status: string;
+            /** Draft */
+            draft: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Confirmed At */
+            confirmed_at: string | null;
+            /** Confirmed By User Id */
+            confirmed_by_user_id: string | null;
         };
         /** AttachmentResponse */
         AttachmentResponse: {
@@ -2226,6 +2578,21 @@ export interface components {
         Body_upload_job_evidence_api_v1_jobs__job_id__uploads_post: {
             /** Upload */
             upload: string;
+        };
+        /** CacheMetricsResponse */
+        CacheMetricsResponse: {
+            /** Snapshots */
+            snapshots: number;
+            /** Invalidated */
+            invalidated: number;
+            /** Hits */
+            hits: number;
+            /** Misses */
+            misses: number;
+            /** Rebuilds */
+            rebuilds: number;
+            /** Fallbacks */
+            fallbacks: number;
         };
         /** CashReceiptCreate */
         CashReceiptCreate: {
@@ -2780,6 +3147,137 @@ export interface components {
              */
             created_at: string;
         };
+        /** ForecastFetch */
+        ForecastFetch: {
+            /**
+             * Site Id
+             * Format: uuid
+             */
+            site_id: string;
+            /** Request Id */
+            request_id: string;
+        };
+        /** ForecastResponse */
+        ForecastResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Site Id
+             * Format: uuid
+             */
+            site_id: string;
+            /** Provider */
+            provider: string;
+            /** Request Id */
+            request_id: string;
+            /**
+             * Issued At
+             * Format: date-time
+             */
+            issued_at: string;
+            /**
+             * Fetched At
+             * Format: date-time
+             */
+            fetched_at: string;
+            /**
+             * Valid From
+             * Format: date-time
+             */
+            valid_from: string;
+            /**
+             * Valid To
+             * Format: date-time
+             */
+            valid_to: string;
+            /** Units */
+            units: string;
+            /** Freshness */
+            freshness: string;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+        };
+        /** GenerationEstimateResponse */
+        GenerationEstimateResponse: {
+            /** Kind */
+            kind: string;
+            /**
+             * Order Id
+             * Format: uuid
+             */
+            order_id: string;
+            /** Model */
+            model: string;
+            /** Scenario */
+            scenario: string;
+            /** Interval */
+            interval: string;
+            /** Month */
+            month: number;
+            /** Unit */
+            unit: string;
+            /** Energy Kwh */
+            energy_kwh: number;
+            /** Inputs */
+            inputs: {
+                [key: string]: unknown;
+            };
+            /** Assumptions */
+            assumptions: {
+                [key: string]: unknown;
+            };
+        };
+        /** GenerationSummaryResponse */
+        GenerationSummaryResponse: {
+            /** Estimate */
+            estimate: {
+                [key: string]: unknown;
+            };
+            /** Verified */
+            verified: {
+                [key: string]: unknown;
+            };
+        };
+        /** GeolocationResponse */
+        GeolocationResponse: {
+            /**
+             * Site Id
+             * Format: uuid
+             */
+            site_id: string;
+            /** Latitude */
+            latitude: number;
+            /** Longitude */
+            longitude: number;
+            /** Verified */
+            verified: boolean;
+            /** Source */
+            source: string;
+            /** Verified At */
+            verified_at: string | null;
+        };
+        /** GeolocationUpsert */
+        GeolocationUpsert: {
+            /** Latitude */
+            latitude: number;
+            /** Longitude */
+            longitude: number;
+            /**
+             * Verified
+             * @default false
+             */
+            verified: boolean;
+            /**
+             * Source
+             * @default manual
+             */
+            source: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -2861,6 +3359,44 @@ export interface components {
              * Format: date-time
              */
             uploaded_at: string;
+        };
+        /** InvalidateRequest */
+        InvalidateRequest: {
+            /**
+             * Event Id
+             * Format: uuid
+             */
+            event_id: string;
+            /** Aggregate Kind */
+            aggregate_kind: string;
+            /** Aggregate Id */
+            aggregate_id: string;
+            /** Customer User Id */
+            customer_user_id?: string | null;
+            /** Occurred At */
+            occurred_at?: string | null;
+            /** Payload */
+            payload?: {
+                [key: string]: unknown;
+            };
+        };
+        /** InvalidateResponse */
+        InvalidateResponse: {
+            /**
+             * Event Id
+             * Format: uuid
+             */
+            event_id: string;
+            /** Consumer */
+            consumer: string;
+            /** Events Seen */
+            events_seen: number;
+            /** Snapshots Invalidated */
+            snapshots_invalidated: number;
+            /** Out Of Order Skipped */
+            out_of_order_skipped: number;
+            /** Cursor */
+            cursor: number;
         };
         /** InvoiceCreate */
         InvoiceCreate: {
@@ -3587,6 +4123,68 @@ export interface components {
             /** Revision Request Id */
             revision_request_id?: string | null;
         };
+        /** ReadingCreate */
+        ReadingCreate: {
+            /**
+             * Order Id
+             * Format: uuid
+             */
+            order_id: string;
+            /** Device Ref */
+            device_ref: string;
+            /** Event Id */
+            event_id: string;
+            /** Source */
+            source: string;
+            /**
+             * Measured At
+             * Format: date-time
+             */
+            measured_at: string;
+            /** Energy Wh */
+            energy_wh: number | string;
+            /** Power W */
+            power_w?: number | string | null;
+        };
+        /** ReadingResponse */
+        ReadingResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Order Id
+             * Format: uuid
+             */
+            order_id: string;
+            /** Device Ref */
+            device_ref: string;
+            /** Event Id */
+            event_id: string;
+            /** Source */
+            source: string;
+            /**
+             * Measured At
+             * Format: date-time
+             */
+            measured_at: string;
+            /** Energy Wh */
+            energy_wh: string;
+            /** Power W */
+            power_w: string | null;
+            /** Unit */
+            unit: string;
+            /** Status */
+            status: string;
+            /** Rejection Reason */
+            rejection_reason: string | null;
+            /**
+             * Duplicate
+             * @default false
+             */
+            duplicate: boolean;
+        };
         /** ReadyResponse */
         ReadyResponse: {
             /**
@@ -4058,6 +4656,33 @@ export interface components {
             postal_code: string;
             /** Country Code */
             country_code: string;
+        };
+        /** SnapshotResponse */
+        SnapshotResponse: {
+            /** Cache Key */
+            cache_key: string;
+            /** Scope */
+            scope: string;
+            /** Source */
+            source: string;
+            /** Stale */
+            stale: boolean;
+            /** Stale Reason */
+            stale_reason: string | null;
+            /** Schema Version */
+            schema_version: number;
+            /** Business Version */
+            business_version: string;
+            /** Generated At */
+            generated_at: string | null;
+            /** Expires At */
+            expires_at: string | null;
+            /** Build Ms */
+            build_ms: number;
+            /** Snapshot */
+            snapshot: {
+                [key: string]: unknown;
+            };
         };
         /** StaffEntry */
         StaffEntry: {
@@ -9256,6 +9881,483 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DevMailboxMessage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_snapshot_api_v1_customer_snapshots__customer_id__get: {
+        parameters: {
+            query?: {
+                scope?: string;
+            };
+            header?: never;
+            path: {
+                customer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnapshotResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    refresh_snapshot_api_v1_customer_snapshots__customer_id__refresh_post: {
+        parameters: {
+            query?: {
+                scope?: string;
+            };
+            header?: never;
+            path: {
+                customer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnapshotResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    invalidate_cache_api_v1_cache_invalidate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvalidateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvalidateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cache_metrics_api_v1_cache_metrics_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CacheMetricsResponse"];
+                };
+            };
+        };
+    };
+    create_assist_api_v1_ai_assists_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirm_assist_api_v1_ai_assists__session_id__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistConfirm"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upsert_geolocation_api_v1_weather_sites__site_id__geolocation_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GeolocationUpsert"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GeolocationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    fetch_forecast_api_v1_weather_forecasts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ForecastFetch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ForecastResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_advisories_api_v1_weather_advisories_get: {
+        parameters: {
+            query?: {
+                site_id?: string | null;
+                status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdvisoryResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ack_advisory_api_v1_weather_advisories__advisory_id__ack_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                advisory_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdvisoryAction"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdvisoryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    weather_availability_api_v1_weather_availability_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    generation_estimate_api_v1_generation_estimates_get: {
+        parameters: {
+            query: {
+                order_id: string;
+                scenario?: string;
+                interval?: string;
+                month?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenerationEstimateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generation_summary_api_v1_generation_summary_get: {
+        parameters: {
+            query: {
+                order_id: string;
+                scenario?: string;
+                interval?: string;
+                month?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenerationSummaryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_readings_api_v1_generation_readings_get: {
+        parameters: {
+            query: {
+                order_id: string;
+                status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadingResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ingest_reading_api_v1_generation_readings_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReadingCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadingResponse"];
                 };
             };
             /** @description Validation Error */

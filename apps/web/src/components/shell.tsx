@@ -16,6 +16,7 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
     { href: "/customer/installations", label: "Installation work" },
     { href: "/customer/complaints", label: "Complaints" },
     { href: "/customer/equipment", label: "My equipment" },
+    { href: "/customer/generation", label: "Generation" },
     { href: "/customer/estimates", label: "Repair estimates" },
     { href: "/customer/bills", label: "Repair bills" },
     { href: "/customer/replacements", label: "Replacements" },
@@ -44,6 +45,8 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
   support: [
     { href: "/support", label: "Tickets" },
     { href: "/support/lookup", label: "Customer lookup", planned: true },
+    { href: "/support/intelligence", label: "Intelligence" },
+    { href: "/support/weather", label: "Weather ops" },
     { href: "/support/warranty", label: "Warranty" },
     { href: "/support/estimates", label: "Estimates" },
     { href: "/support/replacements", label: "Replacements" },
