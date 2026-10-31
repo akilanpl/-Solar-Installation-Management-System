@@ -1,8 +1,8 @@
 # SolarOps
 
-SolarOps is the operations system for SunPower Solutions, a rooftop solar installer. Phase 1 is the foundation: a real PostgreSQL database, authenticated accounts, and one working workflow from a customer enquiry to a sales qualification update.
+SolarOps is the operations system for SunPower Solutions, a rooftop solar installer. Phase 1 is the foundation: a real PostgreSQL database, authenticated accounts, and a customer enquiry that sales can qualify. Phase 2, on `feature/backend-workflows`, continues that enquiry through an approved rooftop survey, a versioned quotation, a verified sandbox or cash payment, and a confirmed order that creates warehouse and scheduling requests. It does not change stock or mark equipment installed.
 
-Later phases add surveys, quotations, warehouse movement, installation evidence, support, and reporting. Those are specified in `docs/api/API_CONTRACTS.md`. They are not implemented here, and the interface does not invent their numbers.
+Support, weather, and live payment providers are still specified as planned routes in `docs/api/API_CONTRACTS.md`. The interface does not invent their numbers. The Phase 2 review notes are in `docs/architecture/PHASE2_SALES_WORKFLOW.md`.
 
 ## What runs locally
 

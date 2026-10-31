@@ -10,6 +10,41 @@ from app.models.identity import (
     Session,
     User,
 )
+from app.models.phase3 import (  # noqa: F401
+    Delivery,
+    DeliveryLine,
+    EquipmentSerial,
+    InstallationJob,
+    InstallationOtp,
+    ReplenishmentRequest,
+    StockLedger,
+    StockOperation,
+    StockOperationLine,
+    StockReservation,
+    WarehouseLocation,
+    Warranty,
+)
+from app.models.workflow import (  # noqa: F401
+    CatalogueComponent,
+    DocumentCounter,
+    InstallationSchedulingRequest,
+    PackageTemplateLine,
+    PackageTemplateVersion,
+    PaymentAttempt,
+    PaymentIntent,
+    PaymentRequirement,
+    Quotation,
+    QuotationAcceptance,
+    QuotationLine,
+    QuotationRevisionRequest,
+    SalesOrder,
+    SalesOrderLine,
+    Survey,
+    SurveyEvidence,
+    SurveyStatusHistory,
+    WarehousePreparationLine,
+    WarehousePreparationRequest,
+)
 
 __all__ = [
     "AuditEvent",

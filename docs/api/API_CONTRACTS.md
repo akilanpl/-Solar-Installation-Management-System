@@ -33,7 +33,69 @@ Planned routes below are not registered. Calling them returns 404 `not_found`.
 | GET | `/api/v1/enquiries` | Cookie | customer (own), sales, admin | Others 403. |
 | GET | `/api/v1/enquiries/{id}` | Cookie | owner, sales, admin | Other customers get 404. |
 | PATCH | `/api/v1/enquiries/{id}/qualification` | Cookie | sales, admin | 409 `invalid_transition`. |
-| GET | `/api/v1/packages` | Cookie | Any signed-in user | Catalogue only. No prices. |
+| GET | `/api/v1/packages` | Cookie | Any signed-in user | Catalogue identity. Prices live on template versions. |
+| GET | `/api/v1/packages/{code}/versions/current` | Cookie | signed-in staff and customers | Current BOM template. |
+| GET | `/api/v1/packages/{code}/versions/{version}` | Cookie | signed-in staff and customers | A historical template version. |
+| POST | `/api/v1/surveys` | Cookie | sales, admin | Enquiry must be `qualified`. |
+| GET | `/api/v1/surveys` | Cookie | owner, assigned technician, sales, admin | |
+| GET | `/api/v1/surveys/{id}` | Cookie | owner, assigned technician, sales, admin | Other customers get 404. |
+| POST | `/api/v1/surveys/{id}/assignment` | Cookie | sales, admin | Appointment stays pending unless a timestamp is sent. |
+| POST | `/api/v1/surveys/{id}/start` | Cookie | assigned technician | |
+| POST | `/api/v1/surveys/{id}/submission` | Cookie | assigned technician | Rejects out-of-range measurements. |
+| POST | `/api/v1/surveys/{id}/approval` | Cookie | sales, admin | `approved` or `rejected`. |
+| POST | `/api/v1/surveys/{id}/resurvey` | Cookie | sales, admin | Only from `rejected`. |
+| POST | `/api/v1/surveys/{id}/evidence` | Cookie | assigned technician | JPEG, PNG, WebP, or PDF, at most 5 MB. |
+| GET | `/api/v1/surveys/{id}/evidence/{evidence_id}` | Cookie | same as the survey | Stored file, not a guessed URL. |
+| POST | `/api/v1/quotations` | Cookie | sales, admin | Approved survey only. One `issued` or `accepted` quotation per enquiry. Idempotency-Key required. |
+| GET | `/api/v1/quotations` | Cookie | owner, sales, admin | |
+| GET | `/api/v1/quotations/{id}` | Cookie | owner, sales, admin | Other customers get 404. |
+| POST | `/api/v1/quotations/{id}/revision-requests` | Cookie | owning customer | Durable change request. Does not edit the quote. |
+| GET | `/api/v1/quotations/{id}/revision-requests` | Cookie | owner, sales, admin | |
+| POST | `/api/v1/quotations/{id}/revisions` | Cookie | sales, admin | New immutable revision. Previous becomes `superseded`. |
+| POST | `/api/v1/quotations/{id}/acceptance` | Cookie | owning customer | One exact revision. |
+| POST | `/api/v1/quotations/{id}/withdrawal` | Cookie | sales, admin | From `issued` only. |
+| GET | `/api/v1/quotations/{id}/payment-requirement` | Cookie | owner, sales, admin | Advance, verified sum, outstanding balance. |
+| POST | `/api/v1/payments/intents` | Cookie | owner, sales, admin | Sandbox intent. `is_test_only` is true. Disabled in production. |
+| POST | `/api/v1/payments/intents/{id}/sandbox-outcome` | Cookie | owner, sales, admin | `succeeded`, `failed`, or `unknown`. Unknown stays `unresolved`. |
+| POST | `/api/v1/payments/cash-receipts` | Cookie | sales, admin | Manual verified receipt. Not test-only. |
+| GET | `/api/v1/payments/{id}` | Cookie | owner, sales, admin | |
+| POST | `/api/v1/orders` | Cookie | sales, admin | Accepted quote and verified advance. Idempotent. No stock change. |
+| GET | `/api/v1/orders` | Cookie | owner, sales, admin, warehouse | |
+| GET | `/api/v1/orders/{id}` | Cookie | owner, sales, admin, warehouse | |
+| GET | `/api/v1/warehouse/preparation` | Cookie | warehouse staff, warehouse manager, sales, admin | Preparation requests only. |
+| GET | `/api/v1/scheduling/installations` | Cookie | sales, admin | Slot is null until someone selects one. |
+| GET | `/api/v1/stock` | Cookie | warehouse staff, manager, admin, sales | On-hand computed from the ledger. |
+| POST | `/api/v1/stock/operations` | Cookie | warehouse staff, manager, admin | `draft`. Types: receipt, transfer, delivery, adjustment. Idempotency-Key required. |
+| GET | `/api/v1/stock/operations/{id}` | Cookie | warehouse staff, manager, admin, sales | Operation with lines. |
+| POST | `/api/v1/stock/operations/{id}/ready` | Cookie | warehouse staff, manager, admin | Draft to ready. |
+| POST | `/api/v1/stock/operations/{id}/validate` | Cookie | warehouse staff, manager, admin | Ready to done plus ledger rows. 409 `insufficient_stock`. One transaction. |
+| POST | `/api/v1/stock/operations/{id}/cancel` | Cookie | warehouse staff, manager, admin | Before done only. |
+| POST | `/api/v1/stock/reservations` | Cookie | sales, admin, warehouse staff, manager | Reserves an order's material lines. Idempotent per order and component. |
+| GET | `/api/v1/stock/reservations` | Cookie | sales, admin, warehouse staff, manager | Optional `order_id` filter. |
+| POST | `/api/v1/serials/scan` | Cookie | warehouse staff, manager, admin | Registers a serial. 409 `serial_exists`. |
+| POST | `/api/v1/serials/{id}/assign` | Cookie | warehouse staff, manager, admin | Assigns an in-stock serial to an order. 409 on mismatch or reuse. |
+| POST | `/api/v1/replenishment/requests` | Cookie | warehouse staff, manager, admin | `proposed`. |
+| POST | `/api/v1/replenishment/requests/{id}/decision` | Cookie | warehouse manager, admin | `approve` or `reject`. Staff gets 403. |
+| POST | `/api/v1/deliveries` | Cookie | warehouse staff, manager, admin | Picks an order's material lines. 409 `insufficient_stock`. Idempotency-Key required. |
+| GET | `/api/v1/deliveries` | Cookie | warehouse, sales, admin, technician, support, owner customer | |
+| GET | `/api/v1/deliveries/{id}` | Cookie | same as list | |
+| POST | `/api/v1/deliveries/{id}/transit` | Cookie | warehouse staff, manager, admin | Prepared to in transit. |
+| POST | `/api/v1/deliveries/{id}/deliver` | Cookie | warehouse staff, manager, admin | In transit to delivered. |
+| POST | `/api/v1/deliveries/{id}/confirm` | Cookie | warehouse staff, manager, admin, technician | Delivered to confirmed. Consumes reservations, installs serials, activates the warranty. |
+| POST | `/api/v1/deliveries/{id}/cancel` | Cookie | warehouse staff, manager, admin | Prepared/in-transit to cancelled. Restocks MAIN. |
+| POST | `/api/v1/scheduling/installations/{id}/slot` | Cookie | sales, admin | Sets a real slot timestamp. |
+| POST | `/api/v1/assignments/recommendations` | Cookie | sales, admin | Ranked technicians. Does not persist an assignment. |
+| POST | `/api/v1/jobs` | Cookie | sales, admin | Creates the installation job. Returns a one-time customer code. |
+| GET | `/api/v1/jobs` | Cookie | technician (own), sales, admin, warehouse, support, owner customer | |
+| GET | `/api/v1/jobs/{id}` | Cookie | same as list | |
+| POST | `/api/v1/jobs/{id}/en-route` | Cookie | assigned technician | Scheduled to en route. |
+| POST | `/api/v1/jobs/{id}/arrival` | Cookie | assigned technician | Arrival time from the server clock. |
+| POST | `/api/v1/jobs/{id}/customer-otp` | Cookie | assigned technician | 6-digit code. Locks after 5 wrong attempts. |
+| POST | `/api/v1/jobs/{id}/evidence` | Cookie | assigned technician | Photo refs, test readings, start and finish times. |
+| POST | `/api/v1/jobs/{id}/signature` | Cookie | assigned technician | Requires customer confirmation. |
+| POST | `/api/v1/jobs/{id}/completion` | Cookie | assigned technician | Requires OTP, evidence and signature. |
+| GET | `/api/v1/warranties/order/{order_id}` | Cookie | warehouse, sales, admin, technician, support, owner customer | Active after delivery confirmation. |
+| POST | `/api/v1/warranties/order/{order_id}/void` | Cookie | support, admin | Active to void. |
 | GET | `/api/v1/admin/employees` | Cookie | admin | |
 | POST | `/api/v1/admin/employees` | Cookie | admin | Provisions a verified staff account. |
 | GET | `/api/v1/dev/mailbox/{email}` | No |  | 404 unless development without SMTP. Returns the captured email, including the code. |
@@ -70,51 +132,35 @@ Each row is a contract for a later phase. Authentication is a session cookie unl
 
 | Method and path | Roles | Request | Response | Rules |
 | --- | --- | --- | --- | --- |
-| POST `/api/v1/enquiries/{id}/qualification-notes` | sales, admin | note | history | Already covered in spirit by qualification; a longer note thread can be added without changing status. |
-| POST `/api/v1/surveys` | sales, admin | enquiry id, site id | survey `draft` | Enquiry must be `qualified`. |
-| POST `/api/v1/surveys/{id}/assignment` | sales, admin | technician id, slot id | assignment | Technician skill must match. Slot must already exist. |
-| POST `/api/v1/surveys/{id}/submission` | assigned technician | direction, tilt, cable distance, suitability | survey `submitted` | Measurements are required numbers with units. |
-| POST `/api/v1/surveys/{id}/approval` | sales, admin | decision | `approved` or `rejected` | Rejected surveys cannot be quoted. |
-| GET `/api/v1/packages/{id}` | signed in |  | package | |
-| POST `/api/v1/quotations` | sales, admin | survey id, package id | quotation `draft` plus BOM | BOM lines come from the package template and survey measurements. Idempotency-Key required. |
-| POST `/api/v1/quotations/{id}/revisions` | sales, admin | changed lines | new revision | Previous revision stays immutable. |
-| POST `/api/v1/quotations/{id}/acceptance` | owning customer | revision id | `accepted` | Only the current revision. One acceptance. |
-| POST `/api/v1/orders` | sales, admin | accepted quotation id | order | Idempotent. Does not itself decrement stock. |
+| POST `/api/v1/enquiries/{id}/qualification-notes` | sales, admin | note | history | A longer note thread. Qualification itself is implemented. |
 
 ### Payments
 
 | Method and path | Roles | Request | Response | Rules |
 | --- | --- | --- | --- | --- |
-| POST `/api/v1/payments/intents` | customer, sales | order id, amount minor, currency | intent `requires_action` | Amount must match the order balance. Idempotency-Key required. |
-| POST `/api/v1/payments/intents/{id}/verify` | system or sales | provider reference | intent status | Status comes from the provider adapter, which Phase 1 does not have. A timeout stays `unknown`, not `succeeded`. |
-| GET `/api/v1/payments/{id}` | owner, sales, admin |  | status | |
+| POST `/api/v1/payments/intents` | customer, sales | provider method other than sandbox | intent | UPI, cards, wallets, net banking, and EMI stay planned. No card numbers are stored. The sandbox intent above is the only adapter in this phase. |
+| POST `/api/v1/payments/intents/{id}/verify` | system or sales | provider reference | intent status | A real provider verifier. A timeout stays unresolved. The sandbox outcome route is the test stand-in and is labeled test-only. |
 | POST `/api/v1/invoices` | sales, admin | order or ticket id | invoice | Integer minor units. |
 | POST `/api/v1/refunds` | admin | payment id, amount | refund record | Cannot exceed the captured amount. |
 
-### Warehouse
+### Warehouse (remaining)
 
 | Method and path | Roles | Request | Response | Rules |
 | --- | --- | --- | --- | --- |
-| GET `/api/v1/stock` | warehouse staff, manager, admin | product, location | on-hand | Computed from the ledger. |
-| POST `/api/v1/stock/operations` | warehouse staff, manager | type, lines | `draft` | Types: receipt, transfer, delivery, adjustment. |
-| POST `/api/v1/stock/operations/{id}/validate` | warehouse staff, manager |  | `done` plus ledger rows | One transaction. Failure leaves stock unchanged. |
-| POST `/api/v1/stock/reservations` | system, after order | order id, lines | reservation | Not taken from StockSense; add only with the order flow. |
-| POST `/api/v1/serials/scan` | warehouse staff | serial, operation id | serial row | A serial cannot be on two open operations. |
-| POST `/api/v1/deliveries/{id}/confirm` | warehouse staff or technician |  | delivery `confirmed` | This is the future warranty trigger, not Phase 1. |
-| POST `/api/v1/replenishment/requests` | warehouse staff, manager | product, quantity | `proposed` | Suggestion may be created by a threshold check. |
-| POST `/api/v1/replenishment/requests/{id}/decision` | warehouse manager, admin | approve or reject | decision | Staff cannot approve. |
+| POST `/api/v1/replenishment/requests/{id}/receive` | warehouse manager, admin |  | receipt operation | Creates the inbound stock operation for an approved request. Not yet built. |
 
-### Technicians
+Stock operations, reservations, serial scans, deliveries with warranty
+activation, and replenishment request/decision are implemented in Phase 3
+(see the Implemented table). Reservation creation also runs automatically
+inside order confirmation.
 
-| Method and path | Roles | Request | Response | Rules |
-| --- | --- | --- | --- | --- |
-| GET `/api/v1/jobs` | technician |  | own jobs | |
-| POST `/api/v1/jobs/{id}/arrival` | assigned technician |  | arrival time | Server clock. |
-| POST `/api/v1/jobs/{id}/customer-otp` | assigned technician | code | verified or not | Same single-use challenge rules as email OTP. |
-| POST `/api/v1/jobs/{id}/evidence` | assigned technician | photo refs, test readings, times | evidence | Times are entered, not generated. |
-| POST `/api/v1/jobs/{id}/signature` | assigned technician | signature payload, customer confirmation | signature | Stored with the job. |
-| POST `/api/v1/jobs/{id}/completion` | assigned technician |  | `completed` | Requires evidence and signature. |
-| POST `/api/v1/assignments/recommendations` | sales, admin | job requirements | ranked technicians | Does not persist an assignment. Unqualified technicians are omitted. |
+### Technicians (remaining)
+
+Technician jobs, arrival, customer OTP, evidence, signature, completion,
+scheduling slots, and assignment recommendations are implemented in Phase 3
+(see the Implemented table). Still planned: skill-based filtering of
+recommendations (technicians with 5 or more open jobs are currently omitted)
+and dispatcher-override audit events.
 
 ### Support
 

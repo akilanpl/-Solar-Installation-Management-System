@@ -17,7 +17,9 @@ Keep using the synchronous session in `get_db`. Do not open a second engine insi
 
 ## Enquiry slice
 
-`enquiry_service.create_enquiry` and `qualify_enquiry` are the pattern: check the role, write the business row, write history, write audit, let `get_db` commit. Copy that for surveys and quotations.
+`enquiry_service.create_enquiry` and `qualify_enquiry` are the pattern: check the role, write the business row, write history, write audit, let `get_db` commit.
+
+Phase 2 follows that pattern in `survey_service`, `quotation_service`, `payment_service`, and `order_service`. The review notes are in `docs/architecture/PHASE2_SALES_WORKFLOW.md`. Migration `9b1336c3b2cc` adds the tables and seeds package template version 1. Do not edit the Phase 1 migration.
 
 Customer ownership is `customer_profiles.user_id`. Do not accept a customer id from the body.
 
