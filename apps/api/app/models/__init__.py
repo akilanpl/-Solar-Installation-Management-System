@@ -90,3 +90,10 @@ from app.models.operations import GoodsReturn, StockAllocation, SupplierOrder  #
 from app.models.provider import ProviderEvent, ProviderPaymentOrder  # noqa: F401
 from app.models.rate_limit import RateLimitBucket  # noqa: F401
 from app.models.scheduling import TechnicianAppointment, TechnicianAvailability, TechnicianLeave  # noqa: F401
+from app.models.finance import (  # noqa: F401, E402
+    FinanceEntry,
+    FinanceEvidence,
+    FinanceLine,
+    FinancePeriod,
+    FinanceRecord,
+)

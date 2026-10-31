@@ -11,6 +11,7 @@ import { homeForRole, isRole } from "@/lib/access";
 
 const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]> = {
   customer: [
+    { href: "/customer/subsidies", label: "Subsidy documents" },
     { href: "/customer", label: "Overview" },
     { href: "/customer/enquiries/new", label: "New enquiry" },
     { href: "/customer/quotations", label: "Quotations" },
@@ -24,12 +25,14 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
     { href: "/customer/replacements", label: "Replacements" },
   ],
   technician: [
+    { href: "/technician/labour", label: "Labour & payables" },
     { href: "/technician", label: "Assigned jobs" },
     { href: "/technician/surveys", label: "Surveys" },
     { href: "/technician/repairs", label: "Repairs", planned: true },
     { href: "/technician/install", label: "Replacement install" },
   ],
   sales: [
+    { href: "/sales/subsidies", label: "Subsidy review" },
     { href: "/sales", label: "Enquiries" },
     { href: "/sales/surveys", label: "Surveys" },
     { href: "/sales/quotations", label: "Quotations" },
@@ -67,7 +70,7 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
     { href: "/warehouse", label: "Inventory logistics" },
     { href: "/support", label: "Customer support" },
     { href: "/admin/pricing", label: "Warranty & pricing" },
-    { href: "/admin/reports", label: "Reports", planned: true },
+    { href: "/admin/reports", label: "Finance & reports" },
   ],
 };
 

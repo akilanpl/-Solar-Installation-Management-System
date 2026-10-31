@@ -9,6 +9,7 @@ from app.api.v1 import (
     billing,
     dev,
     enquiries,
+    finance,
     health,
     installation,
     operations,
@@ -47,5 +48,6 @@ api_router.include_router(tickets.router)
 api_router.include_router(warranty.router)
 api_router.include_router(replacements.router)
 api_router.include_router(billing.router)
+api_router.include_router(finance.router)
 api_router.include_router(admin.router)
 api_router.include_router(dev.router)

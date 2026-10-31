@@ -1,0 +1,20 @@
+{
+  "baseline_backend_tests": 203,
+  "backend_tests": 244,
+  "new_finance_cases": 41,
+  "frontend_unit_tests": 12,
+  "ruff": "PASS",
+  "frontend_typecheck": "PASS",
+  "frontend_lint": "PASS",
+  "production_build": "PASS",
+  "generated_contract_regeneration_diff": "EMPTY",
+  "managed_browser_required_scenarios": "5 PASS",
+  "playwright_cli": "BLOCKED at browser launch by macOS sandbox",
+  "repository_coverage_gate": "FAIL: branch 65.839% < 70%",
+  "finance_statements_percent": 93.878,
+  "finance_branches_percent": 77.519,
+  "diff_executable_line_percent": 93.891,
+  "pushed": false,
+  "merged": false,
+  "production_ready": false
+}
