@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { ChevronRight } from 'lucide-react';
 import ReceiptPrinter from '../../components/ReceiptPrinter/ReceiptPrinter';
 import { MultiCardWallet } from '../../components/MultiCardWallet/MultiCardWallet';
+import { CustomerAccessibility } from '../../components/CustomerAccessibility/CustomerAccessibility';
 import './RazorpayPaymentPage.css';
 
 export function RazorpayPaymentPage() {
@@ -359,6 +360,8 @@ export function RazorpayPaymentPage() {
           onDownload={() => window.print()}
         />
       )}
+      {/* Customer Accessibility Floating Suite */}
+      <CustomerAccessibility />
     </div>
   );
 }

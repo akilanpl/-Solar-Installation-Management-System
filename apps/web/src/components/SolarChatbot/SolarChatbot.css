@@ -518,6 +518,179 @@
   cursor: not-allowed;
 }
 
+/* ==========================================================================
+   ACCESSIBILITY: SPEECH-TO-TEXT & READ ALOUD STYLES
+   ========================================================================== */
+
+/* Accessibility: Auto Read Aloud Header Toggle */
+.lemon-speech-toggle-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lemon-speech-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.16);
+  transform: scale(1.05);
+}
+
+.lemon-speech-toggle-btn.active {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #059669;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+/* Bot Card Top Bar & Listen / Read Aloud Button */
+.lemon-bot-card-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.lemon-bot-tag {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+}
+
+.lemon-listen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.lemon-listen-btn:hover {
+  background: rgba(56, 189, 248, 0.18);
+  color: #ffffff;
+  border-color: #38bdf8;
+}
+
+.lemon-listen-btn.active-speaking {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #059669;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  animation: pulseListen 1s infinite alternate;
+}
+
+@keyframes pulseListen {
+  from { opacity: 0.85; }
+  to { opacity: 1; filter: drop-shadow(0 0 4px #10b981); }
+}
+
+/* Voice Dictation (Microphone Button in Input Pill) */
+.lemon-voice-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+.lemon-voice-btn:hover {
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.lemon-voice-btn.listening {
+  color: #ffffff;
+  background: #ef4444;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+  animation: micPulse 1s infinite;
+}
+
+@keyframes micPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Speech-to-Text Listening Banner */
+.speech-listening-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  border: 1px solid #ef4444;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
+  animation: slideUpBanner 0.2s ease-out;
+}
+
+@keyframes slideUpBanner {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.listening-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+  animation: pulseDot 0.8s infinite alternate;
+}
+
+@keyframes pulseDot {
+  from { opacity: 0.4; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1.3); }
+}
+
+.listening-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.listening-stop-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.listening-stop-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
 /* Responsive adjustment */
 @media (max-width: 640px) {
   .dock-chat-panel {

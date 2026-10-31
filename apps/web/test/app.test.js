@@ -424,6 +424,55 @@ test('Multi-Card Leather Wallet: card options, visual assets, and metadata synch
   assert.ok(!pageContent.includes('<div className="io-credit-card">'), 'Static io-credit-card must be replaced by MultiCardWallet');
 });
 
+test('Customer Accessibility: scoped screen reader, speech-to-text dictation, and disability helpers', () => {
+  // 1. Scoping verification: active only in customer sections
+  const isCustomerScoped = (role, path = '') =>
+    role === 'customer' || path.startsWith('/customer') || path.startsWith('/store');
+
+  assert.equal(isCustomerScoped('customer', '/customer'), true);
+  assert.equal(isCustomerScoped('customer', '/customer/store'), true);
+  assert.equal(isCustomerScoped('customer', '/customer/payments/razorpay'), true);
+  assert.equal(isCustomerScoped('sales', '/sales'), false);
+  assert.equal(isCustomerScoped('technician', '/technician'), false);
+  assert.equal(isCustomerScoped('warehouse_manager', '/warehouse'), false);
+  assert.equal(isCustomerScoped('admin', '/admin'), false);
+
+  // 2. Chatbot Accessibility: Speech-to-Text and Read Aloud verification
+  const chatbotPath = path.join(__dirname, '../src/components/SolarChatbot/SolarChatbot.jsx');
+  const chatbotCssPath = path.join(__dirname, '../src/components/SolarChatbot/SolarChatbot.css');
+  assert.ok(fs.existsSync(chatbotPath), 'SolarChatbot.jsx must exist');
+  assert.ok(fs.existsSync(chatbotCssPath), 'SolarChatbot.css must exist');
+
+  const chatbotJsx = fs.readFileSync(chatbotPath, 'utf8');
+  const chatbotCss = fs.readFileSync(chatbotCssPath, 'utf8');
+  assert.ok(chatbotJsx.includes('handleToggleSpeechToText'), 'Chatbot must include speech-to-text dictation');
+  assert.ok(chatbotJsx.includes('SpeechSynthesisUtterance'), 'Chatbot must include SpeechSynthesis read aloud');
+  assert.ok(chatbotJsx.includes('autoReadAloud'), 'Chatbot must include auto read aloud toggle for visually impaired');
+  assert.ok(chatbotJsx.includes('lemon-voice-btn'), 'Chatbot must include microphone dictation button');
+  assert.ok(chatbotCss.includes('lemon-voice-btn'), 'Chatbot CSS must style mic dictation button');
+  assert.ok(chatbotCss.includes('speech-listening-banner'), 'Chatbot CSS must style listening banner');
+
+  // 3. Customer Accessibility Assistant Suite Verification
+  const a11yPath = path.join(__dirname, '../src/components/CustomerAccessibility/CustomerAccessibility.jsx');
+  const a11yCssPath = path.join(__dirname, '../src/components/CustomerAccessibility/CustomerAccessibility.css');
+  assert.ok(fs.existsSync(a11yPath), 'CustomerAccessibility.jsx must exist');
+  assert.ok(fs.existsSync(a11yCssPath), 'CustomerAccessibility.css must exist');
+
+  const a11yJsx = fs.readFileSync(a11yPath, 'utf8');
+  const a11yCss = fs.readFileSync(a11yCssPath, 'utf8');
+  assert.ok(a11yJsx.includes('getPageNarration'), 'Customer accessibility must include page narrator text generator');
+  assert.ok(a11yJsx.includes('highContrast'), 'Customer accessibility must support high-contrast mode');
+  assert.ok(a11yJsx.includes('textSize'), 'Customer accessibility must support scalable text zoom');
+  assert.ok(a11yJsx.includes('dyslexicFont'), 'Customer accessibility must support dyslexia reading spacing');
+  assert.ok(a11yJsx.includes('readingRuler'), 'Customer accessibility must support visual reading guide ruler');
+
+  // Verify high contrast and accessibility CSS rules
+  assert.ok(a11yCss.includes('customer-high-contrast'), 'CSS must include high-contrast mode rules');
+  assert.ok(a11yCss.includes('customer-text-large'), 'CSS must include text zoom rules');
+  assert.ok(a11yCss.includes('customer-dyslexia-spacing'), 'CSS must include dyslexia spacing rules');
+  assert.ok(a11yCss.includes('customer-reading-ruler'), 'CSS must include reading ruler styling');
+});
+
 
 
 

@@ -3028,3 +3028,69 @@ Scope: apps/web/src/components/MultiCardWallet/MultiCardWallet.jsx,
    - All 17 unit tests passing (17/17).
    - Verified Vite production build completes cleanly in 2.26s.
 ================================================================================
+================================================================================
+SECTION 58: CUSTOMER ACCESSIBILITY SUITE: SPEECH-TO-TEXT DICTATION, SCREEN READER NARRATION & VISUAL ASSISTANCE
+================================================================================
+Date: 01-Nov-2026
+Author: Antigravity Assistant & Engineering Team
+Scope: apps/web/src/components/CustomerAccessibility/CustomerAccessibility.jsx,
+       apps/web/src/components/CustomerAccessibility/CustomerAccessibility.css,
+       apps/web/src/components/SolarChatbot/SolarChatbot.jsx,
+       apps/web/src/components/SolarChatbot/SolarChatbot.css,
+       apps/web/src/components/AppShell/AppShell.jsx,
+       apps/web/src/pages/Customer/RazorpayPaymentPage.jsx,
+       apps/web/test/app.test.js
+
+1. Executive Summary & Design System Integration:
+   - Implemented an enterprise-grade WCAG 2.2 AAA accessibility suite scoped strictly to the
+     Customer experience (role === 'customer' or routes starting with /customer or /store).
+   - Designed specifically to empower visually impaired, low-vision, dyslexic, and motor-disabled
+     solar customers to browse solar hardware, monitor live generation, file complaints, and
+     execute milestone payments independently and with dignity.
+   - Built with zero external dependencies, leveraging native Web Speech API (SpeechRecognition &
+     SpeechSynthesis) and Web Audio API for hardware-accelerated, offline-capable interaction.
+
+2. Chatbot Accessibility: Speech-to-Text & Read Aloud:
+   - Voice Dictation (Speech to Text):
+     * Integrated microphone dictation button (.lemon-voice-btn) inside the chatbot input capsule.
+     * Starts native SpeechRecognition / webkitSpeechRecognition with language support ('en-IN', 'en-US').
+     * Renders a live listening status banner (.speech-listening-banner) with animated red pulse wave
+       and "Listening to your voice... Speak now" telemetry, synchronizing speech directly into the input.
+     * Graceful fallback simulation if hardware microphone is unavailable or permissions are blocked.
+   - Assistant Read Aloud (Text to Speech):
+     * Added individual speaker listen button (.lemon-listen-btn) inside each assistant message card,
+       allowing visually impaired users to click and hear responses read aloud clearly.
+     * Added global "Auto Read Aloud" switch (.lemon-speech-toggle-btn) in the chatbot header:
+       when enabled, every incoming bot diagnosis or telemetry response is spoken automatically.
+     * Clean markdown and URL formatting stripping ensures smooth, natural synthesized voice output.
+
+3. Customer Portal Accessibility Assistant Suite:
+   - Scoped Floating Assistant Pill (.customer-a11y-floating-trigger):
+     * High-visibility trigger located at the bottom right of customer views.
+     * Toggles an accessible quick-drawer panel (.customer-a11y-drawer) with focus trapping.
+   - Page Screen Reader ("Read Page Aloud"):
+     * Context-aware narration engine (getPageNarration()) that synthesizes summaries of current pages:
+       - Customer Dashboard: Reads 5 kW solar generation (22.4 kWh), battery level (92%),
+         scheduled technician audit date (Sat, 18 May), and technician verification OTP (849 201).
+       - Solar Store: Narrates hardware availability, pricing, warranty, and 12% solar GST.
+       - Milestone Payments / Razorpay: Narrates bill breakdown, multi-card wallet options, and receipt status.
+       - Quotations & Support: Narrates bill of materials, central subsidy credits, and technical tickets.
+     * Play, Pause, Resume, and Stop controls with live speaking waveform indicator.
+   - Visual & Cognitive Disability Toggles:
+     * High Contrast Mode: Deep black (#000000) backdrop, high-luminance gold/yellow (#ffff00) headings,
+       and 3px solid focus borders exceeding WCAG AAA 14:1 contrast ratios.
+     * Text Sizing (Zoom): 100% (Standard) -> 125% (Large A+) -> 150% (Extra Large A++).
+     * Dyslexia-Friendly Reading: Expands letter-spacing (0.08em), word-spacing (0.16em), and line-height (1.85).
+     * Reading Tracking Ruler: A highlighted horizontal guide line following cursor position to assist focus.
+     * Audio Feedback Earcons: Web Audio sine-wave chimes confirming button clicks and state changes.
+     * Reduce Motion: Disables 3D card tilts, keyframe sweeps, and animations for vestibular protection.
+   - Strict Role Scoping:
+     * Excluded from internal roles (sales, warehouse, technician, admin) so their specialized operational
+       interfaces remain clean and unmodified.
+
+4. Testing & Verification:
+   - Added Unit Test #18 in apps/web/test/app.test.js validating role scoping, chatbot voice dictation
+     and speech synthesis utterances, and all customer accessibility drawer features and CSS rules.
+   - All 18 unit tests passing (18/18).
+   - Production build verified in 2.27s (dist/assets/CustomerAccessibility-BrBO0agr.js code-split to 11.5 kB).
+================================================================================

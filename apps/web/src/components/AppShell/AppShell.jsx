@@ -5,6 +5,7 @@ import { canAccessPath, homeForRole } from '../../lib/access';
 import { Header } from '../Header/Header';
 import { Sidebar } from '../Sidebar/Sidebar';
 import { LoadingState } from '../LoadingState/LoadingState';
+import { CustomerAccessibility } from '../CustomerAccessibility/CustomerAccessibility';
 import { ShieldAlert } from 'lucide-react';
 import './AppShell.css';
 
@@ -61,6 +62,11 @@ export function AppShell({ children, requiredRole = null }) {
     );
   }
 
+  const isCustomerScope =
+    user.role === 'customer' ||
+    path.startsWith('/customer') ||
+    path.startsWith('/store');
+
   return (
     <div className="app-shell-layout">
       <Sidebar />
@@ -68,6 +74,7 @@ export function AppShell({ children, requiredRole = null }) {
         <Header />
         <main className="app-shell-content">{children}</main>
       </div>
+      {isCustomerScope && <CustomerAccessibility />}
     </div>
   );
 }

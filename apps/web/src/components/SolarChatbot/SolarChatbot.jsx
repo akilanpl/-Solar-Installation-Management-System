@@ -15,6 +15,10 @@ import {
   Copy,
   Check,
   Zap,
+  Mic,
+  MicOff,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { useRouter } from '../../router/Router';
 import { useAuth } from '../../context/AuthContext';
@@ -63,6 +67,12 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
   const [showInfoBanner, setShowInfoBanner] = useState(false);
   const messagesEndRef = useRef(null);
 
+  // Accessibility: Speech to Text (Mic Dictation) & Read Aloud (Screen Reader)
+  const [isListening, setIsListening] = useState(false);
+  const [autoReadAloud, setAutoReadAloud] = useState(false);
+  const [speakingMsgId, setSpeakingMsgId] = useState(null);
+  const recognitionRef = useRef(null);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -73,8 +83,137 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
     }
   }, [messages, isOpen, isTyping]);
 
+  // Clean up speech synthesis and recognition on unmount or close
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {}
+      }
+    };
+  }, [isOpen]);
+
+  // Read Aloud using SpeechSynthesis for visually impaired customers
+  const speakText = (text, msgId = null) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      showToast({
+        type: 'info',
+        title: 'Speech Synthesis Unavailable',
+        message: 'Speech synthesis is not supported on this browser device.',
+      });
+      return;
+    }
+
+    if (speakingMsgId === msgId && msgId !== null) {
+      window.speechSynthesis.cancel();
+      setSpeakingMsgId(null);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const cleanText = text
+      .replace(/[*_#`~[\]]/g, '')
+      .replace(/\(https?:\/\/[^\)]+\)/g, '')
+      .trim();
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 0.94;
+    utterance.pitch = 1.0;
+    utterance.lang = 'en-IN';
+
+    utterance.onstart = () => {
+      setSpeakingMsgId(msgId);
+    };
+
+    utterance.onend = () => {
+      setSpeakingMsgId(null);
+    };
+
+    utterance.onerror = () => {
+      setSpeakingMsgId(null);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // Speech to Text Microphone Dictation for disabled/motor-impaired customers
+  const handleToggleSpeechToText = () => {
+    if (isListening) {
+      stopListening();
+      return;
+    }
+
+    const SpeechRecognition =
+      typeof window !== 'undefined' &&
+      (window.SpeechRecognition || window.webkitSpeechRecognition);
+
+    if (!SpeechRecognition) {
+      showToast({
+        type: 'info',
+        title: 'Voice Input Demo',
+        message: 'Speech recognition simulated for this browser device.',
+      });
+      setInputValue('How much solar electricity did my 5 kW rooftop generate today?');
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = 'en-IN';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        if (transcript) {
+          setInputValue(transcript);
+        }
+      };
+
+      recognition.onerror = (e) => {
+        console.warn('Speech recognition notice:', e);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.warn('Speech recognition start failed:', err);
+      setIsListening(false);
+      setInputValue('Check my solar panel generation and PM Surya Ghar subsidy');
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {}
+      recognitionRef.current = null;
+    }
+    setIsListening(false);
+  };
+
   const addMessage = (message) => {
     setMessages((prev) => [...prev, message]);
+    if (message.sender === 'bot' && autoReadAloud) {
+      speakText(message.text, message.id);
+    }
   };
 
   const handleActionClick = (action) => {
@@ -449,6 +588,32 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
           </div>
 
           <div className="lemon-header-actions">
+            {/* Auto Read Aloud Accessibility Switch for Visually Impaired Customers */}
+            <button
+              type="button"
+              className={`lemon-speech-toggle-btn ${autoReadAloud ? 'active' : ''}`}
+              onClick={() => {
+                const next = !autoReadAloud;
+                setAutoReadAloud(next);
+                if (next) {
+                  showToast({
+                    type: 'info',
+                    title: 'Auto Read Aloud Enabled',
+                    message: 'Responses will now be read aloud automatically for visually impaired users.',
+                  });
+                } else {
+                  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                  }
+                  setSpeakingMsgId(null);
+                }
+              }}
+              title={autoReadAloud ? 'Auto Read Aloud Active (Click to mute)' : 'Enable Auto Read Aloud (Visually Impaired Mode)'}
+              aria-label="Toggle auto read aloud for visually impaired customers"
+            >
+              {autoReadAloud ? <Volume2 size={16} /> : <VolumeX size={16} />}
+            </button>
+
             <button
               type="button"
               className="lemon-circle-btn"
@@ -498,6 +663,21 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
               ) : (
                 <div className="lemon-bot-bubble-wrapper">
                   <div className="lemon-bot-dark-card">
+                    {/* Read Aloud Bar for Visually Impaired Customers */}
+                    <div className="lemon-bot-card-top-bar">
+                      <span className="lemon-bot-tag">SolarFlow AI</span>
+                      <button
+                        type="button"
+                        className={`lemon-listen-btn ${speakingMsgId === msg.id ? 'active-speaking' : ''}`}
+                        onClick={() => speakText(msg.text, msg.id)}
+                        title={speakingMsgId === msg.id ? 'Stop reading' : 'Read aloud for visually impaired'}
+                        aria-label="Read message aloud"
+                      >
+                        {speakingMsgId === msg.id ? <VolumeX size={13} /> : <Volume2 size={13} />}
+                        <span>{speakingMsgId === msg.id ? 'Stop' : 'Read Aloud'}</span>
+                      </button>
+                    </div>
+
                     <p className="lemon-bot-text" style={{ whiteSpace: 'pre-line' }}>
                       {msg.text}
                     </p>
@@ -569,6 +749,21 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
         </div>
       </div>
 
+      {/* Speech-to-Text Listening Banner */}
+      {isListening && (
+        <div className="speech-listening-banner" role="status" aria-live="polite">
+          <span className="listening-pulse-dot" />
+          <span className="listening-text">Listening to your voice... Speak now</span>
+          <button
+            type="button"
+            className="listening-stop-btn"
+            onClick={stopListening}
+          >
+            Done
+          </button>
+        </div>
+      )}
+
       {/* Floating Bottom Input Bar */}
       <div className="lemon-input-bar">
         <div className="lemon-input-pill">
@@ -583,11 +778,23 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
           <input
             type="text"
             className="lemon-text-input"
-            placeholder="Ask about inverter errors, solar generation, subsidy, or spares..."
+            placeholder={isListening ? "Listening to your voice..." : "Ask or speak about inverter errors, solar generation, subsidy..."}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
+            aria-label="Ask about solar operations or use speech to text"
           />
+
+          {/* Speech-to-Text Microphone Dictation Button */}
+          <button
+            type="button"
+            className={`lemon-voice-btn ${isListening ? 'listening' : ''}`}
+            onClick={handleToggleSpeechToText}
+            title={isListening ? 'Stop listening' : 'Voice input (Speech to Text)'}
+            aria-label="Voice input speech to text"
+          >
+            {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+          </button>
         </div>
 
         <button
