@@ -388,25 +388,18 @@ export function SolarStore() {
     <AppShell requiredRole="customer">
       <div className="solar-store-page">
         {/* Page Top Banner */}
-        <div className="solar-store-hero">
-          <div className="hero-content-col">
-            <div className="hero-badge-tag">
-              <Zap size={14} color="#fbbf24" />
-              <span>Official SolarFlow Hardware Marketplace</span>
-            </div>
-            <h1 className="hero-title">
-              Tier-1 Solar Panels, Inverters & Storage
-            </h1>
-            <p className="hero-subtitle">
-              Order direct-from-warehouse solar hardware, automated sprinkler
-              washers, LiFePO4 batteries, and genuine BOS spares with free delivery
-              across Bengaluru.
+        <div
+          className="solar-store-hero"
+          role="banner"
+          aria-label="Complete Solar Solutions - Hybrid Inverter & Battery Combo"
+        >
+          {/* Accessible off-screen metadata for SEO and screen-readers */}
+          <div className="hero-content-col sr-only">
+            <h1>Complete Solar Solutions - Official SolarFlow Marketplace</h1>
+            <p>
+              Power. Save. Live Better. Reliable Hybrid Inverter & Battery Combo and
+              Complete DCR Solar Kits for Every Home.
             </p>
-            <div className="hero-trust-chips">
-              <span>✓ 25-Year Manufacturer Warranty</span>
-              <span>✓ Free 24h Bengaluru Staging</span>
-              <span>✓ PM Surya Ghar Subsidy Approved</span>
-            </div>
           </div>
 
           <div className="hero-cart-col">
@@ -414,8 +407,9 @@ export function SolarStore() {
               type="button"
               className="store-cart-toggle-btn"
               onClick={() => setIsCartOpen(true)}
+              title="Open Solar Order Cart"
             >
-              <ShoppingCart size={20} />
+              <ShoppingCart size={18} />
               <span>Solar Cart</span>
               <span className="cart-badge-count">{cartCount}</span>
             </button>
@@ -476,6 +470,16 @@ export function SolarStore() {
               <option value="price_high">Price: High to Low</option>
               <option value="rating">Highest Rated</option>
             </select>
+
+            <button
+              type="button"
+              className="store-inline-cart-btn"
+              onClick={() => setIsCartOpen(true)}
+              title="Open Solar Cart"
+            >
+              <ShoppingCart size={15} />
+              <span>Cart ({cartCount})</span>
+            </button>
           </div>
         </div>
 

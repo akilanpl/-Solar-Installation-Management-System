@@ -2120,3 +2120,38 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+37. OFFICIAL SOLAR STORE HERO BANNER INTEGRATION & CART ERGONOMICS
+--------------------------------------------------------------------------------
+- Date & Context:
+  Integrated the official high-resolution marketing visual asset (solar-store-hero.png,
+  1024 × 364 px) into the Solar Store hero container (.solar-store-hero).
+  Replaced the previous purple gradient with the branded banner visual displaying complete
+  DCR solar kits, hybrid inverters, battery combos, and PM Surya Ghar specifications.
+
+- Key Architecture & Visual Elements:
+  1. Hero Visual Asset Integration (SolarStore.jsx, SolarStore.css):
+     - Asset Location: Static high-fidelity banner served at /solar-store-hero.png
+       (apps/web/public/solar-store-hero.png and apps/web/src/assets/solar-store-hero.png).
+     - Styling: aspect-ratio: 1024 / 364;, background-image: url('/solar-store-hero.png');,
+       background-size: cover;, background-position: center;, border-radius: 20px;,
+       and clean drop shadow 0 6px 24px rgba(0, 0, 0, 0.08).
+     - SEO & Accessibility: Preserved semantic document headings and marketplace descriptions
+       via off-screen accessibility container (.hero-content-col.sr-only), preventing visual text clutter.
+  2. Cart Action Ergonomics:
+     - Top-Right Floating Pill: Floating glassmorphic .store-cart-toggle-btn with Lucide
+       <ShoppingCart> icon and dynamic red badge count pill.
+     - Controls Row Quick-Access: Added .store-inline-cart-btn right next to the category and
+       search bar for convenient 1-click cart opening during catalog exploration.
+     - Responsive Breakpoint: Fluid scaling down to 180px min-height on mobile devices (<768px).
+
+- Files Created & Modified:
+  * apps/web/public/solar-store-hero.png (Added)
+  * apps/web/src/assets/solar-store-hero.png (Added)
+  * apps/web/src/pages/Customer/SolarStore.jsx (Modified)
+  * apps/web/src/pages/Customer/SolarStore.css (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================
