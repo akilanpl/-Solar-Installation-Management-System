@@ -1,6 +1,9 @@
+from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, Response
+from pydantic import BaseModel
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.deps import current_user, get_settings
@@ -8,7 +11,8 @@ from app.core.config import Settings
 from app.core.errors import AppError
 from app.db.session import get_db
 from app.models.identity import User
-from app.models.workflow import PaymentIntent
+from app.models.provider import ProviderPaymentOrder
+from app.models.workflow import PaymentIntent, Quotation
 from app.schemas import parse_idempotency_key
 from app.schemas.workflow import (
     CashReceiptCreate,
@@ -105,6 +109,51 @@ def cash_receipt(
     intent, replayed = payment_service.record_cash_receipt(db, user, payload, _key(idempotency_key))
     response.status_code = 200 if replayed else 201
     return intent_response(intent)
+
+
+class ReceiptResponse(BaseModel):
+    payment: PaymentIntentResponse
+    quotation_reference: str
+    recorded_at: datetime
+    notice: str
+    refunded_minor: int
+    unapplied_minor: int
+
+
+@router.get("/payments/receipts", response_model=list[ReceiptResponse])
+def receipts(user: User = Depends(current_user), db: Session = Depends(get_db)):
+    if user.role_code not in {"customer", "sales", "admin"}:
+        raise AppError(403, "forbidden", "You cannot view receipts.")
+    query = (
+        select(PaymentIntent, Quotation)
+        .join(Quotation, PaymentIntent.quotation_id == Quotation.id)
+        .where(PaymentIntent.status == "verified")
+    )
+    if user.role_code == "customer":
+        query = query.where(Quotation.customer_user_id == user.id)
+    return [
+        ReceiptResponse(
+            payment=intent_response(p),
+            quotation_reference=q.reference,
+            recorded_at=p.created_at,
+            refunded_minor=(
+                db.get(ProviderPaymentOrder, p.id).refunded_minor
+                if db.get(ProviderPaymentOrder, p.id)
+                else 0
+            ),
+            unapplied_minor=(
+                db.get(ProviderPaymentOrder, p.id).unapplied_minor
+                if db.get(ProviderPaymentOrder, p.id)
+                else 0
+            ),
+            notice="Test-only record; no money moved"
+            if p.is_test_only
+            else "Staff-recorded cash receipt; not provider settlement"
+            if p.method == "cash"
+            else "Provider verification record",
+        )
+        for p, q in db.execute(query.order_by(PaymentIntent.created_at.desc()).limit(200))
+    ]
 
 
 @router.get("/payments/{intent_id}", response_model=PaymentIntentResponse)

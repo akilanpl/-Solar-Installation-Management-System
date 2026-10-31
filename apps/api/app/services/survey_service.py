@@ -177,6 +177,20 @@ def assign_survey(
     technician = db.get(User, payload.technician_user_id)
     if technician is None or technician.role_code != "technician" or not technician.is_active:
         raise AppError(422, "validation_error", "Choose an active technician.")
+    from app.models.scheduling import TechnicianAppointment
+
+    if payload.appointment_starts_at is not None or db.scalar(
+        select(TechnicianAppointment.id)
+        .where(
+            TechnicianAppointment.survey_id == survey.id, TechnicianAppointment.status == "booked"
+        )
+        .limit(1)
+    ):
+        raise AppError(
+            409,
+            "use_calendar_booking",
+            "Use the calendar with an explicit start/end interval to book or reschedule this survey.",
+        )
     survey.assigned_technician_user_id = technician.id
     if payload.appointment_starts_at is None:
         survey.appointment_status = "pending"

@@ -59,48 +59,29 @@ def _main_on_hand(db: Session, component_code: str) -> int:
     return int(total or 0)
 
 
-def _check_pick_availability(db: Session, order: SalesOrder) -> None:
-    """Picking needs real MAIN on-hand. Ledger deductions at pick time are
-    the oversell guard; reservations are the paper trail consumed at confirm."""
-    from app.services.inventory_service import lock_components as _lock
-
-    _lock(db, [line.component_code for line in order.lines if line.component_code])
-    for line in order.lines:
-        if line.line_kind != "material" or line.component_code is None:
-            continue
-        if _main_on_hand(db, line.component_code) < line.quantity:
-            raise AppError(
-                409,
-                "insufficient_stock",
-                f"Insufficient stock to pick {line.component_code}.",
-            )
-
-
-def _deduct_pick(db: Session, user: User, order: SalesOrder, delivery_ref: str) -> None:
-    """Write the pick as a done delivery stock operation plus ledger rows."""
+def _deduct_pick(
+    db: Session, user: User, order: SalesOrder, delivery: Delivery, picks: list[dict]
+) -> None:
     operation = StockOperation(
         reference=next_reference(db, "stock_operation", "STK"),
         operation_type="delivery",
         status="done",
         source_order_id=order.id,
-        note=f"Auto-pick for delivery {delivery_ref}.",
+        note=f"Pick for delivery {delivery.reference}.",
         created_by_user_id=user.id,
         validated_at=utcnow(),
-        idempotency_key=f"pick-{order.id}",
-        request_hash=_hash(order.id),
+        idempotency_key=f"pick-{delivery.id}",
+        request_hash=delivery.request_hash,
     )
     db.add(operation)
     db.flush()
-    position = 0
-    for line in order.lines:
-        if line.line_kind != "material" or line.component_code is None:
-            continue
+    for position, line in enumerate(picks):
         db.add(
             StockOperationLine(
                 operation_id=operation.id,
-                component_code=line.component_code,
-                quantity=Decimal(line.quantity),
-                from_location="MAIN",
+                component_code=line["component_code"],
+                quantity=Decimal(line["quantity"]),
+                from_location=line["location_code"],
                 to_location=None,
                 sort_order=position,
             )
@@ -108,25 +89,24 @@ def _deduct_pick(db: Session, user: User, order: SalesOrder, delivery_ref: str) 
         db.add(
             StockLedger(
                 operation_id=operation.id,
-                component_code=line.component_code,
-                location_code="MAIN",
-                quantity_delta=Decimal(-line.quantity),
+                component_code=line["component_code"],
+                location_code=line["location_code"],
+                quantity_delta=Decimal(-line["quantity"]),
             )
         )
-        position += 1
     add_audit(
         db,
         actor_user_id=user.id,
         action="stock_operation.validated",
         entity_type="stock_operation",
         entity_id=operation.id,
-        metadata={"auto_pick_for_order": str(order.id)},
+        metadata={"delivery_id": str(delivery.id)},
     )
     db.flush()
 
 
 def _restock_cancelled_pick(db: Session, user: User, delivery: Delivery) -> None:
-    """Return a cancelled pick to MAIN through a done receipt operation."""
+    """Return a cancelled pick to its actual source location through a done receipt operation."""
     operation = StockOperation(
         reference=next_reference(db, "stock_operation", "STK"),
         operation_type="receipt",
@@ -140,14 +120,30 @@ def _restock_cancelled_pick(db: Session, user: User, delivery: Delivery) -> None
     )
     db.add(operation)
     db.flush()
+    from app.models.operations import StockAllocation
+    from app.services.inventory_service import lock_components
+
+    lock_components(db, [line.component_code for line in delivery.lines])
     for position, line in enumerate(delivery.lines):
+        allocation = db.scalar(
+            select(StockAllocation)
+            .join(StockReservation, StockAllocation.reservation_id == StockReservation.id)
+            .where(
+                StockReservation.order_id == delivery.order_id,
+                StockReservation.component_code == line.component_code,
+                StockAllocation.location_code == line.location_code,
+            )
+            .with_for_update(of=StockAllocation)
+        )
+        if allocation is not None:
+            allocation.picked_quantity -= line.quantity
         db.add(
             StockOperationLine(
                 operation_id=operation.id,
                 component_code=line.component_code,
                 quantity=Decimal(line.quantity),
                 from_location=None,
-                to_location="MAIN",
+                to_location=line.location_code,
                 sort_order=position,
             )
         )
@@ -155,7 +151,7 @@ def _restock_cancelled_pick(db: Session, user: User, delivery: Delivery) -> None
             StockLedger(
                 operation_id=operation.id,
                 component_code=line.component_code,
-                location_code="MAIN",
+                location_code=line.location_code,
                 quantity_delta=Decimal(line.quantity),
             )
         )
@@ -171,29 +167,38 @@ def _restock_cancelled_pick(db: Session, user: User, delivery: Delivery) -> None
 
 
 def create_delivery(
-    db: Session, user: User, order_id: uuid.UUID, idempotency_key: str
+    db: Session,
+    user: User,
+    order_id: uuid.UUID,
+    idempotency_key: str,
+    lines: list[dict] | None = None,
 ) -> tuple[Delivery, bool]:
+    from collections import defaultdict
+
+    from app.models.operations import StockAllocation
+    from app.models.phase3 import WarehouseLocation
+    from app.services.inventory_service import lock_components, on_hand
+    from app.services.location_allocation import outstanding
+
     if user.role_code not in WAREHOUSE:
         raise AppError(403, "forbidden", "Only warehouse staff can prepare a delivery.")
+    # Serialize every pick/cancel for an order, then stock writers by component.
     order = db.scalar(
-        select(SalesOrder).where(SalesOrder.id == order_id).options(selectinload(SalesOrder.lines))
+        select(SalesOrder)
+        .where(SalesOrder.id == order_id)
+        .options(selectinload(SalesOrder.lines))
+        .with_for_update()
     )
     if order is None:
         raise AppError(404, "not_found", "Order not found.")
-    digest = _hash(order.id)
-    existing = db.scalar(select(Delivery).where(Delivery.order_id == order.id))
-    if existing is not None:
-        if (
-            existing.created_by_user_id == user.id
-            and existing.idempotency_key == idempotency_key
-            and existing.request_hash == digest
-        ):
-            return _load(db, existing.id), True
-        raise AppError(409, "duplicate_delivery", "This order already has a delivery.")
+    digest = hashlib.sha256(
+        json.dumps(
+            {"order_id": str(order_id), "lines": lines}, sort_keys=True, separators=(",", ":")
+        ).encode()
+    ).hexdigest()
     keyed = db.scalar(
         select(Delivery).where(
-            Delivery.created_by_user_id == user.id,
-            Delivery.idempotency_key == idempotency_key,
+            Delivery.created_by_user_id == user.id, Delivery.idempotency_key == idempotency_key
         )
     )
     if keyed is not None:
@@ -202,12 +207,119 @@ def create_delivery(
                 409, "idempotency_conflict", "This key was used for a different delivery."
             )
         return _load(db, keyed.id), True
-    reservations = list(
-        db.scalars(select(StockReservation).where(StockReservation.order_id == order.id))
-    )
+    demand = defaultdict(int)
+    for line in order.lines:
+        if line.line_kind == "material" and line.component_code:
+            demand[line.component_code] += line.quantity
+    reservations = {
+        r.component_code: r
+        for r in db.scalars(
+            select(StockReservation).where(StockReservation.order_id == order.id).with_for_update()
+        )
+    }
     if not reservations:
         raise AppError(409, "reservations_missing", "This order has no reservations to pick.")
-    _check_pick_availability(db, order)
+    lock_components(db, list(demand))
+    used = dict(
+        db.execute(
+            select(DeliveryLine.component_code, func.sum(DeliveryLine.quantity))
+            .join(Delivery, DeliveryLine.delivery_id == Delivery.id)
+            .where(Delivery.order_id == order.id, Delivery.status != "cancelled")
+            .group_by(DeliveryLine.component_code)
+        ).all()
+    )
+    remaining = {c: q - int(used.get(c, 0)) for c, q in demand.items()}
+    wanted = defaultdict(int)
+    if lines is None:
+        for code, quantity in remaining.items():
+            own_allocations = list(
+                db.scalars(
+                    select(StockAllocation).where(
+                        StockAllocation.reservation_id == reservations[code].id
+                    )
+                )
+            )
+            allowed = {
+                row.location_code: row.quantity - row.picked_quantity for row in own_allocations
+            }
+            # Stable actual location priority; quarantine is never saleable stock.
+            for loc in db.scalars(
+                select(WarehouseLocation.code)
+                .where(WarehouseLocation.code != "QUARANTINE")
+                .order_by(WarehouseLocation.code)
+            ):
+                qty = min(
+                    quantity,
+                    max(
+                        0,
+                        int(
+                            on_hand(db, code, loc)
+                            - outstanding(db, code, loc, exclude_order=order.id)
+                        ),
+                    ),
+                )
+                if own_allocations:
+                    qty = min(qty, allowed.get(loc, 0))
+                if qty:
+                    wanted[(code, loc)] += qty
+                    quantity -= qty
+                if not quantity:
+                    break
+            if quantity:
+                raise AppError(
+                    409, "insufficient_stock", f"Insufficient available stock for {code}."
+                )
+    else:
+        for line in lines:
+            wanted[(line["component_code"], line["location_code"])] += line["quantity"]
+    totals = defaultdict(int)
+    for (code, loc), qty in wanted.items():
+        if (
+            code not in demand
+            or qty <= 0
+            or loc == "QUARANTINE"
+            or db.get(WarehouseLocation, loc) is None
+        ):
+            raise AppError(
+                422,
+                "invalid_pick",
+                "Choose an ordered component, usable location and positive quantity.",
+            )
+        totals[code] += qty
+        if totals[code] > remaining[code]:
+            raise AppError(409, "over_pick", "Pick exceeds remaining order quantity.")
+        if on_hand(db, code, loc) - outstanding(db, code, loc, exclude_order=order.id) < qty:
+            raise AppError(
+                409,
+                "insufficient_stock",
+                f"Stock at {loc} is insufficient or allocated to another order.",
+            )
+    if not wanted:
+        raise AppError(
+            409, "duplicate_delivery", "No remaining order material is available to pick."
+        )
+    # Existing physical allocations constrain a pick to its reserved locations.
+    for code in totals:
+        r = reservations[code]
+        allocated = list(
+            db.scalars(
+                select(StockAllocation)
+                .where(StockAllocation.reservation_id == r.id)
+                .with_for_update()
+            )
+        )
+        if allocated:
+            for (c, loc), qty in wanted.items():
+                if c != code:
+                    continue
+                row = next((a for a in allocated if a.location_code == loc), None)
+                if row is None or row.quantity - row.picked_quantity < qty:
+                    raise AppError(
+                        409,
+                        "allocation_mismatch",
+                        "Pick must use the order's actual location allocation.",
+                    )
+                row.picked_quantity += qty
     delivery = Delivery(
         reference=next_reference(db, "delivery", "DLV"),
         order_id=order.id,
@@ -218,29 +330,43 @@ def create_delivery(
     )
     db.add(delivery)
     db.flush()
-    _deduct_pick(db, user, order, delivery.reference)
-    position = 0
-    for line in order.lines:
-        if line.line_kind != "material" or line.component_code is None:
-            continue
-        db.add(
-            DeliveryLine(
-                delivery_id=delivery.id,
-                component_code=line.component_code,
-                quantity=line.quantity,
-                sort_order=position,
+    picks = [
+        {"component_code": c, "location_code": location, "quantity": q}
+        for (c, location), q in sorted(wanted.items())
+    ]
+    _deduct_pick(db, user, order, delivery, picks)
+    for i, item in enumerate(picks):
+        line = DeliveryLine(delivery_id=delivery.id, sort_order=i, **item)
+        db.add(line)
+        db.flush()
+        serials = list(
+            db.scalars(
+                select(EquipmentSerial)
+                .where(
+                    EquipmentSerial.order_id == order.id,
+                    EquipmentSerial.component_code == line.component_code,
+                    EquipmentSerial.location_code == line.location_code,
+                    EquipmentSerial.status == "reserved",
+                    EquipmentSerial.delivery_line_id.is_(None),
+                )
+                .order_by(EquipmentSerial.serial_number)
+                .limit(line.quantity)
+                .with_for_update()
             )
         )
-        position += 1
-    if position == 0:
-        raise AppError(409, "nothing_to_deliver", "This order has no material lines.")
+        for serial in serials:
+            serial.delivery_line_id = line.id
+            serial.status = "in_transit"
     add_audit(
         db,
         actor_user_id=user.id,
         action="delivery.prepared",
         entity_type="delivery",
         entity_id=delivery.id,
-        metadata={"order_id": str(order.id)},
+        metadata={
+            "order_id": str(order.id),
+            "partial": any(totals[c] < remaining[c] for c in remaining),
+        },
     )
     db.flush()
     return _load(db, delivery.id), False
@@ -261,6 +387,9 @@ def transition(db: Session, user: User, delivery_id: uuid.UUID, to_status: str) 
         "in_transit": {"delivered", "cancelled"},
         "delivered": {"confirmed"},
     }
+    order_id = db.scalar(select(Delivery.order_id).where(Delivery.id == delivery_id))
+    if order_id is not None:
+        db.scalar(select(SalesOrder.id).where(SalesOrder.id == order_id).with_for_update())
     delivery = db.scalar(
         select(Delivery)
         .where(Delivery.id == delivery_id)
@@ -282,13 +411,46 @@ def transition(db: Session, user: User, delivery_id: uuid.UUID, to_status: str) 
     delivery.status = to_status
     if to_status == "cancelled":
         _restock_cancelled_pick(db, user, delivery)
+        for serial in db.scalars(
+            select(EquipmentSerial)
+            .join(DeliveryLine, EquipmentSerial.delivery_line_id == DeliveryLine.id)
+            .where(DeliveryLine.delivery_id == delivery.id)
+            .with_for_update(of=EquipmentSerial)
+        ):
+            serial.delivery_line_id = None
+            serial.status = "reserved"
     if to_status == "confirmed":
         delivery.confirmed_at = utcnow()
         from app.services.inventory_service import consume_reservations as _consume
 
-        _consume(db, delivery.order_id)
-        _install_assigned_serials(db, delivery.order_id)
-        _activate_warranty(db, user, delivery.order_id)
+        db.flush()
+        for serial in db.scalars(
+            select(EquipmentSerial)
+            .join(DeliveryLine, EquipmentSerial.delivery_line_id == DeliveryLine.id)
+            .where(DeliveryLine.delivery_id == delivery.id, EquipmentSerial.status == "in_transit")
+            .with_for_update(of=EquipmentSerial)
+        ):
+            serial.status = "delivered"
+        db.flush()
+        from app.services.coverage_service import activate
+
+        activate(db, user, delivery.order_id, "delivery", delivery.confirmed_at)
+        confirmed = dict(
+            db.execute(
+                select(DeliveryLine.component_code, func.sum(DeliveryLine.quantity))
+                .join(Delivery, DeliveryLine.delivery_id == Delivery.id)
+                .where(Delivery.order_id == delivery.order_id, Delivery.status == "confirmed")
+                .group_by(DeliveryLine.component_code)
+            ).all()
+        )
+        reservations = list(
+            db.scalars(
+                select(StockReservation).where(StockReservation.order_id == delivery.order_id)
+            )
+        )
+        if all(int(confirmed.get(r.component_code, 0)) >= r.quantity for r in reservations):
+            _consume(db, delivery.order_id)
+            _activate_warranty(db, user, delivery.order_id)
     add_audit(
         db,
         actor_user_id=user.id,
@@ -301,26 +463,12 @@ def transition(db: Session, user: User, delivery_id: uuid.UUID, to_status: str) 
     return _load(db, delivery.id)
 
 
-def _install_assigned_serials(db: Session, order_id: uuid.UUID) -> None:
-    """Serials assigned to the order move to installed at handover."""
-    rows = list(
-        db.scalars(
-            select(EquipmentSerial).where(
-                EquipmentSerial.order_id == order_id,
-                EquipmentSerial.status == "reserved",
-            )
-        )
-    )
-    for row in rows:
-        row.status = "installed"
-    db.flush()
-
-
 def assign_serial(
     db: Session, user: User, serial_id: uuid.UUID, order_id: uuid.UUID
 ) -> EquipmentSerial:
     if user.role_code not in WAREHOUSE:
         raise AppError(403, "forbidden", "Only warehouse staff can assign serials.")
+    db.scalar(select(SalesOrder.id).where(SalesOrder.id == order_id).with_for_update())
     serial = db.scalar(
         select(EquipmentSerial).where(EquipmentSerial.id == serial_id).with_for_update()
     )
@@ -328,6 +476,18 @@ def assign_serial(
         raise AppError(404, "not_found", "Serial not found.")
     if serial.status != "in_stock":
         raise AppError(409, "invalid_transition", "Only an in-stock serial can be assigned.")
+    receipt = db.get(StockOperation, serial.operation_id) if serial.operation_id else None
+    if (
+        receipt is None
+        or receipt.operation_type != "receipt"
+        or receipt.status != "done"
+        or serial.location_code == "QUARANTINE"
+    ):
+        raise AppError(
+            409,
+            "receipt_required",
+            "A usable validated receipt is required before serial assignment.",
+        )
     order = db.get(SalesOrder, order_id)
     if order is None:
         raise AppError(404, "not_found", "Order not found.")
@@ -338,6 +498,25 @@ def assign_serial(
         raise AppError(
             409, "serial_component_mismatch", "This serial's component is not on the order."
         )
+    required = sum(
+        line.quantity
+        for line in order.lines
+        if line.line_kind == "material" and line.component_code == serial.component_code
+    )
+    assigned = int(
+        db.scalar(
+            select(func.count())
+            .select_from(EquipmentSerial)
+            .where(
+                EquipmentSerial.order_id == order.id,
+                EquipmentSerial.component_code == serial.component_code,
+                EquipmentSerial.status.in_(("reserved", "in_transit", "delivered", "installed")),
+            )
+        )
+        or 0
+    )
+    if assigned >= required:
+        raise AppError(409, "serial_over_assignment", "All ordered units already have serials.")
     serial.order_id = order.id
     serial.status = "reserved"
     add_audit(
@@ -366,7 +545,7 @@ def _activate_warranty(db: Session, user: User, order_id: uuid.UUID) -> Warranty
         starts_at=starts_at,
         ends_at=starts_at + timedelta(days=365 * WARRANTY_YEARS),
         status="active",
-        coverage_note="Five-year workmanship and panel warranty from delivery confirmation.",
+        coverage_note="Legacy five-year order-level estimate. Product/serial coverage requires separately recorded policy terms; this record is not manufacturer verification.",
     )
     db.add(warranty)
     db.flush()

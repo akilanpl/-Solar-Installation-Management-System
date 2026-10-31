@@ -34,7 +34,7 @@ from app.db.base import Base
 OPERATION_TYPES = ("receipt", "transfer", "delivery", "adjustment")
 OPERATION_STATUSES = ("draft", "ready", "done", "cancelled")
 RESERVATION_STATUSES = ("reserved", "consumed", "released")
-SERIAL_STATUSES = ("in_stock", "reserved", "in_transit", "installed", "faulty")
+SERIAL_STATUSES = ("registered", "in_stock", "reserved", "in_transit", "delivered", "installed", "faulty")
 DELIVERY_STATUSES = ("prepared", "in_transit", "delivered", "confirmed", "cancelled")
 REPLENISHMENT_STATUSES = ("proposed", "approved", "rejected", "ordered", "received", "cancelled")
 JOB_STATUSES = ("created", "scheduled", "en_route", "on_site", "completed", "cancelled")
@@ -146,7 +146,7 @@ class EquipmentSerial(Base):
     __tablename__ = "equipment_serials"
     __table_args__ = (
         CheckConstraint(
-            "status IN ('in_stock', 'reserved', 'in_transit', 'installed', 'faulty')",
+            "status IN ('registered', 'in_stock', 'reserved', 'in_transit', 'delivered', 'installed', 'faulty')",
             name="serial_status",
         ),
     )
@@ -160,6 +160,7 @@ class EquipmentSerial(Base):
     location_code: Mapped[str | None] = mapped_column(ForeignKey("warehouse_locations.code"))
     order_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("sales_orders.id"))
     operation_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("stock_operations.id"))
+    delivery_line_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("delivery_lines.id"))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
@@ -178,7 +179,7 @@ class Delivery(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     reference: Mapped[str] = mapped_column(String(20), nullable=False, unique=True)
     order_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("sales_orders.id"), nullable=False, unique=True
+        ForeignKey("sales_orders.id"), nullable=False
     )
     status: Mapped[str] = mapped_column(String(16), nullable=False)
     created_by_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
@@ -196,6 +197,7 @@ class Delivery(Base):
 
 class DeliveryLine(Base):
     __tablename__ = "delivery_lines"
+    __table_args__ = (CheckConstraint("quantity > 0", name="quantity_positive"),)
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     delivery_id: Mapped[uuid.UUID] = mapped_column(
@@ -204,6 +206,7 @@ class DeliveryLine(Base):
     component_code: Mapped[str] = mapped_column(
         ForeignKey("catalogue_components.code"), nullable=False
     )
+    location_code: Mapped[str] = mapped_column(ForeignKey("warehouse_locations.code"), nullable=False, server_default="MAIN")
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     sort_order: Mapped[int] = mapped_column(Integer, nullable=False)
 

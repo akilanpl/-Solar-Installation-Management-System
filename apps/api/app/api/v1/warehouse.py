@@ -68,6 +68,7 @@ def _delivery_payload(delivery) -> DeliveryResponse:
         status=delivery.status,
         lines=[
             DeliveryLineResponse(
+                id=line.id, location_code=line.location_code,
                 component_code=line.component_code,
                 quantity=line.quantity,
                 sort_order=line.sort_order,
@@ -291,7 +292,7 @@ def create_delivery(
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ):
     delivery, replayed = fulfillment_service.create_delivery(
-        db, user, payload.order_id, _key(idempotency_key)
+        db, user, payload.order_id, _key(idempotency_key), [line.model_dump() for line in payload.lines] if payload.lines is not None else None
     )
     response.status_code = 200 if replayed else 201
     return _delivery_payload(delivery)

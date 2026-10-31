@@ -4,14 +4,18 @@ from app.api.deps import require_csrf
 from app.api.v1 import (
     admin,
     auth,
+    calendar,
+    coverage,
     dev,
     enquiries,
     health,
     installation,
+    operations,
     orders,
     packages,
     payments,
     quotations,
+    razorpay,
     surveys,
     warehouse,
     workspace_reads,
@@ -25,9 +29,13 @@ api_router.include_router(packages.router)
 api_router.include_router(surveys.router)
 api_router.include_router(quotations.router)
 api_router.include_router(payments.router)
+api_router.include_router(razorpay.router)
 api_router.include_router(orders.router)
 api_router.include_router(warehouse.router)
+api_router.include_router(operations.router)
 api_router.include_router(workspace_reads.router)
 api_router.include_router(installation.router)
+api_router.include_router(calendar.router)
+api_router.include_router(coverage.router)
 api_router.include_router(admin.router)
 api_router.include_router(dev.router)

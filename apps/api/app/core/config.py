@@ -8,7 +8,7 @@ root `.env`. Environment variables win over the file so tests can point at
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -46,6 +46,9 @@ class Settings(BaseSettings):
     smtp_password: str | None = None
     smtp_from: str = "solarops@localhost"
     smtp_tls: bool = True
+    razorpay_key_id: str | None = None
+    razorpay_key_secret: SecretStr | None = None
+    razorpay_webhook_secret: SecretStr | None = None
     seed_password: str | None = None
     gst_rate_bps: int = 1800
     advance_percent: int = 40

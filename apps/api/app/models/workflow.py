@@ -358,7 +358,7 @@ class PaymentIntent(Base):
     __tablename__ = "payment_intents"
     __table_args__ = (
         CheckConstraint("amount_minor > 0", name="amount"),
-        CheckConstraint("method IN ('sandbox', 'cash')", name="method"),
+        CheckConstraint("method IN ('sandbox', 'cash', 'razorpay')", name="method"),
         CheckConstraint(
             "status IN ('pending', 'processing', 'verified', 'failed', 'unresolved')",
             name="status",

@@ -74,6 +74,42 @@ def _customer(client, application, email: str = "leela@example.com") -> dict[str
     return _login(client, "customer", email, "Solarops123")
 
 
+def _scheduled_payload(application, order_id, technician_id):
+    """Explicit isolated calendar fixture; production never invents these values."""
+    from app.models.scheduling import TechnicianAppointment, TechnicianAvailability
+
+    with Session(application.state.engine) as db:
+        tech_id = uuid.UUID(str(technician_id))
+        sales = db.scalar(select(User).where(User.email == "sales@example.com"))
+        if db.get(TechnicianAvailability, tech_id) is None:
+            db.add(
+                TechnicianAvailability(
+                    technician_user_id=tech_id,
+                    timezone="UTC",
+                    working_hours={str(day): [["00:00", "23:59"]] for day in range(7)},
+                    qualifications={"installation": "2031-12-31", "survey": "2031-12-31"},
+                    daily_capacity=20,
+                    recorded_by_user_id=sales.id,
+                )
+            )
+        count = int(
+            db.scalar(
+                select(func.count())
+                .select_from(TechnicianAppointment)
+                .where(TechnicianAppointment.technician_user_id == tech_id)
+            )
+            or 0
+        )
+        start = datetime(2030, 1, 7, 9, tzinfo=UTC) + timedelta(hours=count * 2)
+        db.commit()
+    return {
+        "order_id": str(order_id),
+        "technician_user_id": str(technician_id),
+        "slot_starts_at": start.isoformat(),
+        "slot_ends_at": (start + timedelta(hours=1)).isoformat(),
+    }
+
+
 def _all_staff(application) -> None:
     _staff(application, "sales", "sales@example.com", "EMP-SALES-901")
     _staff(application, "technician", "tech@example.com", "EMP-TECH-901")
@@ -391,7 +427,7 @@ def test_confirmed_order_creates_reservations(client, application):
     assert {row["status"] for row in reserved.json()} == {"reserved"}
 
 
-def test_serial_scan_is_unique_and_rejects_done_operations(client, application):
+def test_serial_scan_is_unique_and_bounded_by_validated_receipt(client, application):
     _all_staff(application)
     _customer(client, application)
     warehouse = _warehouse(client)
@@ -418,7 +454,17 @@ def test_serial_scan_is_unique_and_rejects_done_operations(client, application):
         },
         headers=warehouse,
     )
-    assert locked.status_code == 409, locked.text
+    assert locked.status_code == 201, locked.text
+    overflow = client.post(
+        "/api/v1/serials/scan",
+        json={
+            "serial_number": "SN-PANEL-0003",
+            "component_code": "PANEL-550",
+            "operation_id": validated["id"],
+        },
+        headers=warehouse,
+    )
+    assert overflow.status_code == 409, overflow.text
 
 
 def test_replenishment_staff_cannot_approve(client, application):
@@ -535,7 +581,7 @@ def test_job_completion_requires_otp_evidence_and_signature(client, application)
         tech_id = str(tech.id)
     created = client.post(
         "/api/v1/jobs",
-        json={"order_id": order["id"], "technician_user_id": tech_id},
+        json=_scheduled_payload(application, order["id"], tech_id),
         headers=sales,
     )
     assert created.status_code == 201, created.text
@@ -676,7 +722,7 @@ def test_cross_phase_order_to_completed_installation(client, application):
         tech_id = str(tech.id)
     job = client.post(
         "/api/v1/jobs",
-        json={"order_id": order["id"], "technician_user_id": tech_id},
+        json=_scheduled_payload(application, order["id"], tech_id),
         headers=sales,
     )
     assert job.status_code == 201, job.text
@@ -697,7 +743,7 @@ def test_cross_phase_order_to_completed_installation(client, application):
                 "photo_refs": [_uploaded_photo(client, job_id, technician)],
                 "test_readings": {"voc_v": 612.5},
                 "installed_capacity_kw": "3",
-            "started_at": (datetime.now(UTC) - timedelta(minutes=1)).isoformat(),
+                "started_at": (datetime.now(UTC) - timedelta(minutes=1)).isoformat(),
                 "finished_at": now,
             },
             headers=technician,
@@ -709,7 +755,11 @@ def test_cross_phase_order_to_completed_installation(client, application):
     assert (
         client.post(
             f"/api/v1/jobs/{job_id}/signature",
-            json={"signature_ref": "E2E-SIG", "customer_confirmed": True, "summary_hash": summary_hash},
+            json={
+                "signature_ref": "E2E-SIG",
+                "customer_confirmed": True,
+                "summary_hash": summary_hash,
+            },
             headers=customer,
         ).status_code
         == 200
@@ -829,7 +879,7 @@ def test_duplicate_delivery_confirmation_fails(client, application):
     assert repeat.json()["error"]["code"] == "invalid_transition"
 
 
-def test_site_stock_must_transfer_to_main_before_pick(client, application):
+def test_explicit_main_pick_cannot_use_site_stock_before_transfer(client, application):
     _all_staff(application)
     order = _confirmed_order(client, application, email="location@example.com")
     warehouse = _warehouse(client)
@@ -837,7 +887,13 @@ def test_site_stock_must_transfer_to_main_before_pick(client, application):
     _receipt_material(client, warehouse, material, location="SITE")
     blocked = client.post(
         "/api/v1/deliveries",
-        json={"order_id": order["id"]},
+        json={
+            "order_id": order["id"],
+            "lines": [
+                {"component_code": code, "location_code": "MAIN", "quantity": quantity}
+                for code, quantity in material
+            ],
+        },
         headers={**warehouse, "Idempotency-Key": uuid.uuid4().hex},
     )
     assert blocked.status_code == 409, blocked.text
@@ -885,15 +941,23 @@ def test_site_stock_must_transfer_to_main_before_pick(client, application):
     assert main_panel and float(main_panel[0]["on_hand"]) == 0.0
 
 
-def test_serial_assign_install_and_mismatch(client, application):
+def test_serial_assign_deliver_and_component_mismatch(client, application):
     _all_staff(application)
     order = _confirmed_order(client, application, email="serial@example.com")
     warehouse = _warehouse(client)
     material = _order_material(application, order["id"])
     component = material[0][0]
+    receipts = {
+        code: _receipt_validate(client, warehouse, code, str(quantity))
+        for code, quantity in material
+    }
     scanned = client.post(
         "/api/v1/serials/scan",
-        json={"serial_number": "SN-ASSIGN-001", "component_code": component},
+        json={
+            "serial_number": "SN-ASSIGN-001",
+            "component_code": component,
+            "operation_id": receipts[component]["id"],
+        },
         headers=warehouse,
     )
     assert scanned.status_code == 201, scanned.text
@@ -907,9 +971,14 @@ def test_serial_assign_install_and_mismatch(client, application):
             )
         )
     assert other is not None
+    other_receipt = _receipt_validate(client, warehouse, other, "1")
     wrong_scan = client.post(
         "/api/v1/serials/scan",
-        json={"serial_number": "SN-ASSIGN-002", "component_code": other},
+        json={
+            "serial_number": "SN-ASSIGN-002",
+            "component_code": other,
+            "operation_id": other_receipt["id"],
+        },
         headers=warehouse,
     )
     assert wrong_scan.status_code == 201, wrong_scan.text
@@ -934,7 +1003,6 @@ def test_serial_assign_install_and_mismatch(client, application):
         headers=warehouse,
     )
     assert repeat_assign.status_code == 409, repeat_assign.text
-    _receipt_material(client, warehouse, material)
     created = client.post(
         "/api/v1/deliveries",
         json={"order_id": order["id"]},
@@ -957,7 +1025,7 @@ def test_serial_assign_install_and_mismatch(client, application):
         status = db.scalar(
             select(EquipmentSerial.status).where(EquipmentSerial.id == uuid.UUID(serial_id))
         )
-    assert status == "installed"
+    assert status == "delivered"
 
 
 def test_foreign_technician_cannot_touch_assigned_job(client, application):
@@ -971,7 +1039,7 @@ def test_foreign_technician_cannot_touch_assigned_job(client, application):
         tech_id = str(tech.id)
     created = client.post(
         "/api/v1/jobs",
-        json={"order_id": order["id"], "technician_user_id": tech_id},
+        json=_scheduled_payload(application, order["id"], tech_id),
         headers=sales,
     )
     job_id = created.json()["id"]
@@ -998,7 +1066,7 @@ def test_expired_and_reused_customer_otp_fail(client, application):
         tech_id = str(tech.id)
     created = client.post(
         "/api/v1/jobs",
-        json={"order_id": order["id"], "technician_user_id": tech_id},
+        json=_scheduled_payload(application, order["id"], tech_id),
         headers=sales,
     )
     job_id, customer_code = created.json()["id"], application.state.email_sender.messages[-1].code
@@ -1177,7 +1245,11 @@ def test_concurrent_picks_serialize_on_component_locks(client, application):
 
 
 def _uploaded_photo(client, job_id, headers):
-    response = client.post(f"/api/v1/jobs/{job_id}/uploads", files={"upload": ("roof.png", _png(), "image/png")}, headers=headers)
+    response = client.post(
+        f"/api/v1/jobs/{job_id}/uploads",
+        files={"upload": ("roof.png", _png(), "image/png")},
+        headers=headers,
+    )
     assert response.status_code == 201, response.text
     return response.json()["storage_key"]
 
@@ -1186,6 +1258,7 @@ def _png():
     from io import BytesIO
 
     from PIL import Image
+
     output = BytesIO()
     Image.new("RGB", (2, 2)).save(output, format="PNG")
     return output.getvalue()

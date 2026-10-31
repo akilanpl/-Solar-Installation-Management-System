@@ -322,6 +322,19 @@ def validate_operation(db: Session, user: User, operation_id: uuid.UUID) -> Stoc
                         f"Adjustment would drive {line.component_code} negative.",
                     )
             deltas.append((line.component_code, location, quantity))
+    # Every line was checked against the same starting balance above. Check the
+    # combined operation too: duplicate lines must never collectively overdraw.
+    net: dict[tuple[str, str], Decimal] = {}
+    for code, location, delta in deltas:
+        key = (code, location)
+        net[key] = net.get(key, ZERO) + delta
+    from app.services.location_allocation import outstanding
+
+    for (code, location), delta in net.items():
+        if delta < ZERO and on_hand(db, code, location) + delta < outstanding(db, code, location):
+            raise AppError(
+                409, "insufficient_stock", f"Operation would drive {code} at {location} negative."
+            )
     for component_code, location_code, delta in deltas:
         db.add(
             StockLedger(
@@ -434,13 +447,45 @@ def scan_serial(
         )
         if operation is None:
             raise AppError(404, "not_found", "Stock operation not found.")
-        if operation.status == "done":
-            raise AppError(409, "invalid_transition", "A serial cannot join a validated operation.")
+        if operation.status != "done" or operation.operation_type != "receipt":
+            raise AppError(
+                409, "receipt_not_validated", "Serial custody requires a validated goods receipt."
+            )
+        matched = list(
+            db.scalars(
+                select(StockOperationLine).where(
+                    StockOperationLine.operation_id == operation.id,
+                    StockOperationLine.component_code == component_code,
+                )
+            )
+        )
+        locations = {line.to_location for line in matched if line.to_location}
+        units = sum(line.quantity for line in matched)
+        registered = int(
+            db.scalar(
+                select(func.count())
+                .select_from(EquipmentSerial)
+                .where(
+                    EquipmentSerial.operation_id == operation.id,
+                    EquipmentSerial.component_code == component_code,
+                )
+            )
+            or 0
+        )
+        if len(locations) != 1 or registered + 1 > units:
+            raise AppError(
+                409,
+                "serial_receipt_mismatch",
+                "Receipt must contain an unregistered unit of this component at one location.",
+            )
+        location = next(iter(locations))
+    else:
+        location = None
     row = EquipmentSerial(
         serial_number=serial,
         component_code=component_code,
-        status="in_stock",
-        location_code="MAIN",
+        status="in_stock" if operation else "registered",
+        location_code=location,
         order_id=None,
         operation_id=operation.id if operation else None,
     )

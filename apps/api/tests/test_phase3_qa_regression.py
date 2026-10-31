@@ -24,6 +24,7 @@ from tests.test_phase3_warehouse_installation import (
     _receipt_material,
     _receipt_validate,
     _sales,
+    _scheduled_payload,
     _technician,
     _uploaded_photo,
     _warehouse,
@@ -39,7 +40,7 @@ def _job(client, application):
         technician_id = db.scalar(select(User.id).where(User.email == "tech@example.com"))
     response = client.post(
         "/api/v1/jobs",
-        json={"order_id": order["id"], "technician_user_id": str(technician_id)},
+        json=_scheduled_payload(application, order["id"], technician_id),
         headers=_sales(client),
     )
     assert response.status_code == 201

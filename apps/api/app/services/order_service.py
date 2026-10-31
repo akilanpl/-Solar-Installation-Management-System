@@ -29,7 +29,7 @@ from app.models.workflow import (
     WarehousePreparationRequest,
 )
 from app.repositories.queries import add_audit
-from app.services.payment_service import requirement_for, verified_payments
+from app.services.payment_service import requirement_for, verified_payments, verified_total
 from app.services.references import next_reference
 
 SALES = {"sales", "admin"}
@@ -122,7 +122,7 @@ def confirm_order(
         )
     requirement = requirement_for(db, quotation.id)
     payments = verified_payments(db, quotation.id)
-    verified = sum(item.amount_minor for item in payments)
+    verified = verified_total(db, quotation.id)
     if requirement is None or verified < requirement.minimum_advance_minor:
         raise AppError(
             409,
@@ -198,8 +198,9 @@ def confirm_order(
         slot_starts_at=None,
     )
     db.add(scheduling)
+    from app.services.coverage_service import snapshot_terms
     from app.services.inventory_service import reserve_for_order as _reserve_for_order
-
+    snapshot_terms(db, order)
     _reserve_for_order(db, order)
     add_audit(
         db,

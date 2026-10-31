@@ -1704,6 +1704,31 @@
         }
       }
     },
+    "/api/v1/payments/receipts": {
+      "get": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "Receipts",
+        "operationId": "receipts_api_v1_payments_receipts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReceiptResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Receipts Api V1 Payments Receipts Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/payments/{intent_id}": {
       "get": {
         "tags": [
@@ -1723,6 +1748,139 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentIntentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/razorpay/capability": {
+      "get": {
+        "tags": [
+          "razorpay-test"
+        ],
+        "summary": "Capability",
+        "operationId": "capability_api_v1_payments_razorpay_capability_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderCapability"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/razorpay/orders": {
+      "post": {
+        "tags": [
+          "razorpay-test"
+        ],
+        "summary": "Create Order",
+        "operationId": "create_order_api_v1_payments_razorpay_orders_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RazorpayOrderInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RazorpayOrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/razorpay/{intent_id}/reconcile": {
+      "post": {
+        "tags": [
+          "razorpay-test"
+        ],
+        "summary": "Reconcile",
+        "operationId": "reconcile_api_v1_payments_razorpay__intent_id__reconcile_post",
+        "parameters": [
+          {
+            "name": "intent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Intent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReconcileInput"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -2837,6 +2995,348 @@
         }
       }
     },
+    "/api/v1/stock/allocations": {
+      "post": {
+        "tags": [
+          "operational-custody"
+        ],
+        "summary": "Allocate",
+        "operationId": "allocate_api_v1_stock_allocations_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AllocationCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AllocationResponse"
+                  },
+                  "title": "Response Allocate Api V1 Stock Allocations Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "operational-custody"
+        ],
+        "summary": "Allocations",
+        "operationId": "allocations_api_v1_stock_allocations_get",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AllocationResponse"
+                  },
+                  "title": "Response Allocations Api V1 Stock Allocations Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stock/returns": {
+      "post": {
+        "tags": [
+          "operational-custody"
+        ],
+        "summary": "Authorize Return",
+        "operationId": "authorize_return_api_v1_stock_returns_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReturnCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "operational-custody"
+        ],
+        "summary": "Returns",
+        "operationId": "returns_api_v1_stock_returns_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReturnResponse"
+                  },
+                  "title": "Response Returns Api V1 Stock Returns Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stock/returns/{return_id}/inspection": {
+      "post": {
+        "tags": [
+          "operational-custody"
+        ],
+        "summary": "Inspect Return",
+        "operationId": "inspect_return_api_v1_stock_returns__return_id__inspection_post",
+        "parameters": [
+          {
+            "name": "return_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Return Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReturnInspection"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/procurement/orders": {
+      "get": {
+        "tags": [
+          "operational-custody"
+        ],
+        "summary": "Supplier Orders",
+        "operationId": "supplier_orders_api_v1_procurement_orders_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SupplierOrderResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Supplier Orders Api V1 Procurement Orders Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "operational-custody"
+        ],
+        "summary": "Supplier Order",
+        "operationId": "supplier_order_api_v1_procurement_orders_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupplierOrderCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierOrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/procurement/orders/{order_id}/receipt": {
+      "post": {
+        "tags": [
+          "operational-custody"
+        ],
+        "summary": "Supplier Receipt",
+        "operationId": "supplier_receipt_api_v1_procurement_orders__order_id__receipt_post",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupplierReceiptLink"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierOrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/workspace/technicians": {
       "get": {
         "tags": [
@@ -3673,6 +4173,373 @@
         }
       }
     },
+    "/api/v1/scheduling/availability/{tech_id}": {
+      "put": {
+        "tags": [
+          "technician-calendar"
+        ],
+        "summary": "Availability",
+        "operationId": "availability_api_v1_scheduling_availability__tech_id__put",
+        "parameters": [
+          {
+            "name": "tech_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Tech Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilityInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "technician-calendar"
+        ],
+        "summary": "Read Availability",
+        "operationId": "read_availability_api_v1_scheduling_availability__tech_id__get",
+        "parameters": [
+          {
+            "name": "tech_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Tech Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scheduling/leave/{tech_id}": {
+      "post": {
+        "tags": [
+          "technician-calendar"
+        ],
+        "summary": "Leave",
+        "operationId": "leave_api_v1_scheduling_leave__tech_id__post",
+        "parameters": [
+          {
+            "name": "tech_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Tech Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaveInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeaveResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scheduling/appointments": {
+      "get": {
+        "tags": [
+          "technician-calendar"
+        ],
+        "summary": "Appointments",
+        "operationId": "appointments_api_v1_scheduling_appointments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AppointmentResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Appointments Api V1 Scheduling Appointments Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "technician-calendar"
+        ],
+        "summary": "Book",
+        "operationId": "book_api_v1_scheduling_appointments_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppointmentInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scheduling/eligibility": {
+      "post": {
+        "tags": [
+          "technician-calendar"
+        ],
+        "summary": "Eligibility",
+        "operationId": "eligibility_api_v1_scheduling_eligibility_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EligibilityInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EligibilityResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Eligibility Api V1 Scheduling Eligibility Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty-policies": {
+      "get": {
+        "tags": [
+          "product-warranty"
+        ],
+        "summary": "Policies",
+        "operationId": "policies_api_v1_warranty_policies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PolicyResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Policies Api V1 Warranty Policies Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "product-warranty"
+        ],
+        "summary": "Create Policy",
+        "operationId": "create_policy_api_v1_warranty_policies_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{order_id}/unit-warranties": {
+      "get": {
+        "tags": [
+          "product-warranty"
+        ],
+        "summary": "Unit Warranties",
+        "operationId": "unit_warranties_api_v1_orders__order_id__unit_warranties_get",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UnitCoverageResponse"
+                  },
+                  "title": "Response Unit Warranties Api V1 Orders  Order Id  Unit Warranties Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/employees": {
       "get": {
         "tags": [
@@ -3779,10 +4646,375 @@
           }
         }
       }
+    },
+    "/api/v1/payments/razorpay/webhook": {
+      "post": {
+        "tags": [
+          "razorpay-webhook"
+        ],
+        "summary": "Webhook",
+        "operationId": "webhook_api_v1_payments_razorpay_webhook_post",
+        "parameters": [
+          {
+            "name": "X-Razorpay-Signature",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Razorpay-Signature"
+            }
+          },
+          {
+            "name": "X-Razorpay-Event-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Razorpay-Event-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderEventResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AllocationCreate": {
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/DeliveryPickLine"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Lines"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "order_id",
+          "lines"
+        ],
+        "title": "AllocationCreate"
+      },
+      "AllocationResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "reservation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Reservation Id"
+          },
+          "location_code": {
+            "type": "string",
+            "title": "Location Code"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "picked_quantity": {
+            "type": "integer",
+            "title": "Picked Quantity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "reservation_id",
+          "location_code",
+          "quantity",
+          "picked_quantity"
+        ],
+        "title": "AllocationResponse"
+      },
+      "AppointmentInput": {
+        "properties": {
+          "starts_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Starts At"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ends At"
+          },
+          "resource_type": {
+            "type": "string",
+            "enum": [
+              "survey",
+              "installation"
+            ],
+            "title": "Resource Type"
+          },
+          "resource_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Resource Id"
+          },
+          "technician_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Technician User Id"
+          },
+          "override_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000,
+                "minLength": 5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Override Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "starts_at",
+          "ends_at",
+          "resource_type",
+          "resource_id",
+          "technician_user_id"
+        ],
+        "title": "AppointmentInput"
+      },
+      "AppointmentResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "technician_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Technician User Id"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "survey_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Survey Id"
+          },
+          "starts_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Starts At"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ends At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "override_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Override Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "technician_user_id",
+          "job_id",
+          "survey_id",
+          "starts_at",
+          "ends_at",
+          "status",
+          "override_reason"
+        ],
+        "title": "AppointmentResponse"
+      },
+      "AvailabilityInput": {
+        "properties": {
+          "timezone": {
+            "type": "string",
+            "maxLength": 64,
+            "title": "Timezone"
+          },
+          "working_hours": {
+            "additionalProperties": {
+              "items": {
+                "prefixItems": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 2,
+                "minItems": 2
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Working Hours"
+          },
+          "qualifications": {
+            "additionalProperties": {
+              "type": "string",
+              "format": "date"
+            },
+            "propertyNames": {
+              "enum": [
+                "survey",
+                "installation"
+              ]
+            },
+            "type": "object",
+            "title": "Qualifications"
+          },
+          "daily_capacity": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Daily Capacity"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "timezone",
+          "working_hours",
+          "qualifications",
+          "daily_capacity"
+        ],
+        "title": "AvailabilityInput"
+      },
+      "AvailabilityResponse": {
+        "properties": {
+          "timezone": {
+            "type": "string",
+            "maxLength": 64,
+            "title": "Timezone"
+          },
+          "working_hours": {
+            "additionalProperties": {
+              "items": {
+                "prefixItems": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 2,
+                "minItems": 2
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Working Hours"
+          },
+          "qualifications": {
+            "additionalProperties": {
+              "type": "string",
+              "format": "date"
+            },
+            "propertyNames": {
+              "enum": [
+                "survey",
+                "installation"
+              ]
+            },
+            "type": "object",
+            "title": "Qualifications"
+          },
+          "daily_capacity": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Daily Capacity"
+          },
+          "technician_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Technician User Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "timezone",
+          "working_hours",
+          "qualifications",
+          "daily_capacity",
+          "technician_user_id"
+        ],
+        "title": "AvailabilityResponse"
+      },
       "Body_upload_evidence_api_v1_surveys__survey_id__evidence_post": {
         "properties": {
           "upload": {
@@ -3942,6 +5174,22 @@
             "type": "string",
             "format": "uuid",
             "title": "Order Id"
+          },
+          "lines": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/DeliveryPickLine"
+                },
+                "type": "array",
+                "maxItems": 200,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lines"
           }
         },
         "additionalProperties": false,
@@ -3953,6 +5201,15 @@
       },
       "DeliveryLineResponse": {
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "location_code": {
+            "type": "string",
+            "title": "Location Code"
+          },
           "component_code": {
             "type": "string",
             "title": "Component Code"
@@ -3968,11 +5225,43 @@
         },
         "type": "object",
         "required": [
+          "id",
+          "location_code",
           "component_code",
           "quantity",
           "sort_order"
         ],
         "title": "DeliveryLineResponse"
+      },
+      "DeliveryPickLine": {
+        "properties": {
+          "component_code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 2,
+            "title": "Component Code"
+          },
+          "location_code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 2,
+            "title": "Location Code"
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Quantity"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "component_code",
+          "location_code",
+          "quantity"
+        ],
+        "title": "DeliveryPickLine"
       },
       "DeliveryResponse": {
         "properties": {
@@ -4063,6 +5352,63 @@
           "created_at"
         ],
         "title": "DevMailboxMessage"
+      },
+      "EligibilityInput": {
+        "properties": {
+          "starts_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Starts At"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ends At"
+          },
+          "resource_type": {
+            "type": "string",
+            "enum": [
+              "survey",
+              "installation"
+            ],
+            "title": "Resource Type"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "starts_at",
+          "ends_at",
+          "resource_type"
+        ],
+        "title": "EligibilityInput"
+      },
+      "EligibilityResponse": {
+        "properties": {
+          "technician_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Technician User Id"
+          },
+          "eligible": {
+            "type": "boolean",
+            "title": "Eligible"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          }
+        },
+        "type": "object",
+        "required": [
+          "technician_user_id",
+          "eligible",
+          "reasons"
+        ],
+        "title": "EligibilityResponse"
       },
       "EmployeeCreate": {
         "properties": {
@@ -4715,6 +6061,18 @@
               }
             ],
             "title": "Slot Starts At"
+          },
+          "slot_ends_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slot Ends At"
           }
         },
         "additionalProperties": false,
@@ -5000,6 +6358,74 @@
           "summary_hash"
         ],
         "title": "JobSignature"
+      },
+      "LeaveInput": {
+        "properties": {
+          "starts_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Starts At"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ends At"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "starts_at",
+          "ends_at",
+          "reason"
+        ],
+        "title": "LeaveInput"
+      },
+      "LeaveResponse": {
+        "properties": {
+          "starts_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Starts At"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ends At"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Reason"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "technician_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Technician User Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "starts_at",
+          "ends_at",
+          "reason",
+          "id",
+          "technician_user_id"
+        ],
+        "title": "LeaveResponse"
       },
       "LocationChoice": {
         "properties": {
@@ -5510,6 +6936,136 @@
         ],
         "title": "PaymentRequirementResponse"
       },
+      "PolicyInput": {
+        "properties": {
+          "component_code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 2,
+            "title": "Component Code"
+          },
+          "months": {
+            "type": "integer",
+            "maximum": 600.0,
+            "minimum": 1.0,
+            "title": "Months"
+          },
+          "activation_event": {
+            "type": "string",
+            "enum": [
+              "delivery",
+              "installation"
+            ],
+            "title": "Activation Event"
+          },
+          "terms": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 10,
+            "title": "Terms"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "component_code",
+          "months",
+          "activation_event",
+          "terms"
+        ],
+        "title": "PolicyInput"
+      },
+      "PolicyResponse": {
+        "properties": {
+          "component_code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 2,
+            "title": "Component Code"
+          },
+          "months": {
+            "type": "integer",
+            "maximum": 600.0,
+            "minimum": 1.0,
+            "title": "Months"
+          },
+          "activation_event": {
+            "type": "string",
+            "enum": [
+              "delivery",
+              "installation"
+            ],
+            "title": "Activation Event"
+          },
+          "terms": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 10,
+            "title": "Terms"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "component_code",
+          "months",
+          "activation_event",
+          "terms",
+          "id",
+          "version"
+        ],
+        "title": "PolicyResponse"
+      },
+      "ProviderCapability": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled",
+          "mode",
+          "reason"
+        ],
+        "title": "ProviderCapability"
+      },
+      "ProviderEventResponse": {
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "title": "Event Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_id",
+          "status"
+        ],
+        "title": "ProviderEventResponse"
+      },
       "QualificationUpdate": {
         "properties": {
           "status": {
@@ -5870,6 +7426,67 @@
         ],
         "title": "QuotationRevisionCreate"
       },
+      "RazorpayOrderInput": {
+        "properties": {
+          "quotation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Quotation Id"
+          },
+          "amount_minor": {
+            "type": "integer",
+            "maximum": 100000000.0,
+            "minimum": 100.0,
+            "title": "Amount Minor"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "quotation_id",
+          "amount_minor"
+        ],
+        "title": "RazorpayOrderInput"
+      },
+      "RazorpayOrderResponse": {
+        "properties": {
+          "payment": {
+            "$ref": "#/components/schemas/PaymentIntentResponse"
+          },
+          "provider_order_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Order Id"
+          },
+          "public_key_id": {
+            "type": "string",
+            "title": "Public Key Id"
+          },
+          "refunded_minor": {
+            "type": "integer",
+            "title": "Refunded Minor"
+          },
+          "unapplied_minor": {
+            "type": "integer",
+            "title": "Unapplied Minor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payment",
+          "provider_order_id",
+          "public_key_id",
+          "refunded_minor",
+          "unapplied_minor"
+        ],
+        "title": "RazorpayOrderResponse"
+      },
       "ReadyResponse": {
         "properties": {
           "status": {
@@ -5889,6 +7506,44 @@
           "database"
         ],
         "title": "ReadyResponse"
+      },
+      "ReceiptResponse": {
+        "properties": {
+          "payment": {
+            "$ref": "#/components/schemas/PaymentIntentResponse"
+          },
+          "quotation_reference": {
+            "type": "string",
+            "title": "Quotation Reference"
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recorded At"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          },
+          "refunded_minor": {
+            "type": "integer",
+            "title": "Refunded Minor"
+          },
+          "unapplied_minor": {
+            "type": "integer",
+            "title": "Unapplied Minor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payment",
+          "quotation_reference",
+          "recorded_at",
+          "notice",
+          "refunded_minor",
+          "unapplied_minor"
+        ],
+        "title": "ReceiptResponse"
       },
       "RecommendationRequest": {
         "properties": {
@@ -5940,6 +7595,28 @@
           "reason"
         ],
         "title": "RecommendationResponse"
+      },
+      "ReconcileInput": {
+        "properties": {
+          "payment_id": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^pay_[A-Za-z0-9]+$",
+            "title": "Payment Id"
+          },
+          "signature": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Signature"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "payment_id",
+          "signature"
+        ],
+        "title": "ReconcileInput"
       },
       "ReplenishmentCreate": {
         "properties": {
@@ -6134,6 +7811,174 @@
           "created_at"
         ],
         "title": "ReservationResponse"
+      },
+      "ReturnCreate": {
+        "properties": {
+          "delivery_line_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Delivery Line Id"
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Quantity"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Reason"
+          },
+          "serial_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Serial Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "delivery_line_id",
+          "quantity",
+          "reason"
+        ],
+        "title": "ReturnCreate"
+      },
+      "ReturnInspection": {
+        "properties": {
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "restock",
+              "damaged"
+            ],
+            "title": "Disposition"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Note"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "disposition",
+          "note"
+        ],
+        "title": "ReturnInspection"
+      },
+      "ReturnResponse": {
+        "properties": {
+          "delivery_line_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Delivery Line Id"
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Quantity"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Reason"
+          },
+          "serial_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Serial Id"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "disposition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disposition"
+          },
+          "inspection_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inspection Note"
+          },
+          "operation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operation Id"
+          },
+          "inspected_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inspected At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "delivery_line_id",
+          "quantity",
+          "reason",
+          "id",
+          "status",
+          "disposition",
+          "inspection_note",
+          "operation_id",
+          "inspected_at"
+        ],
+        "title": "ReturnResponse"
       },
       "RevisionRequestCreate": {
         "properties": {
@@ -6836,6 +8681,103 @@
         ],
         "title": "StockOperationResponse"
       },
+      "SupplierOrderCreate": {
+        "properties": {
+          "replenishment_request_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Replenishment Request Id"
+          },
+          "supplier_name": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Supplier Name"
+          },
+          "supplier_reference": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Supplier Reference"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "replenishment_request_id",
+          "supplier_name",
+          "supplier_reference"
+        ],
+        "title": "SupplierOrderCreate"
+      },
+      "SupplierOrderResponse": {
+        "properties": {
+          "replenishment_request_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Replenishment Request Id"
+          },
+          "supplier_name": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Supplier Name"
+          },
+          "supplier_reference": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Supplier Reference"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "received_operation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Received Operation Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "replenishment_request_id",
+          "supplier_name",
+          "supplier_reference",
+          "id",
+          "status",
+          "received_operation_id"
+        ],
+        "title": "SupplierOrderResponse"
+      },
+      "SupplierReceiptLink": {
+        "properties": {
+          "operation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Operation Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "operation_id"
+        ],
+        "title": "SupplierReceiptLink"
+      },
       "SurveyAssignment": {
         "properties": {
           "technician_user_id": {
@@ -7414,6 +9356,69 @@
         ],
         "title": "TemplateVersionResponse"
       },
+      "UnitCoverageResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "serial_number": {
+            "type": "string",
+            "title": "Serial Number"
+          },
+          "component_code": {
+            "type": "string",
+            "title": "Component Code"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/PolicyResponse"
+          },
+          "delivery_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Delivery Id"
+          },
+          "starts_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Starts At"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ends At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "void_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Void Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "serial_number",
+          "component_code",
+          "policy",
+          "delivery_id",
+          "starts_at",
+          "ends_at",
+          "status",
+          "void_reason"
+        ],
+        "title": "UnitCoverageResponse"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -7613,6 +9618,30 @@
         ],
         "title": "WarrantyResponse"
       },
+      "WorkEquipment": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "serial_number": {
+            "type": "string",
+            "title": "Serial Number"
+          },
+          "component_code": {
+            "type": "string",
+            "title": "Component Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "serial_number",
+          "component_code"
+        ],
+        "title": "WorkEquipment"
+      },
       "WorkSummaryData": {
         "properties": {
           "job_id": {
@@ -7650,6 +9679,13 @@
             },
             "type": "array",
             "title": "Files"
+          },
+          "equipment": {
+            "items": {
+              "$ref": "#/components/schemas/WorkEquipment"
+            },
+            "type": "array",
+            "title": "Equipment"
           }
         },
         "type": "object",

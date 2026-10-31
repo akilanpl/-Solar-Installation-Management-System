@@ -23,7 +23,7 @@ class StockOperationLineInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     component_code: str = Field(min_length=2, max_length=32)
-    quantity: Decimal
+    quantity: Decimal = Field(max_digits=14, decimal_places=4, allow_inf_nan=False)
     from_location: str | None = Field(default=None, max_length=32)
     to_location: str | None = Field(default=None, max_length=32)
 
@@ -165,13 +165,23 @@ class ReplenishmentResponse(BaseModel):
     created_at: datetime
 
 
+class DeliveryPickLine(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    component_code: str = Field(min_length=2, max_length=32)
+    location_code: str = Field(min_length=2, max_length=32)
+    quantity: int = Field(gt=0, le=100000)
+
+
 class DeliveryCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     order_id: uuid.UUID
+    lines: list[DeliveryPickLine] | None = Field(default=None, min_length=1, max_length=200)
 
 
 class DeliveryLineResponse(BaseModel):
+    id: uuid.UUID
+    location_code: str
     component_code: str
     quantity: int
     sort_order: int
@@ -206,13 +216,24 @@ class JobCreate(BaseModel):
     order_id: uuid.UUID
     technician_user_id: uuid.UUID | None = None
     slot_starts_at: datetime | None = None
+    slot_ends_at: datetime | None = None
 
-    @field_validator("slot_starts_at")
+    @field_validator("slot_starts_at", "slot_ends_at")
     @classmethod
     def aware(cls, value: datetime | None) -> datetime | None:
         if value is not None and value.tzinfo is None:
             raise ValueError("Slot time must include a timezone.")
         return value
+
+    @model_validator(mode="after")
+    def complete_interval(self):
+        if bool(self.slot_starts_at) != bool(self.slot_ends_at):
+            raise ValueError(
+                "Provide both appointment start and end, or create an unbooked work record."
+            )
+        if self.slot_ends_at and self.slot_ends_at <= self.slot_starts_at:
+            raise ValueError("Appointment finish must follow its start.")
+        return self
 
 
 class JobResponse(BaseModel):
@@ -254,15 +275,17 @@ class JobEvidence(BaseModel):
             raise ValueError("Times must include a timezone.")
         return value
 
-
     @model_validator(mode="after")
     def valid_work(self):
         import math
         from datetime import UTC
+
         if self.finished_at <= self.started_at or self.finished_at > datetime.now(UTC):
             raise ValueError("Work must finish after it starts and cannot finish in the future.")
         if "voc_v" not in self.test_readings or not 0 < self.test_readings["voc_v"] <= 1500:
-            raise ValueError("Record open-circuit voltage (voc_v), greater than zero and at most 1500 V.")
+            raise ValueError(
+                "Record open-circuit voltage (voc_v), greater than zero and at most 1500 V."
+            )
         if any(not math.isfinite(value) for value in self.test_readings.values()):
             raise ValueError("Electrical readings must be finite.")
         return self
@@ -310,6 +333,12 @@ class WorkSummaryFile(BaseModel):
     sha256: str
 
 
+class WorkEquipment(BaseModel):
+    id: uuid.UUID
+    serial_number: str
+    component_code: str
+
+
 class WorkSummaryData(BaseModel):
     job_id: uuid.UUID
     order_id: uuid.UUID
@@ -317,6 +346,7 @@ class WorkSummaryData(BaseModel):
     arrival_at: datetime | None
     evidence: JobEvidence
     files: list[WorkSummaryFile]
+    equipment: list[WorkEquipment] = Field(default_factory=list)
 
 
 class WorkSummaryResponse(BaseModel):

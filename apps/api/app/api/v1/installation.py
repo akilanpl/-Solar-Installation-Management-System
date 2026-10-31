@@ -96,7 +96,7 @@ def create_job(
     db: Session = Depends(get_db),
 ):
     job, code = installation_service.create_job(
-        db, user, payload.order_id, payload.technician_user_id, payload.slot_starts_at
+        db, user, payload.order_id, payload.technician_user_id, payload.slot_starts_at, payload.slot_ends_at
     )
     response.status_code = 201
     order = db.get(SalesOrder, job.order_id)

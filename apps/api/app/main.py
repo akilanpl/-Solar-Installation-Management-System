@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError, OperationalError
 
+from app.api.v1.razorpay import webhook_router
 from app.api.v1.router import api_router
 from app.core.config import Settings, get_settings
 from app.core.errors import AppError, error_body
@@ -34,10 +35,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         CORSMiddleware,
         allow_origins=settings.origins,
         allow_credentials=True,
-        allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+        allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["Content-Type", "X-CSRF-Token", "Idempotency-Key"],
     )
     application.include_router(api_router)
+    # Provider webhooks do not use browser cookies/CSRF; raw-byte HMAC is mandatory.
+    application.include_router(webhook_router, prefix="/api/v1")
 
     @application.middleware("http")
     async def correlate(request: Request, call_next):

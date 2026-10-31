@@ -61,3 +61,8 @@ __all__ = [
     "SolarPackage",
     "User",
 ]
+
+from app.models.coverage import OrderWarrantyTerm, ProductWarrantyPolicy, SerialWarranty  # noqa: F401
+from app.models.operations import GoodsReturn, StockAllocation, SupplierOrder  # noqa: F401
+from app.models.provider import ProviderEvent, ProviderPaymentOrder  # noqa: F401
+from app.models.scheduling import TechnicianAppointment, TechnicianAvailability, TechnicianLeave  # noqa: F401

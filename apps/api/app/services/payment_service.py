@@ -63,7 +63,14 @@ def verified_total(db: Session, quotation_id: uuid.UUID) -> int:
             PaymentIntent.status == "verified",
         )
     )
-    return int(value or 0)
+    from app.models.provider import ProviderPaymentOrder
+
+    refunded = db.scalar(
+        select(func.coalesce(func.sum(ProviderPaymentOrder.refunded_minor), 0))
+        .join(PaymentIntent, ProviderPaymentOrder.intent_id == PaymentIntent.id)
+        .where(PaymentIntent.quotation_id.in_(family), PaymentIntent.status == "verified")
+    )
+    return max(0, int(value or 0) - int(refunded or 0))
 
 
 def _lock_enquiry(db: Session, enquiry_id: uuid.UUID) -> None:
