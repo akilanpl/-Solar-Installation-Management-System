@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import {CalendarAdministration} from "@/components/calendar-board";
 import { Workspace } from "@/components/workspace";
 import { Button, Card, EmptyState, ErrorState, LoadingState, PageHeader, SelectField, TextField } from "@/components/ui";
 import { api, ApiError, type EmployeeCreate, type EmployeeResponse } from "@/lib/api";
@@ -109,6 +110,7 @@ function Employees() {
           </div>
         </form>
       </Card></div>
+      <CalendarAdministration/>
     </>
   );
 }

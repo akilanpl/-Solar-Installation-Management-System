@@ -77,3 +77,11 @@
 .payment-capability .rzp-details-list { font-size:13px; line-height:1.6; color:#64748b; }
 .actual-provider-blocked { background:#fffbeb; color:#92400e; border-radius:20px; padding:5px 10px; font-size:11px; font-weight:700; }
 .payment-capability .auth-google-btn { color:#64748b; cursor:not-allowed; }
+
+/* Latest teammate dcd36a0: remove decorative card accent bars. */
+.card-accent-violet,.card-accent-lime{border-top:none;}
+@media print{body>*{visibility:hidden}.receipt-printer-modal-overlay,.receipt-printer-modal-overlay *{visibility:visible}.receipt-printer-modal-overlay{position:absolute;inset:0;background:white}.receipt-actions-bar,.receipt-machine{display:none}.receipt-output-viewport{height:auto;overflow:visible}}
+
+.receipt-printer-modal-overlay{align-items:flex-start;overflow-y:auto;overscroll-behavior:contain}.receipt-printer-root{margin:auto}
+@media(prefers-reduced-motion:reduce){.receipt-printer-modal-overlay,.receipt-paper-wrapper.anim-stepped-feed{animation:none;transition:none;transform:none}}
+@media print{.receipt-paper-wrapper.anim-stepped-feed{animation:none;transform:none}}
