@@ -1,6 +1,6 @@
 """Drop and recreate the local development schema.
 
-Refuses any database other than `solarops` and any environment other than
+Refuses any database other than `solarops_dev` and any environment other than
 development. It does not know how to target production, and it will not run
 against `solarops_test` (pytest owns that database).
 """
@@ -21,15 +21,19 @@ def main() -> None:
     if "--yes" not in sys.argv:
         raise SystemExit("Refusing to reset the database without --yes.")
     settings = Settings()
-    database = make_url(settings.database_url).database or ""
-    if settings.app_env != "development" or database != "solarops" or "prod" in database:
+    url = make_url(settings.database_url)
+    database = url.database or ""
+    if (
+        settings.app_env != "development"
+        or database != "solarops_dev"
+        or url.host not in {"127.0.0.1", "localhost"}
+    ):
         raise SystemExit(f"Refusing to reset app_env={settings.app_env} database={database}.")
     engine = create_engine(settings.database_url)
     with engine.begin() as connection:
         connection.execute(text("DROP SCHEMA IF EXISTS public CASCADE"))
         connection.execute(text("CREATE SCHEMA public"))
-        connection.execute(text("GRANT ALL ON SCHEMA public TO solarops"))
-        connection.execute(text("GRANT ALL ON SCHEMA public TO public"))
+        connection.execute(text("GRANT ALL ON SCHEMA public TO CURRENT_USER"))
     engine.dispose()
     config = Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
     command.upgrade(config, "head")

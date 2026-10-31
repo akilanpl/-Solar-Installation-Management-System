@@ -137,7 +137,7 @@ def test_missing_required_configuration_is_controlled(monkeypatch):
     assert {item["loc"] for item in error.value.errors()} >= {("database_url",), ("secret_key",)}
 
 
-@pytest.mark.parametrize("name", ["solarops", "production", "solarops_test_copy"])
+@pytest.mark.parametrize("name", ["solarops", "solarops_dev", "production", "solarops_test_copy"])
 def test_database_guard_rejects_non_test_names(name):
     with pytest.raises(RuntimeError, match="Refusing to run tests"):
         _assert_safe(f"postgresql+psycopg://localhost/{name}")

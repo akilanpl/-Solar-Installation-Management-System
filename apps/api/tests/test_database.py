@@ -4,13 +4,33 @@ import uuid
 
 import pytest
 from app.models.enquiry import Enquiry
+from app.models.identity import User
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from tests.conftest import csrf_headers, login, signup_and_verify
-from tests.test_enquiries import ENQUIRY, _customer_headers
+from tests.test_enquiries import ENQUIRY, _customer_headers, _sales_user
 
 pytestmark = pytest.mark.database
+
+
+@pytest.mark.parametrize("role", ["technician", "support", "warehouse_staff", "warehouse_manager"])
+def test_non_sales_staff_cannot_access_enquiries(client, application, role):
+    _sales_user(application)
+    with Session(application.state.engine) as db:
+        staff = db.query(User).filter_by(email="sales@example.com").one()
+        staff.role_code = role
+        db.commit()
+    signed_in = login(client, kind="employee", identifier="EMP-SALES-901", password="Salespass123")
+    assert signed_in.status_code == 200
+    assert signed_in.json()["user"]["role"] == role
+    assert client.get("/api/v1/enquiries").status_code == 403
+    denied = client.patch(
+        f"/api/v1/enquiries/{uuid.uuid4()}/qualification",
+        json={"status": "qualified"},
+        headers=csrf_headers(client),
+    )
+    assert denied.status_code == 403
 
 
 @pytest.mark.parametrize(

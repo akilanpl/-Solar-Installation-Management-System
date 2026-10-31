@@ -7,17 +7,20 @@ from empty. Each test then truncates account and enquiry rows.
 
 import os
 from collections.abc import Generator
+from pathlib import Path
 
 import pytest
 from alembic import command
 from alembic.config import Config
+from dotenv import dotenv_values
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine.url import make_url
 
 TEST_DATABASE_URL = os.environ.get(
     "SOLAROPS_TEST_DATABASE_URL",
-    "postgresql+psycopg://solarops:solarops@127.0.0.1:5432/solarops_test",
+    dotenv_values(Path(__file__).resolve().parents[3] / ".env").get("SOLAROPS_TEST_DATABASE_URL")
+    or "postgresql+psycopg://solarops:solarops@127.0.0.1:5432/solarops_test",
 )
 os.environ["SOLAROPS_APP_ENV"] = "test"
 os.environ["SOLAROPS_DATABASE_URL"] = TEST_DATABASE_URL
@@ -41,12 +44,12 @@ _assert_safe(TEST_DATABASE_URL)
 
 
 def _migrate() -> None:
+    _assert_safe(TEST_DATABASE_URL)
     engine = create_engine(TEST_DATABASE_URL)
     with engine.begin() as connection:
         connection.execute(text("DROP SCHEMA IF EXISTS public CASCADE"))
         connection.execute(text("CREATE SCHEMA public"))
-        connection.execute(text("GRANT ALL ON SCHEMA public TO solarops"))
-        connection.execute(text("GRANT ALL ON SCHEMA public TO public"))
+        connection.execute(text("GRANT ALL ON SCHEMA public TO CURRENT_USER"))
     engine.dispose()
     config = Config("alembic.ini")
     command.upgrade(config, "head")
@@ -115,6 +118,32 @@ def signup_and_verify(client: TestClient, application, email: str = "customer@ex
         json={"email": email, "code": code},
         headers=csrf_headers(client),
     )
+    if verified.status_code != 200:
+        # Diagnose intermittent verification failures without printing the OTP,
+        # hashes, password, cookie or server secret.
+        from app.core.security import secrets_match, utcnow
+        from app.models.identity import EmailVerificationChallenge, User
+        from sqlalchemy.orm import Session
+
+        with Session(application.state.engine) as db:
+            user = db.query(User).filter_by(email=email).one_or_none()
+            challenge = (
+                db.query(EmailVerificationChallenge).filter_by(user_id=user.id).first()
+                if user
+                else None
+            )
+            state = {"challenge_present": challenge is not None}
+            if challenge is not None:
+                state.update(
+                    expired=challenge.expires_at <= utcnow(),
+                    consumed=challenge.consumed_at is not None,
+                    captured_code_matches=secrets_match(
+                        challenge.code_hash, code, application.state.settings.secret_key
+                    ),
+                )
+        pytest.fail(
+            f"Verification HTTP {verified.status_code}; safe challenge diagnostics: {state}"
+        )
     assert verified.status_code == 200, verified.text
 
 

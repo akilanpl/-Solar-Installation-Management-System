@@ -1,6 +1,6 @@
 # How the SolarOps baseline tests work
 
-All paths below are relative to the repository root. See PHASE1_BASELINE_REPORT.md for executed results; the PostgreSQL workflow described here has not passed in this environment.
+All paths below are relative to the repository root. See PHASE1_BASELINE_REPORT.md for the initial results and PHASE1_POSTGRESQL_INTEGRATION_REPORT.md for the subsequent PostgreSQL-backed verification.
 
 ## Test categories and the code they exercise
 

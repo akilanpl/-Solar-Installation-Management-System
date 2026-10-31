@@ -1,5 +1,7 @@
 # SolarOps Phase 1 QA baseline
 
+Historical baseline before local PostgreSQL setup. See [the PostgreSQL integration report](PHASE1_POSTGRESQL_INTEGRATION_REPORT.md) for subsequent executed results and resolved blockers.
+
 Date: 2026-10-31 (Asia/Calcutta). Repository: `akilanpl/-Solar-Installation-Management-System`. QA branch: `test/qa-integration`, cloned from `81addc8539d69e5d39df3db545567c833350a87a` into `qa-checkout` because the supplied outer directory was a source export without Git metadata.
 
 **Partial baseline: the independent checks pass, but PostgreSQL integration is blocked. Do not treat this as Phase 1 acceptance.**
