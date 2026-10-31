@@ -1,0 +1,45 @@
+# Secrets and local environment
+.env
+.env.local
+.env.*.local
+apps/web/.env.local
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Node / Next.js
+node_modules/
+apps/web/node_modules/
+apps/web/.next/
+apps/web/out/
+apps/web/coverage/
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/blob-report/
+npm-debug.log*
+yarn-error.log*
+
+# Local mail capture, generated dev passwords, databases
+var/
+*.sql.dump
+pgdata/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Build artifacts
+dist/
+build/
+*.tsbuildinfo
