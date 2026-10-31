@@ -1656,3 +1656,37 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+--------------------------------------------------------------------------------
+27. RECEIPT PRINTER MACHINE PIXEL-PERFECT VISUAL ALIGNMENT
+--------------------------------------------------------------------------------
+- Date & Context:
+  Redesigned the ReceiptPrinter POS machine chassis (`ReceiptPrinter.jsx`, `ReceiptPrinter.css`)
+  to match the exact reference specification (`media_1793452095653_8643c0e3.png`).
+
+- Key Architecture & Visual Elements:
+  1. Outer Chassis Styling (`.receipt-machine`):
+     - Dark matte charcoal finish (`#202020`) with 24px rounded corners and subtle border highlight.
+     - Top Bar Layout:
+       * Left: Square brand badge (`#323232`, 32px × 32px, 7px radius) with etched 4-pointed sparkle star SVG.
+       * Right: Pill-shaped `Home` button (`#383838`, 12px radius) with Lucide `Home` icon and white label.
+  2. Inner Inset LCD Screen Display (`.receipt-lcd-screen`):
+     - Deep dark inset screen (`#141414`) with 16px radius and recessed box-shadow.
+     - Top Row:
+       * Left: "Pro plan" title (bold white, 17px) and "Annual subscription" subtitle (muted grey, 13.5px).
+       * Right: "Total" label (13px grey) and "£230.40" amount (21px bold white).
+     - Bottom Row:
+       * Animated circular notch spinner (`.receipt-notch-spinner`) rotating at 0.75s per cycle.
+       * Status text: "Printing your receipt" (transitions to "Receipt printed" upon completion with green checkmark).
+  3. Output Slot & Thermal Paper Perforation:
+     - Recessed slit slot (`#0a0a0a`, 6px height) with internal drop shadow.
+     - Subtle dotted horizontal perforation guide line (`.paper-perforation-line`) at the top of the white paper.
+     - Preserved authentic 20-interval stepped mechanical paper feed animation and sawtooth tear edge clip-path.
+
+- Files Modified:
+  * apps/web/src/components/ReceiptPrinter/ReceiptPrinter.jsx (Modified)
+  * apps/web/src/components/ReceiptPrinter/ReceiptPrinter.css (Modified)
+  * apps/web/src/pages/Customer/RazorpayPaymentPage.jsx (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================

@@ -1,14 +1,19 @@
 /* ================================================================
    RECEIPT PRINTER (POS THERMAL BILL GENERATOR) CSS
-   Authentic stepped paper feed keyframes, thermal paper texture,
-   LCD screen, sawtooth tear edge, and responsive printer chassis.
+   Exact match to reference design:
+   - Matte dark charcoal chassis (#202020) with 22px rounded corners
+   - Top bar with Sparkle badge on left and 'Home' pill button on right
+   - Deep dark LCD inset display (#141414) with 'Pro plan', 'Annual subscription',
+     'Total', '£230.40', circular notch spinner and 'Printing your receipt'
+   - Recessed output slot slit with white thermal paper emerging
+   - Sawtooth tear edge and 20-keyframe stepped mechanical paper feed
    ================================================================ */
 
 .receipt-printer-modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(15, 23, 42, 0.75);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   display: flex;
@@ -29,7 +34,7 @@
 
 .receipt-printer-root {
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -41,110 +46,151 @@
    ================================================================ */
 .receipt-machine {
   width: 100%;
-  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  border: 1.5px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px 18px 10px 10px;
-  padding: 16px 20px 12px 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  background: #202020;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 16px 18px 12px 18px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
   z-index: 10;
+  box-sizing: border-box;
 }
 
-.receipt-header {
+/* Top Bar: Sparkle badge & Home button */
+.receipt-top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   margin-bottom: 12px;
 }
 
-.receipt-brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #94a3b8;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-.receipt-power-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #10b981;
-  box-shadow: 0 0 10px #10b981;
-  animation: receiptPowerPulse 2s infinite ease-in-out;
-}
-
-@keyframes receiptPowerPulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.45;
-    transform: scale(0.85);
-  }
-}
-
-/* Machine LCD Digital Screen */
-.receipt-screen {
-  background: #020617;
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  border-radius: 10px;
-  padding: 12px 14px;
-  margin-bottom: 14px;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
-}
-
-.receipt-screen-content {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.receipt-screen-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-
-.receipt-screen-label {
-  font-size: 11.5px;
-  color: #64748b;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  text-transform: uppercase;
-}
-
-.receipt-screen-amount {
-  font-size: 19px;
-  font-weight: 800;
-  color: #38bdf8;
-  letter-spacing: -0.5px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-.receipt-status-line {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-top: 6px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.receipt-status-icon {
+.receipt-sparkle-badge {
+  width: 32px;
+  height: 32px;
+  background: #323232;
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #a8a8a8;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12);
 }
 
-.receipt-status-icon .spin-icon {
-  animation: receiptSpin 1s linear infinite;
+.receipt-home-btn {
+  background: #383838;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #f5f5f5;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes receiptSpin {
+.receipt-home-btn:hover {
+  background: #444444;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.receipt-home-btn:active {
+  transform: translateY(0);
+}
+
+.receipt-home-icon {
+  color: #e5e5e5;
+}
+
+/* ================================================================
+   2. INSET LCD SCREEN DISPLAY
+   ================================================================ */
+.receipt-lcd-screen {
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  padding: 18px 20px 16px 20px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.85);
+  box-sizing: border-box;
+}
+
+.receipt-lcd-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.receipt-lcd-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.receipt-plan-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 3px 0;
+  letter-spacing: -0.3px;
+  font-family: inherit;
+}
+
+.receipt-plan-sub {
+  font-size: 13.5px;
+  color: #888888;
+  margin: 0;
+  font-weight: 400;
+  font-family: inherit;
+}
+
+.receipt-lcd-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.receipt-total-label {
+  font-size: 13px;
+  color: #888888;
+  font-weight: 500;
+  text-align: right;
+  display: block;
+}
+
+.receipt-total-value {
+  font-size: 21px;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: right;
+  letter-spacing: -0.4px;
+  display: block;
+  margin-top: 2px;
+}
+
+/* Status Row with Circular Notch Spinner */
+.receipt-lcd-status-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.receipt-notch-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #8e8e8e;
+  border-top-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: receiptNotchSpin 0.75s linear infinite;
+  box-sizing: border-box;
+}
+
+@keyframes receiptNotchSpin {
   from {
     transform: rotate(0deg);
   }
@@ -153,29 +199,34 @@
   }
 }
 
-.receipt-status-text {
-  font-size: 12px;
-  font-weight: 500;
-  color: #e2e8f0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+.receipt-status-check {
+  display: flex;
+  align-items: center;
 }
 
-/* Machine Ejection Slit */
-.receipt-slot-slit {
-  height: 7px;
-  width: 94%;
-  margin: 0 auto;
-  background: #000000;
+.receipt-status-text {
+  font-size: 13.5px;
+  color: #b8b8b8;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+/* Machine Recessed Slit Slot */
+.receipt-slit-slot {
+  height: 6px;
+  width: 96%;
+  margin: 12px auto 0 auto;
+  background: #0a0a0a;
   border-radius: 4px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.95), 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* ================================================================
-   2. PAPER OUTPUT & STEPPED FEED ANIMATION
+   3. PAPER OUTPUT & STEPPED FEED ANIMATION
    ================================================================ */
 .receipt-output-viewport {
-  width: 90%;
-  max-width: 380px;
+  width: 92%;
+  max-width: 400px;
   overflow: hidden;
   position: relative;
   margin-top: -3px;
@@ -259,16 +310,24 @@
 }
 
 /* ================================================================
-   3. THERMAL PAPER STYLING & SAWTOOTH CLIP PATH
+   4. THERMAL PAPER STYLING & SAWTOOTH CLIP PATH
    ================================================================ */
 .receipt-paper {
   background: #ffffff;
   color: #0f172a;
-  padding: 24px 22px 30px 22px;
+  padding: 16px 22px 30px 22px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
   line-height: 1.45;
+}
+
+/* Subtle Dotted Perforation Line at top of paper */
+.paper-perforation-line {
+  border-bottom: 2px dotted #d1d5db;
+  width: 92%;
+  margin: 2px auto 14px auto;
+  opacity: 0.8;
 }
 
 .paper-header {
@@ -424,7 +483,7 @@
 }
 
 /* ================================================================
-   4. ACTION CONTROLS BAR (PRINT & RETURN)
+   5. ACTION CONTROLS BAR (PRINT & DONE)
    ================================================================ */
 .receipt-actions-bar {
   display: flex;
@@ -482,4 +541,3 @@
   background: rgba(255, 255, 255, 0.25);
   color: #ffffff;
 }
-

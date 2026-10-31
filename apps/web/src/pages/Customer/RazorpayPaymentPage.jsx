@@ -22,20 +22,20 @@ export function RazorpayPaymentPage() {
   const [showPrinter, setShowPrinter] = useState(false);
   const [printerStage, setPrinterStage] = useState('processing');
 
-  // Bill metadata for solar milestone
+  // Bill metadata for subscription / solar milestone (Exact match to reference design)
   const billInfo = {
-    billId: 'INV-SURYA-2026-9912',
-    orderId: 'order_PMSG_2026_9912',
+    title: 'Pro plan',
+    subtitle: 'Annual subscription',
+    amount: '£230.40',
+    billId: 'INV-PRO-2026-9912',
+    orderId: 'sub_pro_2026_9912',
     utrNumber: 'RZP91823902381',
     customerName: fullName || 'Arun Kumar',
     accountNumber: `•••• ${cardNumber ? cardNumber.replace(/\s+/g, '').slice(-4) : '4921'}`,
-    amount: '₹78,000.00',
     date: '31 Oct 2026',
     items: [
-      { name: '5 kW Bifacial Mono PERC Modules', qty: '10x', cost: '₹1,80,000' },
-      { name: '5 kVA Solar Hybrid Inverter', qty: '1x', cost: '₹82,000' },
-      { name: 'Rooftop Mounting Structure & BOS', qty: '1 set', cost: '₹40,000' },
-      { name: 'Central Subsidy (PM Surya Ghar)', qty: 'Credit', cost: '-₹78,000' },
+      { name: 'SolarOps Pro Plan License', qty: '1x', cost: '£180.00' },
+      { name: 'Priority Escrow & VIP Setup', qty: '1x', cost: '£50.40' },
     ],
   };
 
