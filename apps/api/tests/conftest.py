@@ -23,6 +23,8 @@ os.environ["SOLAROPS_APP_ENV"] = "test"
 os.environ["SOLAROPS_DATABASE_URL"] = TEST_DATABASE_URL
 os.environ["SOLAROPS_SECRET_KEY"] = "test-secret-key-not-for-production-use!!"
 os.environ["SOLAROPS_COOKIE_SECURE"] = "false"
+os.environ["SOLAROPS_LOGIN_IP_LIMIT"] = "100"
+os.environ["SOLAROPS_LOGIN_IDENTIFIER_LIMIT"] = "100"
 os.environ["SOLAROPS_TRUSTED_ORIGINS"] = "http://127.0.0.1:3000,http://localhost:3000"
 
 from app.core.config import get_settings  # noqa: E402

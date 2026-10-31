@@ -46,6 +46,11 @@ class Settings(BaseSettings):
     smtp_from: str = "solarops@localhost"
     smtp_tls: bool = True
     seed_password: str | None = None
+    gst_rate_bps: int = 1800
+    advance_percent: int = 40
+    quotation_validity_days: int = 14
+    evidence_dir: str = "var/survey-evidence"
+    evidence_max_bytes: int = 5_000_000
 
     @field_validator("app_env")
     @classmethod
@@ -53,6 +58,20 @@ class Settings(BaseSettings):
         allowed = {"development", "test", "production"}
         if value not in allowed:
             raise ValueError(f"SOLAROPS_APP_ENV must be one of {sorted(allowed)}")
+        return value
+
+    @field_validator("gst_rate_bps")
+    @classmethod
+    def _gst(cls, value: int) -> int:
+        if value < 0 or value > 2800:
+            raise ValueError("SOLAROPS_GST_RATE_BPS must be between 0 and 2800.")
+        return value
+
+    @field_validator("advance_percent")
+    @classmethod
+    def _advance(cls, value: int) -> int:
+        if value < 1 or value > 100:
+            raise ValueError("SOLAROPS_ADVANCE_PERCENT must be between 1 and 100.")
         return value
 
     @field_validator("secret_key")
@@ -77,6 +96,13 @@ class Settings(BaseSettings):
     @property
     def development_mailbox_enabled(self) -> bool:
         return self.app_env == "development" and not self.smtp_host
+
+    @property
+    def evidence_path(self) -> Path:
+        path = Path(self.evidence_dir)
+        if not path.is_absolute():
+            path = REPO_ROOT / path
+        return path
 
 
 @lru_cache

@@ -501,6 +501,1458 @@
         }
       }
     },
+    "/api/v1/packages/{package_code}/versions/current": {
+      "get": {
+        "tags": [
+          "packages"
+        ],
+        "summary": "Read Current Version",
+        "operationId": "read_current_version_api_v1_packages__package_code__versions_current_get",
+        "parameters": [
+          {
+            "name": "package_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Package Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateVersionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/packages/{package_code}/versions/{version_number}": {
+      "get": {
+        "tags": [
+          "packages"
+        ],
+        "summary": "Read Version",
+        "operationId": "read_version_api_v1_packages__package_code__versions__version_number__get",
+        "parameters": [
+          {
+            "name": "package_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Package Code"
+            }
+          },
+          {
+            "name": "version_number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Version Number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateVersionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/surveys": {
+      "post": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Create Survey",
+        "operationId": "create_survey_api_v1_surveys_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SurveyCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "List Surveys",
+        "operationId": "list_surveys_api_v1_surveys_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/surveys/{survey_id}": {
+      "get": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Read Survey",
+        "operationId": "read_survey_api_v1_surveys__survey_id__get",
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/surveys/{survey_id}/assignment": {
+      "post": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Assign Survey",
+        "operationId": "assign_survey_api_v1_surveys__survey_id__assignment_post",
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SurveyAssignment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/surveys/{survey_id}/start": {
+      "post": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Start Survey",
+        "operationId": "start_survey_api_v1_surveys__survey_id__start_post",
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/surveys/{survey_id}/submission": {
+      "post": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Submit Survey",
+        "operationId": "submit_survey_api_v1_surveys__survey_id__submission_post",
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SurveySubmit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/surveys/{survey_id}/approval": {
+      "post": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Decide Survey",
+        "operationId": "decide_survey_api_v1_surveys__survey_id__approval_post",
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SurveyDecision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/surveys/{survey_id}/resurvey": {
+      "post": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Resurvey",
+        "operationId": "resurvey_api_v1_surveys__survey_id__resurvey_post",
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/surveys/{survey_id}/evidence": {
+      "post": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Upload Evidence",
+        "operationId": "upload_evidence_api_v1_surveys__survey_id__evidence_post",
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_evidence_api_v1_surveys__survey_id__evidence_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/surveys/{survey_id}/evidence/{evidence_id}": {
+      "get": {
+        "tags": [
+          "surveys"
+        ],
+        "summary": "Download Evidence",
+        "operationId": "download_evidence_api_v1_surveys__survey_id__evidence__evidence_id__get",
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          },
+          {
+            "name": "evidence_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Evidence Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quotations": {
+      "post": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Create Quotation",
+        "operationId": "create_quotation_api_v1_quotations_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuotationCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuotationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "List Quotations",
+        "operationId": "list_quotations_api_v1_quotations_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuotationList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quotations/{quotation_id}": {
+      "get": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Read Quotation",
+        "operationId": "read_quotation_api_v1_quotations__quotation_id__get",
+        "parameters": [
+          {
+            "name": "quotation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Quotation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuotationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quotations/{quotation_id}/revisions": {
+      "post": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Revise Quotation",
+        "operationId": "revise_quotation_api_v1_quotations__quotation_id__revisions_post",
+        "parameters": [
+          {
+            "name": "quotation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Quotation Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuotationRevisionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuotationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quotations/{quotation_id}/revision-requests": {
+      "post": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Request Revision",
+        "operationId": "request_revision_api_v1_quotations__quotation_id__revision_requests_post",
+        "parameters": [
+          {
+            "name": "quotation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Quotation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevisionRequestCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevisionRequestResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "List Revision Requests",
+        "operationId": "list_revision_requests_api_v1_quotations__quotation_id__revision_requests_get",
+        "parameters": [
+          {
+            "name": "quotation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Quotation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RevisionRequestResponse"
+                  },
+                  "title": "Response List Revision Requests Api V1 Quotations  Quotation Id  Revision Requests Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quotations/{quotation_id}/acceptance": {
+      "post": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Accept Quotation",
+        "operationId": "accept_quotation_api_v1_quotations__quotation_id__acceptance_post",
+        "parameters": [
+          {
+            "name": "quotation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Quotation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuotationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quotations/{quotation_id}/withdrawal": {
+      "post": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Withdraw Quotation",
+        "operationId": "withdraw_quotation_api_v1_quotations__quotation_id__withdrawal_post",
+        "parameters": [
+          {
+            "name": "quotation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Quotation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuotationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quotations/{quotation_id}/payment-requirement": {
+      "get": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "Read Requirement",
+        "operationId": "read_requirement_api_v1_quotations__quotation_id__payment_requirement_get",
+        "parameters": [
+          {
+            "name": "quotation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Quotation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentRequirementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/intents": {
+      "post": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "Create Intent",
+        "operationId": "create_intent_api_v1_payments_intents_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentIntentCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentIntentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/intents/{intent_id}/sandbox-outcome": {
+      "post": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "Sandbox Outcome",
+        "operationId": "sandbox_outcome_api_v1_payments_intents__intent_id__sandbox_outcome_post",
+        "parameters": [
+          {
+            "name": "intent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Intent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SandboxOutcome"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentIntentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/cash-receipts": {
+      "post": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "Cash Receipt",
+        "operationId": "cash_receipt_api_v1_payments_cash_receipts_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CashReceiptCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentIntentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/{intent_id}": {
+      "get": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "Read Payment",
+        "operationId": "read_payment_api_v1_payments__intent_id__get",
+        "parameters": [
+          {
+            "name": "intent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Intent Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentIntentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders": {
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Create Order",
+        "operationId": "create_order_api_v1_orders_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "List Orders",
+        "operationId": "list_orders_api_v1_orders_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{order_id}": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Read Order",
+        "operationId": "read_order_api_v1_orders__order_id__get",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warehouse/preparation": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Warehouse Queue",
+        "operationId": "warehouse_queue_api_v1_warehouse_preparation_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WarehouseRequestResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Warehouse Queue Api V1 Warehouse Preparation Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scheduling/installations": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Scheduling Queue",
+        "operationId": "scheduling_queue_api_v1_scheduling_installations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SchedulingRequestResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Scheduling Queue Api V1 Scheduling Installations Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/employees": {
       "get": {
         "tags": [
@@ -611,6 +2063,49 @@
   },
   "components": {
     "schemas": {
+      "Body_upload_evidence_api_v1_surveys__survey_id__evidence_post": {
+        "properties": {
+          "upload": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Upload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "upload"
+        ],
+        "title": "Body_upload_evidence_api_v1_surveys__survey_id__evidence_post"
+      },
+      "CashReceiptCreate": {
+        "properties": {
+          "quotation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Quotation Id"
+          },
+          "amount_minor": {
+            "type": "integer",
+            "maximum": 100000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Amount Minor"
+          },
+          "receipt_reference": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 3,
+            "title": "Receipt Reference"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "quotation_id",
+          "amount_minor",
+          "receipt_reference"
+        ],
+        "title": "CashReceiptCreate"
+      },
       "CsrfResponse": {
         "properties": {
           "csrf_token": {
@@ -918,6 +2413,52 @@
             "type": "boolean",
             "title": "Subsidy Interest"
           },
+          "shadow_free_area_sqm": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shadow Free Area Sqm"
+          },
+          "grid_connection_suitable": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid Connection Suitable"
+          },
+          "decision_by_user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision By User Id"
+          },
+          "decision_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision At"
+          },
           "qualification_note": {
             "anyOf": [
               {
@@ -969,6 +2510,10 @@
           "monthly_bill_minor",
           "currency_code",
           "subsidy_interest",
+          "shadow_free_area_sqm",
+          "grid_connection_suitable",
+          "decision_by_user_id",
+          "decision_at",
           "qualification_note",
           "created_at",
           "updated_at",
@@ -1059,6 +2604,52 @@
             "type": "boolean",
             "title": "Subsidy Interest"
           },
+          "shadow_free_area_sqm": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shadow Free Area Sqm"
+          },
+          "grid_connection_suitable": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid Connection Suitable"
+          },
+          "decision_by_user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision By User Id"
+          },
+          "decision_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision At"
+          },
           "qualification_note": {
             "anyOf": [
               {
@@ -1092,11 +2683,50 @@
           "monthly_bill_minor",
           "currency_code",
           "subsidy_interest",
+          "shadow_free_area_sqm",
+          "grid_connection_suitable",
+          "decision_by_user_id",
+          "decision_at",
           "qualification_note",
           "created_at",
           "updated_at"
         ],
         "title": "EnquirySummary"
+      },
+      "EvidenceResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "title": "Size Bytes"
+          },
+          "original_filename": {
+            "type": "string",
+            "title": "Original Filename"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "content_type",
+          "size_bytes",
+          "original_filename",
+          "created_at"
+        ],
+        "title": "EvidenceResponse"
       },
       "HTTPValidationError": {
         "properties": {
@@ -1248,6 +2878,231 @@
         ],
         "title": "MessageResponse"
       },
+      "OrderCreate": {
+        "properties": {
+          "quotation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Quotation Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "quotation_id"
+        ],
+        "title": "OrderCreate"
+      },
+      "OrderLineResponse": {
+        "properties": {
+          "component_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Code"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "line_kind": {
+            "type": "string",
+            "title": "Line Kind"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "unit_price_minor": {
+            "type": "integer",
+            "title": "Unit Price Minor"
+          },
+          "line_total_minor": {
+            "type": "integer",
+            "title": "Line Total Minor"
+          },
+          "sort_order": {
+            "type": "integer",
+            "title": "Sort Order"
+          }
+        },
+        "type": "object",
+        "required": [
+          "component_code",
+          "description",
+          "line_kind",
+          "quantity",
+          "unit",
+          "unit_price_minor",
+          "line_total_minor",
+          "sort_order"
+        ],
+        "title": "OrderLineResponse"
+      },
+      "OrderList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OrderResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "page_size",
+          "total"
+        ],
+        "title": "OrderList"
+      },
+      "OrderResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "quotation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Quotation Id"
+          },
+          "quotation_version": {
+            "type": "integer",
+            "title": "Quotation Version"
+          },
+          "customer_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Customer User Id"
+          },
+          "site_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Site Id"
+          },
+          "package_code": {
+            "type": "string",
+            "title": "Package Code"
+          },
+          "template_version_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Template Version Id"
+          },
+          "material_total_minor": {
+            "type": "integer",
+            "title": "Material Total Minor"
+          },
+          "installation_total_minor": {
+            "type": "integer",
+            "title": "Installation Total Minor"
+          },
+          "discount_minor": {
+            "type": "integer",
+            "title": "Discount Minor"
+          },
+          "tax_minor": {
+            "type": "integer",
+            "title": "Tax Minor"
+          },
+          "total_minor": {
+            "type": "integer",
+            "title": "Total Minor"
+          },
+          "currency_code": {
+            "type": "string",
+            "title": "Currency Code"
+          },
+          "payment_verification_state": {
+            "type": "string",
+            "title": "Payment Verification State"
+          },
+          "test_only_payment": {
+            "type": "boolean",
+            "title": "Test Only Payment"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "confirmed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Confirmed At"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/OrderLineResponse"
+            },
+            "type": "array",
+            "title": "Lines"
+          },
+          "warehouse_request_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Warehouse Request Id"
+          },
+          "scheduling_request_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scheduling Request Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "reference",
+          "quotation_id",
+          "quotation_version",
+          "customer_user_id",
+          "site_id",
+          "package_code",
+          "template_version_id",
+          "material_total_minor",
+          "installation_total_minor",
+          "discount_minor",
+          "tax_minor",
+          "total_minor",
+          "currency_code",
+          "payment_verification_state",
+          "test_only_payment",
+          "status",
+          "confirmed_at",
+          "lines",
+          "warehouse_request_id",
+          "scheduling_request_id"
+        ],
+        "title": "OrderResponse"
+      },
       "PackageResponse": {
         "properties": {
           "id": {
@@ -1311,6 +3166,140 @@
         ],
         "title": "PackageResponse"
       },
+      "PaymentIntentCreate": {
+        "properties": {
+          "quotation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Quotation Id"
+          },
+          "amount_minor": {
+            "type": "integer",
+            "maximum": 100000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Amount Minor"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "quotation_id",
+          "amount_minor"
+        ],
+        "title": "PaymentIntentCreate"
+      },
+      "PaymentIntentResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "quotation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Quotation Id"
+          },
+          "amount_minor": {
+            "type": "integer",
+            "title": "Amount Minor"
+          },
+          "currency_code": {
+            "type": "string",
+            "title": "Currency Code"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "is_test_only": {
+            "type": "boolean",
+            "title": "Is Test Only"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "transaction_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transaction Reference"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "quotation_id",
+          "amount_minor",
+          "currency_code",
+          "method",
+          "status",
+          "is_test_only",
+          "provider",
+          "transaction_reference",
+          "created_at"
+        ],
+        "title": "PaymentIntentResponse"
+      },
+      "PaymentRequirementResponse": {
+        "properties": {
+          "quotation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Quotation Id"
+          },
+          "currency_code": {
+            "type": "string",
+            "title": "Currency Code"
+          },
+          "minimum_advance_minor": {
+            "type": "integer",
+            "title": "Minimum Advance Minor"
+          },
+          "full_amount_minor": {
+            "type": "integer",
+            "title": "Full Amount Minor"
+          },
+          "advance_percent": {
+            "type": "integer",
+            "title": "Advance Percent"
+          },
+          "verified_minor": {
+            "type": "integer",
+            "title": "Verified Minor"
+          },
+          "outstanding_minor": {
+            "type": "integer",
+            "title": "Outstanding Minor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "quotation_id",
+          "currency_code",
+          "minimum_advance_minor",
+          "full_amount_minor",
+          "advance_percent",
+          "verified_minor",
+          "outstanding_minor"
+        ],
+        "title": "PaymentRequirementResponse"
+      },
       "QualificationUpdate": {
         "properties": {
           "status": {
@@ -1333,6 +3322,38 @@
               }
             ],
             "title": "Note"
+          },
+          "shadow_free_area_sqm": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shadow Free Area Sqm"
+          },
+          "grid_connection_suitable": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid Connection Suitable"
+          },
+          "acknowledge_downstream": {
+            "type": "boolean",
+            "title": "Acknowledge Downstream",
+            "default": false
           }
         },
         "additionalProperties": false,
@@ -1341,6 +3362,303 @@
           "status"
         ],
         "title": "QualificationUpdate"
+      },
+      "QuotationCreate": {
+        "properties": {
+          "survey_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Survey Id"
+          },
+          "package_code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 3,
+            "title": "Package Code"
+          },
+          "discount_minor": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Discount Minor",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "survey_id",
+          "package_code"
+        ],
+        "title": "QuotationCreate"
+      },
+      "QuotationLineResponse": {
+        "properties": {
+          "component_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Code"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "line_kind": {
+            "type": "string",
+            "title": "Line Kind"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "unit_cost_minor": {
+            "type": "integer",
+            "title": "Unit Cost Minor"
+          },
+          "unit_price_minor": {
+            "type": "integer",
+            "title": "Unit Price Minor"
+          },
+          "line_total_minor": {
+            "type": "integer",
+            "title": "Line Total Minor"
+          },
+          "sort_order": {
+            "type": "integer",
+            "title": "Sort Order"
+          }
+        },
+        "type": "object",
+        "required": [
+          "component_code",
+          "description",
+          "line_kind",
+          "quantity",
+          "unit",
+          "unit_cost_minor",
+          "unit_price_minor",
+          "line_total_minor",
+          "sort_order"
+        ],
+        "title": "QuotationLineResponse"
+      },
+      "QuotationList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/QuotationResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "page_size",
+          "total"
+        ],
+        "title": "QuotationList"
+      },
+      "QuotationResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "enquiry_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Enquiry Id"
+          },
+          "survey_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Survey Id"
+          },
+          "customer_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Customer User Id"
+          },
+          "site_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Site Id"
+          },
+          "package_code": {
+            "type": "string",
+            "title": "Package Code"
+          },
+          "template_version_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Template Version Id"
+          },
+          "version_number": {
+            "type": "integer",
+            "title": "Version Number"
+          },
+          "supersedes_quotation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersedes Quotation Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "material_cost_minor": {
+            "type": "integer",
+            "title": "Material Cost Minor"
+          },
+          "material_total_minor": {
+            "type": "integer",
+            "title": "Material Total Minor"
+          },
+          "installation_total_minor": {
+            "type": "integer",
+            "title": "Installation Total Minor"
+          },
+          "discount_minor": {
+            "type": "integer",
+            "title": "Discount Minor"
+          },
+          "tax_minor": {
+            "type": "integer",
+            "title": "Tax Minor"
+          },
+          "tax_rate_bps": {
+            "type": "integer",
+            "title": "Tax Rate Bps"
+          },
+          "total_minor": {
+            "type": "integer",
+            "title": "Total Minor"
+          },
+          "currency_code": {
+            "type": "string",
+            "title": "Currency Code"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "issued_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Issued At"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/QuotationLineResponse"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "reference",
+          "enquiry_id",
+          "survey_id",
+          "customer_user_id",
+          "site_id",
+          "package_code",
+          "template_version_id",
+          "version_number",
+          "supersedes_quotation_id",
+          "status",
+          "material_cost_minor",
+          "material_total_minor",
+          "installation_total_minor",
+          "discount_minor",
+          "tax_minor",
+          "tax_rate_bps",
+          "total_minor",
+          "currency_code",
+          "expires_at",
+          "issued_at",
+          "lines"
+        ],
+        "title": "QuotationResponse"
+      },
+      "QuotationRevisionCreate": {
+        "properties": {
+          "package_code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 3,
+            "title": "Package Code"
+          },
+          "discount_minor": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Discount Minor",
+            "default": 0
+          },
+          "revision_request_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revision Request Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "package_code"
+        ],
+        "title": "QuotationRevisionCreate"
       },
       "ReadyResponse": {
         "properties": {
@@ -1376,6 +3694,160 @@
           "email"
         ],
         "title": "ResendVerificationRequest"
+      },
+      "RevisionRequestCreate": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "capacity",
+              "grid",
+              "components",
+              "pricing",
+              "installation"
+            ],
+            "title": "Category"
+          },
+          "request_text": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 3,
+            "title": "Request Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "category",
+          "request_text"
+        ],
+        "title": "RevisionRequestCreate"
+      },
+      "RevisionRequestResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "quotation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Quotation Id"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "request_text": {
+            "type": "string",
+            "title": "Request Text"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "quotation_id",
+          "category",
+          "request_text",
+          "status",
+          "created_at"
+        ],
+        "title": "RevisionRequestResponse"
+      },
+      "SandboxOutcome": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "succeeded",
+              "failed",
+              "unknown"
+            ],
+            "title": "Outcome"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "outcome"
+        ],
+        "title": "SandboxOutcome"
+      },
+      "SchedulingRequestResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "order_reference": {
+            "type": "string",
+            "title": "Order Reference"
+          },
+          "customer_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Customer User Id"
+          },
+          "site_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Site Id"
+          },
+          "work_summary": {
+            "type": "string",
+            "title": "Work Summary"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "slot_starts_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slot Starts At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "order_id",
+          "order_reference",
+          "customer_user_id",
+          "site_id",
+          "work_summary",
+          "status",
+          "slot_starts_at",
+          "created_at"
+        ],
+        "title": "SchedulingRequestResponse"
       },
       "SignupRequest": {
         "properties": {
@@ -1529,6 +4001,560 @@
         ],
         "title": "SiteResponse"
       },
+      "SurveyAssignment": {
+        "properties": {
+          "technician_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Technician User Id"
+          },
+          "appointment_starts_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appointment Starts At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "technician_user_id"
+        ],
+        "title": "SurveyAssignment"
+      },
+      "SurveyCreate": {
+        "properties": {
+          "enquiry_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Enquiry Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "enquiry_id"
+        ],
+        "title": "SurveyCreate"
+      },
+      "SurveyDecision": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "rejected"
+            ],
+            "title": "Decision"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "SurveyDecision"
+      },
+      "SurveyHistoryResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "from_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Status"
+          },
+          "to_status": {
+            "type": "string",
+            "title": "To Status"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "from_status",
+          "to_status",
+          "note",
+          "created_at"
+        ],
+        "title": "SurveyHistoryResponse"
+      },
+      "SurveyList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SurveyResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "page_size",
+          "total"
+        ],
+        "title": "SurveyList"
+      },
+      "SurveyResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "enquiry_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Enquiry Id"
+          },
+          "customer_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Customer User Id"
+          },
+          "site_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Site Id"
+          },
+          "assigned_technician_user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assigned Technician User Id"
+          },
+          "appointment_status": {
+            "type": "string",
+            "title": "Appointment Status"
+          },
+          "appointment_starts_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appointment Starts At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "revision_number": {
+            "type": "integer",
+            "title": "Revision Number"
+          },
+          "revision_of_survey_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revision Of Survey Id"
+          },
+          "azimuth_deg": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Azimuth Deg"
+          },
+          "tilt_deg": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tilt Deg"
+          },
+          "shadow_free_area_sqm": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shadow Free Area Sqm"
+          },
+          "cable_distance_m": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cable Distance M"
+          },
+          "grid_connection": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid Connection"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "submitted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted At"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "reviewed_by_user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed By User Id"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceResponse"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/SurveyHistoryResponse"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "reference",
+          "enquiry_id",
+          "customer_user_id",
+          "site_id",
+          "assigned_technician_user_id",
+          "appointment_status",
+          "appointment_starts_at",
+          "status",
+          "revision_number",
+          "revision_of_survey_id",
+          "azimuth_deg",
+          "tilt_deg",
+          "shadow_free_area_sqm",
+          "cable_distance_m",
+          "grid_connection",
+          "notes",
+          "submitted_at",
+          "reviewed_at",
+          "reviewed_by_user_id",
+          "evidence",
+          "history",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "SurveyResponse"
+      },
+      "SurveySubmit": {
+        "properties": {
+          "azimuth_deg": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 360.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Azimuth Deg"
+          },
+          "tilt_deg": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 90.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Tilt Deg"
+          },
+          "shadow_free_area_sqm": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Shadow Free Area Sqm"
+          },
+          "cable_distance_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 10000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Cable Distance M"
+          },
+          "grid_connection": {
+            "type": "string",
+            "enum": [
+              "suitable",
+              "unsuitable",
+              "unknown"
+            ],
+            "title": "Grid Connection"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 3,
+            "title": "Notes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "azimuth_deg",
+          "tilt_deg",
+          "shadow_free_area_sqm",
+          "cable_distance_m",
+          "grid_connection",
+          "notes"
+        ],
+        "title": "SurveySubmit"
+      },
+      "TemplateLineResponse": {
+        "properties": {
+          "component_code": {
+            "type": "string",
+            "title": "Component Code"
+          },
+          "component_name": {
+            "type": "string",
+            "title": "Component Name"
+          },
+          "line_kind": {
+            "type": "string",
+            "title": "Line Kind"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "unit_cost_minor": {
+            "type": "integer",
+            "title": "Unit Cost Minor"
+          },
+          "unit_price_minor": {
+            "type": "integer",
+            "title": "Unit Price Minor"
+          },
+          "sort_order": {
+            "type": "integer",
+            "title": "Sort Order"
+          }
+        },
+        "type": "object",
+        "required": [
+          "component_code",
+          "component_name",
+          "line_kind",
+          "quantity",
+          "unit",
+          "unit_cost_minor",
+          "unit_price_minor",
+          "sort_order"
+        ],
+        "title": "TemplateLineResponse"
+      },
+      "TemplateVersionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "package_code": {
+            "type": "string",
+            "title": "Package Code"
+          },
+          "version_number": {
+            "type": "integer",
+            "title": "Version Number"
+          },
+          "is_current": {
+            "type": "boolean",
+            "title": "Is Current"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/TemplateLineResponse"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "package_code",
+          "version_number",
+          "is_current",
+          "note",
+          "lines"
+        ],
+        "title": "TemplateVersionResponse"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -1589,6 +4615,78 @@
           "code"
         ],
         "title": "VerifyEmailRequest"
+      },
+      "WarehouseLineResponse": {
+        "properties": {
+          "component_code": {
+            "type": "string",
+            "title": "Component Code"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "component_code",
+          "description",
+          "quantity",
+          "unit"
+        ],
+        "title": "WarehouseLineResponse"
+      },
+      "WarehouseRequestResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "order_reference": {
+            "type": "string",
+            "title": "Order Reference"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/WarehouseLineResponse"
+            },
+            "type": "array",
+            "title": "Lines"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "order_id",
+          "order_reference",
+          "status",
+          "lines",
+          "created_at"
+        ],
+        "title": "WarehouseRequestResponse"
       }
     }
   }
