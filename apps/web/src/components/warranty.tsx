@@ -321,7 +321,7 @@ export function WarrantyWorkspace() {
             });
           }} className="mt-3 space-y-2">
             <TextField label="Ticket ID" name="ticket" required />
-            <TextField label="Serial number" name="unit" required />
+            <TextField label="Serial number for this decision" name="unit" required />
             <TextField label="Fault category (blank reuses the triage classification)" name="fault" />
             <Button disabled={pending}>Record decision</Button>
           </form>
@@ -343,7 +343,7 @@ export function WarrantyWorkspace() {
             });
           }} className="mt-3 space-y-2">
             <TextField label="Ticket ID" name="ticket" required />
-            <TextField label="Serial number" name="unit" required />
+            <TextField label="Serial number for this exception" name="unit" required />
             <SelectField label="Override decision" name="verdict" defaultValue="covered">
               <option value="covered">Covered</option>
               <option value="not_covered">Not covered</option>
@@ -856,7 +856,7 @@ export function PricingAdmin() {
           }} className="mt-3 space-y-2">
             <TextField label="Label" name="label" required placeholder="Standard 2026" />
             <label className="grid gap-1 text-sm">Labour rates (JSON: code → paise per minute)
-              <textarea name="labour" rows={2} required className="rounded-none border border-moss-300 bg-sand-50 p-2 font-mono text-xs" defaultValue='{"REPAIR_LABOUR": 2000}' />
+              <textarea name="labour" rows={2} required className="rounded-none border border-moss-300 bg-sand-50 p-2 font-mono text-xs" defaultValue='{"repair_labour": 6000}' />
             </label>
             <label className="grid gap-1 text-sm">Part prices (JSON: SKU → paise each)
               <textarea name="parts" rows={3} required className="rounded-none border border-moss-300 bg-sand-50 p-2 font-mono text-xs" defaultValue='{"PANEL-540": 1200000}' />
