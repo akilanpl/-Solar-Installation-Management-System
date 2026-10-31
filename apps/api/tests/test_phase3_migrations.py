@@ -66,3 +66,58 @@ def test_phase3_round_trip_keeps_existing_phase1_record(client, application):
     saved = client.get(f"/api/v1/enquiries/{enquiry_id}")
     assert saved.status_code == 200
     assert saved.json()["reference"] == created.json()["reference"]
+
+
+def test_forward_hardening_migration_preserves_financial_and_ledger_records(client, application):
+    """Upgrade a representative older Phase 3 dataset, not merely an empty DB."""
+    import hashlib
+    import json
+
+    from tests.test_phase3_warehouse_installation import (
+        _all_staff,
+        _confirmed_order,
+        _receipt_validate,
+        _warehouse,
+    )
+
+    _assert_safe(TEST_DATABASE_URL)
+    _all_staff(application)
+    _confirmed_order(client, application, email="preserved-financial-fixture@example.com")
+    _receipt_validate(client, _warehouse(client), "PANEL-550", "3")
+    tables = [
+        "quotations",
+        "quotation_lines",
+        "quotation_acceptances",
+        "payment_intents",
+        "payment_attempts",
+        "sales_orders",
+        "sales_order_lines",
+        "stock_operations",
+        "stock_operation_lines",
+        "stock_ledger",
+        "audit_events",
+        "surveys",
+    ]
+
+    def snapshot():
+        with application.state.engine.connect() as conn:
+            result = {}
+            for table in tables:
+                rows = sorted(
+                    json.dumps(list(row), default=str, sort_keys=True)
+                    for row in conn.execute(text("SELECT * FROM " + table))
+                )
+                assert rows, table + " fixture must contain representative preserved records"
+                result[table] = (len(rows), hashlib.sha256("\n".join(rows).encode()).hexdigest())
+            return result
+
+    original = snapshot()
+    config = Config("alembic.ini")
+    command.downgrade(config, "e6a2b3c4d5f6")
+    try:
+        assert snapshot() == original
+        assert "provider_events" not in inspect(application.state.engine).get_table_names()
+    finally:
+        _assert_safe(TEST_DATABASE_URL)
+        command.upgrade(config, "head")
+    assert snapshot() == original

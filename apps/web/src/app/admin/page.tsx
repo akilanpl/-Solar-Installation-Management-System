@@ -91,7 +91,7 @@ function Employees() {
         <p className="mt-1 text-sm text-moss-900/80">
           The new account is marked verified because the company checked identity outside this form. Customers cannot use this action.
         </p>
-        <form className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={onSubmit}>
+        <form autoComplete="off" className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={onSubmit}>
           <TextField label="Full name" name="full_name" required />
           <TextField label="Email" name="email" type="email" required />
           <TextField label="Mobile" name="phone" required />
@@ -104,7 +104,7 @@ function Employees() {
             <option value="support">Support</option>
             <option value="admin">Admin</option>
           </SelectField>
-          <TextField label="Temporary password" name="password" type="password" required />
+          <TextField label="Temporary password" name="password" type="password" autoComplete="new-password" required />
           <div className="md:col-span-2">
             <Button type="submit" disabled={pending}>{pending ? "Saving…" : "Create employee"}</Button>
           </div>

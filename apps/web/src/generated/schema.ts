@@ -1172,6 +1172,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/surveys/{survey_id}/site-context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Survey Context */
+        get: operations["survey_context_api_v1_surveys__survey_id__site_context_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{job_id}/site-context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Job Context */
+        get: operations["job_context_api_v1_jobs__job_id__site_context_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/scheduling/installations/{scheduling_id}/slot": {
         parameters: {
             query?: never;
@@ -1715,6 +1749,18 @@ export interface components {
             status: string;
             /** Override Reason */
             override_reason: string | null;
+        };
+        /** AssignedWorkContext */
+        AssignedWorkContext: {
+            /** Enquiry Reference */
+            enquiry_reference: string;
+            /** Order Reference */
+            order_reference: string | null;
+            /** Contact Name */
+            contact_name: string;
+            site: components["schemas"]["SiteResponse"];
+            /** Equipment */
+            equipment: components["schemas"]["WorkUnit"][];
         };
         /** AvailabilityInput */
         AvailabilityInput: {
@@ -3650,6 +3696,20 @@ export interface components {
             summary: components["schemas"]["WorkSummaryData"];
             /** Summary Hash */
             summary_hash: string;
+        };
+        /** WorkUnit */
+        WorkUnit: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Serial Number */
+            serial_number: string;
+            /** Component Code */
+            component_code: string;
+            /** Status */
+            status: string;
         };
     };
     responses: never;
@@ -6041,6 +6101,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SerialResponse"][];
+                };
+            };
+        };
+    };
+    survey_context_api_v1_surveys__survey_id__site_context_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                survey_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignedWorkContext"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    job_context_api_v1_jobs__job_id__site_context_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignedWorkContext"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

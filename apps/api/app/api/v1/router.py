@@ -18,6 +18,7 @@ from app.api.v1 import (
     razorpay,
     surveys,
     warehouse,
+    work_context,
     workspace_reads,
 )
 
@@ -34,6 +35,7 @@ api_router.include_router(orders.router)
 api_router.include_router(warehouse.router)
 api_router.include_router(operations.router)
 api_router.include_router(workspace_reads.router)
+api_router.include_router(work_context.router)
 api_router.include_router(installation.router)
 api_router.include_router(calendar.router)
 api_router.include_router(coverage.router)

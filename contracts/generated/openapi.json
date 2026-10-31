@@ -3408,6 +3408,92 @@
         }
       }
     },
+    "/api/v1/surveys/{survey_id}/site-context": {
+      "get": {
+        "tags": [
+          "assigned-work-context"
+        ],
+        "summary": "Survey Context",
+        "operationId": "survey_context_api_v1_surveys__survey_id__site_context_get",
+        "parameters": [
+          {
+            "name": "survey_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Survey Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignedWorkContext"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/jobs/{job_id}/site-context": {
+      "get": {
+        "tags": [
+          "assigned-work-context"
+        ],
+        "summary": "Job Context",
+        "operationId": "job_context_api_v1_jobs__job_id__site_context_get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignedWorkContext"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/scheduling/installations/{scheduling_id}/slot": {
       "post": {
         "tags": [
@@ -4922,6 +5008,48 @@
           "override_reason"
         ],
         "title": "AppointmentResponse"
+      },
+      "AssignedWorkContext": {
+        "properties": {
+          "enquiry_reference": {
+            "type": "string",
+            "title": "Enquiry Reference"
+          },
+          "order_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Reference"
+          },
+          "contact_name": {
+            "type": "string",
+            "title": "Contact Name"
+          },
+          "site": {
+            "$ref": "#/components/schemas/SiteResponse"
+          },
+          "equipment": {
+            "items": {
+              "$ref": "#/components/schemas/WorkUnit"
+            },
+            "type": "array",
+            "title": "Equipment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enquiry_reference",
+          "order_reference",
+          "contact_name",
+          "site",
+          "equipment"
+        ],
+        "title": "AssignedWorkContext"
       },
       "AvailabilityInput": {
         "properties": {
@@ -9763,6 +9891,35 @@
           "summary_hash"
         ],
         "title": "WorkSummaryResponse"
+      },
+      "WorkUnit": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "serial_number": {
+            "type": "string",
+            "title": "Serial Number"
+          },
+          "component_code": {
+            "type": "string",
+            "title": "Component Code"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "serial_number",
+          "component_code",
+          "status"
+        ],
+        "title": "WorkUnit"
       }
     }
   }

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { components } from "@/generated/schema";
 import { api } from "@/lib/api";
 import { Button, Card, EmptyState, ErrorState, LoadingState, PageHeader, StatusBadge, TextField } from "@/components/ui";
+import {WorkContext} from "@/components/work-context";
 type Job = components["schemas"]["JobResponse"];
 type Evidence = components["schemas"]["JobEvidence-Input"];
 type Summary = components["schemas"]["WorkSummaryResponse"];
@@ -29,7 +30,7 @@ function JobCard({ job, customer, reload }: { job: Job; customer: boolean; reloa
     try { const result = await api<{ message?: string }>(`/api/v1/jobs/${job.id}/${action}`, { method: "POST", ...(body !== undefined ? { body: JSON.stringify(body) } : {}) }); setNotice(result.message ?? "Change saved."); reload(); }
     catch (e) { setError(e instanceof Error ? e.message : "Action failed."); } finally { setPending(false); }
   }
-  return <Card><h2 className="text-lg font-semibold">{job.reference}</h2><StatusBadge status={job.status} /><p className="my-3 text-sm">Appointment: {job.slot_starts_at ? new Date(job.slot_starts_at).toLocaleString() : "Not scheduled"}</p>
+  return <Card><h2 className="text-lg font-semibold">{job.reference}</h2><StatusBadge status={job.status} /><WorkContext kind="jobs" id={job.id}/><p className="my-3 text-sm">Appointment: {job.slot_starts_at ? new Date(job.slot_starts_at).toLocaleString() : "Not scheduled"}</p>
     {error && <ErrorState message={error} />}
     {notice && <p role="status" className="my-3 text-sm">{notice}</p>}
     {!customer && <div className="space-y-3">

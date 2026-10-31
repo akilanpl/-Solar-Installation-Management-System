@@ -1,0 +1,6 @@
+"use client";
+import {useEffect,useState} from "react";
+import type {components} from "@/generated/schema";
+import {api} from "@/lib/api";
+type Context=components["schemas"]["AssignedWorkContext"];
+export function WorkContext({kind,id}:{kind:"jobs"|"surveys";id:string}){const [context,setContext]=useState<Context|null>(null),[error,setError]=useState("");useEffect(()=>{let active=true;api<Context>(`/api/v1/${kind}/${id}/site-context`).then(value=>{if(active)setContext(value);}).catch(e=>{if(active)setError(e.message);});return()=>{active=false;};},[kind,id]);return <section className="actual-work-context" aria-label="Authorized work context">{error?<p role="alert">{error}</p>:context?<><p><strong>{context.contact_name}</strong> · {context.enquiry_reference}{context.order_reference?` · ${context.order_reference}`:""}</p><p>Customer-provided site: {context.site.line1}{context.site.line2?`, ${context.site.line2}`:""}, {context.site.city}, {context.site.state} {context.site.postal_code}</p><p>GPS location and travel time are unavailable.</p>{kind==="jobs"&&<><p>Recorded equipment custody:</p>{context.equipment.length?<ul>{context.equipment.map(unit=><li key={unit.id}>{unit.component_code} · {unit.serial_number} · {unit.status}</li>)}</ul>:<p>No equipment serials have been recorded.</p>}</>}</>:<p>Loading authorized site context…</p>}</section>;}
