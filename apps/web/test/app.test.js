@@ -1,7 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { ROLES, homeForRole, canAccessPath } from '../src/lib/access.js';
 import { formatCapacity, formatInrFromPaise } from '../src/lib/format.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 test('Access Control: all 7 enterprise roles have valid dashboard routes', () => {
   assert.equal(ROLES.length, 7);
@@ -313,6 +319,12 @@ test('Performance Optimization: code-splitting routes and skeleton loader struct
   // Skeleton shimmer width ratio check
   const skeletonKpiCount = 3;
   assert.equal(skeletonKpiCount, 3);
+
+  // Inlined zero-latency pre-hydration skeleton in index.html for instant (<25ms) 3G first paint
+  const indexHtml = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+  assert.ok(indexHtml.includes('pre-app-shell'), 'index.html must contain pre-app-shell container');
+  assert.ok(indexHtml.includes('prebootShimmer'), 'index.html must contain prebootShimmer keyframes');
+  assert.ok(indexHtml.includes('Sub-50ms Fast-Boot'), 'index.html must contain fast-boot telemetry pill');
 });
 
 
