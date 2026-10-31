@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="27" failures="0" errors="0" time="0.031368917">
+    <testsuite name="src/lib/access.test.ts" timestamp="2026-10-31T12:34:03.085Z" hostname="Akilans-MacBook-Air.local" tests="4" failures="0" errors="0" skipped="0" time="0.001571209">
+        <testcase classname="src/lib/access.test.ts" name="access &gt; sends each role to its own workspace" time="0.000728708">
+        </testcase>
+        <testcase classname="src/lib/access.test.ts" name="access &gt; does not let a customer open staff workspaces" time="0.000149375">
+        </testcase>
+        <testcase classname="src/lib/access.test.ts" name="access &gt; ignores a requested admin path for a customer" time="0.00008675">
+        </testcase>
+        <testcase classname="src/lib/access.test.ts" name="access &gt; rejects open redirects" time="0.000046584">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/api.test.ts" timestamp="2026-10-31T12:34:03.086Z" hostname="Akilans-MacBook-Air.local" tests="9" failures="0" errors="0" skipped="0" time="0.021287333">
+        <testcase classname="src/lib/api.test.ts" name="authenticated same-origin API transport &gt; uses cookies and returns persisted server payload" time="0.018778125">
+        </testcase>
+        <testcase classname="src/lib/api.test.ts" name="authenticated same-origin API transport &gt; adds CSRF on business mutation" time="0.000283875">
+        </testcase>
+        <testcase classname="src/lib/api.test.ts" name="authenticated same-origin API transport &gt; lets the browser generate multipart upload boundaries" time="0.000365875">
+        </testcase>
+        <testcase classname="src/lib/api.test.ts" name="authenticated same-origin API transport &gt; does not turn role rejection into mock success" time="0.000497708">
+        </testcase>
+        <testcase classname="src/lib/api.test.ts" name="authenticated same-origin API transport &gt; returns a useful provider/proxy error for non-JSON failure" time="0.000173708">
+        </testcase>
+        <testcase classname="src/lib/api.test.ts" name="authenticated same-origin API transport &gt; returns a network state instead of local mock records" time="0.000160833">
+        </testcase>
+        <testcase classname="src/lib/api.test.ts" name="authenticated same-origin API transport &gt; supports logout with no response body" time="0.000083334">
+        </testcase>
+        <testcase classname="src/lib/api.test.ts" name="authenticated same-origin API transport &gt; acquires a CSRF token when no cookie exists" time="0.00016825">
+        </testcase>
+        <testcase classname="src/lib/api.test.ts" name="authenticated same-origin API transport &gt; retains field validation details" time="0.000190792">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/format.test.ts" timestamp="2026-10-31T12:34:03.086Z" hostname="Akilans-MacBook-Air.local" tests="14" failures="0" errors="0" skipped="0" time="0.008510375">
+        <testcase classname="src/lib/format.test.ts" name="money and capacity formatting &gt; converts whole rupees to integer paise" time="0.000733459">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="money and capacity formatting &gt; formats paise without binary floating point" time="0.006637584">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="money and capacity formatting &gt; shows capacity in kilowatts" time="0.000076875">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="decimal INR receipt amounts &gt; converts 0 exactly" time="0.000080375">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="decimal INR receipt amounts &gt; converts 0.01 exactly" time="0.000055292">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="decimal INR receipt amounts &gt; converts 12.3 exactly" time="0.000037875">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="decimal INR receipt amounts &gt; converts 12.34 exactly" time="0.000032541">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="decimal INR receipt amounts &gt; converts 1000000 exactly" time="0.000034542">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="decimal INR receipt amounts &gt; rejects -1" time="0.00005275">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="decimal INR receipt amounts &gt; rejects NaN" time="0.000050125">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="decimal INR receipt amounts &gt; rejects 1.001" time="0.000026917">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="decimal INR receipt amounts &gt; rejects 1e3" time="0.000021917">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="decimal INR receipt amounts &gt; rejects 1000000.01" time="0.0000205">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="decimal INR receipt amounts &gt; rejects " time="0.000017791">
+        </testcase>
+    </testsuite>
+</testsuites>
