@@ -50,7 +50,7 @@ def _require_roles(user: User, allowed: set[str]) -> None:
 def _as_utc(value: datetime) -> datetime:
     if value.tzinfo is None:
         return value.replace(tzinfo=UTC)
-    return value
+    return value.astimezone(UTC)
 
 
 def _normalize_code(code: str) -> str:
@@ -290,7 +290,7 @@ def evaluate_coverage(db: Session, user: User, ticket_id: uuid.UUID, serial_numb
     category = (fault_category or ticket.category or "").strip() or None
     digest = _digest({"ticket_id": str(ticket.id), "serial_id": str(serial.id),
                       "fault_category": category, "fault_code": ticket.fault_code,
-                      "evaluated_date": at.date().isoformat()})
+                      "evaluation": at.isoformat() if evaluated_at is not None else at.date().isoformat()})
     keyed = db.scalar(
         select(CoverageDecision).where(
             CoverageDecision.ticket_id == ticket.id,
@@ -309,7 +309,12 @@ def evaluate_coverage(db: Session, user: User, ticket_id: uuid.UUID, serial_numb
             WarrantyException.ticket_id == ticket.id,
             WarrantyException.serial_id == serial.id)
     )
+    coverage = db.scalar(
+        select(SerializedAssetCoverage).where(SerializedAssetCoverage.serial_id == serial.id)
+    )
     repeat_key = {"version_id": str(version.id) if version else None,
+                  "coverage": _snapshot_coverage(coverage) if coverage else None,
+                  "fault_code": ticket.fault_code,
                   "fault_category": category,
                   "exception_id": str(exception.id) if exception else None}
     latest = db.scalar(
@@ -320,7 +325,9 @@ def evaluate_coverage(db: Session, user: User, ticket_id: uuid.UUID, serial_numb
     )
     if latest is not None and latest.evidence is not None:
         prior = latest.evidence.get("repeat_key")
-        if prior == repeat_key and _as_utc(latest.evaluated_at).date() == at.date():
+        if (prior == repeat_key
+                and (_as_utc(latest.evaluated_at) == at if evaluated_at is not None
+                     else _as_utc(latest.evaluated_at).date() == at.date())):
             return latest, False
     coverage = db.scalar(
         select(SerializedAssetCoverage).where(
