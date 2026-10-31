@@ -6,7 +6,7 @@
     "dev": "next dev --hostname 127.0.0.1 --port 3000",
     "build": "next build",
     "start": "next start --hostname 127.0.0.1 --port 3000",
-    "lint": "next lint",
+    "lint": "eslint src e2e --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "generate:api": "openapi-typescript ../../contracts/generated/openapi.json -o src/generated/schema.ts",
