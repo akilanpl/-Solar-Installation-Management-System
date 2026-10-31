@@ -1,42 +1,16 @@
-/* ErrorState Component Styles */
-.error-state-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 18px 22px;
-  background: var(--color-black-elevated);
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius-md);
-  color: var(--color-white);
-  box-shadow: 0 0 16px rgba(255, 77, 109, 0.25);
+/* ErrorState Component Styles using Alert */
+.error-state-container {
   margin: 16px 0;
-}
-
-.error-icon-box {
-  color: var(--color-danger);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 2px;
+  justify-content: flex-start;
+  width: 100%;
 }
 
-.error-content {
-  flex: 1;
+.error-state-container .alert-card {
+  width: 100%;
+  max-width: 520px;
 }
 
-.error-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--color-danger);
-  margin-bottom: 4px;
+.error-retry-action {
+  margin-top: 8px;
 }
-
-.error-message {
-  font-size: 13px;
-  color: var(--color-white-muted);
-}
-
-.error-actions {
-  margin-top: 12px;
-}
-

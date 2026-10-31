@@ -388,3 +388,92 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
       clamps animation and transition durations to 0.01ms, ensuring a safe, static experience.
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+11. MODERN WAVE ALERT & TOAST SYSTEM ARCHITECTURE (SUCCESS, WARNING, ERROR, INFO)
+--------------------------------------------------------------------------------
+- Date & Context:
+  Replaced the legacy dark-green toast with a modern, high-contrast, multi-variant
+  wave alert and notification card architecture. The design incorporates an organic SVG
+  wave graphic along the left border, a tinted circular icon backdrop, distinct semantic
+  color coding (Success, Warning, Error, Info), bold title, descriptive subtitle, and an
+  accessible dismiss action.
+
+- Key Architecture & Visual Elements:
+  1. Component-Scoped Isolation:
+     - Pure React JSX (`apps/web/src/components/Alert/Alert.jsx`) and dedicated CSS
+       (`apps/web/src/components/Alert/Alert.css`).
+     - Avoided CSS-in-JS runtime overhead by compiling pure CSS classes scoped under `.alert-card`.
+  2. Four Semantic Variants:
+     - Success: Emerald wave (#04e4003a), backdrop (#04e40048), text/icon (#269b24).
+     - Warning: Amber wave (#ffa30d3a), backdrop (#ffa30d48), text/icon (#db970e).
+     - Error: Crimson wave (#fc0c0c3a), backdrop (#fc0c0c48), text/icon (#d10d0d).
+     - Info: Azure wave (#4777ff3a), backdrop (#4777ff48), text/icon (#124fff).
+  3. Left-Border Organic SVG Wave:
+     - 1440x320 SVG path rotated 90 degrees and positioned on the left edge (`left: -31px; top: 32px;`).
+     - Renders fluid, natural wave accents without external image assets or raster degradation.
+  4. Global Application Toast Integration:
+     - Updated `AuthContext.jsx` and `AuthContext.css` to host `.auth-toast-container` at fixed
+       bottom-right (`bottom: 24px; right: 24px; z-index: 9999;`).
+     - Provides instant 1-click Demo Bypass feedback: "Demo Mode Active: Logged in as Ananya Iyer (SUPPORT)".
+  5. ErrorState Component Consolidation:
+     - Refactored `ErrorState.jsx` and `ErrorState.css` to build upon the `Alert` primitive with
+       `type="error"` and support interactive retry buttons.
+
+- Files Created or Modified:
+  * apps/web/src/components/Alert/Alert.jsx (Created)
+  * apps/web/src/components/Alert/Alert.css (Created)
+  * apps/web/src/context/AuthContext.jsx (Modified)
+  * apps/web/src/context/AuthContext.css (Modified)
+  * apps/web/src/components/ErrorState/ErrorState.jsx (Modified)
+  * apps/web/src/components/ErrorState/ErrorState.css (Modified)
+
+- React Concepts & Hooks Used:
+  * useState:
+    - `toastConfig` in `AuthContext` holds active notification properties `{ type, title, message }`.
+  * Dynamic Prop Normalization:
+    - Safeguards variant inputs to valid semantic states with fallback to `success`.
+  * Component Composition:
+    - `Alert` accepts `children` to support embedded actions (e.g., retry buttons in `ErrorState`).
+  * Debounce & Timer Cleanup:
+    - `window._toastTimeout` prevents race conditions when multiple toasts fire in rapid succession.
+  * Accessibility (a11y):
+    - `role="alert"` for screen reader announcements.
+    - Keyboard-accessible dismiss button (`tabIndex={0}`, Space/Enter listeners).
+
+- How the Code Works Step-by-Step:
+  1. An event occurs (e.g. user clicks demo bypass, submits a quote, or an API call fails).
+  2. The caller invokes `showToast(msg, options)` or passes a structured config object.
+  3. `AuthContext` normalizes parameters and assigns the matching semantic variant (success/warning/error/info).
+  4. The toast card slides in from the bottom with `alertSlideIn` cubic-bezier animation.
+  5. The user can dismiss immediately via the cross icon or allow the 4.5s auto-dismiss timer to elapse.
+
+- How the Frontend Communicates with the Backend:
+  * API services catch network or validation errors and pipe error summaries into `showToast()` or
+    inline `ErrorState` components, giving real-time, non-blocking feedback to enterprise operators.
+
+- Important Technical Decisions & Reasons:
+  * Zero-Runtime CSS: Converted the user's styled-components reference into standard CSS classes to
+    prevent React runtime rendering bottlenecks and bundle bloat.
+  * Unified Alert Primitives: Consolidating both floating toasts and inline failure states under
+    the single `Alert` component guarantees visual consistency across all workspaces.
+
+- Bugs Encountered & Fixes:
+  * Multiple rapid toast clicks: Rapid clicks reset the toast content while previous timeouts were
+    still pending, causing premature dismissals. Fixed by clearing the previous timeout before
+    scheduling a new one.
+
+- Technical Interview Questions & Answers:
+  Q1: Why is separating styled-components into dedicated .jsx and .css files advantageous in large-scale enterprise React applications?
+  A1: CSS-in-JS libraries like styled-components incur runtime overhead from dynamic class generation,
+      hashing, and style tag injection on every render. Component-scoped static CSS files can be
+      extracted, minified, cached by CDNs, and parsed in parallel by the browser engine, resulting
+      in faster First Contentful Paint (FCP) and lower JavaScript bundle size.
+
+  Q2: How does compound component composition benefit alert/toast systems compared to rigid prop configs?
+  A2: Allowing an `Alert` component to accept both standard title/message props and arbitrary `children`
+      enables extreme flexibility. High-level modules can insert action buttons (like retry links or
+      navigation pills) without bloating the core alert component with domain-specific conditional props.
+
+================================================================================

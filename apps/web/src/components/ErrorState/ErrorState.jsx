@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle } from 'lucide-react';
+import { Alert } from '../Alert/Alert';
 import { Button } from '../Button/Button';
 import './ErrorState.css';
 
@@ -9,22 +9,20 @@ export function ErrorState({
   onRetry = null,
 }) {
   return (
-    <div className="error-state-card">
-      <div className="error-icon-box">
-        <AlertCircle size={22} />
-      </div>
-      <div className="error-content">
-        <h4 className="error-title">{title}</h4>
-        <p className="error-message">{message || 'Unable to complete request.'}</p>
+    <div className="error-state-container">
+      <Alert
+        type="error"
+        title={title}
+        message={message || 'Unable to complete request.'}
+      >
         {onRetry && (
-          <div className="error-actions">
+          <div className="error-retry-action">
             <Button variant="outline" size="sm" onClick={onRetry}>
               Try Again
             </Button>
           </div>
         )}
-      </div>
+      </Alert>
     </div>
   );
 }
-

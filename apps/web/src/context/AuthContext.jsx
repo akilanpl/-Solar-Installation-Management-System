@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { homeForRole } from '../lib/access';
+import { Alert } from '../components/Alert/Alert';
 import './AuthContext.css';
 
 const AuthContext = createContext(null);
@@ -8,13 +9,50 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [toastMessage, setToastMessage] = useState(null);
+  const [toastConfig, setToastConfig] = useState(null);
 
-  const showToast = (msg) => {
-    setToastMessage(msg);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 4000);
+  const showToast = (content, options = {}) => {
+    let type = 'success';
+    let title = 'Success';
+    let message = '';
+
+    if (typeof content === 'object' && content !== null) {
+      type = content.type || 'success';
+      title = content.title || (type === 'success' ? 'Success message' : type === 'warning' ? 'Warning message' : type === 'error' ? 'Error message' : 'Info message');
+      message = content.message || content.subText || '';
+    } else if (typeof content === 'string') {
+      const lower = content.toLowerCase();
+      if (lower.includes('demo mode active')) {
+        type = 'success';
+        title = 'Demo Mode Active';
+        message = content.replace(/^⚡?\s*demo mode active:?\s*/i, '');
+      } else if (lower.includes('error') || lower.includes('failed') || lower.includes('invalid') || lower.includes('denied') || lower.includes('unable')) {
+        type = 'error';
+        title = options.title || 'Error message';
+        message = content;
+      } else if (lower.includes('warning') || lower.includes('caution') || lower.includes('check')) {
+        type = 'warning';
+        title = options.title || 'Warning message';
+        message = content;
+      } else if (lower.includes('signed out') || lower.includes('dispatched') || lower.includes('info')) {
+        type = 'info';
+        title = options.title || 'Info message';
+        message = content;
+      } else {
+        type = options.type || 'success';
+        title = options.title || 'Success message';
+        message = content;
+      }
+    }
+
+    setToastConfig({ type, title, message });
+
+    if (window._toastTimeout) {
+      clearTimeout(window._toastTimeout);
+    }
+    window._toastTimeout = setTimeout(() => {
+      setToastConfig(null);
+    }, 4500);
   };
 
   useEffect(() => {
@@ -40,14 +78,22 @@ export function AuthProvider({ children }) {
   const bypassLogin = (roleKey) => {
     const newUser = api.bypassLogin(roleKey);
     setUser(newUser);
-    showToast(`⚡ Demo Mode Active: Logged in as ${newUser.full_name} (${newUser.role.toUpperCase()})`);
+    showToast({
+      type: 'success',
+      title: 'Demo Mode Active',
+      message: `Logged in as ${newUser.full_name} (${newUser.role.toUpperCase()})`,
+    });
     return newUser;
   };
 
   const login = async (identifier, password, accountKind = 'customer') => {
     const res = await api.login(identifier, password, accountKind);
     setUser(res.user);
-    showToast(`Welcome back, ${res.user.full_name}!`);
+    showToast({
+      type: 'success',
+      title: 'Welcome Back',
+      message: `Signed in as ${res.user.full_name}`,
+    });
     return res.user;
   };
 
@@ -62,7 +108,11 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     await api.logout();
     setUser(null);
-    showToast('Signed out of SolarOps session.');
+    showToast({
+      type: 'info',
+      title: 'Signed Out',
+      message: 'SolarOps session ended.',
+    });
   };
 
   return (
@@ -79,12 +129,14 @@ export function AuthProvider({ children }) {
       }}
     >
       {children}
-      {toastMessage && (
+      {toastConfig && (
         <div className="auth-toast-container">
-          <div className="auth-toast">
-            <span>⚡</span>
-            <span>{toastMessage}</span>
-          </div>
+          <Alert
+            type={toastConfig.type}
+            title={toastConfig.title}
+            message={toastConfig.message}
+            onClose={() => setToastConfig(null)}
+          />
         </div>
       )}
     </AuthContext.Provider>
@@ -98,4 +150,3 @@ export function useAuth() {
   }
   return context;
 }
-

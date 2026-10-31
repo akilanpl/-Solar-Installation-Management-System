@@ -1,0 +1,167 @@
+/* ==========================================================================
+   SOLARFLOW / SOLAROPS - COMPONENT-SCOPED ALERT & TOAST STYLES
+   Exact implementation of the wave alert card with 4 variants:
+   success, warning, error, info
+   ========================================================================== */
+
+.alert-card {
+  width: 350px;
+  min-height: 80px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  padding: 10px 16px;
+  background-color: #ffffff;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 8px 24px, 0 0 1px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 14px;
+  z-index: 1000;
+  animation: alertSlideIn 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes alertSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.alert-card .wave {
+  position: absolute;
+  transform: rotate(90deg);
+  left: -31px;
+  top: 32px;
+  width: 80px;
+  pointer-events: none;
+}
+
+.alert-card .icon-container {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+.alert-card .icon {
+  width: 17px;
+  height: 17px;
+}
+
+.alert-card .message-text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.alert-card .message-text,
+.alert-card .sub-text {
+  margin: 0;
+  cursor: default;
+}
+
+.alert-card .message-text {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.alert-card .sub-text {
+  font-size: 13px;
+  color: #555555;
+  line-height: 1.35;
+  margin-top: 2px;
+  word-break: break-word;
+}
+
+.alert-card .cross-icon {
+  width: 18px;
+  height: 18px;
+  color: #777777;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 150ms ease, transform 150ms ease;
+  padding: 2px;
+}
+
+.alert-card .cross-icon:hover {
+  color: #111111;
+  transform: scale(1.15);
+}
+
+/* --------------------------------------------------------------------------
+   VARIANT 1: SUCCESS (Green Wave & Accent)
+   -------------------------------------------------------------------------- */
+.alert-card.type-success .wave {
+  fill: #04e4003a;
+}
+.alert-card.type-success .icon-container {
+  background-color: #04e40048;
+}
+.alert-card.type-success .icon {
+  color: #269b24;
+}
+.alert-card.type-success .message-text {
+  color: #269b24;
+}
+
+/* --------------------------------------------------------------------------
+   VARIANT 2: WARNING (Orange/Amber Wave & Accent)
+   -------------------------------------------------------------------------- */
+.alert-card.type-warning .wave {
+  fill: #ffa30d3a;
+}
+.alert-card.type-warning .icon-container {
+  background-color: #ffa30d48;
+}
+.alert-card.type-warning .icon {
+  color: #db970e;
+}
+.alert-card.type-warning .message-text {
+  color: #db970e;
+}
+
+/* --------------------------------------------------------------------------
+   VARIANT 3: ERROR (Red Wave & Accent)
+   -------------------------------------------------------------------------- */
+.alert-card.type-error .wave {
+  fill: #fc0c0c3a;
+}
+.alert-card.type-error .icon-container {
+  background-color: #fc0c0c48;
+}
+.alert-card.type-error .icon {
+  color: #d10d0d;
+}
+.alert-card.type-error .message-text {
+  color: #d10d0d;
+}
+
+/* --------------------------------------------------------------------------
+   VARIANT 4: INFO (Blue Wave & Accent)
+   -------------------------------------------------------------------------- */
+.alert-card.type-info .wave {
+  fill: #4777ff3a;
+}
+.alert-card.type-info .icon-container {
+  background-color: #4777ff48;
+}
+.alert-card.type-info .icon {
+  color: #124fff;
+}
+.alert-card.type-info .message-text {
+  color: #124fff;
+}

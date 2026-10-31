@@ -1,4 +1,8 @@
-/* AuthContext notification / toast styling */
+/* ==========================================================================
+   SOLARFLOW / SOLAROPS - AUTH CONTEXT TOAST CONTAINER
+   Anchors Alert cards at the bottom-right viewport with fluid stacking
+   ========================================================================== */
+
 .auth-toast-container {
   position: fixed;
   bottom: 24px;
@@ -7,31 +11,15 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-width: 400px;
+  pointer-events: auto;
+  max-width: calc(100vw - 32px);
 }
 
-.auth-toast {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 18px;
-  background: var(--color-black-elevated);
-  border: 1px solid var(--color-lime);
-  box-shadow: var(--color-lime-glow);
-  border-radius: var(--radius-md);
-  color: var(--color-white);
-  font-size: 14px;
-  animation: slideInUp 250ms ease-out;
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+@media (max-width: 640px) {
+  .auth-toast-container {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    align-items: center;
   }
 }
-
