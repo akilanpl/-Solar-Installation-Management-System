@@ -32,7 +32,7 @@ def sync_batch(
     payload: SyncBatchRequest,
     request: Request,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> SyncBatchResponse:
@@ -55,7 +55,7 @@ def upload_evidence(
     entity_id: uuid.UUID = Form(...),
     upload: UploadFile = File(...),
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> SyncVerdictResponse:
@@ -85,7 +85,7 @@ def upload_evidence(
 @router.get("/operations", response_model=list[SyncOperationRecord])
 def list_operations(
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
 ) -> list[SyncOperationRecord]:
     return [
         SyncOperationRecord(**item)
@@ -96,7 +96,7 @@ def list_operations(
 @router.get("/assignments", response_model=OfflineAssignmentResponse)
 def offline_assignments(
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
 ) -> OfflineAssignmentResponse:
     return OfflineAssignmentResponse(
         **offline_sync_service.offline_assignments(db, user)

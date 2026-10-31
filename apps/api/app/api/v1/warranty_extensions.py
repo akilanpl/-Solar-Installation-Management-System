@@ -3,7 +3,8 @@
 Approval, rejection review and payment verification require a fresh
 step-up grant (``X-Strong-Auth`` header). Activation never happens from a
 browser-only success event: a paid extension waits in ``pending_payment``
-until support records a verified payment reference.
+until an extension-specific settled payment can be verified. Typed references
+alone cannot activate coverage.
 """
 
 import uuid
@@ -67,7 +68,7 @@ def _extension_response(row) -> ExtensionResponse:
 def check_eligibility(
     serial_number: str = Query(min_length=1, max_length=64),
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
 ) -> EligibilityResponse:
     return EligibilityResponse(
         **warranty_extension_service.evaluate_eligibility(db, user, serial_number)
@@ -80,7 +81,7 @@ def create_terms(
     payload: ExtensionTermsCreate,
     request: Request,
     user: User = Depends(require_strong_auth),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> ExtensionTermsResponse:
@@ -103,7 +104,7 @@ def create_terms(
 @router.get("/warranty/extensions/terms", response_model=list[ExtensionTermsResponse])
 def list_terms(
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
 ) -> list[ExtensionTermsResponse]:
     return [_terms_response(row) for row in warranty_extension_service.list_terms(db, user)]
 
@@ -113,7 +114,7 @@ def list_terms(
 def issue_offer(
     coverage_id: uuid.UUID = Query(...),
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> ExtensionOfferResponse:
@@ -131,7 +132,7 @@ def request_extension(
     payload: ExtensionRequestCreate,
     request: Request,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> ExtensionResponse:
@@ -150,7 +151,7 @@ def request_extension(
 @router.get("/warranty/extensions/requests", response_model=list[ExtensionResponse])
 def list_extensions(
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
 ) -> list[ExtensionResponse]:
     return [
         _extension_response(row)
@@ -162,7 +163,7 @@ def list_extensions(
 def get_extension(
     extension_id: uuid.UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
 ) -> ExtensionResponse:
     return _extension_response(
         warranty_extension_service.get_extension(db, user, extension_id)
@@ -176,7 +177,7 @@ def approve_extension(
     payload: ExtensionDecisionRequest,
     request: Request,
     user: User = Depends(require_strong_auth),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
 ) -> ExtensionResponse:
     return _extension_response(
         warranty_extension_service.approve_extension(
@@ -192,7 +193,7 @@ def reject_extension(
     payload: ExtensionDecisionRequest,
     request: Request,
     user: User = Depends(require_strong_auth),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
 ) -> ExtensionResponse:
     if not payload.note:
         from app.core.errors import AppError
@@ -210,7 +211,7 @@ def reject_extension(
 def cancel_extension(
     extension_id: uuid.UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
 ) -> ExtensionResponse:
     return _extension_response(
         warranty_extension_service.cancel_extension(db, user, extension_id=extension_id)
@@ -224,7 +225,7 @@ def record_payment_and_activate(
     payload: ExtensionPaymentRequest,
     request: Request,
     user: User = Depends(require_strong_auth),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
 ) -> ExtensionResponse:
     return _extension_response(
         warranty_extension_service.record_payment_and_activate(

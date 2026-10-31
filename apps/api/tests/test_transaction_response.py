@@ -78,3 +78,31 @@ def test_failed_commit_cannot_emit_success_or_usable_session_cookie(application)
         application.state.session_factory = original
     with original() as db:
         assert db.scalar(select(func.count()).select_from(AuthSession)) == 0
+
+
+def test_mfa_enrollment_is_durable_before_success_headers(application):
+    from app.models.phase4e import MfaFactor
+    from tests.test_phase4a_support import _technician
+
+    _all_staff(application)
+    visible_factors = []
+
+    async def observed(scope, receive, send):
+        async def observe(message):
+            if (scope["type"] == "http"
+                    and scope["path"] == "/api/v1/auth/mfa/totp/enroll/start"
+                    and message["type"] == "http.response.start"
+                    and message["status"] == 200):
+                with Session(application.state.engine) as db:
+                    visible_factors.append(db.scalar(select(func.count()).select_from(MfaFactor)))
+            await send(message)
+        await application(scope, receive, observe)
+
+    with TestClient(observed) as client:
+        headers = _technician(client)
+        result = client.post("/api/v1/auth/mfa/totp/enroll/start",
+                             json={"password": "Staffpass123", "label": "Durable enrollment"},
+                             headers=headers)
+        assert result.status_code == 200
+        assert result.json()["factor_id"]
+    assert visible_factors == [1], "MFA enrollment must commit before response headers"

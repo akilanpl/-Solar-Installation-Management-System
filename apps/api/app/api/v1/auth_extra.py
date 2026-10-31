@@ -92,7 +92,7 @@ def _strong_methods(db: Session, user: User) -> list[str]:
 def passkey_registration_options(
     request: Request,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> PasskeyOptionsResponse:
@@ -108,7 +108,7 @@ def passkey_registration_verify(
     payload: PasskeyVerifyRequest,
     request: Request,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> PasskeyCredentialResponse:
@@ -124,7 +124,7 @@ def passkey_registration_verify(
 @router.get("/passkeys", response_model=list[PasskeyCredentialResponse])
 def list_passkeys(
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
 ) -> list[PasskeyCredentialResponse]:
     return [_credential_response(row) for row in webauthn_service.list_credentials(db, user)]
 
@@ -132,7 +132,7 @@ def list_passkeys(
 @router.post("/passkeys/authentication/options", response_model=PasskeyOptionsResponse)
 def passkey_authentication_options(
     request: Request,
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> PasskeyOptionsResponse:
@@ -151,7 +151,7 @@ def passkey_authentication_verify(
     payload: PasskeyVerifyLoginRequest,
     request: Request,
     response: Response,
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> LoginResponse:
@@ -178,7 +178,7 @@ def revoke_passkey(
     payload: RevokeRequest,
     request: Request,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
 ) -> PasskeyCredentialResponse:
     _reauthenticated(request, db, settings, user, payload.password)
@@ -191,7 +191,7 @@ def revoke_passkey(
 @router.get("/mfa/status", response_model=MfaStatusResponse)
 def mfa_status(
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
 ) -> MfaStatusResponse:
     methods = mfa_service.user_mfa_methods(db, user)
     return MfaStatusResponse(**methods)
@@ -204,7 +204,7 @@ def totp_enroll_start(
     payload: TotpEnrollStartRequest,
     request: Request,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> TotpEnrollStartResponse:
@@ -221,7 +221,7 @@ def totp_enroll_confirm(
     payload: TotpVerifyRequest,
     request: Request,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> MfaStatusResponse:
@@ -256,7 +256,7 @@ def ticket_verify_totp(
     payload: MfaTicketVerifyRequest,
     request: Request,
     response: Response,
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> LoginResponse:
@@ -273,7 +273,7 @@ def ticket_verify_recovery(
     payload: MfaTicketVerifyRequest,
     request: Request,
     response: Response,
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> LoginResponse:
@@ -293,7 +293,7 @@ def issue_recovery_codes(
     payload: TotpEnrollStartRequest,
     request: Request,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> RecoveryCodesResponse:
@@ -311,7 +311,7 @@ def revoke_factor(
     payload: RevokeRequest,
     request: Request,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
 ) -> MfaStatusResponse:
     _reauthenticated(request, db, settings, user, payload.password)
@@ -325,7 +325,7 @@ def revoke_factor(
 def step_up_start(
     request: Request,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> StepUpStartResponse:
@@ -344,7 +344,7 @@ def step_up_verify_totp(
     payload: MfaTicketVerifyRequest,
     request: Request,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> StrongGrantResponse:
@@ -364,7 +364,7 @@ def step_up_verify_passkey(
     payload: StepUpPasskeyRequest,
     request: Request,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
 ) -> StrongGrantResponse:
@@ -385,7 +385,7 @@ def step_up_verify_passkey(
 
 def require_strong_auth(
     request: Request,
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     user: User = Depends(current_user),
 ) -> User:
@@ -399,7 +399,7 @@ def require_strong_auth(
 def revoke_other_sessions(
     request: Request,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db_dep),
+    db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
 ) -> dict:
     from app.core.security import hash_secret
