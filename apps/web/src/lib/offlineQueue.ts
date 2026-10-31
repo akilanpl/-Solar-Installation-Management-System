@@ -1,7 +1,7 @@
 export const OFFLINE_ENABLED =
   typeof process !== "undefined" && process.env.NEXT_PUBLIC_SOLAROPS_OFFLINE === "on";
 
-export const OFFLINE_SCHEMA_VERSION = 1;
+export const OFFLINE_SCHEMA_VERSION = 2;
 export const OFFLINE_MAX_ATTEMPTS = 8;
 
 export type SyncState =
@@ -59,18 +59,47 @@ export function createMemoryStore(): QueueStore {
 }
 
 export function createIndexedDbStore(dbName = "solarops-offline"): QueueStore {
+  const activeStore = "ops_by_user_v2";
   function open(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
+      let blocked = false;
       const request = indexedDB.open(dbName, OFFLINE_SCHEMA_VERSION);
       request.onupgradeneeded = () => {
         const db = request.result;
-        if (!db.objectStoreNames.contains("ops")) {
-          const store = db.createObjectStore("ops", { keyPath: "client_operation_id" });
-          store.createIndex("by_user", "user_id", { unique: false });
+        const tx = request.transaction!;
+        const store = db.createObjectStore(activeStore, {
+          keyPath: ["user_id", "client_operation_id"],
+        });
+        store.createIndex("by_user", "user_id", { unique: false });
+        if (db.objectStoreNames.contains("ops")) {
+          // Copy within the version-change transaction. Keep the original
+          // store for recovery; active reads/writes use only the scoped store.
+          const cursor = tx.objectStore("ops").openCursor();
+          cursor.onsuccess = () => {
+            const item = cursor.result;
+            if (!item) return;
+            const row = item.value as QueuedOperation;
+            if (typeof row.user_id !== "string" || !row.user_id ||
+                typeof row.client_operation_id !== "string" || !row.client_operation_id) {
+              tx.abort();
+              return;
+            }
+            store.add({ ...row, schema_version: OFFLINE_SCHEMA_VERSION });
+            item.continue();
+          };
         }
       };
-      request.onsuccess = () => resolve(request.result);
+      request.onsuccess = () => {
+        const db = request.result;
+        db.onversionchange = () => db.close();
+        if (blocked) db.close();
+        else resolve(db);
+      };
       request.onerror = () => reject(request.error ?? new Error("IndexedDB unavailable."));
+      request.onblocked = () => {
+        blocked = true;
+        reject(new Error("Close other SolarOps tabs before upgrading offline drafts."));
+      };
     });
   }
 
@@ -81,10 +110,15 @@ export function createIndexedDbStore(dbName = "solarops-offline"): QueueStore {
     const db = await open();
     try {
       return await new Promise<T>((resolve, reject) => {
-        const tx = db.transaction("ops", mode);
-        const request = run(tx.objectStore("ops"));
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error ?? new Error("IndexedDB write failed."));
+        const tx = db.transaction(activeStore, mode);
+        let result: T;
+        const request = run(tx.objectStore(activeStore));
+        request.onsuccess = () => { result = request.result; };
+        // A successful request can still be rolled back by a later abort.
+        // Report a saved draft only after the complete transaction commits.
+        tx.oncomplete = () => resolve(result);
+        tx.onabort = () => reject(tx.error ?? new Error("IndexedDB transaction aborted."));
+        tx.onerror = () => reject(tx.error ?? new Error("IndexedDB transaction failed."));
       });
     } finally {
       db.close();
@@ -93,41 +127,27 @@ export function createIndexedDbStore(dbName = "solarops-offline"): QueueStore {
 
   return {
     async list(userId) {
-      const db = await open();
-      try {
-        return await new Promise<QueuedOperation[]>((resolve, reject) => {
-          const tx = db.transaction("ops", "readonly");
-          const index = tx.objectStore("ops").index("by_user");
-          const request = index.getAll(userId);
-          request.onsuccess = () => resolve((request.result ?? []) as QueuedOperation[]);
-          request.onerror = () => reject(request.error ?? new Error("IndexedDB read failed."));
-        });
-      } finally {
-        db.close();
-      }
+      const rows = await withStore<QueuedOperation[]>("readonly", store =>
+        store.index("by_user").getAll(userId));
+      return rows.sort((a, b) => a.updated_at.localeCompare(b.updated_at));
     },
     async put(record) {
-      await withStore("readwrite", (store) => store.put(record));
+      if (!record.user_id || !record.client_operation_id) {
+        throw new Error("Offline operation needs its account and operation identity.");
+      }
+      await withStore("readwrite", store => store.put(record));
     },
     async remove(userId, clientOperationId) {
-      const rows = await this.list(userId);
-      if (!rows.some((row) => row.client_operation_id === clientOperationId)) return;
-      await withStore("readwrite", (store) => store.delete(clientOperationId));
+      await withStore("readwrite", store => store.delete([userId, clientOperationId]));
     },
     async clearUser(userId) {
-      const rows = await this.list(userId);
-      const db = await open();
-      try {
-        await new Promise<void>((resolve, reject) => {
-          const tx = db.transaction("ops", "readwrite");
-          const store = tx.objectStore("ops");
-          for (const row of rows) store.delete(row.client_operation_id);
-          tx.oncomplete = () => resolve();
-          tx.onerror = () => reject(tx.error ?? new Error("IndexedDB purge failed."));
+      await withStore("readwrite", store => {
+        const request = store.index("by_user").getAllKeys(userId);
+        request.addEventListener("success", () => {
+          for (const key of request.result) store.delete(key);
         });
-      } finally {
-        db.close();
-      }
+        return request;
+      });
     },
   };
 }
