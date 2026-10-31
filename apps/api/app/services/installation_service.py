@@ -118,7 +118,7 @@ def create_job(
     technician = None
     if technician_user_id is not None:
         technician = db.get(User, technician_user_id)
-        if technician is None or technician.role_code != TECHNICIAN:
+        if technician is None or technician.role_code != TECHNICIAN or not technician.is_active:
             raise AppError(400, "invalid_technician", "That user is not an active technician.")
     job = InstallationJob(
         reference=next_reference(db, "installation_job", "JOB"),
@@ -212,7 +212,9 @@ def verify_customer_otp(db: Session, user: User, job_id: uuid.UUID, code: str) -
     digest = hashlib.sha256(code.encode("utf-8")).hexdigest()
     if digest != challenge.code_hash:
         challenge.attempt_count += 1
-        db.flush()
+        # Like email verification, rejected attempts must survive the request
+        # rollback. No job state or audit writes precede this failure branch.
+        db.commit()
         raise AppError(400, "invalid_customer_code", "Wrong customer code.")
     challenge.consumed_at = utcnow()
     job.otp_verified = True
@@ -265,6 +267,8 @@ def complete_job(db: Session, user: User, job_id: uuid.UUID) -> InstallationJob:
         raise AppError(409, "evidence_required", "Record evidence before completion.")
     if not job.signature:
         raise AppError(409, "signature_required", "Capture the customer signature first.")
+    if job.status != "on_site" or job.arrival_at is None:
+        raise AppError(409, "arrival_required", "Record arrival before completing this job.")
     job.status = "completed"
     job.completed_at = utcnow()
     add_audit(
