@@ -23,13 +23,16 @@ Customer-confirmed resolution. No Phase 4B–4E work was started.
 
 ## Verification (all observed)
 
-- Backend: **166 passed**, ruff clean. Fresh-login persistence, replay/stale/
-  duplicate rejection, concurrency single-winner, and rollback proven.
+- Backend: **179 passed** (147 baseline + 32 new), ruff clean. Fresh-login
+  persistence, replay/stale/duplicate rejection, concurrency single-winner,
+  and rollback proven.
 - Frontend: **10 passed**, typecheck/lint/build clean (28/28 pages).
 - Browser: Leela acceptance **passed** in Chromium against real PostgreSQL;
   smoke + enquiry specs still pass (2 passed).
 - Migration `f4a7b2c1d093` applied from empty (test bootstrap), by round-trip
   downgrade/upgrade, and on a fresh `solarops_dev` (reset + seed).
+- Repo campaign for this SHA: 10/10 executed stages pass, line coverage
+  89.8%; aggregate 56.6/100 INCOMPLETE on hardcoded mandatory campaigns only.
 - Acceptance scenario proven transition by transition; the closed ticket
   persists across logout/login and reload.
 
@@ -39,8 +42,24 @@ Customer-confirmed resolution. No Phase 4B–4E work was started.
 - `7ee8f77` Phase 4A frontend (workspaces, regenerated types)
 - `ff5ef45` Acceptance spec and contract docs
 - `2f2802a` E2E-driven fixes with regression test
+- (this commit) Edge-case test batch, contract doc, test report, handoff
 
-PR: opened after final docs commit (URL below).
+## Push / PR status: BLOCKED by the repo's own fail-closed gate
+
+`git push origin feature/phase4a-support` is refused by `.githooks/pre-push`
+(runs `.pushgate/run.sh`), whose scorecard hardcodes six mandatory-campaign
+entries (extended browser journey, load, mutation, secret scan, CI) that no
+local run can satisfy — the integration release itself was never pushed for
+the same reason. Bypassing with `--no-verify` would defeat a safety control,
+so the branch was intentionally left unpushed. To publish after reviewer
+agreement:
+
+```sh
+git push origin feature/phase4a-support
+gh pr create --base main --head feature/phase4a-support --title "Phase 4A: support operations" --body-file docs/phase4/PHASE4A_HANDOFF.md
+```
+
+No PR URL exists yet. Do not merge to `main` without review.
 
 ## Remaining limitations (explicit)
 
