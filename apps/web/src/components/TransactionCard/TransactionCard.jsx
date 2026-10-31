@@ -1,27 +1,18 @@
 import React, { useState } from 'react';
-import { CheckCircle2, ArrowRight, Zap, ShieldCheck } from 'lucide-react';
 import { useRouter } from '../../router/Router';
-import { useAuth } from '../../context/AuthContext';
 import './TransactionCard.css';
 
 /**
- * Interactive POS Terminal & Razorpay Settlement Card
+ * Interactive POS Terminal Component
  *
  * Implements the card-swipe POS terminal animation on hover and click,
- * paired with real-time Razorpay settlement status indicating funds
- * were just credited to the customer's Aadhaar-linked bank account.
+ * redirecting to the live payment checkout.
  */
 export function TransactionCard({
-  amount = '₹78,000.00',
-  accountNumber = '•••• 4921',
-  utrNumber = 'RZP91823902381',
-  beneficiary = 'Arun Kumar',
   currencySymbol = '₹',
 }) {
   const { navigate } = useRouter();
-  const { showToast } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [settledTime, setSettledTime] = useState('Just now');
 
   const handleTriggerTransaction = () => {
     setIsProcessing(true);
@@ -33,9 +24,7 @@ export function TransactionCard({
 
   return (
     <div className="pos-transaction-wrapper">
-      {/* ===================================================================
-          ANIMATED POS TERMINAL & CARD SWIPE (User Reference Component)
-          =================================================================== */}
+      {/* ANIMATED POS TERMINAL & CARD SWIPE */}
       <div
         className={`pos-container ${isProcessing ? 'active-swipe' : ''}`}
         onClick={handleTriggerTransaction}
@@ -79,75 +68,8 @@ export function TransactionCard({
           </svg>
         </div>
       </div>
-
-      {/* ===================================================================
-          RAZORPAY PROCESSED DISBURSEMENT CARD ("Just Credited")
-          =================================================================== */}
-      <div className="rzp-settlement-card">
-        {/* Header: Razorpay Route & Credited Status */}
-        <div className="rzp-settlement-header">
-          <div className="rzp-brand-badge">
-            <div className="rzp-logo-mark">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M13.5 2L5 13h5l-2 9 11-12h-5.5z" />
-              </svg>
-            </div>
-            <span className="rzp-brand-name">Razorpay Route</span>
-            <span className="rzp-verified-chip">
-              <ShieldCheck size={12} color="#0284c7" />
-              <span>Verified Payout</span>
-            </span>
-          </div>
-
-          <span className="rzp-status-pill credited">
-            <span className="rzp-status-dot" />
-            Just Credited
-          </span>
-        </div>
-
-        {/* Amount & Direct Settlement Row */}
-        <div className="rzp-amount-row">
-          <div className="rzp-amount-col">
-            <span className="rzp-amount-label">Net Disbursed Subsidy</span>
-            <span className="rzp-amount-value">{amount}</span>
-          </div>
-          <div className="rzp-instant-chip">
-            <Zap size={12} />
-            <span>Instant IMPS</span>
-          </div>
-        </div>
-
-        {/* Detailed Banking & Reconciliation Metadata */}
-        <div className="rzp-details-list">
-          <div className="rzp-detail-item">
-            <span className="rzp-detail-label">Beneficiary Account:</span>
-            <strong className="rzp-detail-value">
-              {beneficiary} (A/C {accountNumber})
-            </strong>
-          </div>
-
-          <div className="rzp-detail-item">
-            <span className="rzp-detail-label">Bank Reference UTR:</span>
-            <strong className="rzp-detail-value mono">{utrNumber}</strong>
-          </div>
-
-          <div className="rzp-detail-item">
-            <span className="rzp-detail-label">Settlement Route:</span>
-            <span className="rzp-detail-value">DBT Direct Credit · National Portal</span>
-          </div>
-
-          <div className="rzp-detail-item">
-            <span className="rzp-detail-label">Status:</span>
-            <span className="rzp-detail-status">
-              <CheckCircle2 size={13} color="#10b981" />
-              <strong style={{ color: '#047857' }}>Credited · {settledTime}</strong>
-            </span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
 
 export default TransactionCard;
-

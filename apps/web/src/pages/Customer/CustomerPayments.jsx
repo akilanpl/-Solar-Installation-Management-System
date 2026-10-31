@@ -156,14 +156,8 @@ export function CustomerPayments() {
             </div>
           </Card>
 
-          {/* New Transaction Interactive POS Terminal & Razorpay Settlement Card */}
-          <TransactionCard
-            amount="₹78,000.00"
-            accountNumber="•••• 4921"
-            utrNumber="RZP91823902381"
-            beneficiary="Arun Kumar"
-            currencySymbol="₹"
-          />
+          {/* New Transaction Interactive POS Terminal */}
+          <TransactionCard currencySymbol="₹" />
         </div>
       </div>
     </AppShell>

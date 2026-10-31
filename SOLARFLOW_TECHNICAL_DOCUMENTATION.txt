@@ -2196,3 +2196,32 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+39. REMOVAL OF RZP-SETTLEMENT-CARD
+--------------------------------------------------------------------------------
+- Date & Context:
+  Removed the static rzp-settlement-card from the Customer Payments page
+  (CustomerPayments.jsx) and TransactionCard component (TransactionCard.jsx,
+  TransactionCard.css). Streamlined the interface to feature solely the interactive
+  POS terminal swipe container for initiating live checkout transactions.
+
+- Key Architecture & Visual Elements:
+  1. Component Streamlining (TransactionCard.jsx):
+     - Removed <div className="rzp-settlement-card"> and its child disbursement nodes.
+     - Stripped unused Lucide icons (CheckCircle2, Zap, ShieldCheck).
+     - Preserved the interactive card-swipe POS animation and navigation trigger.
+  2. Stylesheet Cleanup (TransactionCard.css):
+     - Removed .rzp-settlement-card, .rzp-settlement-header, .rzp-amount-row, and
+       .rzp-details-list rules.
+  3. Customer Payments Alignment (CustomerPayments.jsx):
+     - Updated invocation to <TransactionCard currencySymbol="₹" />.
+
+- Files Modified:
+  * apps/web/src/components/TransactionCard/TransactionCard.jsx (Modified)
+  * apps/web/src/components/TransactionCard/TransactionCard.css (Modified)
+  * apps/web/src/pages/Customer/CustomerPayments.jsx (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================
