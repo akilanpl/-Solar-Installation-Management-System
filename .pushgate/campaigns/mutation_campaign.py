@@ -76,7 +76,7 @@ def classify_junit(path, returncode, *, timeout=False):
             # Setup/runtime exceptions are not proof that the regression killed
             # a mutant. Credit only observable assertion/expectation failures.
             messages = [failure.get("message", "").lstrip() for failure in failures]
-            if all(msg.startswith("AssertionError") or msg.startswith("Failed: DID NOT RAISE")
+            if all(msg.startswith(("AssertionError", "Failed: DID NOT RAISE", "assert "))
                    for msg in messages):
                 return "killed", len(cases)
         return "error", len(cases)

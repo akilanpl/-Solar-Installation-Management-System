@@ -19,6 +19,8 @@ class MutationEngineTests(unittest.TestCase):
     def test_assertion_failure_is_killed_only_with_test_failure_exit(self):
         xml = '<testsuite tests="1"><testcase name="guard"><failure message="AssertionError: expected denied"/></testcase></testsuite>'
         self.assertEqual(self.classify(xml), ("killed", 1))
+        assert_xml = '<testsuite tests="1"><testcase name="guard"><failure message="assert None == 1"/></testcase></testsuite>'
+        self.assertEqual(self.classify(assert_xml), ("killed", 1))
         self.assertEqual(self.classify(xml, code=2), ("error", 1))
         self.assertEqual(self.classify(xml, timeout=True), ("timeout", 0))
 
