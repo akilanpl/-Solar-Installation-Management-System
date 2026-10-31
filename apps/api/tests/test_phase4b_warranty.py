@@ -314,3 +314,46 @@ def test_warranty_visibility_and_lookup(client, application):
     assert found.json()["coverage"]["status"] == "active"
     assert client.get("/api/v1/warranty/serials/lookup?serial_number=SN-NOPE-1",
                       headers=_support(client)).status_code == 404
+
+
+def test_same_day_expiry_and_void_invalidate_cached_coverage(client, application):
+    """A prior verdict cannot survive crossing its exact boundary or voiding."""
+    _all_staff(application)
+    _policy(client, _admin(client, application))
+    order, serial = _installed_order(client, application)
+    support = _support(client)
+    response = client.post(f"/api/v1/warranty/orders/{order['id']}/activate-coverages",
+                           headers=support)
+    assert response.status_code == 201, response.text
+    coverage = next(row for row in response.json() if row["serial_number"] == serial.upper())
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    ticket = _create_ticket(client, customer, order["id"], serial)
+    _triage(client, ticket["id"])
+    support = _support(client)
+    boundary = datetime.fromisoformat(coverage["ends_at"])
+    first = _decide(client, support, ticket["id"], serial, at=boundary.isoformat())
+    assert first.status_code == 201 and first.json()["verdict"] == "covered", first.text
+    after = _decide(client, support, ticket["id"], serial,
+                    at=(boundary + timedelta(seconds=1)).isoformat())
+    assert after.status_code == 201 and after.json()["verdict"] == "not_covered", after.text
+    assert after.json()["id"] != first.json()["id"]
+    current = _decide(client, support, ticket["id"], serial)
+    assert current.json()["verdict"] == "covered", current.text
+    voided = client.post(f"/api/v1/warranty/coverages/{coverage['coverage_id']}/void",
+                         json={"reason": "Coverage voided after verified custody review."},
+                         headers=support)
+    assert voided.status_code == 200, voided.text
+    changed = _decide(client, support, ticket["id"], serial)
+    assert changed.status_code == 201 and changed.json()["verdict"] == "not_covered", changed.text
+    assert changed.json()["id"] != current.json()["id"]
+
+
+def test_warranty_evaluation_normalizes_non_utc_offset():
+    from datetime import timezone
+
+    from app.services.warranty_service import _as_utc
+
+    local = datetime(2026, 11, 1, 1, tzinfo=timezone(timedelta(hours=5, minutes=30)))
+    normalized = _as_utc(local)
+    assert normalized == datetime(2026, 10, 31, 19, 30, tzinfo=UTC)
+    assert normalized.tzinfo == UTC
