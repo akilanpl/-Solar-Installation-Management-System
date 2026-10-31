@@ -55,7 +55,7 @@ function Employees() {
     <>
       <PageHeader
         title="Employees"
-        description="Staff accounts come from the database. Revenue, labour, and report figures are not implemented, so this page does not show them."
+        description="Manage staff accounts here. Open Finance & reports for revenue, cash, labour and job profitability."
       />
       {error ? <div className="mb-4"><ErrorState message={error} /></div> : null}
       {!rows ? <LoadingState label="Loading employees" /> : null}
