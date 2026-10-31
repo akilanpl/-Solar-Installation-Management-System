@@ -5,6 +5,7 @@ Generated passwords stay in gitignored var/demo-credentials.json.
 """
 
 import json
+import re
 import secrets
 import sys
 from pathlib import Path
@@ -36,10 +37,10 @@ def assert_development(settings: Settings) -> None:
     url = make_url(settings.database_url)
     if (
         settings.app_env != "development"
-        or url.database != "solarops_dev"
+        or not (url.database == "solarops_dev" or re.fullmatch(r"solarops_release_demo_[0-9]{8}", url.database or ""))
         or url.host not in {"127.0.0.1", "localhost"}
     ):
-        raise SystemExit("Demo seeding requires development mode and local solarops_dev.")
+        raise SystemExit("Demo seeding requires development mode and a local explicitly named development/preview database.")
 
 
 def main() -> None:
@@ -185,7 +186,7 @@ def main() -> None:
                     created_enquiries += 1
                     if status != "submitted":
                         qualify_enquiry(
-                            db, sales, enquiry.id, QualificationUpdate(status=status, note=note)
+                            db, sales, enquiry.id, QualificationUpdate(status=status, note=note, shadow_free_area_sqm=40 if status == "qualified" else None, grid_connection_suitable=True if status == "qualified" else None)
                         )
     finally:
         engine.dispose()
