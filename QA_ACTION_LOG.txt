@@ -1,0 +1,52 @@
+SOLAROPS QA ACTION AND CHANGE LOG
+Date: 2026-10-31 (Asia/Calcutta)
+Workspace: D:\Files\Projects\-Solar-Installation-Management-System-main
+
+User constraints:
+- Push only to the designated testing/QA branch.
+- Ask the user to confirm the destination branch before every push attempt.
+- Record every action and file change in this text file.
+
+Actions performed:
+1. Read the complete supplied master prompt from C:\Users\doogy\.codex\attachments\55c4faa5-3f22-49b1-8a26-39e447615712\Pasted text.txt.
+2. Ran Get-Location: confirmed the workspace path above.
+3. Ran git status --short: failed with 'not a git repository'.
+4. Ran git branch --show-current: failed with 'not a git repository'.
+5. Ran rg --files -g AGENTS.md -g '!node_modules' -g '!vendor': no matching instructions found (exit 1).
+6. Listed workspace contents and directories to depth 2 using Get-ChildItem. Found apps/api, apps/web, contracts, docs, .github, README.md, CONTRIBUTING.md, docker-compose.yml and environment template. No .git directory was present.
+7. Created QA_ACTION_LOG.txt (this file), including all actions preceding log creation.
+
+Current blocker:
+This directory has application source but no Git metadata. The existing QA branch and remote cannot be identified or verified. Following the supplied Git safety instruction, paused before checkout, application edits, commit or push. No tests have been run.
+
+Changes made:
+- Added QA_ACTION_LOG.txt only.
+
+Git operations:
+- No checkout, branch creation, staging, commit, push or merge performed.
+
+8. User supplied repository https://github.com/akilanpl/-Solar-Installation-Management-System and designated branch test/qa-integration. Beginning remote verification; push still requires explicit confirmation.
+9. Running git ls-remote --heads for the designated branch.
+10. Initial remote lookup failed due to sandbox network resolution. Retried with approved network access; verified refs/heads/test/qa-integration at 81addc8539d69e5d39df3db545567c833350a87a.
+11. Cloning only test/qa-integration into qa-checkout inside the workspace, preserving the original source folder.
+12. Clone succeeded. Copied the action log into the QA checkout. Inspecting branch, instructions, file inventory and project documentation.
+13. Confirmed checkout branch test/qa-integration; read README, CONTRIBUTING, dependency manifests and inventory. No AGENTS.md found. Reading QA handoff, tests, implementation and checking installed tools.
+14. Read existing PostgreSQL fixtures, auth/enquiry/health tests, CI, Compose and QA handoff. uv and Node/npm found; Docker/psql absent from PATH. Starting uv sync --frozen and npm ci --no-audit --no-fund. Reading routes, schemas, services, database configuration and browser setup.
+15. Dependency setup: uv failed because sandbox denied interpreter cache writes; retried uv sync --frozen with elevated access. npm ci remains in progress. PostgreSQL installation directory not found; service query was denied by sandbox. Read main.py, Settings, request transaction dependency, enquiry routes and all Pydantic schemas, Playwright configuration.
+16. uv sync --frozen succeeded using CPython 3.14.0 (43 packages). Running existing backend lint, formatter check and pytest with --maxfail=1; checking compile and dependency availability. No local PostgreSQL instance has been identified.
+17. Backend ruff check passed; ruff format --check passed (41 files). npm sandbox install failed with Exit handler never called; retried npm ci with approved access. Existing pytest awaiting database connection. Plan: make database cleanup opt-in per integration module and add independent runtime checks so missing PostgreSQL does not prevent all tests.
+18. Existing pytest failed at first setup due sandbox TCP denial; retried outside sandbox with --maxfail=1 --tb=short. npm ci succeeded (427 packages). Frontend unit tests passed (7/7); typecheck/lint and build started. Preparing marker-based fixture isolation and runtime/API-boundary regression tests.
+19. Modified conftest.py to run destructive cleanup only for database-marked tests; marked existing auth/enquiry/health modules; registered database marker in pyproject.toml. Added test_runtime.py (database-independent ASGI/config/contract/CSRF/error checks), test_database.py (constraints/rollback, captured-cookie logout replay, endpoint rate limiting). Removed an always-true package assertion using if False. Running Ruff autofix/format only on changed test files and executing runtime tests.
+20. Ruff fixed 5 import-order issues in changed tests and formatted 2 new files. Frontend: 7 unit tests passed, TypeScript passed, ESLint passed; sandbox build failed with EPERM creating .next/server/app/sales, so retried npm run build outside sandbox. Database retry still awaiting connection. Runtime checks running.
+21. Elevated original integration test retry failed with PostgreSQL connection timeout (130.87s); no migration or test body executed. Elevated production build passed, generating 26 pages. Sandboxed runtime run stalled and was interrupted; elevated runtime run passed 20/20, with 31 database cases deselected and one Starlette/httpx deprecation warning. Live OpenAPI exactly matches checked-in contract.
+22. Read login screen, security primitives, auth service, repositories, migration header, frontend API client and Git identity configuration. Confirmed Node v24.13.0/npm 11.6.2. Added e2e/smoke.spec.ts (login form/rendering/browser error smoke) and explicit frontend typecheck to existing CI. Running generated-type consistency and listing browser tests.
+23. npm run generate:api succeeded and schema.ts has no Git diff. Playwright discovered 2 tests (existing workflow plus new smoke). Sandboxed smoke failed starting uv due cache permission denial; retried outside sandbox with local test-only environment variables. Asked user whether a disposable local solarops_test database exists elsewhere. Running full final pytest with local test database connect_timeout=2 to classify every case.
+24. Full final pytest: 51 discovered, 20 passed, 31 setup errors caused by PostgreSQL unavailability, 1 warning; no assertion failures. No database migration succeeded. Additional source read covered admin/package endpoints and ESLint configuration; rg wildcard migration search failed on Windows syntax, retrying against directory. Running final lint/format/compile, collecting DB tests and inspecting migration constraints.
+25. Final Ruff check passed, format check passed (43 files), compileall passed; database-only collection confirmed 31 cases. Read migration constraints and seed rows. Browser retry started Uvicorn and Next successfully but failed before test body because Playwright Chromium was missing. Running npx playwright install chromium with approved download access.
+26. Reviewed tracked diff and git diff --check (passed). Chromium download running. Fixed nondeterministic invalid-OTP test: choose a wrong code different from captured real code. Added docs/qa/TESTING_EXPLAINED.md grounded in actual routes/services/models, transaction behavior, test boundaries and customer-to-sales workflow. No production application files changed.
+27. Verified OTP patch is in the intended test; git diff --check passed. Generated schema had no content diff (only Git line-ending/stat refresh), confirmed with git diff --numstat and git ls-files --eol. Chromium/FFmpeg/headless-shell/Winldd installation succeeded. Running final login browser smoke, then TypeScript and ESLint. Restoring only the generated schema rewritten by our consistency check to avoid line-ending noise.
+28. Browser smoke reached login and switched portal, then failed looking for exact accessible label Employee ID. Inspecting Playwright accessibility snapshot and TextField label markup to distinguish test-locator error from product failure. Typecheck rerun passed; ESLint rerun in progress.
+29. Accessibility snapshot confirmed staff field includes its hint in its accessible name; corrected only the smoke locator to textbox name prefix and reran Playwright. Added docs/qa/PHASE1_BASELINE_REPORT.md with architecture, endpoint inventory, real counts, failures/blockers, exact reproduction commands and acceptance checklist. PostgreSQL tests remain unverified; no user-provided alternative database endpoint received. Preparing final lint/type validation and diff review.
+30. Final login Chromium smoke passed (1 test, 13.0s); Uvicorn and Next started successfully and Playwright shut them down. Final frontend typecheck and ESLint passed. Updated report with verified browser result. Final Git diff check passed. Rechecking backend lint and formatting after deterministic OTP correction, and compiling tests.
+31. Final backend Ruff lint, formatting (43 files) and compileall passed after OTP correction. Reviewing branch/remote and staging only QA tests/configuration/CI/docs/log; no secrets, .env, database files or generated browser artifacts will be staged. Planned commands: git branch --show-current; git remote get-url origin; git add explicit paths; git diff --cached --check; git diff --cached --stat.
+32. Verified branch test/qa-integration and expected GitHub origin. Staged 12 QA files; staged whitespace check passed (541 additions/3 deletions before this entry). No production code or secrets staged. Executing git add QA_ACTION_LOG.txt, then git commit -m "Add reproducible Phase 1 QA baseline and runtime checks", followed by git status --short and git log -1 --format=%H. Copying the completed action log back to the source-export root for discoverability. No push attempted; destination confirmation remains required.

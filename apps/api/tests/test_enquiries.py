@@ -2,12 +2,15 @@
 
 import uuid
 
+import pytest
 from app.core.security import hash_password, utcnow
 from app.models.audit import AuditEvent
 from app.models.enquiry import Enquiry, EnquiryStatusHistory
 from app.models.identity import EmployeeProfile, User
 from sqlalchemy.orm import Session
 from tests.conftest import csrf_headers, login, signup_and_verify
+
+pytestmark = pytest.mark.database
 
 ENQUIRY = {
     "contact_name": "Leela Nair",
@@ -231,5 +234,4 @@ def test_packages_come_from_database(client, application):
     codes = {item["code"] for item in response.json()}
     assert "PKG-ONG-3" in codes
     assert "PKG-OFG-1" in codes
-    assert all(item["list_price_minor"] is None for item in response.json() if False)
     assert all("price" not in item for item in response.json())

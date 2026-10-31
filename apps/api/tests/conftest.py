@@ -61,7 +61,11 @@ def application():
 
 
 @pytest.fixture(autouse=True)
-def clean_database(application) -> Generator[None, None, None]:
+def clean_database(request) -> Generator[None, None, None]:
+    if request.node.get_closest_marker("database") is None:
+        yield
+        return
+    application = request.getfixturevalue("application")
     application.state.limiter.reset()
     sender = application.state.email_sender
     if hasattr(sender, "messages"):
