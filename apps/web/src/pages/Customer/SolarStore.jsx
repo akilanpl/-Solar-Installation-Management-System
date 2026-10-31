@@ -21,6 +21,11 @@ import {
   Tag,
   ArrowRight,
   ExternalLink,
+  MapPin,
+  Landmark,
+  Building2,
+  Sparkles,
+  Check,
 } from 'lucide-react';
 import './SolarStore.css';
 
@@ -278,6 +283,18 @@ export function SolarStore() {
     const newCart = { ...cart };
     delete newCart[productId];
     saveCart(newCart);
+  };
+
+  const handleClearCart = () => {
+    setCart({});
+    saveCart({});
+    if (showToast) {
+      showToast({
+        type: 'info',
+        title: 'Cart Cleared',
+        message: 'All items removed from your solar cart.',
+      });
+    }
   };
 
   const cartItems = Object.values(cart);
@@ -601,34 +618,58 @@ export function SolarStore() {
               {/* Drawer Header */}
               <div className="cart-drawer-header">
                 <div className="cart-header-title">
-                  <ShoppingBag size={20} color="#4f46e5" />
-                  <h3>Solar Order Cart ({cartCount})</h3>
+                  <div className="cart-icon-bubble">
+                    <ShoppingBag size={18} color="#4f46e5" />
+                  </div>
+                  <div>
+                    <div className="cart-title-row">
+                      <h3>Solar Order Cart</h3>
+                      <span className="cart-count-pill">{cartCount} {cartCount === 1 ? 'item' : 'items'}</span>
+                    </div>
+                    <span className="cart-sub-verified">✓ Verified Tier-1 Equipment Direct Dispatch</span>
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  className="cart-close-btn"
-                  onClick={() => setIsCartOpen(false)}
-                >
-                  <X size={18} />
-                </button>
+
+                <div className="cart-header-actions-col">
+                  {cartItems.length > 0 && (
+                    <button
+                      type="button"
+                      className="cart-clear-text-btn"
+                      onClick={handleClearCart}
+                      title="Clear all items in cart"
+                    >
+                      Clear
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="cart-close-btn"
+                    onClick={() => setIsCartOpen(false)}
+                    title="Close Cart"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
               </div>
 
               {/* Drawer Content */}
               {cartItems.length === 0 ? (
                 <div className="cart-empty-box">
-                  <ShoppingCart size={48} color="#cbd5e1" />
+                  <div className="cart-empty-icon-circle">
+                    <ShoppingCart size={40} color="#94a3b8" />
+                  </div>
                   <h4>Your Solar Cart is Empty</h4>
                   <p>
                     Browse high-efficiency modules, hybrid inverters, and BOS
-                    accessories to add to your installation.
+                    accessories to add directly to your rooftop installation.
                   </p>
                   <button
                     type="button"
                     className="btn-add-cart"
-                    style={{ margin: '14px auto 0 auto', width: 'auto' }}
+                    style={{ margin: '18px auto 0 auto', width: 'auto', padding: '10px 22px' }}
                     onClick={() => setIsCartOpen(false)}
                   >
-                    Start Shopping
+                    Explore Hardware Catalog
                   </button>
                 </div>
               ) : (
@@ -636,11 +677,8 @@ export function SolarStore() {
                   {/* Cart Item List */}
                   <div className="cart-items-list">
                     {cartItems.map(({ product, quantity }) => (
-                      <div key={product.id} className="cart-item-row">
-                        <div
-                          className="cart-item-thumb"
-                          style={{ background: product.imageBg }}
-                        >
+                      <div key={product.id} className="cart-item-card">
+                        <div className="cart-item-thumb-wrapper" style={{ background: product.imageBg || '#f1f5f9' }}>
                           {product.image ? (
                             <img
                               src={product.image}
@@ -648,66 +686,110 @@ export function SolarStore() {
                               className="cart-photo-img"
                             />
                           ) : (
-                            <span>{product.iconText}</span>
+                            <span className="cart-thumb-fallback">{product.iconText}</span>
                           )}
+                          <span className="cart-brand-tag">{product.brand}</span>
                         </div>
-                        <div className="cart-item-info">
-                          <h4 className="cart-item-name">{product.name}</h4>
-                          <div className="cart-item-price">
-                            ₹{product.price.toLocaleString('en-IN')} × {quantity}
-                          </div>
-                          <div className="cart-item-actions">
+
+                        <div className="cart-item-details">
+                          <h4 className="cart-item-name" title={product.name}>
+                            {product.name}
+                          </h4>
+                          <div className="cart-item-spec-chip">{product.specs}</div>
+
+                          <div className="cart-item-controls-row">
                             <div className="cart-item-stepper">
                               <button
                                 type="button"
-                                onClick={() =>
-                                  handleUpdateQuantity(product.id, -1)
-                                }
+                                className="stepper-btn"
+                                onClick={() => handleUpdateQuantity(product.id, -1)}
+                                title={quantity === 1 ? 'Remove from cart' : 'Decrease quantity'}
                               >
-                                <Minus size={12} />
+                                {quantity === 1 ? <Trash2 size={12} color="#ef4444" /> : <Minus size={12} />}
                               </button>
-                              <span>{quantity}</span>
+                              <span className="stepper-val">{quantity}</span>
                               <button
                                 type="button"
+                                className="stepper-btn"
                                 onClick={() => handleUpdateQuantity(product.id, 1)}
+                                title="Increase quantity"
                               >
                                 <Plus size={12} />
                               </button>
                             </div>
-                            <button
-                              type="button"
-                              className="cart-item-remove"
-                              onClick={() => handleRemoveFromCart(product.id)}
-                            >
-                              <Trash2 size={13} />
-                              <span>Remove</span>
-                            </button>
+
+                            <div className="cart-price-column">
+                              <span className="cart-unit-rate">₹{product.price.toLocaleString('en-IN')} × {quantity}</span>
+                              <span className="cart-line-total">
+                                ₹{(product.price * quantity).toLocaleString('en-IN')}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                        <div className="cart-item-subtotal">
-                          ₹{(product.price * quantity).toLocaleString('en-IN')}
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  {/* Delivery Address */}
-                  <div className="cart-address-box">
-                    <label>Bengaluru Delivery Address</label>
-                    <textarea
-                      rows={2}
-                      value={deliveryAddress}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
-                      required
-                    />
+                  {/* Delivery Address Section */}
+                  <div className="cart-delivery-section">
+                    <div className="section-label-row">
+                      <div className="section-label-left">
+                        <MapPin size={15} color="#0284c7" />
+                        <span>Bengaluru Delivery Address</span>
+                      </div>
+                      <span className="verified-premise-chip">
+                        <CheckCircle2 size={12} color="#10b981" />
+                        <span>Verified Premise</span>
+                      </span>
+                    </div>
+
+                    <div className="address-input-wrapper">
+                      <textarea
+                        rows={2}
+                        className="cart-address-textarea"
+                        value={deliveryAddress}
+                        onChange={(e) => setDeliveryAddress(e.target.value)}
+                        placeholder="Enter complete rooftop premise delivery address..."
+                        required
+                      />
+                    </div>
+
+                    <div className="address-quick-presets">
+                      <span className="preset-label">Premises:</span>
+                      <button
+                        type="button"
+                        className="preset-chip"
+                        onClick={() => setDeliveryAddress('#42, 4th Cross, 100ft Road, Indiranagar, Bengaluru - 560038')}
+                      >
+                        Indiranagar (Default)
+                      </button>
+                      <button
+                        type="button"
+                        className="preset-chip"
+                        onClick={() => setDeliveryAddress('Villa 12, Ferns Paradise, Outer Ring Road, Doddanekkundi, Bengaluru - 560037')}
+                      >
+                        Doddanekkundi (Villa)
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Payment Options */}
-                  <div className="cart-payment-options">
-                    <label>Select Payment Option</label>
-                    <div className="payment-radios">
+                  {/* Payment Options Section */}
+                  <div className="cart-payment-section">
+                    <div className="section-label-row">
+                      <div className="section-label-left">
+                        <CreditCard size={15} color="#4f46e5" />
+                        <span>Select Payment Method</span>
+                      </div>
+                      <span className="verified-premise-chip" style={{ background: '#eff6ff', color: '#1d4ed8', borderColor: '#bfdbfe' }}>
+                        <Zap size={12} color="#2563eb" />
+                        <span>Instant Settlement</span>
+                      </span>
+                    </div>
+
+                    <div className="payment-options-grid">
+                      {/* Option 1: Razorpay Instant Gateway */}
                       <label
-                        className={`payment-radio-pill ${paymentMethod === 'razorpay' ? 'selected' : ''}`}
+                        className={`payment-option-card ${paymentMethod === 'razorpay' ? 'selected' : ''}`}
                       >
                         <input
                           type="radio"
@@ -716,10 +798,32 @@ export function SolarStore() {
                           checked={paymentMethod === 'razorpay'}
                           onChange={() => setPaymentMethod('razorpay')}
                         />
-                        <span>⚡ Razorpay Secure Checkout (Cards / UPI / Netbanking)</span>
+                        <div className="option-card-body">
+                          <div className="option-header-row">
+                            <div className="option-title-group">
+                              <div className="option-icon-box razorpay">
+                                <Zap size={16} color="#2563eb" />
+                              </div>
+                              <div>
+                                <span className="option-name">Razorpay Secure Checkout</span>
+                                <span className="option-sub">UPI, Credit/Debit Cards, NetBanking</span>
+                              </div>
+                            </div>
+                            <span className="option-badge-recommended">Recommended · 0% Fee</span>
+                          </div>
+                          <div className="option-brands-row">
+                            <span className="brand-chip">UPI / QR</span>
+                            <span className="brand-chip">Google Pay</span>
+                            <span className="brand-chip">PhonePe</span>
+                            <span className="brand-chip">Visa / MC</span>
+                            <span className="brand-chip">RuPay</span>
+                          </div>
+                        </div>
                       </label>
+
+                      {/* Option 2: PM Surya Ghar Subsidy Offset */}
                       <label
-                        className={`payment-radio-pill ${paymentMethod === 'subsidy' ? 'selected' : ''}`}
+                        className={`payment-option-card ${paymentMethod === 'subsidy' ? 'selected' : ''}`}
                       >
                         <input
                           type="radio"
@@ -728,10 +832,25 @@ export function SolarStore() {
                           checked={paymentMethod === 'subsidy'}
                           onChange={() => setPaymentMethod('subsidy')}
                         />
-                        <span>🏛️ Offset with PM Surya Ghar Subsidy Balance</span>
+                        <div className="option-card-body">
+                          <div className="option-header-row">
+                            <div className="option-title-group">
+                              <div className="option-icon-box subsidy">
+                                <Landmark size={16} color="#059669" />
+                              </div>
+                              <div>
+                                <span className="option-name">Offset with PM Surya Ghar Subsidy</span>
+                                <span className="option-sub">Apply your sanctioned national portal DBT balance</span>
+                              </div>
+                            </div>
+                            <span className="option-badge-subsidy">₹78,000 Sanctioned</span>
+                          </div>
+                        </div>
                       </label>
+
+                      {/* Option 3: Pay on Delivery & Inspection */}
                       <label
-                        className={`payment-radio-pill ${paymentMethod === 'cod' ? 'selected' : ''}`}
+                        className={`payment-option-card ${paymentMethod === 'cod' ? 'selected' : ''}`}
                       >
                         <input
                           type="radio"
@@ -740,41 +859,74 @@ export function SolarStore() {
                           checked={paymentMethod === 'cod'}
                           onChange={() => setPaymentMethod('cod')}
                         />
-                        <span>🚚 Pay on Delivery & Inspection</span>
+                        <div className="option-card-body">
+                          <div className="option-header-row">
+                            <div className="option-title-group">
+                              <div className="option-icon-box cod">
+                                <Truck size={16} color="#d97706" />
+                              </div>
+                              <div>
+                                <span className="option-name">Pay on Delivery & Site Inspection</span>
+                                <span className="option-sub">Inspect components on-site with technician before payment</span>
+                              </div>
+                            </div>
+                            <span className="option-badge-cod">On-Site OTP</span>
+                          </div>
+                        </div>
                       </label>
                     </div>
                   </div>
 
-                  {/* Bill Breakdown */}
-                  <div className="cart-bill-summary">
-                    <div className="bill-line">
-                      <span>Subtotal ({cartCount} items)</span>
-                      <span>₹{subtotal.toLocaleString('en-IN')}</span>
+                  {/* Bill Breakdown Container */}
+                  <div className="cart-bill-container">
+                    <div className="cart-bill-row">
+                      <span>Subtotal ({cartCount} {cartCount === 1 ? 'item' : 'items'})</span>
+                      <span className="bold-rate">₹{subtotal.toLocaleString('en-IN')}</span>
                     </div>
-                    <div className="bill-line">
-                      <span>Solar GST (12%)</span>
+                    <div className="cart-bill-row">
+                      <span className="gst-label-group">
+                        <span>Solar Equipment GST (12%)</span>
+                        <span className="tax-concessional-badge">Concessional Solar Rate</span>
+                      </span>
                       <span>₹{gstAmount.toLocaleString('en-IN')}</span>
                     </div>
-                    <div className="bill-line">
-                      <span>Bengaluru Warehouse Delivery</span>
-                      <span>{deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`}</span>
+                    <div className="cart-bill-row">
+                      <span>Bengaluru Warehouse Express Delivery</span>
+                      <span className="free-delivery-badge">FREE</span>
                     </div>
-                    <div className="bill-line grand-total">
-                      <span>Grand Total</span>
-                      <span>₹{grandTotal.toLocaleString('en-IN')}</span>
+
+                    <div className="cart-bill-divider" />
+
+                    <div className="cart-bill-row grand-total-row">
+                      <div className="grand-label-col">
+                        <span className="grand-title">Grand Total</span>
+                        <span className="grand-sub">Inclusive of 12% GST & Insurance</span>
+                      </div>
+                      <span className="grand-amount">₹{grandTotal.toLocaleString('en-IN')}</span>
+                    </div>
+
+                    <div className="savings-highlight-banner">
+                      <CheckCircle2 size={13} color="#059669" />
+                      <span>You saved ₹{Math.round(subtotal * 0.14).toLocaleString('en-IN')} with direct factory distributor pricing</span>
                     </div>
                   </div>
 
-                  {/* Checkout Button */}
-                  <button type="submit" className="btn-confirm-checkout">
-                    <CreditCard size={17} />
-                    <span>
-                      {paymentMethod === 'razorpay'
-                        ? `Pay with Razorpay · ₹${grandTotal.toLocaleString('en-IN')}`
-                        : `Place Order · ₹${grandTotal.toLocaleString('en-IN')}`}
-                    </span>
-                    <ArrowRight size={16} />
-                  </button>
+                  {/* Fixed Sticky Footer for Checkout */}
+                  <div className="cart-drawer-sticky-footer">
+                    <button type="submit" className="btn-confirm-checkout-pro">
+                      <CreditCard size={18} />
+                      <span>
+                        {paymentMethod === 'razorpay'
+                          ? `Pay with Razorpay · ₹${grandTotal.toLocaleString('en-IN')}`
+                          : `Confirm Order · ₹${grandTotal.toLocaleString('en-IN')}`}
+                      </span>
+                      <ArrowRight size={17} className="btn-arrow-nudge" />
+                    </button>
+                    <div className="cart-trust-footer-row">
+                      <ShieldCheck size={13} color="#10b981" />
+                      <span>256-Bit SSL Encrypted Razorpay Gateway · 10-Yr Warranty Equipment</span>
+                    </div>
+                  </div>
                 </form>
               )}
             </div>

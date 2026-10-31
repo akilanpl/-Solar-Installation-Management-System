@@ -15,6 +15,17 @@ import {
   User,
   ArrowRight,
   PhoneCall,
+  TrendingDown,
+  Coins,
+  FileText,
+  ThumbsUp,
+  ThumbsDown,
+  Copy,
+  Check,
+  Zap,
+  Cpu,
+  Clock,
+  Sparkle,
 } from 'lucide-react';
 import { useRouter } from '../../router/Router';
 import { useAuth } from '../../context/AuthContext';
@@ -24,15 +35,15 @@ const INITIAL_MESSAGES = [
   {
     id: 'msg-1',
     sender: 'bot',
-    text: "Hello Arun! 👋 I'm your SolarFlow AI Assistant. I can diagnose rooftop solar faults, file official warranty service complaints, book technician visits, or help you order panels & accessories. How can I help you today?",
+    text: "Hello Arun! I'm your SolarFlow AI Engineering Assistant. I can diagnose rooftop inverter faults, file official warranty service requests, book on-site technician visits, or help you order panels & accessories. How can I assist you today?",
     timestamp: 'Just now',
     chips: [
-      { id: 'chip-inverter', label: '🚨 Inverter Red Alarm / E-04', action: 'inverter_fault' },
-      { id: 'chip-complaint', label: '📝 File Warranty Complaint', action: 'file_complaint' },
-      { id: 'chip-book', label: '📅 Book Rooftop Maintenance', action: 'book_maintenance' },
-      { id: 'chip-order', label: '🛒 Order Solar Products', action: 'order_store' },
-      { id: 'chip-generation', label: '📉 Low Solar Generation', action: 'low_generation' },
-      { id: 'chip-subsidy', label: '💰 PM Surya Ghar Subsidy', action: 'check_subsidy' },
+      { id: 'chip-inverter', label: 'Inverter Red Alarm / E-04', icon: 'alert', action: 'inverter_fault' },
+      { id: 'chip-complaint', label: 'File Warranty Complaint', icon: 'file', action: 'file_complaint' },
+      { id: 'chip-book', label: 'Book Rooftop Maintenance', icon: 'calendar', action: 'book_maintenance' },
+      { id: 'chip-order', label: 'Order Solar Products', icon: 'cart', action: 'order_store' },
+      { id: 'chip-generation', label: 'Low Solar Generation', icon: 'trending', action: 'low_generation' },
+      { id: 'chip-subsidy', label: 'PM Surya Ghar Subsidy', icon: 'coins', action: 'check_subsidy' },
     ],
   },
 ];
@@ -43,6 +54,8 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [copiedId, setCopiedId] = useState(null);
+  const [feedbackState, setFeedbackState] = useState({});
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -53,10 +66,39 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
     if (isOpen) {
       scrollToBottom();
     }
-  }, [messages, isOpen]);
+  }, [messages, isOpen, isTyping]);
 
   const addMessage = (message) => {
     setMessages((prev) => [...prev, message]);
+  };
+
+  const handleCopyMessage = (msgId, text) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedId(msgId);
+      setTimeout(() => setCopiedId(null), 2000);
+      if (showToast) {
+        showToast({
+          type: 'info',
+          title: 'Copied to Clipboard',
+          message: 'AI response copied for your records.',
+        });
+      }
+    }
+  };
+
+  const handleFeedback = (msgId, type) => {
+    setFeedbackState((prev) => ({ ...prev, [msgId]: type }));
+    if (showToast) {
+      showToast({
+        type: 'success',
+        title: type === 'up' ? 'Helpful Response' : 'Feedback Logged',
+        message:
+          type === 'up'
+            ? 'Thank you! Your feedback improves our diagnostic model.'
+            : 'Feedback noted. Our engineering support desk has been flagged.',
+      });
+    }
   };
 
   const handleActionClick = (action) => {
@@ -96,7 +138,7 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
         addMessage({
           id: `bot-${Date.now()}`,
           sender: 'bot',
-          text: "⚠️ **Problem Diagnosed: Inverter Error E-04 (Grid Disconnect / DC Ground Leakage)**\n\nThis indicates an AC grid phase imbalance from BESCOM or insulation breakdown in the DC array wiring. For your safety, the inverter has entered protection mode.",
+          text: "Problem Diagnosed: Inverter Error E-04 (Grid Disconnect / DC Ground Leakage)\n\nThis indicates an AC grid phase imbalance from BESCOM or insulation breakdown in the DC array wiring. For your safety, the inverter has entered protection mode.",
           cardType: 'diagnostic',
           diagnosticData: {
             code: 'E-04',
@@ -109,8 +151,8 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
             ticketRecommended: true,
           },
           chips: [
-            { id: 'btn-create-tk', label: '🚨 File Urgent Field Repair Ticket', action: 'auto_file_e04' },
-            { id: 'btn-call-desk', label: '📞 Call Emergency (+91 80 4000 7800)', action: 'call_support' },
+            { id: 'btn-create-tk', label: 'File Urgent Field Repair Ticket', icon: 'alert', action: 'auto_file_e04' },
+            { id: 'btn-call-desk', label: 'Call Emergency Desk (+91 80 4000 7800)', icon: 'phone', action: 'call_support' },
           ],
           timestamp: 'Just now',
         });
@@ -118,7 +160,6 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
       // 2. Auto-file complaint for E-04
       else if (query.includes('file urgent') || query.includes('auto_file_e04')) {
         const ticketNum = 'TK-' + Math.floor(1000 + Math.random() * 9000);
-        // Persist to local storage tickets
         try {
           const existing = JSON.parse(localStorage.getItem('solarops_tickets') || '[]');
           existing.unshift({
@@ -147,7 +188,7 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
         addMessage({
           id: `bot-${Date.now()}`,
           sender: 'bot',
-          text: `✅ **Official Warranty Complaint Filed Successfully!**\n\nYour service request has been logged and prioritized under your 10-Year Inverter Replacement Warranty.`,
+          text: `Official Warranty Complaint Filed Successfully!\n\nYour service request has been logged and prioritized under your 10-Year Inverter Replacement Warranty.`,
           cardType: 'ticket',
           ticketData: {
             ticketId: ticketNum,
@@ -158,8 +199,8 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
             eta: 'Today within 2 hours',
           },
           chips: [
-            { id: 'btn-open-supp', label: '📋 View in Support Desk', action: 'go_support' },
-            { id: 'btn-order-acc', label: '🛒 Browse Solar Accessories', action: 'order_store' },
+            { id: 'btn-open-supp', label: 'View in Support Desk', icon: 'file', action: 'go_support' },
+            { id: 'btn-order-acc', label: 'Browse Solar Accessories', icon: 'cart', action: 'order_store' },
           ],
           timestamp: 'Just now',
         });
@@ -169,12 +210,12 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
         addMessage({
           id: `bot-${Date.now()}`,
           sender: 'bot',
-          text: "I can help you file a complaint immediately with our engineering team. Please select the category of the issue:",
+          text: "I can help you file a complaint immediately with our engineering team. Please select the specific issue category:",
           chips: [
-            { id: 'c1', label: 'Inverter Tripping / Noise', action: 'inverter_fault' },
-            { id: 'c2', label: 'Physical Solar Panel Issue', action: 'panel_damage' },
-            { id: 'c3', label: 'BESCOM Net-Metering Delay', action: 'discom_delay' },
-            { id: 'c4', label: 'Billing / Subsidy Dispute', action: 'check_subsidy' },
+            { id: 'c1', label: 'Inverter Tripping / Noise', icon: 'alert', action: 'inverter_fault' },
+            { id: 'c2', label: 'Physical Solar Panel Issue', icon: 'tool', action: 'panel_damage' },
+            { id: 'c3', label: 'BESCOM Net-Metering Delay', icon: 'trending', action: 'discom_delay' },
+            { id: 'c4', label: 'Billing / Subsidy Dispute', icon: 'coins', action: 'check_subsidy' },
           ],
           timestamp: 'Just now',
         });
@@ -184,7 +225,7 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
         addMessage({
           id: `bot-${Date.now()}`,
           sender: 'bot',
-          text: "📉 **Solar Yield Diagnostic**\n\nBased on your 5 kW Bifacial Mono-PERC system in Bengaluru:\n• Normal dry season output: **22-26 kWh/day**\n• Dust & soiling can degrade output by **15%-25%** after 3 weeks without rain.\n\n**Recommended Solution:** Clean panels early morning using soft microfiber squeegee and plain water.",
+          text: "Solar Yield Diagnostic Analysis\n\nBased on your 5 kW Bifacial Mono-PERC system in Bengaluru:\n• Normal dry season output: 22-26 kWh/day\n• Dust & soiling degrades output by 15%-25% after 3 weeks without rain.\n\nRecommended Action: Clean panels early morning using soft microfiber squeegee and plain water, or install automated sprinkler nozzles.",
           cardType: 'product_recommendation',
           productData: {
             name: 'Solar Rooftop Sprinkler Cleaning Kit',
@@ -194,8 +235,8 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
             desc: '10-Nozzle high pressure automated cleaning kit with WiFi timer.',
           },
           chips: [
-            { id: 'btn-buy-clean', label: '🛒 Order Cleaning Kit (₹4,999)', action: 'order_cleaning_kit' },
-            { id: 'btn-book-clean', label: '📅 Book Professional Cleaning (₹1,499)', action: 'book_cleaning_service' },
+            { id: 'btn-buy-clean', label: 'Order Cleaning Kit (₹4,999)', icon: 'cart', action: 'order_cleaning_kit' },
+            { id: 'btn-book-clean', label: 'Book Professional Cleaning (₹1,499)', icon: 'calendar', action: 'book_cleaning_service' },
           ],
           timestamp: 'Just now',
         });
@@ -205,7 +246,7 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
         addMessage({
           id: `bot-${Date.now()}`,
           sender: 'bot',
-          text: "🛒 **SolarFlow Hardware Marketplace**\n\nYou can order genuine Tier-1 solar equipment, lithium battery storage, automated cleaning kits, and BOS accessories directly with free delivery across Bengaluru!",
+          text: "SolarFlow Hardware Marketplace\n\nYou can order genuine Tier-1 solar equipment, lithium battery storage, automated cleaning kits, and BOS accessories directly with free delivery across Bengaluru!",
           cardType: 'store_showcase',
           storeProducts: [
             {
@@ -225,8 +266,8 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
             },
           ],
           chips: [
-            { id: 'btn-go-store', label: '🛍️ Open Solar Ecommerce Store', action: 'go_store' },
-            { id: 'btn-order-kit', label: '⚡ Quick Order Cleaning Kit', action: 'order_cleaning_kit' },
+            { id: 'btn-go-store', label: 'Open Solar Ecommerce Store', icon: 'cart', action: 'go_store' },
+            { id: 'btn-order-kit', label: 'Quick Order Cleaning Kit', icon: 'zap', action: 'order_cleaning_kit' },
           ],
           timestamp: 'Just now',
         });
@@ -253,53 +294,18 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
         if (showToast) {
           showToast({
             type: 'success',
-            title: 'Order Placed!',
-            message: `Order #${orderId} confirmed. Dispatched within 24 hours.`,
+            title: 'Order Dispatched',
+            message: `Order #${orderId} confirmed for ₹4,999. Free Bengaluru delivery.`,
           });
         }
 
         addMessage({
           id: `bot-${Date.now()}`,
           sender: 'bot',
-          text: `🎉 **Order Confirmed: ${orderId}**\n\n• **Item:** Solar Rooftop Sprinkler Cleaning Kit (10-Nozzle WiFi)\n• **Total:** ₹4,999 (Free Bengaluru Delivery)\n• **Delivery Address:** #42, 4th Cross, Indiranagar\n• **Est. Delivery:** Tomorrow by 4:00 PM IST`,
+          text: `Order Confirmed: #${orderId}\n\n1x Automatic Solar Rooftop Sprinkler Cleaning Kit has been placed. Dispatched from Peenya Warehouse.\n\nDelivery Address: #42, 4th Cross, Indiranagar, Bengaluru\nPayment Method: Pay on Delivery & Inspection`,
           chips: [
-            { id: 'btn-view-store', label: '🛍️ Continue Shopping', action: 'go_store' },
-            { id: 'btn-help-more', label: '❓ Ask Another Question', action: 'ask_more' },
-          ],
-          timestamp: 'Just now',
-        });
-      }
-      // 7. Book Maintenance
-      else if (query.includes('book') || query.includes('maintenance') || query.includes('visit')) {
-        const bookingRef = 'BOOK-2026-' + Math.floor(1000 + Math.random() * 9000);
-        if (showToast) {
-          showToast({
-            type: 'success',
-            title: 'Technician Visit Booked',
-            message: `Booking #${bookingRef} scheduled for Saturday, 10:00 AM.`,
-          });
-        }
-
-        addMessage({
-          id: `bot-${Date.now()}`,
-          sender: 'bot',
-          text: `📅 **Rooftop Maintenance Scheduled!**\n\n• **Booking Reference:** ${bookingRef}\n• **Slot:** Saturday, 18 May 2026 (10:00 AM - 12:30 PM)\n• **Assigned Engineer:** Karthik Raja\n• **Scope:** Thermal drone scan, MC4 torque check, string Voc verification, and rooftop module washing.`,
-          chips: [
-            { id: 'btn-more-products', label: '🛒 Browse Replacement Parts', action: 'go_store' },
-            { id: 'btn-ask-more', label: '⚡ Inverter Health Check', action: 'inverter_fault' },
-          ],
-          timestamp: 'Just now',
-        });
-      }
-      // 8. Subsidy Query
-      else if (query.includes('subsidy') || query.includes('surya ghar')) {
-        addMessage({
-          id: `bot-${Date.now()}`,
-          sender: 'bot',
-          text: "💰 **PM Surya Ghar: Muft Bijli Yojana Subsidy Status**\n\n• **Eligible Central Subsidy:** ₹78,000 (Maximum ceiling for 3 kW+ residential)\n• **Claim Status:** **Portal Approved** (Reference: `SUB-KA-2026-0042`)\n• **Disbursement Mode:** Direct Benefit Transfer (DBT) directly into your linked Canara Bank A/c within 30 days of net-meter sync.",
-          chips: [
-            { id: 'btn-order-more', label: '🛒 Upgrade with LiFePO4 Storage', action: 'go_store' },
-            { id: 'btn-ask-help', label: '❓ Check Inverter Status', action: 'inverter_fault' },
+            { id: 'btn-order-more', label: 'Upgrade with LiFePO4 Storage', icon: 'cart', action: 'go_store' },
+            { id: 'btn-ask-help', label: 'Check Inverter Status', icon: 'alert', action: 'inverter_fault' },
           ],
           timestamp: 'Just now',
         });
@@ -309,17 +315,17 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
         addMessage({
           id: `bot-${Date.now()}`,
           sender: 'bot',
-          text: `Thank you for your message! I'm trained on your solar plant data. I can help resolve error codes, file an official warranty ticket, book on-site technician maintenance, or help you order panels and accessories.`,
+          text: `Thank you for your message! I'm synchronized with your 5 kW hybrid solar plant data. I can assist with error diagnosis, warranty claim filing, scheduling technician visits, or ordering panels & accessories.`,
           chips: [
-            { id: 'f1', label: '🚨 Diagnose Inverter Error', action: 'inverter_fault' },
-            { id: 'f2', label: '📝 File Service Complaint', action: 'file_complaint' },
-            { id: 'f3', label: '📅 Book Maintenance Visit', action: 'book_maintenance' },
-            { id: 'f4', label: '🛒 Shop Solar Store', action: 'order_store' },
+            { id: 'f1', label: 'Diagnose Inverter Error', icon: 'alert', action: 'inverter_fault' },
+            { id: 'f2', label: 'File Service Complaint', icon: 'file', action: 'file_complaint' },
+            { id: 'f3', label: 'Book Maintenance Visit', icon: 'calendar', action: 'book_maintenance' },
+            { id: 'f4', label: 'Shop Solar Store', icon: 'cart', action: 'order_store' },
           ],
           timestamp: 'Just now',
         });
       }
-    }, 650);
+    }, 600);
   };
 
   const handleSend = (textToSend = null) => {
@@ -373,8 +379,33 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
       showToast({
         type: 'info',
         title: 'Chat Reset',
-        message: 'Assistant history cleared.',
+        message: 'Assistant conversation cleared.',
       });
+    }
+  };
+
+  const renderChipIcon = (icon) => {
+    switch (icon) {
+      case 'alert':
+        return <AlertTriangle size={13} color="#ef4444" />;
+      case 'file':
+        return <FileText size={13} color="#2563eb" />;
+      case 'calendar':
+        return <Calendar size={13} color="#8b5cf6" />;
+      case 'cart':
+        return <ShoppingBag size={13} color="#4f46e5" />;
+      case 'trending':
+        return <TrendingDown size={13} color="#f59e0b" />;
+      case 'coins':
+        return <Coins size={13} color="#10b981" />;
+      case 'tool':
+        return <Wrench size={13} color="#0284c7" />;
+      case 'phone':
+        return <PhoneCall size={13} color="#10b981" />;
+      case 'zap':
+        return <Zap size={13} color="#2563eb" />;
+      default:
+        return <Sparkles size={13} color="#4f46e5" />;
     }
   };
 
@@ -382,18 +413,22 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
 
   return (
     <div className="dock-chat-panel" aria-label="SolarFlow AI Assistant">
-      {/* Chat Header */}
+      {/* Sleek Copilot Header */}
       <div className="dock-chat-header">
         <div className="chat-header-identity">
           <div className="bot-avatar-badge">
-            <Sparkles size={17} color="#ffffff" />
+            <Sparkles size={18} color="#ffffff" />
+            <span className="ai-core-ping" />
           </div>
           <div>
             <div className="bot-name-row">
               <h4 className="bot-title">SolarFlow AI Copilot</h4>
-              <span className="live-pill">Active</span>
+              <span className="live-telemetry-badge">
+                <span className="live-pulse-dot" />
+                <span>ACTIVE</span>
+              </span>
             </div>
-            <span className="bot-subtext">Diagnose faults, file complaints & order</span>
+            <span className="bot-subtext">Diagnostic reasoning & instant solutions</span>
           </div>
         </div>
 
@@ -401,7 +436,7 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
           <button
             type="button"
             className="chat-icon-btn"
-            title="Reset Chat"
+            title="Reset Chat Session"
             onClick={handleReset}
           >
             <RotateCcw size={14} />
@@ -417,10 +452,13 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
         </div>
       </div>
 
-      {/* Quick Status Notice */}
+      {/* IoT Inverter Live Sync Bar */}
       <div className="chat-system-status-bar">
-        <ShieldCheck size={13} color="#10b981" />
-        <span>Connected to 5 kW Hybrid Inverter & Local DB</span>
+        <div className="status-indicator-group">
+          <ShieldCheck size={14} color="#10b981" />
+          <span>Synced: 5 kW Hybrid Inverter (E-04 Alert) · Local SQLite Active</span>
+        </div>
+        <span className="latency-chip">12ms</span>
       </div>
 
       {/* Messages Thread */}
@@ -432,7 +470,7 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
           >
             {msg.sender === 'bot' && (
               <div className="bot-msg-avatar">
-                <Bot size={14} color="#4f46e5" />
+                <Bot size={15} color="#4f46e5" />
               </div>
             )}
 
@@ -442,12 +480,14 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
                   {msg.text}
                 </div>
 
-                {/* Diagnostic Card */}
+                {/* Priority Diagnostic Card */}
                 {msg.cardType === 'diagnostic' && msg.diagnosticData && (
                   <div className="chat-diagnostic-card">
                     <div className="diag-header">
-                      <AlertTriangle size={14} color="#ef4444" />
-                      <span className="diag-title">Priority Diagnostic: {msg.diagnosticData.code}</span>
+                      <div className="diag-title-group">
+                        <AlertTriangle size={15} color="#ef4444" />
+                        <span className="diag-title">Critical Fault: {msg.diagnosticData.code}</span>
+                      </div>
                       <span className="diag-badge">{msg.diagnosticData.severity}</span>
                     </div>
                     <ul className="diag-list">
@@ -458,17 +498,29 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
                   </div>
                 )}
 
-                {/* Ticket Created Card */}
+                {/* Verified Ticket Card */}
                 {msg.cardType === 'ticket' && msg.ticketData && (
                   <div className="chat-ticket-card">
                     <div className="ticket-card-header">
-                      <span className="ticket-num">{msg.ticketData.ticketId}</span>
+                      <div className="ticket-ref-group">
+                        <Wrench size={14} color="#2563eb" />
+                        <span className="ticket-num">{msg.ticketData.ticketId}</span>
+                      </div>
                       <span className="ticket-status-pill">Dispatched</span>
                     </div>
                     <div className="ticket-card-body">
-                      <div><strong>Issue:</strong> {msg.ticketData.issue}</div>
-                      <div><strong>Technician:</strong> {msg.ticketData.assignedTo}</div>
-                      <div><strong>ETA:</strong> {msg.ticketData.eta}</div>
+                      <div className="ticket-field-row">
+                        <span className="t-label">Issue:</span>
+                        <span className="t-val">{msg.ticketData.issue}</span>
+                      </div>
+                      <div className="ticket-field-row">
+                        <span className="t-label">Technician:</span>
+                        <span className="t-val highlight">{msg.ticketData.assignedTo}</span>
+                      </div>
+                      <div className="ticket-field-row">
+                        <span className="t-label">Arrival Window:</span>
+                        <span className="t-val">{msg.ticketData.eta}</span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -488,7 +540,7 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
                   </div>
                 )}
 
-                {/* Store Showcase */}
+                {/* Store Showcase Table */}
                 {msg.cardType === 'store_showcase' && msg.storeProducts && (
                   <div className="chat-store-showcase">
                     {msg.storeProducts.map((p, idx) => (
@@ -500,6 +552,39 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
                         <span className="showcase-price">{p.price}</span>
                       </div>
                     ))}
+                  </div>
+                )}
+
+                {/* Assistant Message Micro-Interactions (Feedback & Copy) */}
+                {msg.sender === 'bot' && (
+                  <div className="msg-micro-actions-row">
+                    <span className="msg-timestamp">{msg.timestamp}</span>
+                    <div className="micro-btn-group">
+                      <button
+                        type="button"
+                        className="micro-action-btn"
+                        onClick={() => handleCopyMessage(msg.id, msg.text)}
+                        title="Copy Response"
+                      >
+                        {copiedId === msg.id ? <Check size={12} color="#10b981" /> : <Copy size={12} />}
+                      </button>
+                      <button
+                        type="button"
+                        className={`micro-action-btn ${feedbackState[msg.id] === 'up' ? 'active-feedback' : ''}`}
+                        onClick={() => handleFeedback(msg.id, 'up')}
+                        title="Helpful"
+                      >
+                        <ThumbsUp size={12} />
+                      </button>
+                      <button
+                        type="button"
+                        className={`micro-action-btn ${feedbackState[msg.id] === 'down' ? 'active-feedback' : ''}`}
+                        onClick={() => handleFeedback(msg.id, 'down')}
+                        title="Not Helpful"
+                      >
+                        <ThumbsDown size={12} />
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -514,13 +599,12 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
                       className="chat-action-chip"
                       onClick={() => handleChipClick(chip)}
                     >
+                      <span className="chip-icon-box">{renderChipIcon(chip.icon)}</span>
                       <span>{chip.label}</span>
                     </button>
                   ))}
                 </div>
               )}
-
-              <span className="msg-timestamp">{msg.timestamp}</span>
             </div>
           </div>
         ))}
@@ -528,12 +612,15 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
         {isTyping && (
           <div className="chat-bubble-row bot-side">
             <div className="bot-msg-avatar">
-              <Bot size={14} color="#4f46e5" />
+              <Bot size={15} color="#4f46e5" />
             </div>
-            <div className="chat-typing-indicator">
-              <span className="dot" />
-              <span className="dot" />
-              <span className="dot" />
+            <div className="chat-typing-container">
+              <div className="chat-typing-indicator">
+                <span className="dot" />
+                <span className="dot" />
+                <span className="dot" />
+              </div>
+              <span className="typing-label">SolarFlow AI is analyzing system telemetry…</span>
             </div>
           </div>
         )}
@@ -541,22 +628,49 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Bar */}
-      <div className="dock-chat-input-bar">
-        <textarea
-          rows={1}
-          className="chat-textarea"
-          placeholder="Ask a question, report an error, or order…"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
+      {/* Floating Prompt Shortcuts Row */}
+      <div className="chat-quick-hints-row">
         <button
           type="button"
-          className="chat-send-btn"
+          className="hint-pill"
+          onClick={() => handleSend("Diagnose my 5 kW hybrid inverter status")}
+        >
+          Check Inverter Status
+        </button>
+        <button
+          type="button"
+          className="hint-pill"
+          onClick={() => handleSend("What is the next scheduled rooftop maintenance visit?")}
+        >
+          Maintenance Visit
+        </button>
+        <button
+          type="button"
+          className="hint-pill"
+          onClick={() => handleSend("I want to order solar panels")}
+        >
+          Store Catalog
+        </button>
+      </div>
+
+      {/* Input Bar */}
+      <div className="dock-chat-input-bar">
+        <div className="input-textarea-wrapper">
+          <textarea
+            rows={1}
+            className="chat-textarea"
+            placeholder="Ask a question, diagnose a fault, or order…"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+        </div>
+        <button
+          type="button"
+          className={`chat-send-btn ${inputValue.trim() ? 'active' : ''}`}
           disabled={!inputValue.trim()}
           onClick={() => handleSend()}
-          title="Send message"
+          title="Send message (Enter ↵)"
         >
           <Send size={15} />
         </button>
@@ -566,4 +680,3 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
 }
 
 export default SolarChatbot;
-
