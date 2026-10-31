@@ -1,0 +1,25 @@
+{
+  "scope": "backend app only",
+  "tests": [
+    {
+      "id": "backend-line-coverage",
+      "family": "C01",
+      "sev": "P0",
+      "status": "pass",
+      "covered": 6604,
+      "total": 7367,
+      "percent": 89.643,
+      "threshold": 80
+    },
+    {
+      "id": "backend-branch-coverage",
+      "family": "C02",
+      "sev": "P0",
+      "status": "fail",
+      "covered": 1114,
+      "total": 1692,
+      "percent": 65.839,
+      "threshold": 70
+    }
+  ]
+}
