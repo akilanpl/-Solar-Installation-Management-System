@@ -1168,6 +1168,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/jobs/{job_id}/work-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Work Summary */
+        get: operations["work_summary_api_v1_jobs__job_id__work_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{job_id}/uploads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Job Evidence */
+        post: operations["upload_job_evidence_api_v1_jobs__job_id__uploads_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{job_id}/uploads/{storage_key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Job Evidence */
+        get: operations["download_job_evidence_api_v1_jobs__job_id__uploads__storage_key__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/employees": {
         parameters: {
             query?: never;
@@ -1217,6 +1268,11 @@ export interface components {
     schemas: {
         /** Body_upload_evidence_api_v1_surveys__survey_id__evidence_post */
         Body_upload_evidence_api_v1_surveys__survey_id__evidence_post: {
+            /** Upload */
+            upload: string;
+        };
+        /** Body_upload_job_evidence_api_v1_jobs__job_id__uploads_post */
+        Body_upload_job_evidence_api_v1_jobs__job_id__uploads_post: {
             /** Upload */
             upload: string;
         };
@@ -1556,6 +1612,18 @@ export interface components {
              */
             created_at: string;
         };
+        /** InstallationUploadResponse */
+        InstallationUploadResponse: {
+            /** Storage Key */
+            storage_key: string;
+            /** Sha256 */
+            sha256: string;
+            /**
+             * Uploaded At
+             * Format: date-time
+             */
+            uploaded_at: string;
+        };
         /** JobCreate */
         JobCreate: {
             /**
@@ -1569,13 +1637,36 @@ export interface components {
             slot_starts_at?: string | null;
         };
         /** JobEvidence */
-        JobEvidence: {
+        "JobEvidence-Input": {
             /** Photo Refs */
             photo_refs: string[];
             /** Test Readings */
-            test_readings?: {
-                [key: string]: unknown;
+            test_readings: {
+                [key: string]: number;
             };
+            /** Installed Capacity Kw */
+            installed_capacity_kw: number | string;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /**
+             * Finished At
+             * Format: date-time
+             */
+            finished_at: string;
+        };
+        /** JobEvidence */
+        "JobEvidence-Output": {
+            /** Photo Refs */
+            photo_refs: string[];
+            /** Test Readings */
+            test_readings: {
+                [key: string]: number;
+            };
+            /** Installed Capacity Kw */
+            installed_capacity_kw: string;
             /**
              * Started At
              * Format: date-time
@@ -1645,6 +1736,8 @@ export interface components {
             signature_ref: string;
             /** Customer Confirmed */
             customer_confirmed: boolean;
+            /** Summary Hash */
+            summary_hash: string;
         };
         /**
          * LoginRequest
@@ -2671,6 +2764,39 @@ export interface components {
             ends_at: string;
             /** Coverage Note */
             coverage_note: string;
+        };
+        /** WorkSummaryData */
+        WorkSummaryData: {
+            /**
+             * Job Id
+             * Format: uuid
+             */
+            job_id: string;
+            /**
+             * Order Id
+             * Format: uuid
+             */
+            order_id: string;
+            /** Technician User Id */
+            technician_user_id: string;
+            /** Arrival At */
+            arrival_at: string | null;
+            evidence: components["schemas"]["JobEvidence-Output"];
+            /** Files */
+            files: components["schemas"]["WorkSummaryFile"][];
+        };
+        /** WorkSummaryFile */
+        WorkSummaryFile: {
+            /** Key */
+            key: string;
+            /** Sha256 */
+            sha256: string;
+        };
+        /** WorkSummaryResponse */
+        WorkSummaryResponse: {
+            summary: components["schemas"]["WorkSummaryData"];
+            /** Summary Hash */
+            summary_hash: string;
         };
     };
     responses: never;
@@ -4874,7 +5000,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["JobEvidence"];
+                "application/json": components["schemas"]["JobEvidence-Input"];
             };
         };
         responses: {
@@ -5013,6 +5139,104 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WarrantyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    work_summary_api_v1_jobs__job_id__work_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkSummaryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_job_evidence_api_v1_jobs__job_id__uploads_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_job_evidence_api_v1_jobs__job_id__uploads_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstallationUploadResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_job_evidence_api_v1_jobs__job_id__uploads__storage_key__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+                storage_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

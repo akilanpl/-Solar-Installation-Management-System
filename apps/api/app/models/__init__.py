@@ -14,6 +14,7 @@ from app.models.phase3 import (  # noqa: F401
     Delivery,
     DeliveryLine,
     EquipmentSerial,
+    InstallationEvidence,
     InstallationJob,
     InstallationOtp,
     ReplenishmentRequest,

@@ -1,12 +1,21 @@
+import hashlib
+import io
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, File, Request, Response, UploadFile
+from fastapi.responses import FileResponse
+from PIL import Image, UnidentifiedImageError
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.deps import current_user
+from app.core.errors import AppError
 from app.db.session import get_db
 from app.models.identity import User
+from app.models.phase3 import InstallationEvidence
+from app.models.workflow import SalesOrder
 from app.schemas.phase3 import (
+    InstallationUploadResponse,
     JobCreate,
     JobEvidence,
     JobOtpVerify,
@@ -16,8 +25,11 @@ from app.schemas.phase3 import (
     RecommendationResponse,
     SchedulingSlotUpdate,
     WarrantyResponse,
+    WorkSummaryResponse,
 )
 from app.services import fulfillment_service, installation_service
+from app.services.email_sender import OutboundEmail
+from app.services.evidence_store import evidence_file, save_evidence
 
 router = APIRouter(tags=["installation"])
 
@@ -79,6 +91,7 @@ def recommend(
 def create_job(
     payload: JobCreate,
     response: Response,
+    request: Request,
     user: User = Depends(current_user),
     db: Session = Depends(get_db),
 ):
@@ -86,7 +99,12 @@ def create_job(
         db, user, payload.order_id, payload.technician_user_id, payload.slot_starts_at
     )
     response.status_code = 201
-    return _job_payload(job, customer_code=code)
+    order = db.get(SalesOrder, job.order_id)
+    customer = db.get(User, order.customer_user_id)
+    request.app.state.email_sender.send(OutboundEmail(
+        recipient=customer.email, subject=f"SolarOps installation {job.reference}",
+        body=f"Installation {job.reference}: your verification code is {code}. Share it only for this job. This is not work acceptance.", code=code))
+    return _job_payload(job)
 
 
 @router.get("/jobs", response_model=list[JobResponse])
@@ -176,3 +194,47 @@ def void_warranty(
         ends_at=row.ends_at,
         coverage_note=row.coverage_note,
     )
+
+
+@router.get("/jobs/{job_id}/work-summary", response_model=WorkSummaryResponse)
+def work_summary(job_id: UUID, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    return installation_service.work_summary(db, user, job_id)
+
+
+@router.post("/jobs/{job_id}/uploads", status_code=201, response_model=InstallationUploadResponse)
+def upload_job_evidence(job_id: UUID, request: Request, upload: UploadFile = File(...), user: User = Depends(current_user), db: Session = Depends(get_db)):
+    job = installation_service._job_for_technician(db, user, job_id)
+    if user.role_code != "technician" or job.technician_user_id != user.id:
+        raise AppError(403, "forbidden", "Only the assigned technician may upload installation evidence.")
+    if job.signature or job.status in {"completed", "cancelled"}:
+        raise AppError(409, "invalid_transition", "Evidence is closed for this job.")
+    settings = request.app.state.settings
+    payload = upload.file.read(settings.evidence_max_bytes + 1)
+    if len(payload) > settings.evidence_max_bytes:
+        raise AppError(413, "file_too_large", "Installation photo exceeds the upload limit.")
+    try:
+        with Image.open(io.BytesIO(payload)) as image:
+            if image.format not in {"JPEG", "PNG", "WEBP"} or image.width * image.height > 25_000_000:
+                raise ValueError("Unsupported image or excessive dimensions")
+            image.verify()
+    except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError) as exc:
+        raise AppError(422, "invalid_evidence", "Upload a valid JPEG, PNG, or WebP photo.") from exc
+    key, content_type = save_evidence(settings, payload)
+    if not content_type.startswith("image/"):
+        evidence_file(settings, key).unlink(missing_ok=True)
+        raise AppError(422, "invalid_evidence", "Installation photos must be images.")
+    row = InstallationEvidence(job_id=job.id, uploaded_by_user_id=user.id, storage_key=key,
+        content_type=content_type, size_bytes=len(payload), sha256=hashlib.sha256(payload).hexdigest())
+    db.add(row)
+    db.flush()
+    return {"storage_key": key, "sha256": row.sha256, "uploaded_at": row.created_at}
+
+
+@router.get("/jobs/{job_id}/uploads/{storage_key}")
+def download_job_evidence(job_id: UUID, storage_key: str, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    installation_service.get_job(db, user, job_id)
+    row = db.scalar(select(InstallationEvidence).where(InstallationEvidence.job_id == job_id, InstallationEvidence.storage_key == storage_key))
+    if row is None:
+        raise AppError(404, "not_found", "Evidence not found.")
+    installation_service.verify_file(row)
+    return FileResponse(evidence_file(installation_service.get_settings(), row.storage_key), media_type=row.content_type, headers={"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"})

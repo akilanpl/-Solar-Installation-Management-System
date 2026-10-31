@@ -28,7 +28,11 @@ def get_email_sender(request: Request):
 
 
 def client_ip(request: Request) -> str:
-    forwarded = request.headers.get("x-forwarded-for")
+    # Arbitrary clients can set forwarding headers. Trust only explicitly
+    # configured proxies which sanitize those headers before forwarding.
+    peer = request.client.host if request.client else "unknown"
+    trusted = request.app.state.settings.trusted_proxy_ips.split(",")
+    forwarded = request.headers.get("x-forwarded-for") if peer in trusted else None
     if forwarded:
         return forwarded.split(",")[0].strip()[:64]
     if request.client is None:

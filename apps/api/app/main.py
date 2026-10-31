@@ -1,6 +1,8 @@
 """FastAPI application factory."""
 
 import logging
+import time
+import uuid
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
@@ -37,6 +39,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     application.include_router(api_router)
 
+    @application.middleware("http")
+    async def correlate(request: Request, call_next):
+        request_id = uuid.uuid4().hex
+        request.state.request_id = request_id
+        started = time.monotonic()
+        response = await call_next(request)
+        response.headers["X-Request-ID"] = request_id
+        logger.info("request_completed", extra={"request_id": request_id, "method": request.method,
+            "path": request.url.path, "status": response.status_code,
+            "duration_ms": round((time.monotonic() - started) * 1000, 2)})
+        return response
+
     @application.exception_handler(HTTPException)
     def _http(_request: Request, exc: HTTPException) -> JSONResponse:
         code = {404: "not_found", 405: "method_not_allowed"}.get(exc.status_code, "http_error")
@@ -65,7 +79,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @application.exception_handler(IntegrityError)
     def _integrity(_request: Request, exc: IntegrityError) -> JSONResponse:
-        logger.warning("integrity error: %s", exc.orig)
+        logger.warning("database_integrity_conflict")
         return JSONResponse(
             status_code=409,
             content=error_body("conflict", "The request conflicts with existing data."),
@@ -73,7 +87,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @application.exception_handler(OperationalError)
     def _database(_request: Request, exc: OperationalError) -> JSONResponse:
-        logger.error("database unavailable: %s", exc)
+        logger.error("database_unavailable")
         return JSONResponse(
             status_code=503,
             content=error_body("database_unavailable", "The database is not available."),

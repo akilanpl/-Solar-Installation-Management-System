@@ -3157,7 +3157,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/JobEvidence"
+                "$ref": "#/components/schemas/JobEvidence-Input"
               }
             }
           }
@@ -3368,6 +3368,152 @@
         }
       }
     },
+    "/api/v1/jobs/{job_id}/work-summary": {
+      "get": {
+        "tags": [
+          "installation"
+        ],
+        "summary": "Work Summary",
+        "operationId": "work_summary_api_v1_jobs__job_id__work_summary_get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkSummaryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/jobs/{job_id}/uploads": {
+      "post": {
+        "tags": [
+          "installation"
+        ],
+        "summary": "Upload Job Evidence",
+        "operationId": "upload_job_evidence_api_v1_jobs__job_id__uploads_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_job_evidence_api_v1_jobs__job_id__uploads_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstallationUploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/jobs/{job_id}/uploads/{storage_key}": {
+      "get": {
+        "tags": [
+          "installation"
+        ],
+        "summary": "Download Job Evidence",
+        "operationId": "download_job_evidence_api_v1_jobs__job_id__uploads__storage_key__get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "storage_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Storage Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/employees": {
       "get": {
         "tags": [
@@ -3491,6 +3637,20 @@
           "upload"
         ],
         "title": "Body_upload_evidence_api_v1_surveys__survey_id__evidence_post"
+      },
+      "Body_upload_job_evidence_api_v1_jobs__job_id__uploads_post": {
+        "properties": {
+          "upload": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Upload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "upload"
+        ],
+        "title": "Body_upload_job_evidence_api_v1_jobs__job_id__uploads_post"
       },
       "CashReceiptCreate": {
         "properties": {
@@ -4319,6 +4479,30 @@
         ],
         "title": "HistoryResponse"
       },
+      "InstallationUploadResponse": {
+        "properties": {
+          "storage_key": {
+            "type": "string",
+            "title": "Storage Key"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          },
+          "uploaded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Uploaded At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "storage_key",
+          "sha256",
+          "uploaded_at"
+        ],
+        "title": "InstallationUploadResponse"
+      },
       "JobCreate": {
         "properties": {
           "order_id": {
@@ -4358,7 +4542,7 @@
         ],
         "title": "JobCreate"
       },
-      "JobEvidence": {
+      "JobEvidence-Input": {
         "properties": {
           "photo_refs": {
             "items": {
@@ -4370,9 +4554,25 @@
             "title": "Photo Refs"
           },
           "test_readings": {
-            "additionalProperties": true,
+            "additionalProperties": {
+              "type": "number"
+            },
             "type": "object",
+            "minProperties": 1,
             "title": "Test Readings"
+          },
+          "installed_capacity_kw": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Installed Capacity Kw"
           },
           "started_at": {
             "type": "string",
@@ -4389,6 +4589,53 @@
         "type": "object",
         "required": [
           "photo_refs",
+          "test_readings",
+          "installed_capacity_kw",
+          "started_at",
+          "finished_at"
+        ],
+        "title": "JobEvidence"
+      },
+      "JobEvidence-Output": {
+        "properties": {
+          "photo_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Photo Refs"
+          },
+          "test_readings": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "minProperties": 1,
+            "title": "Test Readings"
+          },
+          "installed_capacity_kw": {
+            "type": "string",
+            "title": "Installed Capacity Kw"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "finished_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Finished At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "photo_refs",
+          "test_readings",
+          "installed_capacity_kw",
           "started_at",
           "finished_at"
         ],
@@ -4556,13 +4803,19 @@
           "customer_confirmed": {
             "type": "boolean",
             "title": "Customer Confirmed"
+          },
+          "summary_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Summary Hash"
           }
         },
         "additionalProperties": false,
         "type": "object",
         "required": [
           "signature_ref",
-          "customer_confirmed"
+          "customer_confirmed",
+          "summary_hash"
         ],
         "title": "JobSignature"
       },
@@ -7111,6 +7364,91 @@
           "coverage_note"
         ],
         "title": "WarrantyResponse"
+      },
+      "WorkSummaryData": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Job Id"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "technician_user_id": {
+            "type": "string",
+            "title": "Technician User Id"
+          },
+          "arrival_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arrival At"
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/JobEvidence-Output"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/WorkSummaryFile"
+            },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id",
+          "order_id",
+          "technician_user_id",
+          "arrival_at",
+          "evidence",
+          "files"
+        ],
+        "title": "WorkSummaryData"
+      },
+      "WorkSummaryFile": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "sha256"
+        ],
+        "title": "WorkSummaryFile"
+      },
+      "WorkSummaryResponse": {
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/WorkSummaryData"
+          },
+          "summary_hash": {
+            "type": "string",
+            "title": "Summary Hash"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summary",
+          "summary_hash"
+        ],
+        "title": "WorkSummaryResponse"
       }
     }
   }

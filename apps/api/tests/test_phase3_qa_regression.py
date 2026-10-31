@@ -1,7 +1,7 @@
 """Independent Phase 3 API regressions; failures document product defects."""
 
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from app.models.identity import User
@@ -19,11 +19,13 @@ from tests.test_phase3_warehouse_installation import (
     _all_staff,
     _confirmed_order,
     _customer,
+    _login,
     _order_material,
     _receipt_material,
     _receipt_validate,
     _sales,
     _technician,
+    _uploaded_photo,
     _warehouse,
 )
 
@@ -235,7 +237,7 @@ def test_completion_requires_recorded_arrival_even_after_otp_evidence_and_signat
     headers = _technician(client)
     verified = client.post(
         f"/api/v1/jobs/{job['id']}/customer-otp",
-        json={"code": job["customer_code"]},
+        json={"code": application.state.email_sender.messages[-1].code},
         headers=headers,
     )
     assert verified.status_code == 200
@@ -243,22 +245,28 @@ def test_completion_requires_recorded_arrival_even_after_otp_evidence_and_signat
     evidence = client.post(
         f"/api/v1/jobs/{job['id']}/evidence",
         json={
-            "photo_refs": ["QA-PHOTO-1"],
-            "started_at": now,
+            "photo_refs": [_uploaded_photo(client, job["id"], headers)],
+            "test_readings": {"voc_v": 612.5},
+            "installed_capacity_kw": "3",
+            "started_at": (datetime.now(UTC) - timedelta(minutes=1)).isoformat(),
             "finished_at": now,
         },
         headers=headers,
     )
     assert evidence.status_code == 200
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    summary_hash = client.get(f"/api/v1/jobs/{job['id']}/work-summary").json()["summary_hash"]
     signature = client.post(
         f"/api/v1/jobs/{job['id']}/signature",
         json={
             "signature_ref": "QA-SIGNATURE-1",
             "customer_confirmed": True,
+            "summary_hash": summary_hash,
         },
-        headers=headers,
+        headers=customer,
     )
     assert signature.status_code == 200
+    headers = _technician(client)
     completed = client.post(f"/api/v1/jobs/{job['id']}/completion", headers=headers)
     with Session(application.state.engine) as db:
         saved = db.get(InstallationJob, uuid.UUID(job["id"]))

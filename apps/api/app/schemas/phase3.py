@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 OperationType = Literal["receipt", "transfer", "delivery", "adjustment"]
 
@@ -242,7 +242,8 @@ class JobEvidence(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     photo_refs: list[str] = Field(min_length=1, max_length=10)
-    test_readings: dict = Field(default_factory=dict)
+    test_readings: dict[str, float] = Field(min_length=1)
+    installed_capacity_kw: Decimal = Field(gt=0, le=1000)
     started_at: datetime
     finished_at: datetime
 
@@ -254,11 +255,25 @@ class JobEvidence(BaseModel):
         return value
 
 
+    @model_validator(mode="after")
+    def valid_work(self):
+        import math
+        from datetime import UTC
+        if self.finished_at <= self.started_at or self.finished_at > datetime.now(UTC):
+            raise ValueError("Work must finish after it starts and cannot finish in the future.")
+        if "voc_v" not in self.test_readings or not 0 < self.test_readings["voc_v"] <= 1500:
+            raise ValueError("Record open-circuit voltage (voc_v), greater than zero and at most 1500 V.")
+        if any(not math.isfinite(value) for value in self.test_readings.values()):
+            raise ValueError("Electrical readings must be finite.")
+        return self
+
+
 class JobSignature(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     signature_ref: str = Field(min_length=3, max_length=200)
     customer_confirmed: bool
+    summary_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
 class RecommendationRequest(BaseModel):
@@ -282,3 +297,28 @@ class WarrantyResponse(BaseModel):
     starts_at: datetime
     ends_at: datetime
     coverage_note: str
+
+
+class InstallationUploadResponse(BaseModel):
+    storage_key: str
+    sha256: str
+    uploaded_at: datetime
+
+
+class WorkSummaryFile(BaseModel):
+    key: str
+    sha256: str
+
+
+class WorkSummaryData(BaseModel):
+    job_id: uuid.UUID
+    order_id: uuid.UUID
+    technician_user_id: str
+    arrival_at: datetime | None
+    evidence: JobEvidence
+    files: list[WorkSummaryFile]
+
+
+class WorkSummaryResponse(BaseModel):
+    summary: WorkSummaryData
+    summary_hash: str

@@ -6,6 +6,7 @@ from empty. Each test then truncates account and enquiry rows.
 """
 
 import os
+import re
 from collections.abc import Generator
 from pathlib import Path
 
@@ -38,7 +39,10 @@ get_settings.cache_clear()
 
 def _assert_safe(url: str) -> None:
     name = make_url(url).database
-    if name != "solarops_test":
+    if name != "solarops_test" and not (
+        name == os.environ.get("SOLAROPS_DISPOSABLE_TEST_DATABASE_NAME")
+        and re.fullmatch(r"solarops_release_test_[0-9]{8}", name or "")
+    ):
         raise RuntimeError(f"Refusing to run tests against database {name!r}.")
 
 

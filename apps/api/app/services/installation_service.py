@@ -8,6 +8,8 @@ completion. The server clock stamps arrivals.
 """
 
 import hashlib
+import hmac
+import json
 import secrets
 import uuid
 from datetime import timedelta
@@ -15,12 +17,14 @@ from datetime import timedelta
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.core.errors import AppError
-from app.core.security import utcnow
+from app.core.security import hash_secret, secrets_match, utcnow
 from app.models.identity import EmployeeProfile, User
-from app.models.phase3 import InstallationJob, InstallationOtp
+from app.models.phase3 import InstallationEvidence, InstallationJob, InstallationOtp
 from app.models.workflow import InstallationSchedulingRequest, SalesOrder
 from app.repositories.queries import add_audit
+from app.services.evidence_store import evidence_file
 from app.services.references import next_reference
 
 SALES = {"sales", "admin"}
@@ -86,7 +90,7 @@ def recommend_technicians(
                 "technician_user_id": tech.id,
                 "employee_code": profile.employee_code if profile else tech.email,
                 "open_jobs": open_jobs,
-                "reason": f"{open_jobs} open jobs; nearest qualified technician first.",
+                "reason": f"{open_jobs} open jobs; workload ranking only. Skills, travel and availability are not verified.",
             }
         )
     ranked.sort(key=lambda item: item["open_jobs"])
@@ -137,7 +141,7 @@ def create_job(
         InstallationOtp(
             job_id=job.id,
             purpose="job_customer_verify",
-            code_hash=hashlib.sha256(code.encode("utf-8")).hexdigest(),
+            code_hash=hash_secret(f"{job.id}:job_customer_verify:{code}", get_settings().secret_key),
             expires_at=utcnow() + timedelta(minutes=30),
         )
     )
@@ -163,9 +167,7 @@ def _job_for_technician(db: Session, user: User, job_id: uuid.UUID) -> Installat
         if job.technician_user_id != user.id:
             raise AppError(404, "not_found", "Job not found.")
         return job
-    if user.role_code in SALES:
-        return job
-    raise AppError(403, "forbidden", "You cannot update this job.")
+    raise AppError(403, "forbidden", "Only the assigned technician can update this job.")
 
 
 def mark_en_route(db: Session, user: User, job_id: uuid.UUID) -> InstallationJob:
@@ -197,26 +199,29 @@ def mark_arrival(db: Session, user: User, job_id: uuid.UUID) -> InstallationJob:
 
 def verify_customer_otp(db: Session, user: User, job_id: uuid.UUID, code: str) -> InstallationJob:
     job = _job_for_technician(db, user, job_id)
-    challenge = db.scalar(
-        select(InstallationOtp)
-        .where(InstallationOtp.job_id == job.id, InstallationOtp.consumed_at.is_(None))
-        .order_by(InstallationOtp.created_at.desc())
-        .with_for_update()
-    )
-    if challenge is None:
-        raise AppError(409, "otp_missing", "There is no active customer code for this job.")
-    if challenge.expires_at < utcnow():
-        raise AppError(409, "otp_expired", "The customer code expired.")
-    if challenge.attempt_count >= 5:
-        raise AppError(409, "otp_locked", "Too many wrong codes.")
-    digest = hashlib.sha256(code.encode("utf-8")).hexdigest()
-    if digest != challenge.code_hash:
-        challenge.attempt_count += 1
-        # Like email verification, rejected attempts must survive the request
-        # rollback. No job state or audit writes precede this failure branch.
-        db.commit()
-        raise AppError(400, "invalid_customer_code", "Wrong customer code.")
-    challenge.consumed_at = utcnow()
+    # A separate transaction owns only challenge state. Never commit the caller's
+    # pending business mutations to preserve a rejected attempt.
+    failure = None
+    with Session(db.get_bind(), expire_on_commit=False) as security_db:
+        with security_db.begin():
+            challenge = security_db.scalar(
+                select(InstallationOtp)
+                .where(InstallationOtp.job_id == job.id, InstallationOtp.consumed_at.is_(None))
+                .order_by(InstallationOtp.created_at.desc()).with_for_update()
+            )
+            if challenge is None:
+                failure = AppError(409, "otp_missing", "There is no active customer code for this job.")
+            elif challenge.expires_at <= utcnow():
+                failure = AppError(409, "otp_expired", "The customer code expired.")
+            elif challenge.attempt_count >= 5:
+                failure = AppError(409, "otp_locked", "Too many wrong codes.")
+            elif not secrets_match(challenge.code_hash, f"{job.id}:job_customer_verify:{code}", get_settings().secret_key):
+                challenge.attempt_count += 1
+                failure = AppError(400, "invalid_customer_code", "Wrong customer code.")
+            else:
+                challenge.consumed_at = utcnow()
+    if failure is not None:
+        raise failure
     job.otp_verified = True
     if job.status == "scheduled":
         job.status = "en_route"
@@ -236,21 +241,63 @@ def record_evidence(db: Session, user: User, job_id: uuid.UUID, evidence: dict) 
     job = _job_for_technician(db, user, job_id)
     if job.status not in ("on_site", "en_route", "scheduled"):
         raise AppError(409, "invalid_transition", "Evidence needs an active job.")
+    if job.signature:
+        raise AppError(409, "already_signed", "Acknowledged work cannot be changed.")
     photos = evidence.get("photo_refs") or []
     if not photos:
-        raise AppError(400, "evidence_required", "At least one photo reference is required.")
+        raise AppError(400, "evidence_required", "At least one uploaded photo is required.")
+    for key in photos:
+        uploaded = db.scalar(select(InstallationEvidence).where(
+            InstallationEvidence.job_id == job.id, InstallationEvidence.storage_key == key))
+        if uploaded is None:
+            raise AppError(422, "invalid_evidence", "Every photo must be uploaded to this job.")
+        verify_file(uploaded)
     job.evidence = evidence
+    add_audit(db, actor_user_id=user.id, action="job.evidence_recorded", entity_type="installation_job", entity_id=job.id, metadata={"photo_count": len(photos)})
     db.flush()
     return job
 
 
-def record_signature(
-    db: Session, user: User, job_id: uuid.UUID, signature: dict
-) -> InstallationJob:
-    job = _job_for_technician(db, user, job_id)
+def verify_file(uploaded):
+    payload = evidence_file(get_settings(), uploaded.storage_key).read_bytes()
+    if not hmac.compare_digest(hashlib.sha256(payload).hexdigest(), uploaded.sha256):
+        raise AppError(409, "evidence_modified", "Stored evidence failed its integrity check.")
+
+
+def work_summary(db: Session, user: User, job_id: uuid.UUID) -> dict:
+    job = get_job(db, user, job_id)
+    if not job.evidence:
+        raise AppError(409, "evidence_required", "Record work evidence first.")
+    files = list(db.scalars(select(InstallationEvidence).where(InstallationEvidence.job_id == job.id).order_by(InstallationEvidence.storage_key)))
+    selected = [row for row in files if row.storage_key in job.evidence.get("photo_refs", [])]
+    if len(selected) != len(set(job.evidence.get("photo_refs", []))):
+        raise AppError(409, "invalid_evidence", "Recorded photos have no upload custody record.")
+    for row in selected:
+        verify_file(row)
+    summary = {"job_id": str(job.id), "order_id": str(job.order_id),
+        "technician_user_id": str(job.technician_user_id), "arrival_at": job.arrival_at.isoformat() if job.arrival_at else None,
+        "evidence": job.evidence, "files": [{"key": row.storage_key, "sha256": row.sha256} for row in selected]}
+    digest = hashlib.sha256(json.dumps(summary, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    return {"summary": summary, "summary_hash": digest}
+
+
+def record_signature(db: Session, user: User, job_id: uuid.UUID, signature: dict) -> InstallationJob:
+    job = db.scalar(select(InstallationJob).where(InstallationJob.id == job_id).with_for_update())
+    order = db.get(SalesOrder, job.order_id) if job else None
+    if not job or not order or user.role_code != "customer" or order.customer_user_id != user.id:
+        raise AppError(403, "forbidden", "Only the owning authenticated customer may acknowledge work.")
+    if job.signature or job.status in {"completed", "cancelled"}:
+        raise AppError(409, "already_signed", "This acknowledgment cannot be replayed or replaced.")
     if not signature.get("customer_confirmed"):
         raise AppError(400, "signature_unconfirmed", "Customer confirmation is required.")
-    job.signature = signature
+    summary = work_summary(db, user, job.id)
+    if signature.get("summary_hash") != summary["summary_hash"]:
+        raise AppError(409, "summary_changed", "Review the current work summary before acknowledging.")
+    acceptance = {**signature, "customer_user_id": str(user.id), "job_id": str(job.id),
+        "accepted_at": utcnow().isoformat(), "summary": summary["summary"]}
+    acceptance["payload_hmac"] = hash_secret(json.dumps(acceptance, sort_keys=True, separators=(",", ":")), get_settings().secret_key)
+    job.signature = acceptance
+    add_audit(db, actor_user_id=user.id, action="job.customer_acknowledged", entity_type="installation_job", entity_id=job.id, metadata={"summary_hash": summary["summary_hash"], "payload_hmac": acceptance["payload_hmac"]})
     db.flush()
     return job
 
@@ -269,6 +316,11 @@ def complete_job(db: Session, user: User, job_id: uuid.UUID) -> InstallationJob:
         raise AppError(409, "signature_required", "Capture the customer signature first.")
     if job.status != "on_site" or job.arrival_at is None:
         raise AppError(409, "arrival_required", "Record arrival before completing this job.")
+    summary = work_summary(db, user, job.id)
+    acceptance = dict(job.signature)
+    payload_hmac = acceptance.pop("payload_hmac", "")
+    if not secrets_match(payload_hmac, json.dumps(acceptance, sort_keys=True, separators=(",", ":")), get_settings().secret_key) or acceptance.get("summary_hash") != summary["summary_hash"]:
+        raise AppError(409, "acceptance_invalid", "Customer acknowledgment integrity failed.")
     job.status = "completed"
     job.completed_at = utcnow()
     add_audit(

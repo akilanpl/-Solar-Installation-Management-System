@@ -540,7 +540,7 @@ def test_job_completion_requires_otp_evidence_and_signature(client, application)
     )
     assert created.status_code == 201, created.text
     job_id = created.json()["id"]
-    customer_code = created.json()["customer_code"]
+    customer_code = application.state.email_sender.messages[-1].code
     assert customer_code and len(customer_code) == 6
     technician = _technician(client)
     early = client.post(f"/api/v1/jobs/{job_id}/completion", headers=technician)
@@ -560,26 +560,30 @@ def test_job_completion_requires_otp_evidence_and_signature(client, application)
     evidence = client.post(
         f"/api/v1/jobs/{job_id}/evidence",
         json={
-            "photo_refs": ["JOB-PHOTO-1"],
+            "photo_refs": [_uploaded_photo(client, job_id, technician)],
             "test_readings": {"voc_v": 612.5},
-            "started_at": now,
+            "installed_capacity_kw": "3",
+            "started_at": (datetime.now(UTC) - timedelta(minutes=1)).isoformat(),
             "finished_at": now,
         },
         headers=technician,
     )
     assert evidence.status_code == 200, evidence.text
+    customer = _login(client, "customer", "leela@example.com", "Solarops123")
+    summary_hash = client.get(f"/api/v1/jobs/{job_id}/work-summary").json()["summary_hash"]
     no_confirm = client.post(
         f"/api/v1/jobs/{job_id}/signature",
-        json={"signature_ref": "SIG-1", "customer_confirmed": False},
-        headers=technician,
+        json={"signature_ref": "SIG-1", "customer_confirmed": False, "summary_hash": summary_hash},
+        headers=customer,
     )
     assert no_confirm.status_code == 400, no_confirm.text
     signed = client.post(
         f"/api/v1/jobs/{job_id}/signature",
-        json={"signature_ref": "SIG-1", "customer_confirmed": True},
-        headers=technician,
+        json={"signature_ref": "SIG-1", "customer_confirmed": True, "summary_hash": summary_hash},
+        headers=customer,
     )
     assert signed.status_code == 200, signed.text
+    technician = _technician(client)
     done = client.post(f"/api/v1/jobs/{job_id}/completion", headers=technician)
     assert done.status_code == 200, done.text
     assert done.json()["status"] == "completed"
@@ -676,7 +680,7 @@ def test_cross_phase_order_to_completed_installation(client, application):
         headers=sales,
     )
     assert job.status_code == 201, job.text
-    job_id, customer_code = job.json()["id"], job.json()["customer_code"]
+    job_id, customer_code = job.json()["id"], application.state.email_sender.messages[-1].code
     technician = _technician(client)
     assert client.post(f"/api/v1/jobs/{job_id}/arrival", headers=technician).status_code == 200
     assert (
@@ -690,23 +694,27 @@ def test_cross_phase_order_to_completed_installation(client, application):
         client.post(
             f"/api/v1/jobs/{job_id}/evidence",
             json={
-                "photo_refs": ["E2E-1"],
-                "test_readings": {},
-                "started_at": now,
+                "photo_refs": [_uploaded_photo(client, job_id, technician)],
+                "test_readings": {"voc_v": 612.5},
+                "installed_capacity_kw": "3",
+            "started_at": (datetime.now(UTC) - timedelta(minutes=1)).isoformat(),
                 "finished_at": now,
             },
             headers=technician,
         ).status_code
         == 200
     )
+    customer = _login(client, "customer", "endtoend@example.com", "Solarops123")
+    summary_hash = client.get(f"/api/v1/jobs/{job_id}/work-summary").json()["summary_hash"]
     assert (
         client.post(
             f"/api/v1/jobs/{job_id}/signature",
-            json={"signature_ref": "E2E-SIG", "customer_confirmed": True},
-            headers=technician,
+            json={"signature_ref": "E2E-SIG", "customer_confirmed": True, "summary_hash": summary_hash},
+            headers=customer,
         ).status_code
         == 200
     )
+    technician = _technician(client)
     done = client.post(f"/api/v1/jobs/{job_id}/completion", headers=technician)
     assert done.status_code == 200, done.text
     assert done.json()["status"] == "completed"
@@ -993,7 +1001,7 @@ def test_expired_and_reused_customer_otp_fail(client, application):
         json={"order_id": order["id"], "technician_user_id": tech_id},
         headers=sales,
     )
-    job_id, customer_code = created.json()["id"], created.json()["customer_code"]
+    job_id, customer_code = created.json()["id"], application.state.email_sender.messages[-1].code
     technician = _technician(client)
     with Session(application.state.engine) as db:
         challenge = db.scalar(
@@ -1166,3 +1174,18 @@ def test_concurrent_picks_serialize_on_component_locks(client, application):
             )
         )
     assert int(total or 0) == 0
+
+
+def _uploaded_photo(client, job_id, headers):
+    response = client.post(f"/api/v1/jobs/{job_id}/uploads", files={"upload": ("roof.png", _png(), "image/png")}, headers=headers)
+    assert response.status_code == 201, response.text
+    return response.json()["storage_key"]
+
+
+def _png():
+    from io import BytesIO
+
+    from PIL import Image
+    output = BytesIO()
+    Image.new("RGB", (2, 2)).save(output, format="PNG")
+    return output.getvalue()
