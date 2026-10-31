@@ -1012,7 +1012,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/EvidenceResponse"
+                  "$ref": "#/components/schemas/app__schemas__workflow__EvidenceResponse"
                 }
               }
             }
@@ -5016,7 +5016,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PolicyCreate"
+                "$ref": "#/components/schemas/app__schemas__warranty__PolicyCreate"
               }
             }
           },
@@ -6580,6 +6580,1240 @@
         }
       }
     },
+    "/api/v1/finance/evidence": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Upload Evidence",
+        "operationId": "upload_evidence_api_v1_finance_evidence_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_evidence_api_v1_finance_evidence_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/app__schemas__finance__EvidenceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/evidence/{evidence_id}": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Download Evidence",
+        "operationId": "download_evidence_api_v1_finance_evidence__evidence_id__get",
+        "parameters": [
+          {
+            "name": "evidence_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Evidence Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/records": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "List Records",
+        "operationId": "list_records_api_v1_finance_records_get",
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "name": "order_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Order Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RecordResponse"
+                  },
+                  "title": "Response List Records Api V1 Finance Records Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/periods": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Periods",
+        "operationId": "periods_api_v1_finance_periods_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PeriodResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Periods Api V1 Finance Periods Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Create Period",
+        "operationId": "create_period_api_v1_finance_periods_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PeriodCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/periods/{period_id}/close": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Close Period",
+        "operationId": "close_period_api_v1_finance_periods__period_id__close_post",
+        "parameters": [
+          {
+            "name": "period_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Period Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PeriodClose"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/policies": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Policy",
+        "operationId": "policy_api_v1_finance_policies_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app__schemas__finance__PolicyCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/invoices": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Invoice",
+        "operationId": "invoice_api_v1_finance_invoices_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinanceInvoiceCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/invoices/{invoice_id}/recognize": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Recognize",
+        "operationId": "recognize_api_v1_finance_invoices__invoice_id__recognize_post",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecognitionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/receipts/import": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Receipt",
+        "operationId": "receipt_api_v1_finance_receipts_import_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentImport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/invoices/{invoice_id}/credits": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Credit",
+        "operationId": "credit_api_v1_finance_invoices__invoice_id__credits_post",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Invoice Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreditCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/journal": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Journal",
+        "operationId": "journal_api_v1_finance_journal_get",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Order Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JournalResponse"
+                  },
+                  "title": "Response Journal Api V1 Finance Journal Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/journal/{entry_id}/reverse": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Reverse",
+        "operationId": "reverse_api_v1_finance_journal__entry_id__reverse_post",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReverseCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/labour-rates": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Rate",
+        "operationId": "rate_api_v1_finance_labour_rates_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/timesheets": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Timesheet",
+        "operationId": "timesheet_api_v1_finance_timesheets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TimesheetCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/timesheets/{sheet_id}/review": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Review",
+        "operationId": "review_api_v1_finance_timesheets__sheet_id__review_post",
+        "parameters": [
+          {
+            "name": "sheet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Sheet Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TimesheetReview"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/costs": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Cost",
+        "operationId": "cost_api_v1_finance_costs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CostCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/payables/{payable_id}/settlements": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Settle",
+        "operationId": "settle_api_v1_finance_payables__payable_id__settlements_post",
+        "parameters": [
+          {
+            "name": "payable_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Payable Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettlementCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/completeness": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Attest",
+        "operationId": "attest_api_v1_finance_completeness_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompletenessCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/subsidy-schemes": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Scheme",
+        "operationId": "scheme_api_v1_finance_subsidy_schemes_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SchemeCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/subsidies": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Subsidy",
+        "operationId": "subsidy_api_v1_finance_subsidies_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubsidyCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/subsidies/{case_id}": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Subsidy Detail",
+        "operationId": "subsidy_detail_api_v1_finance_subsidies__case_id__get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/subsidies/{case_id}/documents": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Subsidy Document",
+        "operationId": "subsidy_document_api_v1_finance_subsidies__case_id__documents_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubsidyDocument"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/subsidies/{case_id}/events": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Subsidy Transition",
+        "operationId": "subsidy_transition_api_v1_finance_subsidies__case_id__events_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubsidyTransition"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/dashboard": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Dashboard",
+        "operationId": "dashboard_api_v1_finance_dashboard_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/reports/profit.csv": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Report",
+        "operationId": "report_api_v1_finance_reports_profit_csv_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/v1/finance/advances/allocate": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Allocate",
+        "operationId": "allocate_api_v1_finance_advances_allocate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdvanceAllocation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/payables/{payable_id}/adjustments": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Adjust",
+        "operationId": "adjust_api_v1_finance_payables__payable_id__adjustments_post",
+        "parameters": [
+          {
+            "name": "payable_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Payable Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabourAdjustment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/employees": {
       "get": {
         "tags": [
@@ -6731,6 +7965,54 @@
         ],
         "title": "AcknowledgmentResponse"
       },
+      "AdvanceAllocation": {
+        "properties": {
+          "posting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Posting Date"
+          },
+          "policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policy Id"
+          },
+          "receipt_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Receipt Id"
+          },
+          "invoice_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Invoice Id"
+          },
+          "amount_minor": {
+            "type": "integer",
+            "maximum": 9000000000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Amount Minor"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Key"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "posting_date",
+          "policy_id",
+          "receipt_id",
+          "invoice_id",
+          "amount_minor",
+          "key"
+        ],
+        "title": "AdvanceAllocation"
+      },
       "AttachmentResponse": {
         "properties": {
           "id": {
@@ -6785,6 +8067,20 @@
           "upload"
         ],
         "title": "Body_upload_attachment_api_v1_tickets__ticket_id__attachments_post"
+      },
+      "Body_upload_evidence_api_v1_finance_evidence_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_evidence_api_v1_finance_evidence_post"
       },
       "Body_upload_evidence_api_v1_surveys__survey_id__evidence_post": {
         "properties": {
@@ -6843,6 +8139,54 @@
         ],
         "title": "CashReceiptCreate"
       },
+      "CompletenessCreate": {
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "evidence_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Evidence Id"
+          },
+          "labour_complete": {
+            "type": "boolean",
+            "const": true,
+            "title": "Labour Complete"
+          },
+          "expenses_complete": {
+            "type": "boolean",
+            "const": true,
+            "title": "Expenses Complete"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Note"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Key"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "order_id",
+          "evidence_id",
+          "labour_complete",
+          "expenses_complete",
+          "note",
+          "key"
+        ],
+        "title": "CompletenessCreate"
+      },
       "ConfirmationCreate": {
         "properties": {
           "decision": {
@@ -6875,6 +8219,82 @@
           "summary_version"
         ],
         "title": "ConfirmationCreate"
+      },
+      "CostCreate": {
+        "properties": {
+          "posting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Posting Date"
+          },
+          "policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policy Id"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "material",
+              "expense"
+            ],
+            "title": "Kind"
+          },
+          "ledger_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ledger Id"
+          },
+          "amount_minor": {
+            "type": "integer",
+            "maximum": 9000000000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Amount Minor"
+          },
+          "evidence_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Evidence Id"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Description"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Key"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "posting_date",
+          "policy_id",
+          "order_id",
+          "kind",
+          "amount_minor",
+          "evidence_id",
+          "description",
+          "key"
+        ],
+        "title": "CostCreate"
       },
       "CoverageResponse": {
         "properties": {
@@ -6956,6 +8376,74 @@
           "order_id"
         ],
         "title": "CoverageResponse"
+      },
+      "CreditCreate": {
+        "properties": {
+          "posting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Posting Date"
+          },
+          "policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policy Id"
+          },
+          "source_credit_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Credit Id"
+          },
+          "amount_minor": {
+            "type": "integer",
+            "maximum": 9000000000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Amount Minor"
+          },
+          "tax_minor": {
+            "type": "integer",
+            "maximum": 9000000000000.0,
+            "minimum": 0.0,
+            "title": "Tax Minor"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          },
+          "evidence_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Evidence Id"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Key"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "posting_date",
+          "policy_id",
+          "amount_minor",
+          "tax_minor",
+          "reason",
+          "evidence_id",
+          "key"
+        ],
+        "title": "CreditCreate"
       },
       "CreditNoteCreate": {
         "properties": {
@@ -7108,6 +8596,88 @@
           "message"
         ],
         "title": "CustomerReply"
+      },
+      "DashboardResponse": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "const": "INR",
+            "title": "Currency",
+            "default": "INR"
+          },
+          "recognized_revenue_minor": {
+            "type": "integer",
+            "title": "Recognized Revenue Minor"
+          },
+          "cash_minor": {
+            "type": "integer",
+            "title": "Cash Minor"
+          },
+          "receivables_minor": {
+            "type": "integer",
+            "title": "Receivables Minor"
+          },
+          "payables_minor": {
+            "type": "integer",
+            "title": "Payables Minor"
+          },
+          "advances_minor": {
+            "type": "integer",
+            "title": "Advances Minor"
+          },
+          "deferred_revenue_minor": {
+            "type": "integer",
+            "title": "Deferred Revenue Minor"
+          },
+          "outstanding_jobs": {
+            "type": "integer",
+            "title": "Outstanding Jobs"
+          },
+          "service_liability_minor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Liability Minor"
+          },
+          "service_liability_state": {
+            "type": "string",
+            "title": "Service Liability State"
+          },
+          "subsidy_status": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Subsidy Status"
+          },
+          "jobs": {
+            "items": {
+              "$ref": "#/components/schemas/JobProfit"
+            },
+            "type": "array",
+            "title": "Jobs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recognized_revenue_minor",
+          "cash_minor",
+          "receivables_minor",
+          "payables_minor",
+          "advances_minor",
+          "deferred_revenue_minor",
+          "outstanding_jobs",
+          "service_liability_minor",
+          "service_liability_state",
+          "subsidy_status",
+          "jobs"
+        ],
+        "title": "DashboardResponse"
       },
       "DecisionCreate": {
         "properties": {
@@ -8048,41 +9618,6 @@
         ],
         "title": "EstimateResponse"
       },
-      "EvidenceResponse": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Id"
-          },
-          "content_type": {
-            "type": "string",
-            "title": "Content Type"
-          },
-          "size_bytes": {
-            "type": "integer",
-            "title": "Size Bytes"
-          },
-          "original_filename": {
-            "type": "string",
-            "title": "Original Filename"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "content_type",
-          "size_bytes",
-          "original_filename",
-          "created_at"
-        ],
-        "title": "EvidenceResponse"
-      },
       "ExceptionCreate": {
         "properties": {
           "ticket_id": {
@@ -8176,6 +9711,42 @@
           "created_at"
         ],
         "title": "ExceptionResponse"
+      },
+      "FinanceInvoiceCreate": {
+        "properties": {
+          "posting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Posting Date"
+          },
+          "policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policy Id"
+          },
+          "source_kind": {
+            "type": "string",
+            "enum": [
+              "order",
+              "service_invoice"
+            ],
+            "title": "Source Kind"
+          },
+          "source_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Source Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "posting_date",
+          "policy_id",
+          "source_kind",
+          "source_id"
+        ],
+        "title": "FinanceInvoiceCreate"
       },
       "HTTPValidationError": {
         "properties": {
@@ -8634,6 +10205,72 @@
         ],
         "title": "JobOtpVerify"
       },
+      "JobProfit": {
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "revenue_minor": {
+            "type": "integer",
+            "title": "Revenue Minor"
+          },
+          "material_minor": {
+            "type": "integer",
+            "title": "Material Minor"
+          },
+          "labour_minor": {
+            "type": "integer",
+            "title": "Labour Minor"
+          },
+          "expense_minor": {
+            "type": "integer",
+            "title": "Expense Minor"
+          },
+          "profit_minor": {
+            "type": "integer",
+            "title": "Profit Minor"
+          },
+          "complete": {
+            "type": "boolean",
+            "title": "Complete"
+          },
+          "missing": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing"
+          },
+          "source_record_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Source Record Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "order_id",
+          "reference",
+          "revenue_minor",
+          "material_minor",
+          "labour_minor",
+          "expense_minor",
+          "profit_minor",
+          "complete",
+          "missing",
+          "source_record_ids"
+        ],
+        "title": "JobProfit"
+      },
       "JobResponse": {
         "properties": {
           "id": {
@@ -8796,6 +10433,123 @@
           "summary_hash"
         ],
         "title": "JobSignature"
+      },
+      "JournalResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "source_event": {
+            "type": "string",
+            "title": "Source Event"
+          },
+          "record_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Record Id"
+          },
+          "period_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Period Id"
+          },
+          "posting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Posting Date"
+          },
+          "reversal_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reversal Of"
+          },
+          "lines": {
+            "items": {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source_event",
+          "record_id",
+          "period_id",
+          "posting_date",
+          "reversal_of",
+          "lines"
+        ],
+        "title": "JournalResponse"
+      },
+      "LabourAdjustment": {
+        "properties": {
+          "posting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Posting Date"
+          },
+          "policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policy Id"
+          },
+          "delta_minor": {
+            "type": "integer",
+            "maximum": 9000000000000.0,
+            "minimum": -9000000000000.0,
+            "title": "Delta Minor"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          },
+          "evidence_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Evidence Id"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Key"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "posting_date",
+          "policy_id",
+          "delta_minor",
+          "reason",
+          "evidence_id",
+          "key"
+        ],
+        "title": "LabourAdjustment"
       },
       "LoginRequest": {
         "properties": {
@@ -9186,6 +10940,51 @@
         ],
         "title": "PackageResponse"
       },
+      "PaymentImport": {
+        "properties": {
+          "posting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Posting Date"
+          },
+          "policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policy Id"
+          },
+          "payment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Payment Id"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "invoice_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invoice Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "posting_date",
+          "policy_id",
+          "payment_id",
+          "order_id"
+        ],
+        "title": "PaymentImport"
+      },
       "PaymentIntentCreate": {
         "properties": {
           "quotation_id": {
@@ -9320,42 +11119,85 @@
         ],
         "title": "PaymentRequirementResponse"
       },
-      "PolicyCreate": {
+      "PeriodClose": {
         "properties": {
-          "code": {
+          "evidence": {
             "type": "string",
-            "maxLength": 32,
+            "maxLength": 500,
             "minLength": 3,
-            "title": "Code"
-          },
-          "issuer": {
-            "type": "string",
-            "maxLength": 120,
-            "minLength": 2,
-            "title": "Issuer"
-          },
-          "category": {
-            "type": "string",
-            "maxLength": 64,
-            "minLength": 2,
-            "title": "Category"
-          },
-          "description": {
-            "type": "string",
-            "maxLength": 2000,
-            "minLength": 10,
-            "title": "Description"
+            "title": "Evidence"
           }
         },
         "additionalProperties": false,
         "type": "object",
         "required": [
-          "code",
-          "issuer",
-          "category",
-          "description"
+          "evidence"
         ],
-        "title": "PolicyCreate"
+        "title": "PeriodClose"
+      },
+      "PeriodCreate": {
+        "properties": {
+          "starts_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Starts On"
+          },
+          "ends_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Ends On"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "starts_on",
+          "ends_on"
+        ],
+        "title": "PeriodCreate"
+      },
+      "PeriodResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "starts_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Starts On"
+          },
+          "ends_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Ends On"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "closure_evidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closure Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "starts_on",
+          "ends_on",
+          "status",
+          "closure_evidence"
+        ],
+        "title": "PeriodResponse"
       },
       "PolicyResponse": {
         "properties": {
@@ -10075,6 +11917,54 @@
         ],
         "title": "QuotationRevisionCreate"
       },
+      "RateCreate": {
+        "properties": {
+          "technician_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Technician Id"
+          },
+          "effective_from": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Effective To"
+          },
+          "hourly_minor": {
+            "type": "integer",
+            "maximum": 9000000000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Hourly Minor"
+          },
+          "evidence_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Evidence Id"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Key"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "technician_id",
+          "effective_from",
+          "effective_to",
+          "hourly_minor",
+          "evidence_id",
+          "key"
+        ],
+        "title": "RateCreate"
+      },
       "ReadyResponse": {
         "properties": {
           "status": {
@@ -10110,6 +12000,33 @@
           "reason"
         ],
         "title": "ReasonedAction"
+      },
+      "RecognitionCreate": {
+        "properties": {
+          "posting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Posting Date"
+          },
+          "policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policy Id"
+          },
+          "evidence_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Evidence Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "posting_date",
+          "policy_id",
+          "evidence_id"
+        ],
+        "title": "RecognitionCreate"
       },
       "RecommendationRequest": {
         "properties": {
@@ -10161,6 +12078,79 @@
           "reason"
         ],
         "title": "RecommendationResponse"
+      },
+      "RecordResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "source_key": {
+            "type": "string",
+            "title": "Source Key"
+          },
+          "order_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Id"
+          },
+          "actor_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Actor Id"
+          },
+          "policy_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Id"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          },
+          "request_hash": {
+            "type": "string",
+            "title": "Request Hash"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "source_key",
+          "order_id",
+          "actor_id",
+          "policy_id",
+          "payload",
+          "request_hash",
+          "created_at"
+        ],
+        "title": "RecordResponse"
       },
       "RepairJobCreate": {
         "properties": {
@@ -10734,6 +12724,34 @@
         ],
         "title": "ResolutionSummaryResponse"
       },
+      "ReverseCreate": {
+        "properties": {
+          "posting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Posting Date"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          },
+          "evidence_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Evidence Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "posting_date",
+          "reason",
+          "evidence_id"
+        ],
+        "title": "ReverseCreate"
+      },
       "RevisionRequestCreate": {
         "properties": {
           "category": {
@@ -10903,6 +12921,75 @@
         ],
         "title": "SchedulingSlotUpdate"
       },
+      "SchemeCreate": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Key"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Name"
+          },
+          "official_url": {
+            "type": "string",
+            "maxLength": 500,
+            "pattern": "^https://[^\\s]+$",
+            "title": "Official Url"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Version"
+          },
+          "effective_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "type": "string",
+            "format": "date",
+            "title": "Effective To"
+          },
+          "required_documents": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^\\S+$"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "minItems": 1,
+            "title": "Required Documents"
+          },
+          "evidence_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Evidence Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "name",
+          "official_url",
+          "version",
+          "effective_from",
+          "effective_to",
+          "required_documents",
+          "evidence_id"
+        ],
+        "title": "SchemeCreate"
+      },
       "SerialAssign": {
         "properties": {
           "order_id": {
@@ -11025,6 +13112,48 @@
           "component_code"
         ],
         "title": "SerialScanCreate"
+      },
+      "SettlementCreate": {
+        "properties": {
+          "posting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Posting Date"
+          },
+          "policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policy Id"
+          },
+          "amount_minor": {
+            "type": "integer",
+            "maximum": 9000000000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Amount Minor"
+          },
+          "evidence_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Evidence Id"
+          },
+          "bank_reference": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Bank Reference"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "posting_date",
+          "policy_id",
+          "amount_minor",
+          "evidence_id",
+          "bank_reference"
+        ],
+        "title": "SettlementCreate"
       },
       "SignupRequest": {
         "properties": {
@@ -11475,6 +13604,135 @@
         ],
         "title": "StockOperationResponse"
       },
+      "SubsidyCreate": {
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "scheme_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scheme Id"
+          },
+          "consent_text": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Consent Text"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Key"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "order_id",
+          "scheme_id",
+          "consent_text",
+          "key"
+        ],
+        "title": "SubsidyCreate"
+      },
+      "SubsidyDocument": {
+        "properties": {
+          "document_type": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Document Type"
+          },
+          "evidence_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Evidence Id"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Key"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "document_type",
+          "evidence_id",
+          "key"
+        ],
+        "title": "SubsidyDocument"
+      },
+      "SubsidyTransition": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "reviewed",
+              "submitted",
+              "approved",
+              "rejected",
+              "consent_withdrawn"
+            ],
+            "title": "Action"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Note"
+          },
+          "evidence_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Id"
+          },
+          "external_reference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "pattern": "^\\S+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Reference"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Key"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "action",
+          "note",
+          "key"
+        ],
+        "title": "SubsidyTransition"
+      },
       "SupportAssignmentUpdate": {
         "properties": {
           "support_user_id": {
@@ -11832,7 +14090,7 @@
           },
           "evidence": {
             "items": {
-              "$ref": "#/components/schemas/EvidenceResponse"
+              "$ref": "#/components/schemas/app__schemas__workflow__EvidenceResponse"
             },
             "type": "array",
             "title": "Evidence"
@@ -12560,6 +14818,107 @@
         ],
         "title": "TicketSummary"
       },
+      "TimesheetCreate": {
+        "properties": {
+          "job_kind": {
+            "type": "string",
+            "enum": [
+              "installation",
+              "repair"
+            ],
+            "title": "Job Kind"
+          },
+          "job_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Job Id"
+          },
+          "check_in": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Check In"
+          },
+          "check_out": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Check Out"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Note"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Key"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "job_kind",
+          "job_id",
+          "check_in",
+          "check_out",
+          "note",
+          "key"
+        ],
+        "title": "TimesheetCreate"
+      },
+      "TimesheetReview": {
+        "properties": {
+          "posting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Posting Date"
+          },
+          "policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policy Id"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "rejected"
+            ],
+            "title": "Decision"
+          },
+          "approved_minutes": {
+            "type": "integer",
+            "maximum": 1440.0,
+            "minimum": 0.0,
+            "title": "Approved Minutes"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Note"
+          },
+          "evidence_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Evidence Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "posting_date",
+          "policy_id",
+          "decision",
+          "approved_minutes",
+          "note",
+          "evidence_id"
+        ],
+        "title": "TimesheetReview"
+      },
       "TriageUpdate": {
         "properties": {
           "category": {
@@ -12947,6 +15306,163 @@
           "work_finished_at"
         ],
         "title": "WorkUpdate"
+      },
+      "app__schemas__finance__EvidenceResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "sha256",
+          "content_type"
+        ],
+        "title": "EvidenceResponse"
+      },
+      "app__schemas__finance__PolicyCreate": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^\\S+$",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Label"
+          },
+          "approval_reference": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Approval Reference"
+          },
+          "effective_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "type": "string",
+            "format": "date",
+            "title": "Effective To"
+          },
+          "recognition": {
+            "type": "string",
+            "const": "completed_installation_and_approved_service",
+            "title": "Recognition"
+          },
+          "tax": {
+            "type": "string",
+            "const": "preserve_approved_source_snapshot",
+            "title": "Tax"
+          },
+          "posting_rules": {
+            "type": "string",
+            "const": "invoice_deferred_tax_on_issue_costs_on_approval",
+            "title": "Posting Rules"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "approval_reference",
+          "effective_from",
+          "effective_to",
+          "recognition",
+          "tax",
+          "posting_rules"
+        ],
+        "title": "PolicyCreate"
+      },
+      "app__schemas__warranty__PolicyCreate": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 3,
+            "title": "Code"
+          },
+          "issuer": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Issuer"
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 2,
+            "title": "Category"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "issuer",
+          "category",
+          "description"
+        ],
+        "title": "PolicyCreate"
+      },
+      "app__schemas__workflow__EvidenceResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "title": "Size Bytes"
+          },
+          "original_filename": {
+            "type": "string",
+            "title": "Original Filename"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "content_type",
+          "size_bytes",
+          "original_filename",
+          "created_at"
+        ],
+        "title": "EvidenceResponse"
       }
     }
   }
