@@ -493,6 +493,17 @@ def test_repair_assignment_and_technician_isolation(client, application):
     customer = _login(client, "customer", "leela@example.com", "Solarops123")
     ticket = _create_ticket(client, customer, order["id"])
     _triage(client, ticket["id"])
+    with Session(application.state.engine) as db:
+        owner = db.scalar(select(User).where(User.email == "support@example.com"))
+        assert owner is not None
+        owner_id = str(owner.id)
+    assigned = client.post(
+        f"/api/v1/tickets/{ticket['id']}/support-assignment",
+        json={"support_user_id": owner_id, "note": "Taking ownership first."},
+        headers=_support(client),
+    )
+    assert assigned.status_code == 200, assigned.text
+    assert assigned.json()["status"] == "assigned"
     job = _repair_job(client, ticket["id"], _tech_id(application, "tech@example.com"))
     assert job["status"] == "assigned"
     assert job["reference"].startswith("RPJ-")

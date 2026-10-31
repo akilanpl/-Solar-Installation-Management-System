@@ -438,8 +438,12 @@ def create_repair_job(
     )
     db.add(job)
     db.flush()
-    _move(db, user, ticket, "assigned", "repair_job_created", note,
-          {"repair_job_id": str(job.id), "technician_user_id": str(technician.id)})
+    if ticket.status == "triaged":
+        _move(db, user, ticket, "assigned", "repair_job_created", note,
+              {"repair_job_id": str(job.id), "technician_user_id": str(technician.id)})
+    else:
+        _record(db, user, ticket, "repair_job_created", note,
+                {"repair_job_id": str(job.id), "technician_user_id": str(technician.id)})
     return job, True
 
 

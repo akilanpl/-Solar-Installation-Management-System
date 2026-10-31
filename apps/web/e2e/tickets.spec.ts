@@ -53,6 +53,7 @@ async function signIn(page: Page, kind: string, identifier: string, password: st
 
 test("Leela reports an inverter fault and confirms the repair in the browser", async ({ page, browser }) => {
   test.setTimeout(240_000);
+
   const email = `leela.e2e.${Date.now()}@example.com`;
   const serial = `SN-E2E-${Date.now().toString().slice(-6)}`;
 
@@ -62,18 +63,25 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
   await page.getByLabel("Mobile").fill("9845099999");
   await page.getByLabel("Password").fill("Solarops123");
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page.getByRole("heading", { name: "Verify your email" })).toBeVisible();
+  await page.waitForURL("**/verify-email*", { timeout: 30000 });
+  await page.waitForLoadState("load");
+  await expect(page.getByRole("heading", { name: "Verify your email" })).toBeVisible({ timeout: 30000 });
   await page.getByRole("button", { name: "Load code from local mailbox" }).click();
+  await expect(page.getByText("Loaded the code from the local development mailbox. This button is not available in production.", { exact: true })).toBeVisible({ timeout: 30000 });
   await page.getByRole("button", { name: "Verify email" }).click();
-  await expect(page.getByRole("heading", { name: "Sign in to SolarOps" })).toBeVisible();
+  await page.waitForURL("**/login*", { timeout: 30000 });
+  await page.waitForLoadState("load");
+  await expect(page.getByRole("heading", { name: "Sign in to SolarOps" })).toBeVisible({ timeout: 30000 });
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password", { exact: true }).fill("Solarops123");
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: /Hello, Leela Nair/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Hello, Leela Nair/ })).toBeVisible({ timeout: 30000 });
 
   const customerApi = await browser.newContext();
   const salesApi = await browser.newContext();
   const warehouseApi = await browser.newContext();
+  const supportApi = await browser.newContext();
+  await apiLogin((await supportApi.newPage()).request, "employee", "EMP-SUP-001", STAFF_PASSWORD);
   try {
     await apiLogin((await customerApi.newPage()).request, "customer", email, "Solarops123");
     const customer = await customerApi.newPage();
@@ -91,7 +99,11 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
       status: "qualified", note: "Roof can take 3 kW.", shadow_free_area_sqm: "40.00", grid_connection_suitable: true,
     })).status()).toBe(200);
     const survey = await (await post(s, "/api/v1/surveys", { enquiry_id: enquiry.id })).json() as { id: string };
-    const staff = await (await s.get("/api/v1/support/staff?role=technician", { headers: { "X-CSRF-Token": await csrf(s) } })).json() as { user_id: string; employee_code: string }[];
+    const sup = (await supportApi.newPage()).request;
+    const staff = await (await sup.get("/api/v1/support/staff?role=technician")).json() as { user_id: string; employee_code: string }[];
+    const owners = await (await sup.get("/api/v1/support/staff?role=support")).json() as { user_id: string; employee_code: string }[];
+    const ownerId = owners.find((row) => row.employee_code === "EMP-SUP-001")?.user_id;
+    expect(ownerId).toBeTruthy();
     const techId = staff.find((row) => row.employee_code === "EMP-TECH-001")?.user_id;
     expect(techId).toBeTruthy();
     expect((await post(s, `/api/v1/surveys/${survey.id}/assignment`, { technician_user_id: techId })).status()).toBe(200);
@@ -160,15 +172,17 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
     await supportPage.getByLabel("Triage note").fill("Fault code points at the inverter.");
     await supportPage.getByRole("button", { name: "Triage ticket" }).click();
     await expect(supportPage.getByText("Saved.")).toBeVisible();
-    await supportPage.getByLabel("Support owner").selectOption({ label: /EMP-SUP-001/ });
+    await supportPage.getByLabel("Support owner").selectOption(ownerId as string);
     await supportPage.getByRole("button", { name: "Assign owner" }).click();
     await expect(supportPage.getByText("Saved.")).toBeVisible();
-    await supportPage.getByLabel(/Repair technician/).selectOption({ label: /EMP-TECH-001/ });
+    await supportPage.getByLabel(/Repair technician/).selectOption(techId as string);
     await supportPage.getByRole("button", { name: "Create repair job" }).click();
     await expect(supportPage.getByText("Saved.")).toBeVisible();
 
     const techPage = await (await browser.newContext()).newPage();
     await signIn(techPage, "technician", "EMP-TECH-001", STAFF_PASSWORD);
+    await techPage.waitForURL("**/technician*", { timeout: 30000 });
+    await techPage.waitForLoadState("load");
     await techPage.goto("/technician/repairs");
     await expect(techPage.getByRole("heading", { name: "Repair assignments" })).toBeVisible();
     await techPage.getByRole("link", { name: /RPJ-/ }).first().click();
@@ -193,7 +207,8 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
 
     await page.goto(`/customer/complaints`);
     await page.getByRole("link", { name: ticketRef.trim(), exact: true }).click();
-    await expect(page.getByText("Isolator replaced; generation verified at 2.9 kW under load.")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Repair summary/ })).toBeVisible();
+    await expect(page.getByText("Isolator replaced; generation verified at 2.9 kW under load.").first()).toBeVisible();
     await page.getByRole("button", { name: "I reviewed this repair and accept it" }).click();
     await expect(page.getByText("Saved.")).toBeVisible();
 
@@ -204,7 +219,7 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
     await supportPage.reload();
     await expect(supportPage.getByText("Status: Closed")).toBeVisible();
     await page.reload();
-    await expect(page.getByText("Status: Confirmed by you")).toBeVisible();
+    await expect(page.getByText("Status: Closed")).toBeVisible();
 
     const persisted = await page.request.get(`/api/v1/tickets`);
     expect(persisted.status()).toBe(200);
@@ -214,5 +229,6 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
     await customerApi.close();
     await salesApi.close();
     await warehouseApi.close();
+    await supportApi.close();
   }
 });

@@ -43,6 +43,7 @@ export function AttachmentSection({ ticketId, canUpload }: { ticketId: string; c
   useEffect(load, [load]);
   async function upload(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
     if (!file) return;
     setPending(true);
     setError(null);
@@ -51,7 +52,7 @@ export function AttachmentSection({ ticketId, canUpload }: { ticketId: string; c
       form.set("upload", file);
       await api(`/api/v1/tickets/${ticketId}/attachments`, { method: "POST", body: form });
       setFile(null);
-      event.currentTarget.reset();
+      formElement.reset();
       load();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed.");
@@ -102,7 +103,8 @@ export function Complaints() {
   useEffect(load, [load]);
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const values = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const values = new FormData(form);
     setPending(true);
     setFormError(null);
     setNotice(null);
@@ -120,7 +122,7 @@ export function Complaints() {
         }),
       });
       setNotice(`Complaint ${created.reference} recorded.`);
-      event.currentTarget.reset();
+      form.reset();
       load();
     } catch (e) {
       setFormError(e instanceof Error ? e.message : "Could not raise the complaint.");
@@ -381,6 +383,24 @@ export function SupportTicketDetail({ ticketId }: { ticketId: string }) {
       setPending(false);
     }
   }
+  async function createJob(body: unknown) {
+    setPending(true);
+    setActionError(null);
+    setNotice(null);
+    try {
+      await api(`/api/v1/tickets/${ticketId}/repair-jobs`, {
+        method: "POST",
+        headers: { "Idempotency-Key": newIdempotencyKey() },
+        body: JSON.stringify(body),
+      });
+      setNotice("Saved.");
+      load();
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : "Action failed.");
+    } finally {
+      setPending(false);
+    }
+  }
   if (error) return <ErrorState message={error} onRetry={load} />;
   if (!ticket) return <LoadingState label="Loading ticket" />;
   return (
@@ -425,7 +445,7 @@ export function SupportTicketDetail({ ticketId }: { ticketId: string }) {
               <TextField label="Handover note (optional)" name="note" />
               <Button variant="secondary" disabled={pending}>Assign owner</Button>
             </form>
-            <form onSubmit={(e) => { const v = new FormData(e.currentTarget); e.preventDefault(); act("repair-jobs", { technician_user_id: String(v.get("technician")), scheduled_starts_at: String(v.get("slot") || "") || undefined, note: String(v.get("note") || "") || undefined }, true); }} className="mt-4 space-y-2">
+            <form onSubmit={(e) => { const v = new FormData(e.currentTarget); e.preventDefault(); createJob({ technician_user_id: String(v.get("technician")), scheduled_starts_at: String(v.get("slot") || "") || undefined, note: String(v.get("note") || "") || undefined }); }} className="mt-4 space-y-2">
               <SelectField label="Repair technician (only active technicians with fewer than 5 open jobs stay eligible)" name="technician" required defaultValue="">
                 <option value="" disabled>Select a technician</option>
                 {technicians?.map((t) => <option key={t.user_id} value={t.user_id}>{t.full_name} ({t.employee_code}) — {t.open_repair_jobs} open</option>)}
@@ -577,6 +597,7 @@ export function RepairDetail({ jobId }: { jobId: string }) {
   }
   async function uploadEvidence(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
     if (!photo || !job) return;
     setPending(true);
     setActionError(null);
@@ -586,7 +607,7 @@ export function RepairDetail({ jobId }: { jobId: string }) {
       form.append("repair_job_id", job.id);
       await api(`/api/v1/tickets/${job.ticket_id}/attachments?repair_job_id=${job.id}`, { method: "POST", body: form });
       setPhoto(null);
-      event.currentTarget.reset();
+      formElement.reset();
       setNotice("Evidence uploaded and linked to this job.");
     } catch (e) {
       setActionError(e instanceof Error ? e.message : "Upload failed.");
