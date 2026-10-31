@@ -80,15 +80,15 @@ def test_disposable_backup_restores_every_table_and_preserves_financial_rows(
     )
     assert backup.stat().st_size > 0
     restored_name = "solarops_release_restore_" + uuid.uuid4().hex
-    # Use the local OS owner for CREATEDB only; application role owns/restores
-    # this uniquely named test database. Never drop the input database.
-    owner_environment = {k: v for k, v in os.environ.items() if not k.startswith("PG")}
+    # The explicit local test connection owns creation and cleanup too. This
+    # works on CI TCP services and never falls back to an unrelated OS cluster.
+    assert source.username, "Backup rehearsal requires an explicit test database role"
     restored = None
     created = False
     try:
         subprocess.run(
             ["createdb", "--owner", source.username, restored_name],
-            env=owner_environment,
+            env=environment,
             check=True,
             capture_output=True,
             timeout=30,
@@ -122,7 +122,7 @@ def test_disposable_backup_restores_every_table_and_preserves_financial_rows(
             assert restored_name.startswith("solarops_release_restore_")
             subprocess.run(
                 ["dropdb", restored_name],
-                env=owner_environment,
+                env=environment,
                 check=True,
                 capture_output=True,
                 timeout=30,

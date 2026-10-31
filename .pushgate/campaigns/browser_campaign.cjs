@@ -24,10 +24,14 @@ async function run() {
     process.exitCode = 1;
     return;
   }
-  const cli = requireWeb.resolve('playwright/cli');
+  const cli = resolveCli();
   const result = spawnSync(process.execPath, [cli,'test',`e2e/release/${suite}`,'--config=playwright.release.config.ts','--reporter=junit'], {
     cwd:web,stdio:'inherit',env:{...process.env,PLAYWRIGHT_JUNIT_OUTPUT_FILE:output},
   });
   process.exitCode = result.status === null ? 1 : result.status;
 }
-run().catch(error=>{ console.error(error.message); process.exitCode=1; });
+function resolveCli() {
+  return path.join(path.dirname(requireWeb.resolve('playwright/package.json')), 'cli.js');
+}
+module.exports = { resolveCli };
+if (require.main === module) run().catch(error=>{ console.error(error.message); process.exitCode=1; });
