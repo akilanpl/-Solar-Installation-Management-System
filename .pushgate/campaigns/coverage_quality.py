@@ -1,7 +1,7 @@
 """Measure changed executable lines from this gate's fresh coverage database.
 
-No caller-supplied mutation JSON is accepted. Until an isolated executable
-mutation runner is reviewed/provisioned, mutation remains an explicit failure.
+No caller-supplied mutation JSON is accepted. The fixed reviewed mutation
+engine is executed serially and only its freshly created same-SHA report counts.
 """
 
 import argparse
@@ -135,6 +135,104 @@ def measured_diff(root, folder, sha, base):
     }
 
 
+def validate_mutation_report(report, sha):
+    """Validate internally executed evidence, never an external acceptance flag."""
+    if report.get("schema_version") != 1 or report.get("sha") != sha:
+        raise ValueError("Mutation schema/source SHA does not match this invocation")
+    if report.get("scope") != "critical-guard-spotcheck":
+        raise ValueError(
+            "Mutation report must name the bounded critical-guard-spotcheck scope"
+        )
+    inventory = report.get("inventory")
+    mutants = report.get("mutants")
+    planned = report.get("planned")
+    if (
+        type(planned) is not int
+        or planned < 15
+        or not isinstance(inventory, list)
+        or len(inventory) != planned
+        or len(set(inventory)) != planned
+        or not all(isinstance(item, str) and item for item in inventory)
+        or not isinstance(mutants, list)
+        or len(mutants) != planned
+        or {row.get("id") for row in mutants} != set(inventory)
+    ):
+        raise ValueError(
+            "Mutation inventory is incomplete, duplicated or below the fixed guard scope"
+        )
+    baseline = report.get("baseline", {})
+    if (
+        baseline.get("status") != "passed"
+        or type(baseline.get("tests")) is not int
+        or baseline["tests"] <= 0
+    ):
+        raise ValueError("Actual mutation baseline tests did not pass")
+    if any(row.get("status") not in {"killed", "survived"} for row in mutants):
+        raise ValueError(
+            "Mutation campaign contains error/timeout/unrun or unknown statuses"
+        )
+    killed = sum(row["status"] == "killed" for row in mutants)
+    percent = 100.0 * killed / planned
+    if report.get("killed") != killed or report.get("errors") != 0:
+        raise ValueError("Mutation counts disagree with complete per-mutant executions")
+    if (
+        type(report.get("kill_percent")) not in (float, int)
+        or abs(report["kill_percent"] - percent) > 0.001
+    ):
+        raise ValueError(
+            "Mutation percentage disagrees with actual killed/planned inventory"
+        )
+    if percent < 60 or report.get("decision") != "PASS":
+        raise ValueError(
+            f"Measured critical-guard mutation score {percent:.3f}% <60% or campaign rejected"
+        )
+    return {
+        "scope": report["scope"],
+        "sha": sha,
+        "killed": killed,
+        "planned": planned,
+        "kill_percent": percent,
+    }
+
+
+def execute_mutation_campaign(root, folder, sha):
+    script = root / ".pushgate/campaigns/mutation_campaign.py"
+    if not script.is_file():
+        raise ValueError(
+            "Missing executable prerequisite .pushgate/campaigns/mutation_campaign.py; no mutation score measured"
+        )
+    output = folder / "mutation-report.json"
+    output.unlink(missing_ok=True)
+    with (folder / "mutation-execution.log").open("w") as log:
+        command = [sys.executable, str(script), "--output", str(output)]
+        log.write(json.dumps({"sha": sha, "command": command}) + "\n")
+        log.flush()
+        outcome = subprocess.run(
+            command,
+            cwd=root,
+            stdout=log,
+            stderr=subprocess.STDOUT,
+            timeout=540,
+            check=False,
+        )
+    if not output.is_file() or output.is_symlink() or output.stat().st_size > 5_000_000:
+        raise ValueError(
+            "Executed mutation engine did not emit a bounded regular fresh report"
+        )
+    report = json.loads(output.read_text())
+    verified = validate_mutation_report(report, sha)
+    if outcome.returncode != 0:
+        raise ValueError(
+            f"Executed mutation campaign exited {outcome.returncode}; no passing score accepted"
+        )
+    if git(root, "rev-parse", "HEAD") != sha or git(
+        root, "status", "--porcelain", "--untracked-files=all"
+    ):
+        raise ValueError("Source changed during the mutation campaign")
+    print("Measured bounded mutation scope: " + json.dumps(verified, sort_keys=True))
+    return verified
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--junit", type=Path, required=True)
@@ -169,12 +267,26 @@ def main():
         failures["diff_coverage_at_least_90"] = (
             f"Fresh diff coverage unavailable: {type(error).__name__}: {error}"
         )
-    failures["mutation_score_at_least_60"] = (
-        "No reviewed isolated executable mutation runner is provisioned. A >=60% mutation score "
-        "has NOT been measured. Install/pin a mutation engine and implement a serial campaign "
-        "in a separate checkout with its own disposable PostgreSQL database; rerun actual tests "
-        "per mutant and distinguish killed/survived/timeout/error. External result JSON is not proof."
-    )
+    try:
+        # Source identity must independently be verified even if line coverage
+        # failed; execute the real guard campaign rather than importing JSON.
+        current_sha, _ = verify_source(root)
+        expected = root / ".pushgate/reports" / current_sha
+        if args.junit.resolve().parent != expected.resolve():
+            raise ValueError(
+                "Mutation output must be in current exact-SHA gate directory"
+            )
+        execute_mutation_campaign(root, expected, current_sha)
+    except (
+        OSError,
+        ValueError,
+        KeyError,
+        TypeError,
+        subprocess.SubprocessError,
+    ) as error:
+        failures["mutation_score_at_least_60"] = (
+            f"Actual bounded mutation campaign unavailable/failed: {type(error).__name__}: {error}"
+        )
     suite = ET.Element(
         "testsuite",
         name="mutation-diff-coverage",
