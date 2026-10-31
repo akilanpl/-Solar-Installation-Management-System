@@ -21,30 +21,32 @@ import { useAuth } from '../../context/AuthContext';
 import './SolarChatbot.css';
 
 const DEFAULT_CONTEXT = {
-  title: 'Delayed order',
-  subtitle: '#48213 · 3 items',
+  title: 'Rooftop Solar Assistant',
+  subtitle: '5 kW Bifacial System · Live Telemetry Online',
 };
 
 const INITIAL_MESSAGES = [
   {
     id: 'msg-u1',
     sender: 'user',
-    text: "Status hasn't changed in two days.",
+    text: "Check my solar system health and generation status.",
     timestamp: '2m ago',
   },
   {
     id: 'msg-b1',
     sender: 'bot',
-    text: "Held up at the sorting hub. It's out for delivery today.",
+    text: "All 10 Bifacial Mono PERC modules and 5 kW Hybrid Inverter are operating at peak efficiency.\n\nToday's rooftop solar generation is 22.4 kWh with 92% battery reserve and active BESCOM net-meter export.",
     statusCard: {
-      badgeText: '24',
-      primaryText: 'Today, Thu',
-      secondaryText: '6-9 PM · Bengaluru Central Hub',
+      badgeText: '4.8 kW',
+      primaryText: 'System Operating Normally',
+      secondaryText: '22.4 kWh Generated · 92% Battery SOC · Grid Connected',
     },
-    followUpText: 'A little something for the wait:',
+    followUpText: 'Quick diagnostic topics & service actions:',
     chips: [
-      { id: 'chip-points', label: '300 points', variant: 'accent', action: 'claim_points' },
-      { id: 'chip-shipping', label: 'Free shipping', variant: 'outline', action: 'free_shipping' },
+      { id: 'chip-inverter', label: 'Inverter Red Alarm (E-04)', variant: 'accent', action: 'inverter_fault' },
+      { id: 'chip-subsidy', label: 'PM Surya Ghar Subsidy (₹78k)', variant: 'outline', action: 'check_subsidy' },
+      { id: 'chip-battery', label: 'Battery Backup Level', variant: 'outline', action: 'check_battery' },
+      { id: 'chip-maintenance', label: 'Book Technician Visit', variant: 'outline', action: 'book_maintenance' },
     ],
     timestamp: 'Just now',
   },
@@ -77,14 +79,17 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
 
   const handleActionClick = (action) => {
     switch (action) {
-      case 'claim_points':
-        handleSend("I would like to claim the 300 reward points");
-        break;
-      case 'free_shipping':
-        handleSend("Please apply free shipping to my order");
-        break;
       case 'inverter_fault':
         handleSend("My inverter is showing a red alarm light with Error Code E-04");
+        break;
+      case 'check_subsidy':
+        handleSend("What is the status of my PM Surya Ghar national portal subsidy?");
+        break;
+      case 'check_generation':
+        handleSend("How much power did my solar panels generate today?");
+        break;
+      case 'check_battery':
+        handleSend("What is my battery level and backup runtime for power outages?");
         break;
       case 'file_complaint':
         handleSend("I want to file an official service complaint for my solar system");
@@ -98,9 +103,6 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
       case 'low_generation':
         handleSend("My solar panels are generating less electricity than expected");
         break;
-      case 'check_subsidy':
-        handleSend("What is the status of my PM Surya Ghar national portal subsidy?");
-        break;
       default:
         break;
     }
@@ -113,43 +115,96 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
     setTimeout(() => {
       setIsTyping(false);
 
-      // 1. Claim points
-      if (query.includes('300 points') || query.includes('claim')) {
-        if (showToast) {
-          showToast({
-            type: 'success',
-            title: 'Reward Credited',
-            message: '300 points credited to your SolarOps customer account.',
-          });
-        }
+      // 1. PM Surya Ghar Subsidy
+      if (
+        query.includes('subsidy') ||
+        query.includes('surya ghar') ||
+        query.includes('national portal') ||
+        query.includes('dbt') ||
+        query.includes('78000') ||
+        query.includes('78k')
+      ) {
+        setActiveContext({
+          title: 'PM Surya Ghar Subsidy',
+          subtitle: 'Ref #PMSG-BLR-2026-9912 · Approved',
+        });
+
         addMessage({
           id: `bot-${Date.now()}`,
           sender: 'bot',
-          text: "300 loyalty points have been credited to your account! You can redeem them as a ₹300 discount on any hardware in our Solar Store.",
+          text: "PM Surya Ghar National Portal Status: ₹78,000 central government subsidy has been approved for your 5 kW rooftop installation!\n\nBidirectional net-meter synchronization verified by BESCOM. Direct Benefit Transfer (DBT) will be credited directly to your Aadhaar-linked bank account.",
           statusCard: {
-            badgeText: '✓',
-            primaryText: '300 Points Added',
-            secondaryText: 'Wallet Balance: ₹300 Escrow Credit',
+            badgeText: '₹78k',
+            primaryText: 'Subsidy Sanctioned (Stage 4/5)',
+            secondaryText: 'DBT Credit scheduled in 4-6 business days',
           },
-          followUpText: 'Next steps:',
+          followUpText: 'Recommended subsidy actions:',
           chips: [
-            { id: 'btn-store', label: 'Browse Solar Store', variant: 'accent', action: 'order_store' },
-            { id: 'btn-track', label: 'Track Delivery Live', variant: 'outline', action: 'track_delivery' },
+            { id: 'btn-store-sub', label: 'Apply Balance in Store', variant: 'accent', action: 'order_store' },
+            { id: 'btn-gen-sub', label: 'Check Solar Generation', variant: 'outline', action: 'check_generation' },
           ],
           timestamp: 'Just now',
         });
       }
-      // 2. Free shipping
-      else if (query.includes('free shipping')) {
+      // 2. Solar Generation & Savings Telemetry
+      else if (
+        query.includes('generation') ||
+        query.includes('generate') ||
+        query.includes('how much power') ||
+        query.includes('kwh') ||
+        query.includes('savings') ||
+        query.includes('production')
+      ) {
+        setActiveContext({
+          title: 'Generation Telemetry',
+          subtitle: '5 kW Mono PERC · Indiranagar',
+        });
+
         addMessage({
           id: `bot-${Date.now()}`,
           sender: 'bot',
-          text: "Free priority dispatch has been confirmed for your shipment. Your solar inverter & battery combo will arrive with zero delivery charges.",
+          text: "Today's rooftop solar generation is 22.4 kWh (peak output 4.8 kW at 1:15 PM).\n\n• Self-consumption: 14.2 kWh (63%)\n• Exported to BESCOM Grid: 8.2 kWh (37%)\n• Estimated electricity bill savings this month: ₹4,650.",
           statusCard: {
-            badgeText: '0₹',
-            primaryText: 'Free Priority Delivery',
-            secondaryText: 'Standard Courier Fee Waived',
+            badgeText: '22.4',
+            primaryText: '22.4 kWh Generated Today',
+            secondaryText: 'CO₂ Avoided: 18.2 kg · Grid Export: 8.2 kWh',
           },
+          followUpText: 'System optimization directives:',
+          chips: [
+            { id: 'btn-clean-gen', label: 'Auto Cleaning Kit (₹4,999)', variant: 'accent', action: 'order_store' },
+            { id: 'btn-inv-gen', label: 'Check Inverter Status', variant: 'outline', action: 'inverter_fault' },
+          ],
+          timestamp: 'Just now',
+        });
+      }
+      // 3. Battery Storage & Power Outage Backup
+      else if (
+        query.includes('battery') ||
+        query.includes('backup') ||
+        query.includes('soc') ||
+        query.includes('power cut') ||
+        query.includes('blackout') ||
+        query.includes('outage')
+      ) {
+        setActiveContext({
+          title: 'Battery Energy Storage',
+          subtitle: '5.12 kWh LiFePO4 · Smart BMS Active',
+        });
+
+        addMessage({
+          id: `bot-${Date.now()}`,
+          sender: 'bot',
+          text: "Battery State of Charge is currently 92% (4.7 kWh stored energy).\n\nIn the event of a grid power cut, your essential rooftop loads (refrigerator, WiFi, lights, and fans) will run autonomously for ~9.5 hours.",
+          statusCard: {
+            badgeText: '92%',
+            primaryText: 'Backup Ready: ~9.5 Hours',
+            secondaryText: '51.2V · 100Ah · Battery Health 99%',
+          },
+          followUpText: 'Energy management options:',
+          chips: [
+            { id: 'btn-store-bat', label: '5kWh Expansion Battery', variant: 'accent', action: 'order_store' },
+            { id: 'btn-sub-bat', label: 'Check Subsidy Status', variant: 'outline', action: 'check_subsidy' },
+          ],
           timestamp: 'Just now',
         });
       }
@@ -292,17 +347,18 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
         addMessage({
           id: `bot-${Date.now()}`,
           sender: 'bot',
-          text: "I'm here to help you resolve rooftop solar problems, track hardware orders, or file official complaints.",
+          text: "I'm your SolarFlow AI Assistant. I can help diagnose inverter alarms (E-04), report real-time solar generation, track your PM Surya Ghar subsidy, or schedule rooftop maintenance.",
           statusCard: {
             badgeText: 'AI',
-            primaryText: 'System Telemetry Synced',
-            secondaryText: 'Local DB Active · 5 kW Hybrid Inverter',
+            primaryText: 'Telemetry Synced & Active',
+            secondaryText: '5 kW Inverter · Indiranagar Substation Grid Sync',
           },
           followUpText: 'Quick diagnostic topics:',
           chips: [
             { id: 'f1', label: 'Inverter Red Alarm E-04', variant: 'accent', action: 'inverter_fault' },
-            { id: 'f2', label: 'Delayed order #48213', variant: 'outline', action: 'status_delayed' },
-            { id: 'f3', label: 'Shop Solar Store', variant: 'outline', action: 'order_store' },
+            { id: 'f2', label: 'PM Surya Ghar Subsidy (₹78k)', variant: 'outline', action: 'check_subsidy' },
+            { id: 'f3', label: 'Solar Generation Status', variant: 'outline', action: 'check_generation' },
+            { id: 'f4', label: 'Browse Solar Store', variant: 'outline', action: 'order_store' },
           ],
           timestamp: 'Just now',
         });
@@ -353,12 +409,7 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
       return;
     }
     if (chip.action === 'track_delivery') {
-      handleSend("Where is my delivery right now?");
-      return;
-    }
-    if (chip.action === 'status_delayed') {
-      setActiveContext(DEFAULT_CONTEXT);
-      handleSend("Status hasn't changed in two days.");
+      handleSend("Where is my solar hardware delivery right now?");
       return;
     }
     handleActionClick(chip.action);
@@ -532,7 +583,7 @@ export function SolarChatbot({ isOpen, onClose, onOpenStore }) {
           <input
             type="text"
             className="lemon-text-input"
-            placeholder="Message..."
+            placeholder="Ask about inverter errors, solar generation, subsidy, or spares..."
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
