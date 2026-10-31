@@ -225,6 +225,12 @@ class Quotation(Base):
         ),
         UniqueConstraint("customer_user_id", "idempotency_key", name="uq_quotations_idempotency"),
         UniqueConstraint("enquiry_id", "version_number", name="uq_quotation_version"),
+        Index(
+            "uq_quotations_one_active",
+            "enquiry_id",
+            unique=True,
+            postgresql_where=text("status IN ('issued', 'accepted')"),
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
@@ -409,6 +415,7 @@ class SalesOrder(Base):
             name="totals",
         ),
         UniqueConstraint("quotation_id", name="uq_sales_orders_quotation"),
+        UniqueConstraint("enquiry_id", name="uq_sales_orders_enquiry"),
         UniqueConstraint("confirmed_by_user_id", "idempotency_key", name="uq_sales_orders_idem"),
     )
 

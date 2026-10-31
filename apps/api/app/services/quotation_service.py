@@ -39,6 +39,12 @@ from app.services.references import next_reference
 SALES = {"sales", "admin"}
 
 
+def _lock_enquiry(db: Session, enquiry_id: uuid.UUID) -> None:
+    locked = db.scalar(select(Enquiry.id).where(Enquiry.id == enquiry_id).with_for_update())
+    if locked is None:
+        raise AppError(404, "not_found", "Enquiry not found.")
+
+
 def _hash(payload: object) -> str:
     raw = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
     return sha256(raw.encode("utf-8")).hexdigest()
@@ -159,6 +165,10 @@ def revise_quotation(
 ) -> tuple[Quotation, bool]:
     if user.role_code not in SALES:
         raise AppError(403, "forbidden", "Only sales can revise a quotation.")
+    probe = db.get(Quotation, quotation_id)
+    if probe is None:
+        raise AppError(404, "not_found", "Quotation not found.")
+    _lock_enquiry(db, probe.enquiry_id)
     current = db.scalar(
         select(Quotation).where(Quotation.id == quotation_id).with_for_update()
     )
@@ -195,6 +205,10 @@ def revise_quotation(
     survey = db.get(Survey, current.survey_id)
     if survey is None or survey.status != "approved":
         raise AppError(409, "survey_not_approved", "The survey is no longer approved.")
+    # Supersede before the new insert so the one-active-quotation index
+    # allows the replacement in this transaction. A failure rolls both back.
+    current.status = "superseded"
+    db.flush()
     created = _issue(
         db,
         settings,
@@ -206,7 +220,6 @@ def revise_quotation(
         digest,
         supersedes=current,
     )
-    current.status = "superseded"
     if payload.revision_request_id is not None:
         request = db.get(QuotationRevisionRequest, payload.revision_request_id)
         if request is None or request.quotation_id != current.id:
@@ -248,6 +261,18 @@ def _issue(
         )
     if survey.cable_distance_m is None:
         raise AppError(409, "survey_incomplete", "The approved survey has no cable distance.")
+    open_quotation_id = db.scalar(
+        select(Quotation.id).where(
+            Quotation.enquiry_id == enquiry.id,
+            Quotation.status.in_(("issued", "accepted")),
+        )
+    )
+    if open_quotation_id is not None:
+        raise AppError(
+            409,
+            "quotation_already_open",
+            "This enquiry already has an open quotation. Revise that quotation instead of issuing another.",
+        )
     package = db.scalar(select(SolarPackage).where(SolarPackage.code == package_code_value))
     if (
         package is None

@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.core.errors import AppError
 from app.core.security import utcnow
 from app.models.audit import SolarPackage
+from app.models.enquiry import Enquiry
 from app.models.identity import User
 from app.models.workflow import (
     InstallationSchedulingRequest,
@@ -55,6 +56,12 @@ def confirm_order(
 ) -> tuple[SalesOrder, bool]:
     if user.role_code not in SALES:
         raise AppError(403, "forbidden", "Only sales can confirm an order.")
+    probe = db.get(Quotation, quotation_id)
+    if probe is None:
+        raise AppError(404, "not_found", "Quotation not found.")
+    locked = db.scalar(select(Enquiry.id).where(Enquiry.id == probe.enquiry_id).with_for_update())
+    if locked is None:
+        raise AppError(404, "not_found", "Enquiry not found.")
     quotation = db.scalar(
         select(Quotation)
         .where(Quotation.id == quotation_id)
@@ -97,6 +104,15 @@ def confirm_order(
         if loaded is None:
             raise AppError(500, "order_missing", "The order could not be reloaded.")
         return loaded, True
+    other_order = db.scalar(
+        select(SalesOrder).where(SalesOrder.enquiry_id == quotation.enquiry_id)
+    )
+    if other_order is not None:
+        raise AppError(
+            409,
+            "duplicate_order",
+            "This enquiry already has a confirmed order.",
+        )
     if quotation.status != "accepted":
         raise AppError(409, "quotation_not_accepted", "Confirm an order only from an accepted quotation.")
     survey = db.get(Survey, quotation.survey_id)

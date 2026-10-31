@@ -61,7 +61,7 @@ def read_requirement(
         full_amount_minor=requirement.full_amount_minor,
         advance_percent=requirement.advance_percent,
         verified_minor=verified,
-        outstanding_minor=requirement.full_amount_minor - verified,
+        outstanding_minor=max(0, requirement.full_amount_minor - verified),
     )
 
 

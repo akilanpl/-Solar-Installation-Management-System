@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.core.security import utcnow
+from app.models.enquiry import Enquiry
 from app.models.identity import User
 from app.models.workflow import PaymentAttempt, PaymentIntent, PaymentRequirement, Quotation
 from app.repositories.queries import add_audit
@@ -35,14 +36,40 @@ def requirement_for(db: Session, quotation_id: uuid.UUID) -> PaymentRequirement 
     )
 
 
+def quotation_family_ids(db: Session, quotation_id: uuid.UUID) -> list[uuid.UUID]:
+    """This quotation and the revisions it replaced, each id once.
+
+    Verified money stays on the quotation it was paid against. The current
+    quotation's balance includes that history so a revision does not ask for
+    the same money again and does not drop it.
+    """
+    found: list[uuid.UUID] = []
+    seen: set[uuid.UUID] = set()
+    current: uuid.UUID | None = quotation_id
+    while current is not None and current not in seen:
+        seen.add(current)
+        found.append(current)
+        current = db.scalar(
+            select(Quotation.supersedes_quotation_id).where(Quotation.id == current)
+        )
+    return found
+
+
 def verified_total(db: Session, quotation_id: uuid.UUID) -> int:
+    family = quotation_family_ids(db, quotation_id)
     value = db.scalar(
         select(func.coalesce(func.sum(PaymentIntent.amount_minor), 0)).where(
-            PaymentIntent.quotation_id == quotation_id,
+            PaymentIntent.quotation_id.in_(family),
             PaymentIntent.status == "verified",
         )
     )
     return int(value or 0)
+
+
+def _lock_enquiry(db: Session, enquiry_id: uuid.UUID) -> None:
+    locked = db.scalar(select(Enquiry.id).where(Enquiry.id == enquiry_id).with_for_update())
+    if locked is None:
+        raise AppError(404, "not_found", "Enquiry not found.")
 
 
 def get_requirement(db: Session, user: User, quotation_id: uuid.UUID) -> tuple[PaymentRequirement, int]:
@@ -98,6 +125,7 @@ def create_sandbox_intent(
                 "This Idempotency-Key was already used for a different payment.",
             )
         return existing, True
+    _lock_enquiry(db, quotation.enquiry_id)
     _guard_amount(db, quotation, payload.amount_minor)
     intent = PaymentIntent(
         quotation_id=quotation.id,
@@ -143,6 +171,13 @@ def apply_sandbox_outcome(
 ) -> PaymentIntent:
     if settings.app_env == "production":
         raise AppError(403, "sandbox_disabled", "Sandbox payments are disabled in production.")
+    located = db.get(PaymentIntent, intent_id)
+    if located is None:
+        raise AppError(404, "not_found", "Payment not found.")
+    quotation = db.get(Quotation, located.quotation_id)
+    if quotation is None:
+        raise AppError(404, "not_found", "Quotation not found.")
+    _lock_enquiry(db, quotation.enquiry_id)
     intent = db.scalar(select(PaymentIntent).where(PaymentIntent.id == intent_id).with_for_update())
     if intent is None:
         raise AppError(404, "not_found", "Payment not found.")
@@ -196,6 +231,10 @@ def record_cash_receipt(
 ) -> tuple[PaymentIntent, bool]:
     if user.role_code not in SALES:
         raise AppError(403, "forbidden", "Only sales can record a cash receipt.")
+    quotation = db.get(Quotation, payload.quotation_id)
+    if quotation is None:
+        raise AppError(404, "not_found", "Quotation not found.")
+    _lock_enquiry(db, quotation.enquiry_id)
     quotation = db.scalar(
         select(Quotation).where(Quotation.id == payload.quotation_id).with_for_update()
     )
@@ -295,10 +334,11 @@ def _guard_amount(db: Session, quotation: Quotation, amount_minor: int) -> None:
 
 
 def verified_payments(db: Session, quotation_id: uuid.UUID) -> list[PaymentIntent]:
+    family = quotation_family_ids(db, quotation_id)
     return list(
         db.scalars(
             select(PaymentIntent).where(
-                PaymentIntent.quotation_id == quotation_id,
+                PaymentIntent.quotation_id.in_(family),
                 PaymentIntent.status == "verified",
             )
         )

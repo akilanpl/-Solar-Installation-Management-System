@@ -36,7 +36,13 @@ A payment requirement is created with the quote. The advance is `SOLAROPS_ADVANC
 
 ## Revisions and acceptance
 
-`revise_quotation` locks the current quotation. It inserts a new `issued` row and then marks the old row `superseded`. It does not update `quotation_lines` of the old row. `accept_quotation` locks the row, checks the customer, the `issued` status, the expiry, and the approved survey, then inserts `quotation_acceptances` with the quotation id as the primary key. A second accept gets `already_accepted`.
+An enquiry has at most one `issued` or `accepted` quotation. `uq_quotations_one_active` enforces that. `create_quotation` and `revise_quotation` lock the enquiry row first, so two concurrent issues cannot both pass. A second issue returns `quotation_already_open`. A revision marks the current row `superseded` and flushes that change before inserting the replacement, still inside the same transaction. `quotation_lines` on the old row are not updated. Withdrawing a quotation leaves the enquiry free for a new issue.
+
+`accept_quotation` locks the row, checks the customer, the `issued` status, the expiry, and the approved survey, then inserts `quotation_acceptances` with the quotation id as the primary key. A second accept gets `already_accepted`.
+
+Verified payments stay on the quotation they were paid against. The balance for a quotation includes verified payments on the revisions it superseded, each payment once. A revision therefore does not drop money already received and does not allow that same amount to be collected again. `outstanding_minor` is never negative. Payment verification locks the enquiry before it decides the outcome, so two full payments cannot both become verified.
+
+`confirm_order` locks the enquiry, then the quotation. `uq_sales_orders_enquiry` allows one confirmed order for that enquiry. Repeating the same idempotency key returns the original order and does not create a second warehouse or scheduling request. The handoff rows are still inserted in the order transaction.
 
 ## Payments
 
