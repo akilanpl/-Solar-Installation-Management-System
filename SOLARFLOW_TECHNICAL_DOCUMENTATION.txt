@@ -477,3 +477,96 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
       navigation pills) without bloating the core alert component with domain-specific conditional props.
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+12. DUAL-PANEL AUTHENTICATION ARCHITECTURE (LOGIN & SIGNUP RE-DESIGN)
+--------------------------------------------------------------------------------
+- Date & Context:
+  Completely redesigned the Login and Signup pages to match the uploaded design reference.
+  The layout was transitioned from a single centered card to a high-end dual-panel
+  container housed within an ambient dark viewport.
+
+- Key Architecture & Visual Elements:
+  1. Main Card Container:
+     - 1160px max-width, 32px border-radius, clean white background (#ffffff) with deep
+       drop shadow (`0 30px 80px rgba(0, 0, 0, 0.5)`).
+     - Centered inside an ambient dark background (#0c0d14) with subtle blue and violet
+       radial lighting gradients.
+  2. Left Hero Panel (Royal / Electric Blue Canvas):
+     - Background: Gradient blending radial lighting with rich blue tones
+       (`linear-gradient(145deg, #1d4ed8 0%, #2563eb 35%, #1e40af 70%, #172554 100%)`).
+     - Top-left: Connected geometric node glyph with brand name "ninth".
+     - Glassmorphic Pill: "Join Us to Build 🤩" badge with backdrop blur filter.
+     - Bold Typography: "Start your Journey" title and contextual subtitle.
+     - 3-Step Process Cards Row:
+       * Step 1 (Active): Solid white card with blue circular badge (1) and "Register your account".
+       * Step 2 (Glass): Translucent card with white badge (2) and "Set up your profile information".
+       * Step 3 (Glass): Translucent card with white badge (3) and "Verify your identity through passport/ID".
+  3. Right Form Panel (Clean White Architecture):
+     - Form Header: Centered "Join Us" title.
+     - Field 1 (Phone Number): Flag icon, country code (+374 / +91), vertical separator, and number input.
+     - Field 2 & 3 (2-Column Row): "Full Name / Role" selector/input on the left, and "Username"
+       with green validation checkmark (✓) on the right.
+     - Field 4 (Password): Masked bullet input with Eye/EyeOff toggle and 2-line requirement helper text.
+     - Primary Action: Full-width vibrant blue "Continue" button with smooth hover elevation.
+     - Switch Mode Prompt: "Already have an account? Log in" with instant mode switching.
+     - Divider: Subtle "Or" divider with horizontal rules.
+     - Google SSO Simulation: "Sign up with Google" button with official multicolored Google SVG logo.
+     - 1-Click Demo Bypass: Embedded role-switcher pills (Customer, Sales, Tech, Warehouse, Support, Admin)
+       to fulfill project evaluation requirements.
+     - Legal Disclaimer: Subtle terms and privacy policy link note.
+
+- Files Modified:
+  * apps/web/src/pages/Login/Login.jsx
+  * apps/web/src/pages/Login/Login.css
+  * apps/web/src/pages/Signup/Signup.jsx
+  * apps/web/src/pages/Signup/Signup.css
+
+- React Concepts & Hooks Used:
+  * useState:
+    - `mode`: Polymorphic state toggling between `'login'` and `'signup'`.
+    - `portal`: Manages role selection and auto-fills default test credentials.
+    - `showPassword`: Toggles password visibility without losing input focus.
+    - `phone`, `fullName`, `identifier`, `password`: Controlled input bindings.
+    - `loading`: Tracks asynchronous API request states and prevents double submission.
+    - `fakeModalOpen`: Controls modal visibility for persona switching.
+  * Context Consumption:
+    - `useAuth()` provides `login`, `signup`, and `bypassLogin`.
+    - `useRouter()` enables programmatic SPA navigation without full page reloads.
+
+- How the Code Works Step-by-Step:
+  1. The user visits `/login` or `/signup`.
+  2. The page renders the 1160px wide split card. The left side showcases the 3-step onboarding
+     journey while the right side displays the input form.
+  3. Clicking "Log in" or "Join us" seamlessly updates the `mode` state without reloading the page.
+  4. On submit, `handleSubmit` routes credentials to `login()` or `signup()` via the API client.
+  5. If demo bypass is clicked, `handleQuickBypass()` immediately activates the role and routes to
+     the corresponding dashboard.
+
+- How the Frontend Communicates with the Backend:
+  * Submissions communicate with the FastAPI backend through the `/api/v1` routes.
+  * Failed requests trigger `ErrorState` cards, while successful demo bypass triggers the wave
+    success alert card in `AuthContext`.
+
+- Important Technical Decisions & Reasons:
+  * Polymorphic Auth Component: Consolidated `Login` and `Signup` into a unified layout structure,
+    ensuring 100% design fidelity and eliminating redundant CSS across routes.
+  * Pure CSS Architecture: All layout rules, glassmorphism filters, and responsive grids were
+    implemented using pure CSS instead of runtime CSS-in-JS libraries.
+
+- Bugs Encountered & Fixes:
+  * Mobile overflow: The 3-step cards were too wide for mobile viewports (< 640px). Fixed by
+    transforming the grid to a single vertical column with compact horizontal chips on small screens.
+
+- Technical Interview Questions & Answers:
+  Q1: How does an asymmetric dual-panel layout improve conversion rates compared to a single centered modal?
+  A1: An asymmetric dual-panel layout reserves dedicated visual real estate for brand trust badges,
+      security guarantees, and clear onboarding roadmap steps. This clarifies expectations for
+      new users, significantly reducing hesitation and abandonment.
+
+  Q2: Why is it advantageous to support both Login and Signup within a single polymorphic component?
+  A2: Unifying auth states eliminates jarring page reloads, preserves common form state across mode
+      switches, avoids duplicating validation logic, and keeps bundle sizes lean.
+
+================================================================================
