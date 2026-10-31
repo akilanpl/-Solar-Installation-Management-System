@@ -1727,3 +1727,40 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+--------------------------------------------------------------------------------
+29. DYNAMIC LOCAL DB DATA & AMOUNT INTEGRATION FOR RECEIPT PRINTER
+--------------------------------------------------------------------------------
+- Date & Context:
+  Addressed feedback on the ReceiptPrinter machine LCD screen (`media_1793452733698_b16123ef.png`).
+  Replaced dummy template placeholders ("Pro plan", "Annual subscription", "£230.40")
+  with real project stats, system parameters, and settlement amounts dynamically queried
+  from the website's persistent local database (`solarops_enquiries`, `solarops_current_user`).
+
+- Key Architecture & Visual Elements:
+  1. Dynamic Local DB Retrieval (`getLocalDbStats` in `ReceiptPrinter.jsx`):
+     - Automatically inspects persistent client database storage (`localStorage` keys
+       `solarops_enquiries` and `solarops_current_user`).
+     - System Title: Dynamically computed from customer's preferred capacity:
+       `5 kW Solar System` (e.g. `preferred_capacity_w / 1000`).
+     - Subtitle Stats: Displays actual engineering survey parameters from local DB:
+       `Milestone 1 Advance · 850 sq.ft Reinforced Concrete (Flat)`.
+     - Total Amount: Correctly renders Indian Rupee settlement `₹78,000.00` matching
+       the PM Surya Ghar government direct benefit subsidy escrow schedule.
+  2. Integration with Checkout Flow (`RazorpayPaymentPage.jsx`):
+     - Synchronized `billInfo` metadata with customer's active solar lead and profile.
+     - Linked customer name (`Arun Kumar`), invoice (`INV-SURYA-2026-9912`), order reference
+       (`order_PMSG_2026_9912`), and UTR (`RZP91823902381`).
+     - Thermal paper itemized table now reflects authentic local DB bill components:
+       * 5 kW Bifacial Mono PERC Modules (10x) - ₹1,80,000
+       * 5 kVA Solar Hybrid Inverter (1x) - ₹82,000
+       * Rooftop Mounting Structure & BOS (1 set) - ₹40,000
+       * Central Subsidy (PM Surya Ghar Credit) - -₹78,000
+       * Net Settled Escrow: ₹78,000.00
+
+- Files Modified:
+  * apps/web/src/components/ReceiptPrinter/ReceiptPrinter.jsx (Modified)
+  * apps/web/src/pages/Customer/RazorpayPaymentPage.jsx (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================

@@ -16,39 +16,80 @@ const receiptToothPoints = Array.from(
 
 export const receiptClipPath = `polygon(0 0, 100% 0, 100% calc(100% - ${receiptToothDepth}px), ${receiptToothPoints})`;
 
+// Helper to retrieve project stats & amounts from the website's persistent local DB
+function getLocalDbStats() {
+  try {
+    const storedEnquiries = typeof window !== 'undefined'
+      ? JSON.parse(localStorage.getItem('solarops_enquiries') || '[]')
+      : [];
+    const storedUser = typeof window !== 'undefined'
+      ? JSON.parse(localStorage.getItem('solarops_current_user') || 'null')
+      : null;
+    const activeEnquiry = storedEnquiries[0] || {};
+
+    const capacityKw = activeEnquiry.preferred_capacity_w
+      ? activeEnquiry.preferred_capacity_w / 1000
+      : 5;
+    const customerName = storedUser?.full_name || activeEnquiry.customer_name || 'Arun Kumar';
+    const roofType = activeEnquiry.roof_type || 'Reinforced Concrete (Flat)';
+    const roofArea = activeEnquiry.roof_area_sqft || 850;
+
+    return {
+      title: `${capacityKw} kW Solar System`,
+      subtitle: `Milestone 1 Advance · ${roofArea} sq.ft ${roofType}`,
+      amount: '₹78,000.00',
+      billId: 'INV-SURYA-2026-9912',
+      orderId: 'order_PMSG_2026_9912',
+      utrNumber: 'RZP91823902381',
+      customerName,
+      accountNumber: '•••• 4921',
+      date: '31 Oct 2026',
+      items: [
+        { name: `${capacityKw} kW Bifacial Mono PERC Modules`, qty: '10x', cost: '₹1,80,000' },
+        { name: `${capacityKw} kVA Solar Hybrid Inverter`, qty: '1x', cost: '₹82,000' },
+        { name: 'Rooftop Mounting Structure & BOS', qty: '1 set', cost: '₹40,000' },
+        { name: 'Central Subsidy (PM Surya Ghar)', qty: 'Credit', cost: '-₹78,000' },
+      ],
+    };
+  } catch {
+    return {
+      title: '5 kW Solar System',
+      subtitle: 'Milestone 1 Advance · 850 sq.ft Flat RCC Roof',
+      amount: '₹78,000.00',
+      billId: 'INV-SURYA-2026-9912',
+      orderId: 'order_PMSG_2026_9912',
+      utrNumber: 'RZP91823902381',
+      customerName: 'Arun Kumar',
+      accountNumber: '•••• 4921',
+      date: '31 Oct 2026',
+      items: [
+        { name: '5 kW Bifacial Mono PERC Modules', qty: '10x', cost: '₹1,80,000' },
+        { name: '5 kVA Solar Hybrid Inverter', qty: '1x', cost: '₹82,000' },
+        { name: 'Rooftop Mounting Structure & BOS', qty: '1 set', cost: '₹40,000' },
+        { name: 'Central Subsidy (PM Surya Ghar)', qty: 'Credit', cost: '-₹78,000' },
+      ],
+    };
+  }
+}
+
 /**
  * ReceiptPrinter Component
- * Exact match to reference design:
- * - Matte dark charcoal rounded chassis
- * - Top bar with Star sparkle badge on left and 'Home' pill button on right
- * - Inset LCD screen with 'Pro plan', 'Annual subscription', 'Total', '£230.40',
- *   and circular notch spinner with 'Printing your receipt'
- * - Recessed paper ejection slit with stepped feed animation and sawtooth tear paper
+ * Displays the project stats and settlement amount directly from the website local DB:
+ * - Matte dark charcoal chassis (#202020) with Star sparkle badge & Home button
+ * - Inset LCD screen displaying system stats & ₹78,000.00 amount from local DB
+ * - Stepped paper feed animation with itemized solar bill and sawtooth tear edge
  */
 export function ReceiptPrinter({
   stage = 'printing', // 'processing' | 'printing' | 'complete'
-  title = 'Pro plan',
-  subtitle = 'Annual subscription',
-  amount = '£230.40',
-  billDetails = {
-    title: 'Pro plan',
-    subtitle: 'Annual subscription',
-    amount: '£230.40',
-    billId: 'INV-PRO-2026-9912',
-    orderId: 'sub_pro_2026_9912',
-    utrNumber: 'RZP91823902381',
-    customerName: 'Arun Kumar',
-    accountNumber: '•••• 4921',
-    date: '31 Oct 2026',
-    items: [
-      { name: 'SolarOps Pro Plan License', qty: '1x', cost: '£180.00' },
-      { name: 'Priority Escrow & VIP Setup', qty: '1x', cost: '£50.40' },
-    ],
-  },
+  title,
+  subtitle,
+  amount,
+  billDetails,
   onClose,
   onDownload,
 }) {
   const [currentStage, setCurrentStage] = useState(stage);
+  const localDb = getLocalDbStats();
 
   useEffect(() => {
     if (stage === 'processing') {
@@ -71,10 +112,11 @@ export function ReceiptPrinter({
   const isPrinting = currentStage === 'printing';
   const isComplete = currentStage === 'complete';
 
-  // Extract display values (defaults to exact reference image values)
-  const displayTitle = billDetails?.title || title || 'Pro plan';
-  const displaySubtitle = billDetails?.subtitle || subtitle || 'Annual subscription';
-  const displayAmount = billDetails?.amount || amount || '£230.40';
+  // Extract display values (defaults to website local DB stats & amount)
+  const displayTitle = billDetails?.title || title || localDb.title;
+  const displaySubtitle = billDetails?.subtitle || subtitle || localDb.subtitle;
+  const displayAmount = billDetails?.amount || amount || localDb.amount;
+  const activeBill = { ...localDb, ...(billDetails || {}) };
 
   return (
     <div className="receipt-printer-modal-overlay">
@@ -165,19 +207,19 @@ export function ReceiptPrinter({
               <div className="paper-meta-grid">
                 <div>
                   <span className="meta-label">Invoice:</span>
-                  <strong className="meta-val">{billDetails?.billId || 'INV-PRO-2026-9912'}</strong>
+                  <strong className="meta-val">{activeBill.billId}</strong>
                 </div>
                 <div>
                   <span className="meta-label">Date:</span>
-                  <strong className="meta-val">{billDetails?.date || '31 Oct 2026'}</strong>
+                  <strong className="meta-val">{activeBill.date}</strong>
                 </div>
                 <div>
                   <span className="meta-label">Customer:</span>
-                  <strong className="meta-val">{billDetails?.customerName || 'Arun Kumar'}</strong>
+                  <strong className="meta-val">{activeBill.customerName}</strong>
                 </div>
                 <div>
                   <span className="meta-label">Account:</span>
-                  <strong className="meta-val">{billDetails?.accountNumber || '•••• 4921'}</strong>
+                  <strong className="meta-val">{activeBill.accountNumber}</strong>
                 </div>
               </div>
 
@@ -190,10 +232,7 @@ export function ReceiptPrinter({
                   <span style={{ textAlign: 'center' }}>QTY</span>
                   <span style={{ textAlign: 'right' }}>AMOUNT</span>
                 </div>
-                {(billDetails?.items || [
-                  { name: 'SolarOps Pro Plan License', qty: '1x', cost: '£180.00' },
-                  { name: 'Priority Escrow & VIP Setup', qty: '1x', cost: '£50.40' },
-                ]).map((item, i) => (
+                {activeBill.items.map((item, i) => (
                   <div key={i} className="paper-item-row">
                     <span className="item-name">{item.name}</span>
                     <span className="item-qty">{item.qty}</span>
@@ -214,7 +253,7 @@ export function ReceiptPrinter({
                   <span>PAYMENT METHOD: INSTANT SETTLEMENT</span>
                 </div>
                 <div className="paper-total-sub">
-                  <span>BANK REF (UTR): {billDetails?.utrNumber || 'RZP91823902381'}</span>
+                  <span>BANK REF (UTR): {activeBill.utrNumber}</span>
                 </div>
               </div>
 
@@ -231,8 +270,8 @@ export function ReceiptPrinter({
                     />
                   </svg>
                 </div>
-                <p className="paper-barcode-text">*{billDetails?.orderId || 'sub_pro_2026_9912'}*</p>
-                <p className="paper-thankyou">Thank you for your business.</p>
+                <p className="paper-barcode-text">*{activeBill.orderId}*</p>
+                <p className="paper-thankyou">Thank you for accelerating clean energy.</p>
                 <div className="paper-stamp">✓ VERIFIED & SETTLED</div>
               </div>
             </article>

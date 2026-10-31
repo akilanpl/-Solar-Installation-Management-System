@@ -22,21 +22,63 @@ export function RazorpayPaymentPage() {
   const [showPrinter, setShowPrinter] = useState(false);
   const [printerStage, setPrinterStage] = useState('processing');
 
-  // Bill metadata for subscription / solar milestone (Exact match to reference design)
+  // Load customer profile and project stats dynamically from website local DB
+  const [localDbStats] = useState(() => {
+    try {
+      const storedEnquiries = JSON.parse(localStorage.getItem('solarops_enquiries') || '[]');
+      const storedUser = JSON.parse(localStorage.getItem('solarops_current_user') || 'null');
+      const activeEnquiry = storedEnquiries[0] || {};
+
+      const capacityKw = activeEnquiry.preferred_capacity_w
+        ? activeEnquiry.preferred_capacity_w / 1000
+        : 5;
+      const customerName = storedUser?.full_name || activeEnquiry.customer_name || 'Arun Kumar';
+      const roofType = activeEnquiry.roof_type || 'Flat RCC Roof';
+      const roofArea = activeEnquiry.roof_area_sqft || 850;
+      const refId = activeEnquiry.reference || 'ENQ-2026-001';
+
+      return {
+        customerName,
+        systemTitle: `${capacityKw} kW Solar System`,
+        systemSubtitle: `Milestone 1 Advance · ${roofArea} sq.ft ${roofType}`,
+        amount: '₹78,000.00',
+        refId,
+        items: [
+          { name: `${capacityKw} kW Bifacial Mono PERC Modules`, qty: '10x', cost: '₹1,80,000' },
+          { name: `${capacityKw} kVA Solar Hybrid Inverter`, qty: '1x', cost: '₹82,000' },
+          { name: 'Rooftop Mounting Structure & BOS', qty: '1 set', cost: '₹40,000' },
+          { name: 'Central Subsidy (PM Surya Ghar)', qty: 'Credit', cost: '-₹78,000' },
+        ],
+      };
+    } catch {
+      return {
+        customerName: 'Arun Kumar',
+        systemTitle: '5 kW Solar System',
+        systemSubtitle: 'Milestone 1 Advance · 850 sq.ft Flat RCC Roof',
+        amount: '₹78,000.00',
+        refId: 'ENQ-2026-001',
+        items: [
+          { name: '5 kW Bifacial Mono PERC Modules', qty: '10x', cost: '₹1,80,000' },
+          { name: '5 kVA Solar Hybrid Inverter', qty: '1x', cost: '₹82,000' },
+          { name: 'Rooftop Mounting Structure & BOS', qty: '1 set', cost: '₹40,000' },
+          { name: 'Central Subsidy (PM Surya Ghar)', qty: 'Credit', cost: '-₹78,000' },
+        ],
+      };
+    }
+  });
+
+  // Bill metadata tied directly to website local DB
   const billInfo = {
-    title: 'Pro plan',
-    subtitle: 'Annual subscription',
-    amount: '£230.40',
-    billId: 'INV-PRO-2026-9912',
-    orderId: 'sub_pro_2026_9912',
+    title: localDbStats.systemTitle,
+    subtitle: localDbStats.systemSubtitle,
+    amount: localDbStats.amount,
+    billId: 'INV-SURYA-2026-9912',
+    orderId: 'order_PMSG_2026_9912',
     utrNumber: 'RZP91823902381',
-    customerName: fullName || 'Arun Kumar',
+    customerName: fullName || localDbStats.customerName,
     accountNumber: `•••• ${cardNumber ? cardNumber.replace(/\s+/g, '').slice(-4) : '4921'}`,
     date: '31 Oct 2026',
-    items: [
-      { name: 'SolarOps Pro Plan License', qty: '1x', cost: '£180.00' },
-      { name: 'Priority Escrow & VIP Setup', qty: '1x', cost: '£50.40' },
-    ],
+    items: localDbStats.items,
   };
 
   const handleProceedPayment = (e) => {
