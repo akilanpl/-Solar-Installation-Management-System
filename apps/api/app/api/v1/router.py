@@ -9,6 +9,7 @@ from app.api.v1 import (
     enquiries,
     health,
     installation,
+    intelligence,
     orders,
     packages,
     payments,
@@ -37,3 +38,4 @@ api_router.include_router(replacements.router)
 api_router.include_router(billing.router)
 api_router.include_router(admin.router)
 api_router.include_router(dev.router)
+api_router.include_router(intelligence.router)

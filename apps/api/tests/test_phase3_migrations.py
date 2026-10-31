@@ -46,7 +46,7 @@ def test_phase3_round_trip_keeps_existing_phase1_record(client, application):
         _assert_safe(TEST_DATABASE_URL)
         command.upgrade(config, "head")
     with application.state.engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "4b1c2d3e4f51"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "4d1a2b3c4d50"
     schema = inspect(application.state.engine)
     for name in (
         "stock_ledger",
@@ -75,6 +75,13 @@ def test_phase3_round_trip_keeps_existing_phase1_record(client, application):
         "service_credit_notes",
         "replacement_decisions",
         "return_inspections",
+        "phase4d_customer_snapshots",
+        "phase4d_cache_outbox",
+        "phase4d_ai_assists",
+        "phase4d_site_geolocations",
+        "phase4d_forecast_snapshots",
+        "phase4d_weather_advisories",
+        "phase4d_generation_readings",
     ):
         assert name in schema.get_table_names()
         assert schema.get_foreign_keys(name)

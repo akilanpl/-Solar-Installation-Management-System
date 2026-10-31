@@ -25,6 +25,17 @@ from app.models.phase3 import (  # noqa: F401
     WarehouseLocation,
     Warranty,
 )
+from app.models.phase4d import (  # noqa: F401
+    AiAssistSession,
+    CacheConsumerCursor,
+    CacheMetric,
+    CustomerSnapshotCache,
+    ForecastSnapshot,
+    GenerationReading,
+    SiteGeolocation,
+    SysCacheOutbox,
+    WeatherAdvisory,
+)
 from app.models.support import (  # noqa: F401
     ResolutionAcknowledgment,
     ServiceTicket,
