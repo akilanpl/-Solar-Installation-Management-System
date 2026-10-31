@@ -82,7 +82,9 @@ def _covered_unit(client, application, email, serial="SN-EXT-0001"):
         f"/api/v1/warranty/orders/{order['id']}/activate-coverages",
         headers=_support(client))
     assert activated.status_code == 201, activated.text
-    return order, serial_number, activated.json()[0]
+    coverage = next(row for row in activated.json()
+                    if row["serial_number"] == serial_number.upper())
+    return order, serial_number, coverage
 
 
 def _customer_session(client, email):

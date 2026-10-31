@@ -134,8 +134,13 @@ def test_activation_and_covered_decision(client, application):
     activated = client.post(f"/api/v1/warranty/orders/{order['id']}/activate-coverages",
                             headers=support)
     assert activated.status_code == 201, activated.text
-    assert len(activated.json()) == 1
-    coverage = activated.json()[0]
+    from app.models.phase3 import EquipmentSerial
+
+    with Session(application.state.engine) as db:
+        expected_serials = {row.serial_number for row in db.query(EquipmentSerial).filter_by(
+            order_id=uuid.UUID(order["id"]), status="installed").all()}
+    assert {row["serial_number"] for row in activated.json()} == expected_serials
+    coverage = next(row for row in activated.json() if row["serial_number"] == serial.upper())
     assert coverage["serial_number"] == serial.upper()
     assert coverage["policy_version"] == 1
     assert coverage["status"] == "active"
@@ -195,7 +200,8 @@ def test_expiration_boundary_and_policy_snapshot_preserved(client, application):
     support = _support(client)
     activated = client.post(f"/api/v1/warranty/orders/{order['id']}/activate-coverages",
                             headers=support)
-    ends_at = activated.json()[0]["ends_at"]
+    ends_at = next(row for row in activated.json()
+                   if row["serial_number"] == serial.upper())["ends_at"]
     customer = _login(client, "customer", "leela@example.com", "Solarops123")
     ticket = _create_ticket(client, customer, order["id"], serial)
     _triage(client, ticket["id"])
@@ -233,7 +239,8 @@ def test_exception_override_and_void(client, application):
     support = _support(client)
     activated = client.post(f"/api/v1/warranty/orders/{order['id']}/activate-coverages",
                             headers=support)
-    coverage_id = activated.json()[0]["coverage_id"]
+    coverage_id = next(row for row in activated.json()
+                       if row["serial_number"] == serial.upper())["coverage_id"]
     customer = _login(client, "customer", "leela@example.com", "Solarops123")
     ticket = _create_ticket(client, customer, order["id"], serial)
     _triage(client, ticket["id"])
@@ -291,7 +298,13 @@ def test_warranty_visibility_and_lookup(client, application):
     customer = _login(client, "customer", "leela@example.com", "Solarops123")
     mine = client.get("/api/v1/warranty/serials/mine", headers=customer)
     assert mine.status_code == 200, mine.text
-    assert [row["serial_number"] for row in mine.json()] == [serial.upper()]
+    from app.models.phase3 import EquipmentSerial
+
+    with Session(application.state.engine) as db:
+        expected_serials = {row.serial_number for row in db.query(EquipmentSerial).filter_by(
+            order_id=uuid.UUID(order["id"]), status="installed").all()}
+    assert {row["serial_number"] for row in mine.json()} == expected_serials
+    assert serial.upper() in expected_serials
     stranger = _customer(client, application, "warranty-stranger@example.com")
     assert client.get("/api/v1/warranty/serials/mine", headers=stranger).json() == []
     assert client.get("/api/v1/warranty/serials/lookup?serial_number=x", headers=customer).status_code == 403
