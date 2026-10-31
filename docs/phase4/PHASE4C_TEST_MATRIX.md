@@ -22,6 +22,6 @@ authentication in the managed-browser run uses the visible sign-in form.
 
 Concurrency is bounded to two simultaneous database sessions. Full load,
 resilience, accessibility and multi-browser/device campaigns are NOT RUN.
-Current browser evidence is one actual managed Chromium/IAB desktop session;
+Current browser evidence is one actual managed IAB desktop session;
 Playwright CLI launches were blocked by macOS sandbox permissions, not passed.
 No mock or unit test is described as a real provider or government integration.
