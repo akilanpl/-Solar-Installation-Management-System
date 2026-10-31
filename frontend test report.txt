@@ -1,0 +1,74 @@
+SOLAROPS - FRONTEND TEST REPORT
+Date: 2026-10-31 (Asia/Calcutta)
+Repository: akilanpl/-Solar-Installation-Management-System
+Branch: test/qa-integration
+Tested source: c83bd1150d07e26e9fc8769cc7ea52a9a49a016e
+
+VERDICT: TESTING COMPLETE; FUNCTIONAL ACCEPTANCE FAILS ON QUALIFICATION.
+
+FRESH RESULTS
+- Unit tests: 7 passed (2.75s).
+- TypeScript: PASS.
+- ESLint: PASS; existing next-lint deprecation notice only.
+- Next production build: PASS; 26 pages generated.
+- Generated API types: PASS; regeneration produced identical SHA256.
+- Chromium E2E: 3 passed, 1 failed (55.1s); 0 skipped.
+- Development-data isolation: PASS; protected demo fingerprint unchanged.
+
+BROWSER SCENARIOS
+PASS: Signup/OTP/login/enquiry/reload/sales under-review/customer status view.
+PASS: Seeded admin authenticates and loads Employees screen.
+PASS: Login rendering and customer/staff portal form switching.
+FAIL: Seeded customer-to-sales Qualified workflow: expected PATCH200,
+      received422. Later qualified-status/relogin/refresh assertions did not run.
+
+OPEN FINDING P3-004 (HIGH)
+The sales qualification form sends only status and note. The backend requires
+shadow_free_area_sqm and grid_connection_suitable when qualifying a new enquiry.
+The UI has no inputs for these fields, so correct backend validation returns422.
+Source: apps/web/src/app/sales/enquiries/[id]/page.tsx save(), and
+apps/api/app/services/enquiry_service.py qualify_enquiry().
+Proposed correction: add required validated UI fields and send them.
+No product fix, assertion weakening or backend validation bypass was applied
+during this frontend testing/report cycle.
+
+UNIT COVERAGE
+access.test.ts (4): role destinations, staff-path denial, safe next-path routing,
+external/protocol-relative redirect rejection.
+format.test.ts (3): rupees-to-paise validation, money display, capacity display.
+Counts are not an exhaustive component or numeric line/branch coverage claim.
+
+DATABASE AND BUILD ISOLATION
+Browser QA used solarops_test only, API8001/UI3001 and .next-qa output.
+Test schema:44tables/104indexes, revision d5f1a2b3c4e5.
+Development remains13tables/27indexes, revision68d7cd857e38.
+Protected records unchanged:16users/8enquiries/14history rows.
+Test role cannot CONNECT to development. No development reset/migration/seed.
+Passwords, local environment, databases and browser artifacts remain ignored.
+test 1 report.txt and test 3 report.txt remain unchanged.
+
+REPRODUCTION
+From apps/api:
+  uv run python scripts/check_local_db.py verify
+  uv run python scripts/run_browser_qa.py
+  uv run python scripts/check_local_db.py verify
+From apps/web, set SOLAROPS_NEXT_DIST_DIR=.next-qa and
+NEXT_TELEMETRY_DISABLED=1, then run:
+  npm test
+  npm run typecheck
+  npm run lint
+  npm run build
+  npm run generate:api
+Production build was run after the isolated browser server stopped.
+
+SCOPE / LIMITATIONS
+Tested the current QA frontend, not unmerged frontend redesign branches.
+No browser/device matrix, visual/accessibility audit, load testing or numeric
+coverage measurement. Phase3 UI journeys remain placeholders on this branch.
+No fresh full backend suite was run in this frontend-only cycle.
+The CI web job does not run Playwright; green CI is not full browser acceptance.
+
+DETAILED REPORT: docs/qa/FRONTEND_QA_REPORT.md
+ACTION HISTORY: QA_ACTION_LOG.txt (appended; prior history preserved).
+PUBLICATION: User reconfirmed origin/test/qa-integration; commit/push result
+and remote verification will be reported in chat after publication.
