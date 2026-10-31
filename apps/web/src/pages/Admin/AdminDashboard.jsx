@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { AppShell } from '../../components/AppShell/AppShell';
-import { PageHeader } from '../../components/PageHeader/PageHeader';
+import { DashboardView } from '../../components/DashboardView/DashboardView';
 import { Card } from '../../components/Card/Card';
 import { Button } from '../../components/Button/Button';
 import { Badge } from '../../components/Badge/Badge';
 import { Modal } from '../../components/Modal/Modal';
 import { TextField } from '../../components/TextField/TextField';
 import { SelectField } from '../../components/SelectField/SelectField';
+import { LoadingState } from '../../components/LoadingState/LoadingState';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { ROLE_DISPLAY } from '../../lib/access';
-import { Users, UserPlus, Shield, Activity, Database, Server } from 'lucide-react';
+import { Users, UserPlus, Shield, Activity, Database, Server, Plus, Clock } from 'lucide-react';
 import './AdminDashboard.css';
 import '../Customer/CustomerDashboard.css';
 
 export function AdminDashboard() {
   const { showToast } = useAuth();
   const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
 
   // New Employee Form
@@ -25,7 +27,11 @@ export function AdminDashboard() {
   const [role, setRole] = useState('sales');
 
   const fetchEmployees = () => {
-    api.getEmployees().then(setEmployees);
+    setLoading(true);
+    api.getEmployees().then((data) => {
+      setEmployees(data);
+      setLoading(false);
+    });
   };
 
   useEffect(() => {
@@ -43,179 +49,161 @@ export function AdminDashboard() {
     setFullName('');
     setEmail('');
     fetchEmployees();
-    showToast(`Staff account for ${fullName} provisioned successfully!`);
+    showToast({
+      type: 'success',
+      title: 'Staff Provisioned',
+      message: `Staff account for ${fullName} provisioned successfully!`,
+    });
   };
 
   return (
     <AppShell requiredRole="admin">
-      <PageHeader
-        title="System Administration & Staff Roster"
-        description="Provision operations personnel, configure role-based access control, and inspect infrastructure telemetry."
-        action={
-          <Button
-            variant="primary"
-            icon={<UserPlus size={16} />}
-            onClick={() => setModalOpen(true)}
-          >
-            Provision Employee
-          </Button>
-        }
-      />
+      {loading ? (
+        <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <LoadingState label="Loading administration dashboard…" />
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          {/* Master Bento Dashboard for Admin */}
+          <DashboardView
+            role="admin"
+            employees={employees}
+            onNewAction={() => setModalOpen(true)}
+          />
 
-      {/* System Telemetry Row */}
-      <div className="health-metrics-grid">
-        <Card accent="lime">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '13px', color: 'var(--color-white-dim)' }}>PostgreSQL Database</span>
-            <div className="health-status-badge">
-              <span className="health-pulse" />
-              <span>Healthy</span>
+          {/* Operations Staff Roster Table */}
+          <div className="bento-card" style={{ padding: '28px' }}>
+            <div className="bento-card-header" style={{ marginBottom: '20px' }}>
+              <div>
+                <h3 className="bento-card-title">System Administration & Personnel Roster</h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: '#64748b' }}>
+                  Provision operations personnel, configure role-based access control, and inspect infrastructure telemetry.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="primary-board-btn"
+                onClick={() => setModalOpen(true)}
+              >
+                <UserPlus size={16} />
+                <span>Provision Employee</span>
+              </button>
+            </div>
+
+            <div className="solar-table-container">
+              <table className="solar-table">
+                <thead>
+                  <tr>
+                    <th>Emp Code</th>
+                    <th>Full Name</th>
+                    <th>Email Address</th>
+                    <th>Assigned Role</th>
+                    <th>Permissions</th>
+                    <th>Account Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {employees.map((emp) => (
+                    <tr key={emp.id}>
+                      <td>
+                        <span style={{ fontFamily: 'monospace', fontWeight: '700', color: '#111827' }}>
+                          {emp.employee_code}
+                        </span>
+                      </td>
+                      <td>
+                        <strong style={{ color: '#111827' }}>{emp.full_name}</strong>
+                      </td>
+                      <td style={{ color: '#64748b' }}>{emp.email}</td>
+                      <td>
+                        <Badge variant="lime">{ROLE_DISPLAY[emp.role] || emp.role}</Badge>
+                      </td>
+                      <td>
+                        <span style={{ fontSize: '11px', color: '#475569', background: '#f1f5f9', padding: '3px 8px', borderRadius: '6px' }}>
+                          RBAC: {emp.role.toUpperCase()}
+                        </span>
+                      </td>
+                      <td>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#10b981', fontWeight: '600' }}>
+                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }} />
+                          <span>Active</span>
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className="bento-header-btn"
+                          style={{ color: '#4f46e5', fontWeight: '700' }}
+                          onClick={() => showToast({ type: 'info', title: 'Password Reset', message: `Password reset link dispatched for ${emp.employee_code}.` })}
+                        >
+                          <span>Reset</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-          <div style={{ fontSize: '20px', fontWeight: '800', marginTop: '8px' }}>
-            Port 5432 · Active Pool
-          </div>
-          <span style={{ fontSize: '11px', color: 'var(--color-white-faint)', marginTop: '4px', display: 'block' }}>
-            Alembic Head: 001_phase1_foundation
-          </span>
-        </Card>
-
-        <Card accent="violet">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '13px', color: 'var(--color-white-dim)' }}>FastAPI Gateway</span>
-            <div className="health-status-badge">
-              <span className="health-pulse" />
-              <span>Online</span>
-            </div>
-          </div>
-          <div style={{ fontSize: '20px', fontWeight: '800', marginTop: '8px' }}>
-            /api/v1 · Uvicorn
-          </div>
-          <span style={{ fontSize: '11px', color: 'var(--color-white-faint)', marginTop: '4px', display: 'block' }}>
-            CSRF + Strict Cookie Isolation
-          </span>
-        </Card>
-
-        <Card accent="lime">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '13px', color: 'var(--color-white-dim)' }}>Active Workforce</span>
-            <span style={{ fontSize: '12px', color: 'var(--color-lime)', fontWeight: '700' }}>
-              {employees.length} Staff Members
-            </span>
-          </div>
-          <div style={{ fontSize: '20px', fontWeight: '800', marginTop: '8px' }}>
-            6 Departments
-          </div>
-          <span style={{ fontSize: '11px', color: 'var(--color-white-faint)', marginTop: '4px', display: 'block' }}>
-            Zero access violations logged
-          </span>
-        </Card>
-      </div>
-
-      {/* Employee Management Roster */}
-      <Card>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '700' }}>Enterprise Employee Directory</h3>
-          <span style={{ fontSize: '13px', color: 'var(--color-white-dim)' }}>
-            Staff authenticate via Employee Code (EMP-XXX-001)
-          </span>
         </div>
-
-        <div className="solar-table-container">
-          <table className="solar-table">
-            <thead>
-              <tr>
-                <th>Employee Code</th>
-                <th>Staff Member</th>
-                <th>Portal Role</th>
-                <th>Internal Email</th>
-                <th>Status</th>
-                <th>Joined</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {employees.map((emp) => (
-                <tr key={emp.id}>
-                  <td style={{ fontFamily: 'var(--font-mono)', fontWeight: '700', color: 'var(--color-lime)' }}>
-                    {emp.employee_code}
-                  </td>
-                  <td style={{ fontWeight: '600', color: 'var(--color-white)' }}>{emp.full_name}</td>
-                  <td>
-                    <Badge variant="violet">
-                      {ROLE_DISPLAY[emp.role] || emp.role}
-                    </Badge>
-                  </td>
-                  <td style={{ fontFamily: 'var(--font-mono)', fontSize: '13px' }}>{emp.email}</td>
-                  <td>
-                    <Badge variant="success">Active</Badge>
-                  </td>
-                  <td>{emp.joined}</td>
-                  <td>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => showToast(`Password reset link dispatched for ${emp.employee_code}`)}
-                    >
-                      Reset Key
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+      )}
 
       {/* Provision Employee Modal */}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        title="Provision New Operations Staff Member"
-        footer={null}
+        title="Provision Operations Employee"
       >
         <form onSubmit={handleCreateEmployee}>
           <TextField
-            label="Full Employee Name"
+            label="Full Name"
             name="fullName"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            placeholder="e.g. Anand Murthy"
+            placeholder="e.g. Sumanth Rao"
             required
           />
 
           <TextField
-            label="SunPower Work Email"
+            label="Corporate Email Address"
             name="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="anand.m@sunpowersolutions.com"
+            placeholder="sumanth@sunpower.dev"
             required
           />
 
           <SelectField
-            label="Departmental Role"
+            label="Operational Department & Role"
             name="role"
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            required
-          >
-            <option value="sales">Sales Executive</option>
-            <option value="technician">Field Site Technician</option>
-            <option value="warehouse_manager">Warehouse Manager</option>
-            <option value="warehouse_staff">Warehouse Logistics Staff</option>
-            <option value="support">Customer Support Specialist</option>
-            <option value="admin">System Administrator</option>
-          </SelectField>
+            options={[
+              { value: 'sales', label: 'Sales Feasibility Executive' },
+              { value: 'technician', label: 'Field Technician / Surveyor' },
+              { value: 'warehouse_staff', label: 'Warehouse Staff' },
+              { value: 'warehouse_manager', label: 'Warehouse Manager' },
+              { value: 'support', label: 'Support Specialist' },
+              { value: 'admin', label: 'System Administrator' },
+            ]}
+          />
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
-            <Button variant="ghost" onClick={() => setModalOpen(false)}>
+          <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+            <button
+              type="button"
+              className="export-data-btn"
+              onClick={() => setModalOpen(false)}
+            >
               Cancel
-            </Button>
-            <Button type="submit" variant="primary">
-              Generate Employee Account
-            </Button>
+            </button>
+            <button
+              type="submit"
+              className="primary-board-btn"
+            >
+              Confirm Provisioning
+            </button>
           </div>
         </form>
       </Modal>
@@ -223,3 +211,4 @@ export function AdminDashboard() {
   );
 }
 
+export default AdminDashboard;

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { AppShell } from '../../components/AppShell/AppShell';
-import { PageHeader } from '../../components/PageHeader/PageHeader';
+import { DashboardView } from '../../components/DashboardView/DashboardView';
 import { Card } from '../../components/Card/Card';
 import { Button } from '../../components/Button/Button';
 import { Badge } from '../../components/Badge/Badge';
+import { LoadingState } from '../../components/LoadingState/LoadingState';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { Package, Plus, AlertTriangle, Layers, Truck, CheckSquare } from 'lucide-react';
@@ -27,135 +28,102 @@ export function WarehouseDashboard() {
 
   return (
     <AppShell>
-      <PageHeader
-        title="Warehouse Inventory & Logistics"
-        description="Monitor physical stock counts of photovoltaic modules, hybrid inverters, batteries, and staging dispatches."
-        action={
-          <Button
-            variant="primary"
-            icon={<Plus size={16} />}
-            onClick={() => showToast('Stock receiving GRN intake modal opened.')}
-          >
-            Receive Inbound Stock
-          </Button>
-        }
-      />
-
-      {/* KPI Stats Grid */}
-      <div className="stats-grid-4">
-        <Card className="stat-card-kpi">
-          <div className="stat-icon-wrapper stat-icon-lime">
-            <Package size={24} />
-          </div>
-          <div className="stat-kpi-info">
-            <span className="stat-kpi-value">{totalUnits}</span>
-            <span className="stat-kpi-label">Total Units on Hand</span>
-          </div>
-        </Card>
-
-        <Card className="stat-card-kpi">
-          <div className="stat-icon-wrapper stat-icon-violet">
-            <Truck size={24} />
-          </div>
-          <div className="stat-kpi-info">
-            <span className="stat-kpi-value">{totalAllocated}</span>
-            <span className="stat-kpi-label">Units Allocated to Field</span>
-          </div>
-        </Card>
-
-        <Card className="stat-card-kpi">
-          <div className="stat-icon-wrapper stat-icon-lime">
-            <CheckSquare size={24} />
-          </div>
-          <div className="stat-kpi-info">
-            <span className="stat-kpi-value">4 Orders</span>
-            <span className="stat-kpi-label">Picking Lists Ready</span>
-          </div>
-        </Card>
-
-        <Card className="stat-card-kpi">
-          <div className="stat-icon-wrapper stat-icon-violet">
-            <Layers size={24} />
-          </div>
-          <div className="stat-kpi-info">
-            <span className="stat-kpi-value">Zone South</span>
-            <span className="stat-kpi-label">Hub: Electronic City</span>
-          </div>
-        </Card>
-      </div>
-
-      <Card>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '700' }}>Active Materials Stock Catalogue</h3>
-          <span style={{ fontSize: '13px', color: 'var(--color-white-dim)' }}>
-            Updated live from ERP ledger
-          </span>
+      {loading ? (
+        <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <LoadingState label="Loading warehouse inventory…" />
         </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          {/* Master Bento Dashboard for Warehouse */}
+          <DashboardView
+            role="warehouse_manager"
+            stock={stock}
+            onNewAction={() => showToast({ type: 'info', title: 'GRN Intake', message: 'Inbound stock receiving intake opened.' })}
+          />
 
-        <div className="solar-table-container">
-          <table className="solar-table">
-            <thead>
-              <tr>
-                <th>SKU Code</th>
-                <th>Material Description</th>
-                <th>Category</th>
-                <th>Physical Stock</th>
-                <th>Allocated</th>
-                <th>Available</th>
-                <th>Threshold Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stock.map((item) => {
-                const available = item.in_stock - item.allocated;
-                const isLow = available <= item.min_thresh;
+          {/* Physical Inventory & Staging Table */}
+          <div className="bento-card" style={{ padding: '28px' }}>
+            <div className="bento-card-header" style={{ marginBottom: '20px' }}>
+              <div>
+                <h3 className="bento-card-title">Photovoltaic Modules & Inverters Inventory</h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: '#64748b' }}>
+                  Track serial numbers, available stock, and allocated quantities for installation dispatches.
+                </p>
+              </div>
 
-                return (
-                  <tr key={item.id}>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontWeight: '700', color: 'var(--color-lime)' }}>
-                      {item.sku}
-                    </td>
-                    <td style={{ fontWeight: '600', color: 'var(--color-white)' }}>{item.name}</td>
-                    <td>
-                      <Badge variant="violet">{item.category}</Badge>
-                    </td>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontWeight: '700' }}>
-                      {item.in_stock} {item.unit}
-                    </td>
-                    <td style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-white-dim)' }}>
-                      {item.allocated}
-                    </td>
-                    <td style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-lime)', fontWeight: '800' }}>
-                      {available}
-                    </td>
-                    <td>
-                      {isLow ? (
-                        <span className="stock-warning-badge">
-                          <AlertTriangle size={14} />
-                          <span>Reorder Warning</span>
-                        </span>
-                      ) : (
-                        <Badge variant="success">Healthy</Badge>
-                      )}
-                    </td>
-                    <td>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => showToast(`Picking slip generated for ${item.sku}`)}
-                      >
-                        Pick
-                      </Button>
-                    </td>
+              <button
+                type="button"
+                className="primary-board-btn"
+                onClick={() => showToast({ type: 'info', title: 'Stock Intake', message: 'Stock receiving GRN intake modal opened.' })}
+              >
+                <Plus size={16} />
+                <span>Receive Inbound Stock</span>
+              </button>
+            </div>
+
+            <div className="solar-table-container">
+              <table className="solar-table">
+                <thead>
+                  <tr>
+                    <th>SKU Code</th>
+                    <th>Component Name</th>
+                    <th>Category</th>
+                    <th>In Stock</th>
+                    <th>Allocated</th>
+                    <th>Available</th>
+                    <th>Status</th>
+                    <th>Action</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {stock.map((item) => {
+                    const available = (item.in_stock || 0) - (item.allocated || 0);
+                    const isLow = available < 10;
+                    return (
+                      <tr key={item.sku}>
+                        <td>
+                          <span style={{ fontFamily: 'monospace', fontWeight: '700', color: '#111827' }}>
+                            {item.sku}
+                          </span>
+                        </td>
+                        <td>
+                          <div style={{ fontWeight: '600', color: '#111827' }}>{item.name}</div>
+                          <div style={{ fontSize: '12px', color: '#64748b' }}>{item.description}</div>
+                        </td>
+                        <td>
+                          <span className="tag-badge">{item.category}</span>
+                        </td>
+                        <td style={{ fontWeight: '700', color: '#111827' }}>{item.in_stock}</td>
+                        <td style={{ color: '#4f46e5', fontWeight: '600' }}>{item.allocated}</td>
+                        <td>
+                          <strong style={{ color: isLow ? '#ef4444' : '#10b981' }}>{available}</strong>
+                        </td>
+                        <td>
+                          <Badge variant={isLow ? 'warning' : 'success'}>
+                            {isLow ? 'Low Stock' : 'Optimal'}
+                          </Badge>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="bento-header-btn"
+                            style={{ color: '#4f46e5', fontWeight: '700' }}
+                            onClick={() => showToast({ type: 'success', title: 'Picking Slip', message: `Picking slip generated for ${item.sku}.` })}
+                          >
+                            <span>Pick Slip</span>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-      </Card>
+      )}
     </AppShell>
   );
 }
 
+export default WarehouseDashboard;

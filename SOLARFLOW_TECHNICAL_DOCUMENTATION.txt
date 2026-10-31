@@ -747,3 +747,104 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
       label embedding.
 
 ================================================================================
+
+
+--------------------------------------------------------------------------------
+15. ROLE-TAILORED BENTO DASHBOARD ARCHITECTURE & ESSENTIAL CONTAINER MATRIX
+--------------------------------------------------------------------------------
+- Date & Context:
+  Analyzed all user roles across the enterprise solar operations lifecycle (Customer,
+  Sales, Technician, Warehouse, Support, Admin) and refactored the dashboard layout
+  to provide personalized greetings and strictly essential, role-specific Bento containers.
+  Removed all generic "Go premium!" placeholders and replaced them with high-value
+  operational focus cards.
+
+- Role-by-Role Architecture & Layout Matrix:
+  1. Customer Portal (`CustomerDashboard.jsx`):
+     - Greeting: "Hi, [Name]! What are your plans for today?"
+     - Subtitle: "Track your rooftop solar installation progress, submit capacity connection requests, and monitor monthly savings."
+     - 4 Action Cards: New Solar Enquiry (+), My Enquiries, Planned Capacity (kW), Monthly Savings (INR).
+     - Focus Card (Replaced Go Premium): "☀️ Live Solar Generation Telemetry" (Estimated 620 kWh/mo offsetting 85% grid electricity).
+     - Essential Containers: Solar proposals, survey & net-metering schedule, installation milestones (90% offset, 65% annual goal), and technical consultant consultation.
+  2. Sales Feasibility Workbench (`SalesDashboard.jsx`):
+     - Greeting: "Hi, [Name]! Ready to review feasibility today?"
+     - Subtitle: "Screen incoming solar enquiries, analyze rooftop load parameters, and schedule site engineering surveys."
+     - 4 Action Cards: Qualify Leads (+), Enquiry Funnel, Feasibility Quotes, Scheduled Surveys.
+     - Focus Card: "📈 Monthly Target: 100 kW" (74 kW commissioned this month across Bangalore rooftop cluster).
+     - Essential Containers: Lead Qualification Queue (with status tabs), Selected Enquiry Parameters, Survey Dispatch Calendar, and Client Technical Briefing.
+  3. Field Technician Workbench (`TechnicianDashboard.jsx`):
+     - Greeting: "Hi, [Name]! Ready for your site surveys today?"
+     - Subtitle: "Conduct on-site rooftop shadow raytracing, verify structural roof integrity, and upload engineering checklist evidence."
+     - 4 Action Cards: New Inspection (+), Assigned Surveys, Shadow Checks (100% Raytracing), Offline Sync.
+     - Focus Card: "⚡ Field Diagnostics Mode" (Offline field cache active with GPS-tagged photo sync).
+     - Essential Containers: Assigned Rooftop Surveys with interactive checklist toggles (Obstruction, Structure Anchor Depth, Inverter IP65 Mount), Survey Route Timeline, and Lead Engineer Debrief.
+  4. Warehouse Logistics & Inventory (`WarehouseDashboard.jsx`):
+     - Greeting: "Hi, [Name]! What solar inventory needs dispatch today?"
+     - Subtitle: "Monitor physical counts of photovoltaic modules, hybrid inverters, batteries, and staging material dispatches."
+     - 4 Action Cards: Inbound GRN (+), In-Stock Modules (142 PV Panels), Hybrid Inverters (38 Grid-tie units), Staging Dispatches (18 Kits).
+     - Focus Card: "📦 Inventory Health Alert" (Bifacial 540W modules reorder threshold alert & PO generator).
+     - Essential Containers: Photovoltaic Modules & Inverters Inventory Table, Material Picking Slip verification, Dispatch Delivery Calendar, and Freight Carrier Logistics Sync.
+  5. Customer Care & Operations Ticketing Desk (`SupportDashboard.jsx`):
+     - Greeting: "Hi, [Name]! What customer tickets need resolution today?"
+     - Subtitle: "Liaise on BESCOM net-metering approvals, DISCOM grid synchronization, and inverter warranty tickets."
+     - 4 Action Cards: New Ticket (+), Open Tickets (8 Active), Net-Metering (14 Applications), Warranty Support (3 in transit).
+     - Focus Card: "⚡ DISCOM Grid Sync SLA" (Karnataka BESCOM circle approval fast-track down to 4.2 days).
+     - Essential Containers: Fast Customer Technical Lookup (Meter No & Solar Profile search), Support Tickets Table with priority badges, DISCOM Liaison Calendar, and Escalation Case Review.
+  6. System Administration & Personnel Roster (`AdminDashboard.jsx`):
+     - Greeting: "Hi, [Name]! System oversight & personnel today?"
+     - Subtitle: "Provision enterprise personnel, monitor role-based access control, and inspect infrastructure telemetry."
+     - 4 Action Cards: Add Staff (+), Total Personnel, Role Permissions (RBAC active), System Uptime (99.98%).
+     - Focus Card: "🛡️ Zero-Trust Security Active" (PostgreSQL pool health & HttpOnly session verification).
+     - Essential Containers: Personnel Provisioning Modal, Staff Roster Table with RBAC tags, Operations Audit Log, and Weekly All-Hands Meeting.
+
+- Files Modified:
+  * apps/web/src/components/DashboardView/DashboardView.jsx
+  * apps/web/src/pages/Sales/SalesDashboard.jsx
+  * apps/web/src/pages/Technician/TechnicianDashboard.jsx
+  * apps/web/src/pages/Warehouse/WarehouseDashboard.jsx
+  * apps/web/src/pages/Support/SupportDashboard.jsx
+  * apps/web/src/pages/Admin/AdminDashboard.jsx
+
+- React Concepts & Hooks Used:
+  * Dynamic Role Configuration Strategy:
+    - `getRoleConfig()` maps `activeRole` to greetings, 4 stat cards, workbenches, focus cards, and gauges.
+  * Controlled State Management:
+    - `useState` for interactive checklists, filters, date pickers, view modes, and provisioning modals.
+  * Context Consumption:
+    - `useAuth()` provides role identification and wave alert notifications.
+
+- How the Code Works Step-by-Step:
+  1. The user logs in or switches personas using 1-Click Demo Bypass.
+  2. The role's dashboard mounts within `AppShell` (displaying the organic dock and navigation header).
+  3. `DashboardView` computes the tailored greeting, 4 quick action cards, operational workbench,
+     focus card, and circular gauge metrics.
+  4. The operator interacts with role-specific functions (e.g. technician checking off azimuth,
+     warehouse generating pick slip, sales evaluating a 5kW lead).
+
+- How the Frontend Communicates with the Backend:
+  * Endpoints `/api/v1/enquiries`, `/api/v1/technician/jobs`, `/api/v1/warehouse/stock`,
+    `/api/v1/support/tickets`, and `/api/v1/admin/employees` feed real-time records into the Bento tiles.
+
+- Important Technical Decisions & Reasons:
+  * Eradication of Promotional Placeholders: Removing "Go premium!" eliminates distraction
+    in an internal operations tool and reclaims valuable screen real estate for domain-critical alerts.
+  * Universal Visual Consistency: Applying the reference Bento Grid pattern across all six operational
+    personas establishes a cohesive enterprise experience.
+
+- Bugs Encountered & Fixes:
+  * Personalized greeting name resolution: Standardized to `user?.full_name?.split(' ')[0] || 'User'`,
+    ensuring immediate personalized greetings across all demo bypass personas.
+
+- Technical Interview Questions & Answers:
+  Q1: How does role-based modular dashboard design improve developer velocity and user adoption?
+  A1: Decoupling the presentation layer (`DashboardView`) from domain logic allows developers to configure
+      new enterprise roles rapidly through declarative config objects rather than creating redundant
+      monolithic components. For users, contextual customization eliminates cognitive clutter by showing
+      only data and actions relevant to their operational duties.
+
+  Q2: Why is it preferable to replace promotional widgets with operational focus cards in enterprise software?
+  A2: In B2B and internal operations tools, generic upselling or placeholder cards damage user trust and
+      waste valuable viewport real estate. Repurposing that visual container for role-critical alerts
+      (like low stock warnings, offline field sync, or SLA targets) turns dead space into an active operational asset.
+
+================================================================================

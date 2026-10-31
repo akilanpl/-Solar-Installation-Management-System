@@ -10,7 +10,6 @@ import {
   LayoutGrid,
   List,
   CheckCircle2,
-  Gift,
   FileText,
   Layers,
   Sparkles,
@@ -18,22 +17,302 @@ import {
   Paperclip,
   MessageSquare,
   ArrowRight,
+  Sun,
+  Zap,
+  TrendingUp,
+  Package,
+  Wrench,
+  Headphones,
+  Shield,
+  Check,
+  AlertTriangle,
+  Upload,
+  MapPin,
+  Search,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from '../../router/Router';
+import { formatCapacity, formatInrFromPaise } from '../../lib/format';
 import './DashboardView.css';
 
 export function DashboardView({
+  role = null,
   enquiries = [],
-  onNewAction,
-  roleSpecificCards,
+  jobs = [],
+  stock = [],
+  tickets = [],
+  employees = [],
+  onNewAction = null,
+  onChecklistItemToggle = null,
 }) {
   const { user, showToast } = useAuth();
   const { navigate } = useRouter();
   const [activeDate, setActiveDate] = useState(18); // Fri 18 active
   const [viewMode, setViewMode] = useState('list'); // 'grid' | 'list'
 
+  const activeRole = role || user?.role || 'customer';
   const firstName = user?.full_name ? user.full_name.split(' ')[0] : 'James';
+
+  // --------------------------------------------------------------------------
+  // ROLE-SPECIFIC GREETING & FOCUS DATA
+  // --------------------------------------------------------------------------
+  const getRoleConfig = () => {
+    switch (activeRole) {
+      case 'sales':
+        return {
+          greetingQuestion: ['Ready to review', 'feasibility today?'],
+          greetingSub:
+            'Screen incoming solar enquiries, analyze rooftop load parameters, and schedule site engineering surveys.',
+          featureCards: [
+            {
+              isAdd: true,
+              label: 'Qualify Leads',
+              action: () => showToast({ type: 'info', title: 'Lead Queue', message: 'Ready to review incoming leads.' }),
+            },
+            {
+              title: 'Enquiry Funnel',
+              sub: `${enquiries.length || 18} Active submissions`,
+              icon: <Layers size={28} color="#4F46E5" />,
+            },
+            {
+              title: 'Feasibility Quotes',
+              sub: '9 Proposals ready for review',
+              icon: <FileText size={28} color="#4F46E5" />,
+            },
+            {
+              title: 'Scheduled Surveys',
+              sub: '6 Site visits assigned',
+              icon: <Calendar size={28} color="#4F46E5" />,
+            },
+          ],
+          focusCard: {
+            title: 'Monthly Target: 100 kW',
+            sub: '74 kW commissioned this month across Bangalore residential rooftop cluster.',
+            buttonText: 'View Pipeline Target',
+            action: () => showToast({ type: 'success', title: 'Target Metrics', message: '74% of target achieved!' }),
+          },
+          gauge1: { percent: '84%', cat: 'Conversion', title: 'Lead Velocity', sub: '21/25 proposals qualified' },
+          gauge2: { percent: '92%', cat: 'SLA Speed', title: 'Quote Turnaround', sub: 'Under 24 hours' },
+          agenda: [
+            { time: '02:00-02:45 PM', title: 'Technical Feasibility Review', sub: 'Indiranagar 5kW Bifacial Proposal' },
+            { time: '04:30-05:15 PM', title: 'Customer Proposal Call', sub: 'With Rahul Verma (Sanctioned 7.5kW)' },
+          ],
+        };
+
+      case 'technician':
+        return {
+          greetingQuestion: ['Ready for your', 'site surveys today?'],
+          greetingSub:
+            'Conduct on-site rooftop shadow raytracing, verify structural roof integrity, and upload engineering checklist evidence.',
+          featureCards: [
+            {
+              isAdd: true,
+              label: 'New Inspection',
+              action: () => showToast({ type: 'info', title: 'Field Queue', message: 'Ready for today\'s inspections.' }),
+            },
+            {
+              title: 'Assigned Surveys',
+              sub: `${jobs.length || 3} Rooftop locations`,
+              icon: <Wrench size={28} color="#4F46E5" />,
+            },
+            {
+              title: 'Shadow Checks',
+              sub: '100% Raytracing logged',
+              icon: <Sun size={28} color="#4F46E5" />,
+            },
+            {
+              title: 'Offline Sync',
+              sub: 'Local field cache ready',
+              icon: <CheckCircle2 size={28} color="#4F46E5" />,
+            },
+          ],
+          focusCard: {
+            title: 'Field Diagnostics Active',
+            sub: 'Offline field mode enabled. GPS-tagged roof photos and azimuth measurements automatically queue for sync.',
+            buttonText: 'Sync Offline Evidence',
+            action: () => showToast({ type: 'success', title: 'Field Sync', message: 'Field photos synced successfully.' }),
+          },
+          gauge1: { percent: '95%', cat: 'Compliance', title: 'Safety Gear', sub: 'Full harness & boots verified' },
+          gauge2: { percent: '80%', cat: 'Checklists', title: 'Site Reports', sub: '4/5 visits signed off' },
+          agenda: [
+            { time: '10:00-11:30 AM', title: 'Site Inspection: Indiranagar', sub: '5 kW RCC flat roof raytracing' },
+            { time: '02:30-03:45 PM', title: 'Inverter DB Wiring Check', sub: 'Whitefield residential site' },
+          ],
+        };
+
+      case 'warehouse_staff':
+      case 'warehouse_manager':
+        return {
+          greetingQuestion: ['What solar inventory', 'needs dispatch today?'],
+          greetingSub:
+            'Monitor physical counts of photovoltaic modules, hybrid inverters, batteries, and staging material dispatches.',
+          featureCards: [
+            {
+              isAdd: true,
+              label: 'Inbound GRN',
+              action: () => showToast({ type: 'info', title: 'Warehouse', message: 'GRN intake modal initialized.' }),
+            },
+            {
+              title: 'In-Stock Modules',
+              sub: `${stock.reduce?.((acc, s) => acc + (s.in_stock || 0), 0) || 142} PV Panels`,
+              icon: <Package size={28} color="#4F46E5" />,
+            },
+            {
+              title: 'Hybrid Inverters',
+              sub: '38 Grid-tie units',
+              icon: <Zap size={28} color="#4F46E5" />,
+            },
+            {
+              title: 'Staging Dispatches',
+              sub: '18 Material kits ready',
+              icon: <Layers size={28} color="#4F46E5" />,
+            },
+          ],
+          focusCard: {
+            title: 'Inventory Health Alert',
+            sub: 'Mono-PERC 540W modules are approaching safety reorder threshold (14 units remaining).',
+            buttonText: 'Generate Supplier PO',
+            action: () => showToast({ type: 'warning', title: 'Supplier PO', message: 'PO drafted for 50 PV modules.' }),
+          },
+          gauge1: { percent: '98%', cat: 'Stock Level', title: 'Accuracy', sub: 'Physical count verified' },
+          gauge2: { percent: '85%', cat: 'Logistics', title: 'Pick Speed', sub: 'Average 28m per crew kit' },
+          agenda: [
+            { time: '09:00-10:00 AM', title: 'Inbound Container Receiving', sub: '50x 5kW Hybrid Inverters' },
+            { time: '01:30-02:30 PM', title: 'Dispatch Staging: Crew #2', sub: '12x Panels + Rail mounts' },
+          ],
+        };
+
+      case 'support':
+        return {
+          greetingQuestion: ['What customer tickets', 'need resolution today?'],
+          greetingSub:
+            'Liaise on BESCOM net-metering approvals, DISCOM grid synchronization, and inverter warranty tickets.',
+          featureCards: [
+            {
+              isAdd: true,
+              label: 'New Ticket',
+              action: () => showToast({ type: 'info', title: 'Support', message: 'Escalation ticket modal opened.' }),
+            },
+            {
+              title: 'Open Tickets',
+              sub: `${tickets.length || 8} Active enquiries`,
+              icon: <Headphones size={28} color="#4F46E5" />,
+            },
+            {
+              title: 'Net-Metering',
+              sub: '14 BESCOM applications',
+              icon: <CheckCircle2 size={28} color="#4F46E5" />,
+            },
+            {
+              title: 'Warranty Support',
+              sub: '3 Replacements in transit',
+              icon: <Shield size={28} color="#4F46E5" />,
+            },
+          ],
+          focusCard: {
+            title: 'DISCOM Grid Sync SLA',
+            sub: 'Karnataka BESCOM circle approval time reduced to an average of 4.2 business days.',
+            buttonText: 'View Circle Telemetry',
+            action: () => showToast({ type: 'info', title: 'BESCOM SLA', message: 'Average sync: 4.2 days.' }),
+          },
+          gauge1: { percent: '96%', cat: 'Customer CSAT', title: 'Satisfaction', sub: '52 positive reviews' },
+          gauge2: { percent: '92%', cat: 'Resolution', title: 'First-Contact', sub: 'Resolved within 2 hours' },
+          agenda: [
+            { time: '11:00-11:45 AM', title: 'DISCOM Liaison Call', sub: 'BESCOM Circle 4 Net-metering sync' },
+            { time: '03:00-03:30 PM', title: 'Customer Warranty Briefing', sub: 'Inverter replacement firmware check' },
+          ],
+        };
+
+      case 'admin':
+        return {
+          greetingQuestion: ['System oversight &', 'personnel today?'],
+          greetingSub:
+            'Provision enterprise personnel, monitor role-based access control, and inspect infrastructure telemetry.',
+          featureCards: [
+            {
+              isAdd: true,
+              label: 'Add Staff',
+              action: () => showToast({ type: 'info', title: 'Staff Roster', message: 'Employee provisioning open.' }),
+            },
+            {
+              title: 'Total Personnel',
+              sub: `${employees.length || 12} Operations staff`,
+              icon: <Users size={28} color="#4F46E5" />,
+            },
+            {
+              title: 'Role Permissions',
+              sub: 'Strict RBAC active',
+              icon: <Shield size={28} color="#4F46E5" />,
+            },
+            {
+              title: 'System Uptime',
+              sub: '99.98% High availability',
+              icon: <Zap size={28} color="#4F46E5" />,
+            },
+          ],
+          focusCard: {
+            title: 'Zero-Trust Security Active',
+            sub: 'PostgreSQL connection pool healthy (18ms). HttpOnly session authorization tokens enforced.',
+            buttonText: 'Inspect Health Logs',
+            action: () => showToast({ type: 'success', title: 'System Status', message: 'All backend microservices green.' }),
+          },
+          gauge1: { percent: '100%', cat: 'Security', title: 'Compliance', sub: 'Zero unauthorized requests' },
+          gauge2: { percent: '99%', cat: 'API Response', title: 'Latency SLA', sub: '< 45ms median response' },
+          agenda: [
+            { time: '10:00-10:45 AM', title: 'Security Architecture Audit', sub: 'Session token rotation review' },
+            { time: '04:00-05:00 PM', title: 'Weekly Operations All-Hands', sub: 'SolarOps Q2 milestones review' },
+          ],
+        };
+
+      case 'customer':
+      default: {
+        const totalCapacityWatts = enquiries.reduce((acc, item) => acc + (item.preferred_capacity_w || 0), 0);
+        const totalMonthlyBillsPaise = enquiries.reduce((acc, item) => acc + (item.monthly_bill_minor || 0), 0);
+
+        return {
+          greetingQuestion: ['What are your', 'plans for today?'],
+          greetingSub:
+            'Track your rooftop solar installation progress, submit capacity connection requests, and monitor monthly savings.',
+          featureCards: [
+            {
+              isAdd: true,
+              label: 'New Solar Enquiry',
+              action: onNewAction || (() => navigate('/customer/enquiries/new')),
+            },
+            {
+              title: 'My Enquiries',
+              sub: `${enquiries.length} Active project${enquiries.length === 1 ? '' : 's'}`,
+              icon: <Layers size={28} color="#4F46E5" />,
+            },
+            {
+              title: 'Planned Capacity',
+              sub: totalCapacityWatts > 0 ? formatCapacity(totalCapacityWatts) : '5.0 kW Hybrid',
+              icon: <Sun size={28} color="#4F46E5" />,
+            },
+            {
+              title: 'Monthly Savings',
+              sub: totalMonthlyBillsPaise > 0 ? `₹${formatInrFromPaise(totalMonthlyBillsPaise)} / mo` : '₹4,200 / mo',
+              icon: <TrendingUp size={28} color="#4F46E5" />,
+            },
+          ],
+          focusCard: {
+            title: '☀️ Live Solar Generation',
+            sub: 'Estimated 620 kWh monthly rooftop generation offsetting 85% of your grid electricity bill.',
+            buttonText: 'View Generation Telemetry',
+            action: () => showToast({ type: 'success', title: 'Solar Telemetry', message: 'Real-time generation: 4.8 kW.' }),
+          },
+          gauge1: { percent: '90%', cat: 'Solar Offset', title: 'Grid Independence', sub: '5/5 milestones validated' },
+          gauge2: { percent: '65%', cat: 'Annual Goal', title: 'Carbon Neutrality', sub: '2.4 tons CO2 saved' },
+          agenda: [
+            { time: '11:00-11:45 AM', title: 'Technician Rooftop Survey', sub: 'Site feasibility & shadow raytracing' },
+            { time: '03:30-04:15 PM', title: 'Proposals & Quotation Review', sub: 'With Senior Solar Consultant' },
+          ],
+        };
+      }
+    }
+  };
+
+  const config = getRoleConfig();
 
   return (
     <div className="dash-container">
@@ -41,7 +320,7 @@ export function DashboardView({
           ROW 1: HERO GREETING & TOP FEATURE CARDS
           ================================================================ */}
       <section className="dash-hero-row" aria-label="Dashboard Overview">
-        {/* Left: Big Headline Greeting */}
+        {/* Left: Role-Specific Greeting Headline */}
         <div className="dash-greeting-box">
           <h1 className="dash-greeting-title">
             <span className="dash-greeting-header-line">
@@ -50,107 +329,48 @@ export function DashboardView({
                 <span className="dash-avatar-ring">⚡</span>
               </span>
             </span>
-            <span>What are your</span>
-            <span>plans for today?</span>
+            <span>{config.greetingQuestion[0]}</span>
+            <span>{config.greetingQuestion[1]}</span>
           </h1>
-          <p className="dash-greeting-sub">
-            This platform is designed to revolutionize the way you organize and access your rooftop solar operations and projects.
-          </p>
+          <p className="dash-greeting-sub">{config.greetingSub}</p>
         </div>
 
-        {/* Right: 4 Feature / Quick-Action Cards */}
+        {/* Right: 4 Tailored Quick-Action / Stat Cards */}
         <div className="dash-feature-cards-grid">
-          {/* Card 1: Add New (Lavender Dashed with Purple Plus) */}
-          <div
-            className="dash-feature-card create-new"
-            onClick={onNewAction || (() => navigate('/customer/enquiries/new'))}
-            title="Create new solar project or enquiry"
-            role="button"
-            tabIndex={0}
-          >
-            <div className="dash-create-icon-box">
-              <Plus size={22} strokeWidth={2.8} />
-            </div>
-          </div>
-
-          {/* Card 2: Stay organized */}
-          <div
-            className="dash-feature-card"
-            onClick={() =>
-              showToast({
-                type: 'info',
-                title: 'Pipeline Structure',
-                message: 'All residential and commercial project queues are organized.',
-              })
-            }
-          >
-            <div className="dash-feature-illustration">
-              {/* Playful Calendar / Notes Vector */}
-              <svg width="44" height="44" viewBox="0 0 48 48" fill="none">
-                <rect x="8" y="10" width="32" height="30" rx="8" stroke="#4F46E5" strokeWidth="2.5" fill="#EEF2FF" />
-                <path d="M16 6v6M32 6v6M8 20h32" stroke="#4F46E5" strokeWidth="2.5" strokeLinecap="round" />
-                <rect x="14" y="26" width="8" height="8" rx="2" fill="#6366F1" />
-                <circle cx="28" cy="30" r="2" fill="#4F46E5" />
-              </svg>
-            </div>
-            <div>
-              <h4 className="dash-feature-title">Stay organized</h4>
-              <p className="dash-feature-sub">A clear structure for your notes</p>
-            </div>
-          </div>
-
-          {/* Card 3: Sync your operations */}
-          <div
-            className="dash-feature-card"
-            onClick={() =>
-              showToast({
-                type: 'success',
-                title: 'Telemetry Synced',
-                message: 'Active inverters and smart meter telemetry synchronized.',
-              })
-            }
-          >
-            <div className="dash-feature-illustration">
-              {/* Hanging Notes Vector */}
-              <svg width="44" height="44" viewBox="0 0 48 48" fill="none">
-                <path d="M6 12C16 16 32 16 42 12" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" />
-                <rect x="12" y="14" width="10" height="14" rx="2" stroke="#4F46E5" strokeWidth="2" fill="#EEF2FF" />
-                <rect x="26" y="15" width="10" height="14" rx="2" stroke="#4F46E5" strokeWidth="2" fill="#EEF2FF" />
-                <circle cx="17" cy="14" r="1.5" fill="#4F46E5" />
-                <circle cx="31" cy="15" r="1.5" fill="#4F46E5" />
-              </svg>
-            </div>
-            <div>
-              <h4 className="dash-feature-title">Sync your notes</h4>
-              <p className="dash-feature-sub">Ensure that notes are synced</p>
-            </div>
-          </div>
-
-          {/* Card 4: Collaborate and share */}
-          <div
-            className="dash-feature-card"
-            onClick={() =>
-              showToast({
-                type: 'info',
-                title: 'Workspace Shared',
-                message: 'Collaboration link copied to system clipboard.',
-              })
-            }
-          >
-            <div className="dash-feature-illustration">
-              {/* Shared Cassette / Folder Vector */}
-              <svg width="44" height="44" viewBox="0 0 48 48" fill="none">
-                <rect x="8" y="12" width="32" height="24" rx="6" stroke="#4F46E5" strokeWidth="2.5" fill="#EEF2FF" />
-                <rect x="14" y="18" width="20" height="10" rx="3" stroke="#4F46E5" strokeWidth="2" />
-                <circle cx="19" cy="23" r="2" fill="#4F46E5" />
-                <circle cx="29" cy="23" r="2" fill="#4F46E5" />
-              </svg>
-            </div>
-            <div>
-              <h4 className="dash-feature-title">Collaborate and share</h4>
-              <p className="dash-feature-sub">Share notes with colleagues</p>
-            </div>
-          </div>
+          {config.featureCards.map((card, idx) =>
+            card.isAdd ? (
+              <div
+                key={idx}
+                className="dash-feature-card create-new"
+                onClick={card.action}
+                title={card.label}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="dash-create-icon-box">
+                  <Plus size={22} strokeWidth={2.8} />
+                </div>
+              </div>
+            ) : (
+              <div
+                key={idx}
+                className="dash-feature-card"
+                onClick={() =>
+                  showToast({
+                    type: 'info',
+                    title: card.title,
+                    message: card.sub,
+                  })
+                }
+              >
+                <div className="dash-feature-illustration">{card.icon}</div>
+                <div>
+                  <h4 className="dash-feature-title">{card.title}</h4>
+                  <p className="dash-feature-sub">{card.sub}</p>
+                </div>
+              </div>
+            )
+          )}
         </div>
       </section>
 
@@ -158,21 +378,21 @@ export function DashboardView({
           ROW 2: MIDDLE BENTO GRID (3 COLUMNS)
           ================================================================ */}
       <section className="dash-middle-grid">
-        {/* Column 1: Notifications */}
+        {/* Column 1: Priority Activity / Notifications */}
         <div className="bento-card">
           <div className="bento-card-header">
             <h3 className="bento-card-title">Notifications</h3>
             <button
               type="button"
               className="bento-header-btn"
-              onClick={() => showToast({ type: 'info', title: 'Notifications', message: 'Activity feed cleared.' })}
+              onClick={() => showToast({ type: 'info', title: 'Notifications', message: 'Activity queue refreshed.' })}
             >
               <Trash2 size={13} />
               <span>Clear</span>
             </button>
           </div>
 
-          {/* Floating Highlight Card */}
+          {/* Floating Highlight Event Card */}
           <div className="floating-event-card">
             <div className="event-top-row">
               <span className="event-title-badge">
@@ -185,7 +405,17 @@ export function DashboardView({
                 <Edit2 size={13} style={{ cursor: 'pointer' }} />
               </div>
             </div>
-            <p className="event-sub-info">Landing design meeting | Time: 120 min</p>
+            <p className="event-sub-info">
+              {activeRole === 'sales'
+                ? 'Solar Feasibility & Quotation Review | Time: 45 min'
+                : activeRole === 'technician'
+                ? 'Rooftop Shadow Raytracing Visit | Time: 90 min'
+                : activeRole.startsWith('warehouse')
+                ? 'Material Dispatch Picking Verification | Time: 60 min'
+                : activeRole === 'support'
+                ? 'BESCOM Net-Metering Verification | Time: 30 min'
+                : 'Technician Site Survey Visit | Time: 120 min'}
+            </p>
             <div className="event-pills-row">
               <span className="event-pill">
                 <Calendar size={12} color="#4f46e5" />
@@ -201,23 +431,41 @@ export function DashboardView({
           {/* Secondary Notification */}
           <div className="notification-item-compact">
             <div className="notif-top">
-              <span className="notif-title">Message | Product design</span>
+              <span className="notif-title">Message | Operations Desk</span>
               <MoreHorizontal size={14} color="#94a3b8" style={{ cursor: 'pointer' }} />
             </div>
             <p className="notif-desc">
-              Message from Ken Smith: "Hey team, just wanted to check in on the solar proposal review..."
+              {activeRole === 'customer'
+                ? 'Senior Solar Consultant approved your preliminary 5kW proposal with zero grid downtime.'
+                : activeRole === 'sales'
+                ? 'New customer enquiry received from Indiranagar with sanctioned load 7.5kW.'
+                : activeRole === 'technician'
+                ? 'Rooftop structural integrity checklist updated with latest BIS wind-load standards.'
+                : activeRole.startsWith('warehouse')
+                ? 'Inbound container of 50 hybrid inverters cleared customs inspection.'
+                : 'Customer ticket #TK-1088 escalated for bi-directional meter synchronization.'}
             </p>
           </div>
         </div>
 
-        {/* Column 2: Assignments */}
+        {/* Column 2: Role-Specific Operational Workbench */}
         <div className="bento-card">
           <div className="bento-card-header">
-            <h3 className="bento-card-title">Assignments</h3>
+            <h3 className="bento-card-title">
+              {activeRole === 'sales'
+                ? 'Lead Qualification'
+                : activeRole === 'technician'
+                ? 'Survey Checklist'
+                : activeRole.startsWith('warehouse')
+                ? 'Staged Dispatch'
+                : activeRole === 'support'
+                ? 'Fast Customer Lookup'
+                : 'System Configuration'}
+            </h3>
             <button
               type="button"
               className="bento-header-btn"
-              onClick={() => showToast({ type: 'info', title: 'Assignments', message: 'Filter & edit view active.' })}
+              onClick={() => showToast({ type: 'info', title: 'Edit View', message: 'Details workbench opened.' })}
             >
               <Edit2 size={13} />
               <span>Edit</span>
@@ -225,34 +473,86 @@ export function DashboardView({
           </div>
 
           <div className="assignment-tags-row">
-            <span className="tag-badge">Motion design</span>
-            <span className="tag-badge">Logo</span>
+            <span className="tag-badge">
+              {activeRole === 'sales'
+                ? 'Feasibility'
+                : activeRole === 'technician'
+                ? 'Shadow Check'
+                : activeRole.startsWith('warehouse')
+                ? 'Material Pick'
+                : activeRole === 'support'
+                ? 'BESCOM Meter'
+                : '5kW Hybrid'}
+            </span>
+            <span className="tag-badge">
+              {activeRole === 'sales'
+                ? 'Tariff Model'
+                : activeRole === 'technician'
+                ? 'Azimuth/Tilt'
+                : activeRole.startsWith('warehouse')
+                ? '540W Mono-PERC'
+                : activeRole === 'support'
+                ? 'Warranty Desk'
+                : 'Bifacial Modules'}
+            </span>
             <span className="priority-badge-high">High</span>
           </div>
 
           <h4 className="assignment-main-title">
-            Design a packaging concept for a new product
+            {activeRole === 'sales'
+              ? 'Evaluate electrical sanction & rooftop feasibility for Lead #SO-2026-0042'
+              : activeRole === 'technician'
+              ? 'Complete shadow raytracing & AC/DC distribution box mounting audit'
+              : activeRole.startsWith('warehouse')
+              ? 'Verify staging kit: 10x 540W modules & 5kW string inverter'
+              : activeRole === 'support'
+              ? 'Liaise on bi-directional meter sanction approval for Bangalore South'
+              : 'Review custom rooftop solar proposal & DISCOM subsidy breakdown'}
           </h4>
 
           <div className="assignment-meta-row">
-            <span className="status-chip-green">Package design</span>
+            <span className="status-chip-green">
+              {activeRole === 'customer' ? 'Proposal Active' : 'In Progress'}
+            </span>
             <div className="assignee-box">
-              <span className="assignee-avatar">RL</span>
-              <span>Rachel Lee</span>
+              <span className="assignee-avatar">
+                {activeRole === 'customer' ? 'SC' : 'RL'}
+              </span>
+              <span>
+                {activeRole === 'customer' ? 'Solar Consultant' : 'Rachel Lee'}
+              </span>
             </div>
           </div>
 
           <button
             type="button"
             className="add-assignment-btn"
-            onClick={onNewAction || (() => navigate('/customer/enquiries/new'))}
+            onClick={
+              onNewAction ||
+              (() =>
+                showToast({
+                  type: 'info',
+                  title: 'Task Created',
+                  message: 'Operational assignment added to the queue.',
+                }))
+            }
           >
             <Plus size={16} />
-            <span>Add new assignment</span>
+            <span>
+              {activeRole === 'sales'
+                ? 'Review Next Enquiry'
+                : activeRole === 'technician'
+                ? 'Log Field Checklist Item'
+                : activeRole.startsWith('warehouse')
+                ? 'Generate Picking Slip'
+                : activeRole === 'support'
+                ? 'Open New Ticket'
+                : 'Add Project Milestone'}
+            </span>
           </button>
         </div>
 
-        {/* Column 3: Calendar & Schedule */}
+        {/* Column 3: Calendar & Schedule Widget */}
         <div className="bento-card">
           <div className="bento-card-header">
             <h3 className="bento-card-title">May 2026</h3>
@@ -284,39 +584,25 @@ export function DashboardView({
             ))}
           </div>
 
-          {/* Timed Agenda */}
+          {/* Timed Agenda Slots */}
           <div className="cal-agenda-timeline">
-            <div>
-              <div className="timeline-slot-header">04:30-05:00 PM</div>
-              <div className="timeline-agenda-item" style={{ marginTop: '8px' }}>
-                <div className="agenda-left">
-                  <div className="agenda-icon-box">
-                    <Users size={16} />
+            {config.agenda.map((item, idx) => (
+              <div key={idx}>
+                <div className="timeline-slot-header">{item.time}</div>
+                <div className="timeline-agenda-item" style={{ marginTop: '8px' }}>
+                  <div className="agenda-left">
+                    <div className="agenda-icon-box">
+                      <Clock size={16} />
+                    </div>
+                    <div>
+                      <h5 className="agenda-title">{item.title}</h5>
+                      <p className="agenda-sub">{item.sub}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h5 className="agenda-title">Team meeting</h5>
-                    <p className="agenda-sub">12:00 - 12:30 • UX/UI design</p>
-                  </div>
+                  <MoreHorizontal size={14} color="#94a3b8" />
                 </div>
-                <MoreHorizontal size={14} color="#94a3b8" />
               </div>
-            </div>
-
-            <div>
-              <div className="timeline-slot-header">11:30-12:30 PM</div>
-              <div className="timeline-agenda-item" style={{ marginTop: '8px' }}>
-                <div className="agenda-left">
-                  <div className="agenda-icon-box">
-                    <CheckCircle2 size={16} />
-                  </div>
-                  <div>
-                    <h5 className="agenda-title">Meeting with new client</h5>
-                    <p className="agenda-sub">12:30 - 01:30 PM • Job interview</p>
-                  </div>
-                </div>
-                <MoreHorizontal size={14} color="#94a3b8" />
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -369,7 +655,17 @@ export function DashboardView({
             {/* Task 1 */}
             <div className="today-task-row">
               <div className="task-name-col">
-                <h5>Conduct research</h5>
+                <h5>
+                  {activeRole === 'sales'
+                    ? 'Review 5kW rooftop enquiry for Rahul Verma'
+                    : activeRole === 'technician'
+                    ? 'Conduct rooftop shadow raytracing & azimuth check'
+                    : activeRole.startsWith('warehouse')
+                    ? 'Staging pick: 10x 540W Bifacial modules'
+                    : activeRole === 'support'
+                    ? 'Verify bi-directional meter test report'
+                    : 'Conduct site feasibility inspection'}
+                </h5>
                 <span>4 May, 09:20 AM</span>
               </div>
               <div className="task-duration-col">
@@ -393,7 +689,17 @@ export function DashboardView({
             {/* Task 2 */}
             <div className="today-task-row">
               <div className="task-name-col">
-                <h5>Schedule a meeting</h5>
+                <h5>
+                  {activeRole === 'sales'
+                    ? 'Schedule technician field survey with Karthik'
+                    : activeRole === 'technician'
+                    ? 'Measure AC/DC breaker voltage drop & earthing pit'
+                    : activeRole.startsWith('warehouse')
+                    ? 'Inspect incoming delivery of 50 hybrid inverters'
+                    : activeRole === 'support'
+                    ? 'Liaise on BESCOM net-metering approval'
+                    : 'Review formal BOQ proposal & tariff schedule'}
+                </h5>
                 <span>14 May, 12:45 AM</span>
               </div>
               <div className="task-duration-col">
@@ -417,7 +723,17 @@ export function DashboardView({
             {/* Task 3 */}
             <div className="today-task-row">
               <div className="task-name-col">
-                <h5>Send out reminders</h5>
+                <h5>
+                  {activeRole === 'sales'
+                    ? 'Dispatch formal subsidy application documents'
+                    : activeRole === 'technician'
+                    ? 'Upload rooftop azimuth photo evidence to cloud'
+                    : activeRole.startsWith('warehouse')
+                    ? 'Update physical inventory counts for mounting rails'
+                    : activeRole === 'support'
+                    ? 'Close resolved inverter warranty ticket #TK-1088'
+                    : 'Grid net-metering sync confirmation'}
+                </h5>
                 <span>21 May, 10:30 AM</span>
               </div>
               <div className="task-duration-col">
@@ -440,40 +756,39 @@ export function DashboardView({
           </div>
         </div>
 
-        {/* Column 2: Go premium! Promo Card */}
-        <div className="go-premium-card">
+        {/* Column 2: Role Focus Card (REPLACED "Go premium!") */}
+        <div className="go-premium-card" style={{ background: 'linear-gradient(150deg, #605dec 0%, #5b5fc7 50%, #4f46e5 100%)' }}>
           <div className="premium-illustration-box">
-            {/* Gift Box with Bow Vector matching reference */}
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="8" width="18" height="13" rx="3" fill="rgba(255,255,255,0.2)" />
-              <path d="M12 8v13M3 13h18" stroke="#ffffff" strokeWidth="2" />
-              <path d="M12 8c-2-2-4-3-5-2s0 4 5 2c5-2 6-3 5-2s-3 0-5 2z" fill="#ffffff" />
-            </svg>
+            {activeRole === 'sales' ? (
+              <TrendingUp size={36} color="#ffffff" />
+            ) : activeRole === 'technician' ? (
+              <Wrench size={36} color="#ffffff" />
+            ) : activeRole.startsWith('warehouse') ? (
+              <Package size={36} color="#ffffff" />
+            ) : activeRole === 'support' ? (
+              <Headphones size={36} color="#ffffff" />
+            ) : activeRole === 'admin' ? (
+              <Shield size={36} color="#ffffff" />
+            ) : (
+              <Sun size={36} color="#ffffff" />
+            )}
           </div>
-          <h3 className="premium-title">Go premium!</h3>
-          <p className="premium-sub">
-            Gain access to a range of benefits designed to enhance your user experience
-          </p>
+          <h3 className="premium-title">{config.focusCard.title}</h3>
+          <p className="premium-sub">{config.focusCard.sub}</p>
           <button
             type="button"
             className="premium-cta-btn"
-            onClick={() =>
-              showToast({
-                type: 'success',
-                title: 'SolarOps Pro',
-                message: 'Full telemetry, multi-inverter diagnostics, and priority survey routing active.',
-              })
-            }
+            onClick={config.focusCard.action}
           >
-            Find out more
+            {config.focusCard.buttonText}
           </button>
         </div>
 
-        {/* Column 3: Metrics Gauges & Board Meeting Card */}
+        {/* Column 3: Metrics & Upcoming Meeting */}
         <div className="dash-col-metrics">
           {/* Upper: 2 Circular Progress Gauges */}
           <div className="gauges-card">
-            {/* Gauge 1 (90% Green) */}
+            {/* Gauge 1 */}
             <div className="gauge-item">
               <div className="gauge-svg-box">
                 <svg width="52" height="52" viewBox="0 0 36 36">
@@ -488,20 +803,20 @@ export function DashboardView({
                     fill="none"
                     stroke="#10b981"
                     strokeWidth="3.2"
-                    strokeDasharray="90, 100"
+                    strokeDasharray={`${parseInt(config.gauge1.percent, 10)}, 100`}
                     strokeLinecap="round"
                   />
                 </svg>
-                <div className="gauge-center-text">90%</div>
+                <div className="gauge-center-text">{config.gauge1.percent}</div>
               </div>
               <div className="gauge-info">
-                <span className="gauge-category">Data Research</span>
-                <span className="gauge-title">Marketing</span>
-                <span className="gauge-subnote">You marked 5/5. All assignments done!</span>
+                <span className="gauge-category">{config.gauge1.cat}</span>
+                <span className="gauge-title">{config.gauge1.title}</span>
+                <span className="gauge-subnote">{config.gauge1.sub}</span>
               </div>
             </div>
 
-            {/* Gauge 2 (65% Coral) */}
+            {/* Gauge 2 */}
             <div className="gauge-item">
               <div className="gauge-svg-box">
                 <svg width="52" height="52" viewBox="0 0 36 36">
@@ -516,16 +831,16 @@ export function DashboardView({
                     fill="none"
                     stroke="#f43f5e"
                     strokeWidth="3.2"
-                    strokeDasharray="65, 100"
+                    strokeDasharray={`${parseInt(config.gauge2.percent, 10)}, 100`}
                     strokeLinecap="round"
                   />
                 </svg>
-                <div className="gauge-center-text">65%</div>
+                <div className="gauge-center-text">{config.gauge2.percent}</div>
               </div>
               <div className="gauge-info">
-                <span className="gauge-category">UX/UI Design</span>
-                <span className="gauge-title">Typography</span>
-                <span className="gauge-subnote">You marked 3/5. 2 assignments left</span>
+                <span className="gauge-category">{config.gauge2.cat}</span>
+                <span className="gauge-title">{config.gauge2.title}</span>
+                <span className="gauge-subnote">{config.gauge2.sub}</span>
                 <button
                   type="button"
                   className="gauge-check-btn"
@@ -533,7 +848,7 @@ export function DashboardView({
                     showToast({
                       type: 'info',
                       title: 'Milestone Review',
-                      message: 'Typography and design tokens validated.',
+                      message: `${config.gauge2.title} validated.`,
                     })
                   }
                 >
@@ -543,17 +858,33 @@ export function DashboardView({
             </div>
           </div>
 
-          {/* Lower: Board Meeting Card */}
+          {/* Lower: Meeting Briefing Card */}
           <div className="board-meeting-card">
             <div className="board-meeting-header">
-              <h4 className="board-meeting-title">Board meeting</h4>
+              <h4 className="board-meeting-title">
+                {activeRole === 'sales'
+                  ? 'Client Technical Briefing'
+                  : activeRole === 'technician'
+                  ? 'Field Engineering Debrief'
+                  : activeRole.startsWith('warehouse')
+                  ? 'Logistics Carrier Sync'
+                  : activeRole === 'support'
+                  ? 'DISCOM Coordination Call'
+                  : activeRole === 'admin'
+                  ? 'Operations Staff Standup'
+                  : 'Technical Consultation'}
+              </h4>
               <button type="button" className="bento-header-btn">
                 <Edit2 size={13} />
                 <span>Edit</span>
               </button>
             </div>
-            <p className="board-meeting-time">● March 24 at 4:00 PM</p>
-            <p className="board-meeting-desc">Meeting with John Smith, 4th floor, room 159</p>
+            <p className="board-meeting-time">● Today at 4:00 PM</p>
+            <p className="board-meeting-desc">
+              {activeRole === 'customer'
+                ? 'With Senior Solar Consultant, Rooftop Feasibility review'
+                : 'With Engineering Operations Lead, Room 104'}
+            </p>
             <div className="board-meeting-actions">
               <button
                 type="button"
@@ -574,8 +905,8 @@ export function DashboardView({
                 onClick={() =>
                   showToast({
                     type: 'success',
-                    title: 'Invite Accepted',
-                    message: 'Board meeting confirmed on your calendar.',
+                    title: 'Confirmed',
+                    message: 'Meeting session confirmed on your calendar.',
                   })
                 }
               >
@@ -590,4 +921,3 @@ export function DashboardView({
 }
 
 export default DashboardView;
-
