@@ -49,6 +49,15 @@ class Settings(BaseSettings):
     seed_password: str | None = None
     gst_rate_bps: int = 1800
     advance_percent: int = 40
+    syscache_ttl_seconds: int = 900
+    syscache_force_fallback: bool = False
+    ai_model_url: str | None = None
+    ai_model_key: str | None = None
+    ai_model_provider_name: str | None = None
+    ai_model_version: str | None = None
+    weather_provider_url: str | None = None
+    weather_provider_key: str | None = None
+    weather_provider_name: str | None = None
     quotation_validity_days: int = 14
     evidence_dir: str = "var/survey-evidence"
     evidence_max_bytes: int = 5_000_000
