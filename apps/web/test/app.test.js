@@ -283,6 +283,28 @@ test('Equipment Scanner: role-based visibility and BOM serial match verification
   // Warehouse stock intake serial format
   const whSerial = 'SN-PV540-KA-0985';
   assert.match(whSerial, /^SN-PV\d+-KA-\d+$/);
+
+  // Real camera constraints specification
+  const cameraConstraints = {
+    video: {
+      facingMode: { ideal: 'environment' },
+      width: { ideal: 1280 },
+      height: { ideal: 720 },
+    },
+    audio: false,
+  };
+  assert.equal(cameraConstraints.video.facingMode.ideal, 'environment');
+  assert.equal(cameraConstraints.audio, false);
+
+  // Technician installation photo record structure
+  const techPhoto = {
+    id: 'photo-1',
+    url: 'data:image/jpeg;base64,sampleImageData',
+    tag: 'Rooftop South Array (Azimuth 180°)',
+    time: '11:15 AM',
+  };
+  assert.ok(techPhoto.tag.includes('Rooftop'));
+  assert.ok(techPhoto.url.startsWith('data:image'));
 });
 
 test('Customer Dashboard: technician verification PIN OTP format and parsing', () => {

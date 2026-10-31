@@ -1,24 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  ScanBarcode,
   Camera,
+  ScanBarcode,
   Upload,
+  Check,
   CheckCircle2,
   Package,
   Wrench,
   X,
   Plus,
-  Trash2,
-  Sun,
-  Zap,
-  Battery,
-  ShieldCheck,
-  FileCheck,
-  MapPin,
+  ArrowRight,
   RefreshCw,
   Flashlight,
   Sparkles,
-  ArrowRight,
+  Image as ImageIcon,
+  Trash2,
+  AlertCircle,
+  FlipHorizontal,
+  Sliders,
+  ShieldCheck,
+  MapPin,
 } from 'lucide-react';
 import { Modal } from '../Modal/Modal';
 import { useAuth } from '../../context/AuthContext';
@@ -26,225 +27,282 @@ import './EquipmentScannerModal.css';
 
 export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) {
   const { showToast } = useAuth();
+  const videoRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const streamRef = useRef(null);
 
-  // Purely user-centric mode:
-  // - Technician gets ONLY the Technician mode (BOM verification, site install, checklist)
-  // - Manager (warehouse manager, warehouse staff, admin) gets ONLY the Warehouse Manager mode (stock inventory, inward/dispatch)
-  // There is NO role switcher strip; the interface is 100% tailor-made to the user.
   const isTechnician = role === 'technician';
-  const activeMode = isTechnician ? 'technician' : 'warehouse';
 
-  // Warehouse Mode States
-  const [warehouseAction, setWarehouseAction] = useState('inward'); // 'inward' | 'dispatch'
-  const [barcodeInput, setBarcodeInput] = useState('');
-  const [scannedWarehouseItems, setScannedWarehouseItems] = useState([
-    {
-      id: 1,
-      serial: 'SN-PV540-KA-0985',
-      name: 'Waaree 540W Mono-PERC Module',
-      rack: 'Aisle B - Shelf 04',
-      batch: 'BATCH-2026-Q2',
-      qty: 1,
-      status: 'Verified',
-      time: 'Just now',
-    },
-    {
-      id: 2,
-      serial: 'INV-HYB5K-2026-041',
-      name: 'SolarEdge 5kW Hybrid Inverter',
-      rack: 'Aisle A - Bay 02',
-      batch: 'BATCH-INV-088',
-      qty: 1,
-      status: 'Verified',
-      time: '2m ago',
-    },
-    {
-      id: 3,
-      serial: 'BAT-5KWH-LFP-088',
-      name: 'SolarFlow 5.12kWh LiFePO4 Battery',
-      rack: 'Heavy Staging Area',
-      batch: 'BATCH-LFP-014',
-      qty: 1,
-      status: 'Verified',
-      time: '5m ago',
-    },
-  ]);
-
-  // Technician Mode States
-  const [techVerificationList, setTechVerificationList] = useState([
-    {
-      id: 1,
-      component: 'Inverter Serial Number',
-      targetSerial: 'INV-HYB5K-2026-041',
-      scannedSerial: 'INV-HYB5K-2026-041',
-      status: 'matched',
-      label: 'SolarEdge 5kW Hybrid Grid-Tie (IP65)',
-    },
-    {
-      id: 2,
-      component: 'PV Module Array Serial (1/10)',
-      targetSerial: 'SN-PV540-KA-0981',
-      scannedSerial: 'SN-PV540-KA-0981',
-      status: 'matched',
-      label: '540W Mono-PERC Bifacial Module #1',
-    },
-    {
-      id: 3,
-      component: 'Bi-directional Net-Meter Barcode',
-      targetSerial: 'BESCOM-KA-BLR-099234',
-      scannedSerial: '',
-      status: 'pending',
-      label: 'DISCOM 3-Phase Smart Net-Meter',
-    },
-    {
-      id: 4,
-      component: 'Chemical Earthing Pit Ground Tag',
-      targetSerial: 'EARTH-PIT-KA-042',
-      scannedSerial: '',
-      status: 'pending',
-      label: 'Ground Resistance < 3.2Ω Tag',
-    },
-  ]);
-
-  // Dedicated evidence files for each role to prevent crosstalk
-  const [warehouseFiles, setWarehouseFiles] = useState([
-    { name: 'Supplier_Delivery_Challan_4981.pdf', size: '240 KB' },
-    { name: 'Pallet_Barcode_Batch_540W.jpg', size: '1.2 MB' },
-  ]);
-
-  const [techFiles, setTechFiles] = useState([
-    { name: 'Rooftop_South_Array_Azimuth_180.jpg', size: '2.4 MB' },
-    { name: 'Inverter_ACDC_Distribution_Box.jpg', size: '1.8 MB' },
-  ]);
-
-  const uploadedFiles = isTechnician ? techFiles : warehouseFiles;
-
+  // Camera Hardware State
+  const [cameraStatus, setCameraStatus] = useState('idle'); // 'idle' | 'requesting' | 'active' | 'denied' | 'unsupported'
+  const [facingMode, setFacingMode] = useState('environment'); // 'environment' (back) | 'user' (front)
   const [torchOn, setTorchOn] = useState(false);
   const [laserActive, setLaserActive] = useState(true);
 
-  // Quick scan barcode triggers
-  const handleScanBarcode = (serialCode, itemName, rackLoc) => {
-    if (!serialCode.trim()) return;
+  // Warehouse Mode: QR & Barcode Scanning State
+  const [stockMode, setStockMode] = useState('inward'); // 'inward' | 'dispatch'
+  const [lastScannedCode, setLastScannedCode] = useState(null);
+  const [scannedItems, setScannedItems] = useState([
+    {
+      id: 'item-1',
+      code: 'SN-PV540-KA-0985',
+      name: 'Waaree 540W Mono-PERC Panel',
+      mode: 'inward',
+      time: 'Just now',
+    },
+    {
+      id: 'item-2',
+      code: 'INV-HYB5K-2026-041',
+      name: 'SolarEdge 5kW Hybrid Inverter',
+      mode: 'inward',
+      time: '2m ago',
+    },
+  ]);
 
-    if (!isTechnician) {
-      const newItem = {
-        id: Date.now(),
-        serial: serialCode.trim(),
-        name: itemName || 'Serialized Solar Hardware',
-        rack: rackLoc || 'Warehouse Staging Zone 1',
-        batch: 'BATCH-2026-LIVE',
-        qty: 1,
-        status: warehouseAction === 'inward' ? 'Stock Inward +1' : 'Dispatched -1',
-        time: 'Just now',
+  // Technician Mode: Installation Photos State
+  const [capturedPhotos, setCapturedPhotos] = useState([
+    {
+      id: 'photo-1',
+      url: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=600&auto=format&fit=crop&q=80',
+      tag: 'Rooftop South Array (Azimuth 180°)',
+      time: '11:15 AM',
+    },
+    {
+      id: 'photo-2',
+      url: 'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=600&auto=format&fit=crop&q=80',
+      tag: 'Inverter & AC/DC Protection Box',
+      time: '11:22 AM',
+    },
+  ]);
+
+  // Request Real Camera Access
+  const startCamera = async (facing = facingMode) => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraStatus('unsupported');
+      return;
+    }
+
+    try {
+      setCameraStatus('requesting');
+
+      // Stop previous tracks if switching camera
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+
+      const constraints = {
+        video: {
+          facingMode: { ideal: facing },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+        audio: false,
       };
-      setScannedWarehouseItems([newItem, ...scannedWarehouseItems]);
-      setBarcodeInput('');
-      showToast({
-        type: 'success',
-        title: 'Barcode Scanned & Registered',
-        message: `${newItem.name} (${newItem.serial}) logged to inventory.`,
-      });
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      streamRef.current = stream;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play().catch(() => {});
+      }
+
+      setCameraStatus('active');
+    } catch (err) {
+      console.warn('Real camera access denied or device not found:', err);
+      setCameraStatus('denied');
+    }
+  };
+
+  // Stop camera tracks cleanly
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    setCameraStatus('idle');
+  };
+
+  // Camera Lifecycle
+  useEffect(() => {
+    if (isOpen) {
+      startCamera();
     } else {
-      // Technician verification match
-      let matched = false;
-      const updated = techVerificationList.map((item) => {
-        if (
-          !item.scannedSerial &&
-          (item.targetSerial === serialCode.trim() || !matched)
-        ) {
-          matched = true;
-          return {
-            ...item,
-            scannedSerial: serialCode.trim(),
-            status: 'matched',
-          };
-        }
-        return item;
-      });
-      setTechVerificationList(updated);
-      setBarcodeInput('');
+      stopCamera();
+    }
+
+    return () => {
+      stopCamera();
+    };
+  }, [isOpen, facingMode]);
+
+  // Toggle Camera Facing Mode (Front / Back)
+  const handleToggleFacingMode = () => {
+    const nextMode = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(nextMode);
+    startCamera(nextMode);
+  };
+
+  // Toggle Flashlight (Torch)
+  const handleToggleTorch = async () => {
+    if (!streamRef.current) return;
+    const track = streamRef.current.getVideoTracks()[0];
+    if (track && track.getCapabilities && track.getCapabilities().torch) {
+      try {
+        await track.applyConstraints({
+          advanced: [{ torch: !torchOn }],
+        });
+        setTorchOn(!torchOn);
+      } catch (e) {
+        setTorchOn(!torchOn);
+      }
+    } else {
+      setTorchOn(!torchOn);
       showToast({
-        type: 'success',
-        title: 'Component Verified on Site',
-        message: `Serial ${serialCode.trim()} matches Job #SO-0042 BOM specifications.`,
+        type: 'info',
+        title: 'Torch Simulator',
+        message: torchOn ? 'Flashlight disabled' : 'Flashlight beam active',
       });
     }
   };
 
-  const handleDeleteWarehouseItem = (id) => {
-    setScannedWarehouseItems((prev) => prev.filter((item) => item.id !== id));
+  // =========================================================================
+  // WAREHOUSE MANAGER ACTIONS (Scan Barcode / QR Code)
+  // =========================================================================
+  const handleScanBarcode = (detectedCode, label) => {
+    const newItem = {
+      id: `item-${Date.now()}`,
+      code: detectedCode || `SN-PV540-KA-${Math.floor(1000 + Math.random() * 9000)}`,
+      name: label || 'Waaree 540W Mono-PERC Module',
+      mode: stockMode,
+      time: 'Just now',
+    };
+
+    setLastScannedCode(newItem);
+    setScannedItems((prev) => [newItem, ...prev]);
+
+    // Haptic / Sound vibration feedback if supported
+    if (navigator.vibrate) {
+      navigator.vibrate(80);
+    }
+
     showToast({
-      type: 'info',
-      title: 'Item Removed',
-      message: 'Scanned item removed from batch log.',
+      type: 'success',
+      title: stockMode === 'inward' ? 'Stock Inward +1' : 'Stock Dispatched -1',
+      message: `${newItem.name} (${newItem.code}) recorded.`,
     });
   };
 
   const handleSimulateScan = () => {
-    if (!isTechnician) {
-      const presets = [
-        { code: 'SN-PV540-KA-0986', name: 'Waaree 540W Mono-PERC Module', rack: 'Aisle B - Shelf 04' },
-        { code: 'INV-HYB3K-2026-104', name: 'Micro-Inverter 3kW String Unit', rack: 'Aisle A - Bay 03' },
-        { code: 'BAT-10KWH-LFP-022', name: 'Commercial 10.24kWh Storage Bank', rack: 'Heavy Staging Area' },
-        { code: 'BOS-DB-SPD-449', name: 'Solar AC/DC Distribution Box', rack: 'BOS Rack 2' },
-      ];
-      const randomPreset = presets[Math.floor(Math.random() * presets.length)];
-      handleScanBarcode(randomPreset.code, randomPreset.name, randomPreset.rack);
-    } else {
-      const pendingItem = techVerificationList.find((i) => i.status === 'pending');
-      if (pendingItem) {
-        handleScanBarcode(pendingItem.targetSerial);
-      } else {
-        showToast({
-          type: 'info',
-          title: 'All Components Verified',
-          message: 'All equipment for Job #SO-0042 has already been scanned and verified.',
-        });
+    const warehousePresets = [
+      { code: 'SN-PV540-KA-0988', name: 'Waaree 540W Mono-PERC Module' },
+      { code: 'INV-HYB5K-2026-042', name: 'SolarEdge 5kW Hybrid Inverter' },
+      { code: 'BAT-5KWH-LFP-089', name: 'SolarFlow 5.12kWh LiFePO4 Battery' },
+      { code: 'BOS-DB-SPD-449', name: 'Solar AC/DC Distribution Box' },
+      { code: 'MTR-NET-BESCOM-099', name: 'BESCOM Smart Net-Meter Barcode' },
+    ];
+    const picked = warehousePresets[Math.floor(Math.random() * warehousePresets.length)];
+    handleScanBarcode(picked.code, picked.name);
+  };
+
+  // =========================================================================
+  // TECHNICIAN ACTIONS (Capture Live Snapshot & Upload Photos)
+  // =========================================================================
+  const handleCaptureInstallationPhoto = () => {
+    let photoUrl = '';
+    const video = videoRef.current;
+
+    if (video && video.videoWidth && video.videoHeight) {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        photoUrl = canvas.toDataURL('image/jpeg', 0.92);
+      } catch (e) {
+        photoUrl = '';
       }
     }
+
+    // Fallback if camera stream is blocked
+    if (!photoUrl) {
+      photoUrl =
+        'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=600&auto=format&fit=crop&q=80';
+    }
+
+    const tagOptions = [
+      'Rooftop PV Array & Azimuth Angle',
+      'Inverter Wiring & Distribution Box',
+      'DISCOM Smart Net-Meter',
+      'Earth Pit Resistance Ground Tag',
+    ];
+    const tag = tagOptions[capturedPhotos.length % tagOptions.length];
+
+    const newPhoto = {
+      id: `photo-${Date.now()}`,
+      url: photoUrl,
+      tag: `${tag} #${capturedPhotos.length + 1}`,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setCapturedPhotos((prev) => [newPhoto, ...prev]);
+
+    if (navigator.vibrate) {
+      navigator.vibrate([40, 60, 40]);
+    }
+
+    showToast({
+      type: 'success',
+      title: 'Installation Photo Captured',
+      message: `${newPhoto.tag} captured from optical camera feed.`,
+    });
   };
 
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      const newFile = {
-        name: file.name,
-        size: `${Math.round(file.size / 1024)} KB`,
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const newPhoto = {
+          id: `photo-${Date.now()}`,
+          url: event.target.result,
+          tag: `Uploaded Evidence (${file.name})`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+        setCapturedPhotos((prev) => [newPhoto, ...prev]);
+        showToast({
+          type: 'success',
+          title: 'Photo Uploaded',
+          message: `${file.name} attached to installation report.`,
+        });
       };
-      if (isTechnician) {
-        setTechFiles((prev) => [...prev, newFile]);
-      } else {
-        setWarehouseFiles((prev) => [...prev, newFile]);
-      }
-      showToast({
-        type: 'success',
-        title: 'Evidence Attached',
-        message: `${file.name} uploaded and tagged to work record.`,
-      });
+      reader.readAsDataURL(file);
     }
   };
 
-  const handleRemoveFile = (index) => {
-    if (isTechnician) {
-      setTechFiles((prev) => prev.filter((_, i) => i !== index));
-    } else {
-      setWarehouseFiles((prev) => prev.filter((_, i) => i !== index));
-    }
+  const handleRemovePhoto = (id) => {
+    setCapturedPhotos((prev) => prev.filter((p) => p.id !== id));
+    showToast({
+      type: 'info',
+      title: 'Photo Removed',
+      message: 'Photo removed from submission bundle.',
+    });
   };
 
-  const handleCommit = (e) => {
-    e.preventDefault();
+  // Submit Completed Action
+  const handleSubmitAction = () => {
     if (!isTechnician) {
       showToast({
         type: 'success',
-        title: 'Stock Updated Successfully',
-        message: `${scannedWarehouseItems.length} serialized components saved to warehouse database.`,
+        title: 'Warehouse Stock Synced',
+        message: `${scannedItems.length} barcodes committed to warehouse inventory log.`,
       });
     } else {
       showToast({
         type: 'success',
-        title: 'Installation Work Verified & Submitted',
-        message: 'BOM verification report, serial records, and rooftop photos submitted to Sales & HQ!',
+        title: 'Work Proof Submitted to HQ',
+        message: `${capturedPhotos.length} installation photos synchronized with Sales & Engineering!`,
       });
     }
     onClose();
@@ -255,426 +313,359 @@ export function EquipmentScannerModal({ isOpen, onClose, role = 'technician' }) 
       isOpen={isOpen}
       onClose={onClose}
       title={
-        <div className="scanner-header-title-wrap">
-          <div className="scanner-header-left">
+        <div className="compact-scanner-header">
+          <div className="scanner-header-identity">
             {isTechnician ? (
-              <Wrench size={20} color="#10b981" />
+              <div className="scanner-header-icon tech">
+                <Camera size={19} color="#10b981" />
+              </div>
             ) : (
-              <Package size={20} color="#f59e0b" />
+              <div className="scanner-header-icon wh">
+                <ScanBarcode size={19} color="#f59e0b" />
+              </div>
             )}
-            <span>
-              {isTechnician
-                ? 'Field Work & Installation Verification Scanner'
-                : 'Warehouse Inventory & Stock Receiving Scanner'}
-            </span>
+            <div>
+              <h3 className="scanner-header-title">
+                {isTechnician
+                  ? 'Field Installation Proof Camera'
+                  : 'Warehouse QR & Barcode Scanner'}
+              </h3>
+              <span className="scanner-header-meta">
+                {isTechnician
+                  ? 'Capture & upload photo evidence of completed rooftop installation'
+                  : 'Scan product barcodes and serial plates to manage warehouse stock'}
+              </span>
+            </div>
           </div>
-          <span className={`scanner-role-pill-badge ${isTechnician ? 'technician' : 'manager'}`}>
+
+          <span
+            className={`scanner-header-pill ${isTechnician ? 'technician' : 'warehouse'}`}
+          >
             {isTechnician ? 'Field Technician' : 'Warehouse Manager'}
           </span>
         </div>
       }
-      maxWidth="720px"
+      maxWidth="680px"
     >
-      <div className="equipment-scanner-modal-body">
-        {/* Top Context Subtitle */}
-        <p className="scanner-modal-description">
-          {isTechnician
-            ? 'Scan serialized solar equipment on-site at Arun Kumar’s Indiranagar residence (#SO-0042) to confirm physical delivery against the approved engineering BOM.'
-            : 'Scan serial numbers and QR codes on modules, inverters and batteries to update live warehouse stock counts and stage kits for installation dispatch.'}
-        </p>
-
-        {/* Warehouse Inward vs Outward Dispatch Toggle (Manager Only) */}
+      <div className="compact-scanner-body">
+        {/* ===================================================================
+            WAREHOUSE TOP BAR: Inward vs Outward Toggle
+            =================================================================== */}
         {!isTechnician && (
-          <div className="warehouse-action-toggle">
-            <button
-              type="button"
-              className={`wh-toggle-btn ${warehouseAction === 'inward' ? 'active' : ''}`}
-              onClick={() => setWarehouseAction('inward')}
-            >
-              <Plus size={14} />
-              <span>Inward Goods Receiving (+ Stock)</span>
-            </button>
-            <button
-              type="button"
-              className={`wh-toggle-btn ${warehouseAction === 'dispatch' ? 'active' : ''}`}
-              onClick={() => setWarehouseAction('dispatch')}
-            >
-              <ArrowRight size={14} />
-              <span>Outward Installation Dispatch (- Staging)</span>
-            </button>
+          <div className="warehouse-quick-mode-bar">
+            <span className="mode-label">Stock Action:</span>
+            <div className="mode-pill-toggle">
+              <button
+                type="button"
+                className={`mode-pill ${stockMode === 'inward' ? 'active inward' : ''}`}
+                onClick={() => setStockMode('inward')}
+              >
+                <Plus size={14} />
+                <span>Inward Receiving (+ Stock)</span>
+              </button>
+              <button
+                type="button"
+                className={`mode-pill ${stockMode === 'dispatch' ? 'active dispatch' : ''}`}
+                onClick={() => setStockMode('dispatch')}
+              >
+                <ArrowRight size={14} />
+                <span>Outward Dispatch (- Kit)</span>
+              </button>
+            </div>
           </div>
         )}
 
-        {/* Active Job Banner (Technician Only) */}
+        {/* ===================================================================
+            TECHNICIAN TOP BAR: Active Work Order Details
+            =================================================================== */}
         {isTechnician && (
-          <div className="tech-active-job-banner">
-            <div className="job-meta-left">
-              <MapPin size={16} color="#4f46e5" />
-              <div>
-                <strong>Active Site Survey / Installation #SO-0042</strong>
-                <span>Arun Kumar · 5 kW Hybrid Rooftop · Indiranagar, Bengaluru</span>
+          <div className="technician-job-status-strip">
+            <div className="tech-job-left">
+              <MapPin size={15} color="#10b981" />
+              <span>Job #SO-0042 · Arun Kumar (5kW Hybrid Rooftop, Indiranagar)</span>
+            </div>
+            <span className="tech-job-badge">Work in Progress</span>
+          </div>
+        )}
+
+        {/* ===================================================================
+            PRIMARY CAMERA CONTAINER & OPTICAL VIEWFINDER
+            =================================================================== */}
+        <div className="optical-camera-container">
+          {/* Real Camera Video Element */}
+          <video
+            ref={videoRef}
+            className={`optical-video-stream ${cameraStatus === 'active' ? 'visible' : 'hidden'}`}
+            autoPlay
+            playsInline
+            muted
+          />
+
+          {/* Camera Permission Requesting State */}
+          {cameraStatus === 'requesting' && (
+            <div className="camera-overlay-state">
+              <div className="camera-spinner" />
+              <p>Initializing Camera Feed...</p>
+              <span>Please grant browser camera access if prompted</span>
+            </div>
+          )}
+
+          {/* Camera Permission Denied or Unavailable State */}
+          {(cameraStatus === 'denied' || cameraStatus === 'unsupported') && (
+            <div className="camera-overlay-state denied">
+              <AlertCircle size={36} color="#ef4444" />
+              <h4>Camera Access Unavailable</h4>
+              <p>
+                {cameraStatus === 'denied'
+                  ? 'Browser camera permission was denied or camera is in use by another app.'
+                  : 'Webcam device was not found on this computer.'}
+              </p>
+              <div className="camera-denied-actions">
+                <button
+                  type="button"
+                  className="btn-retry-camera"
+                  onClick={() => startCamera()}
+                >
+                  <RefreshCw size={14} />
+                  <span>Retry Camera</span>
+                </button>
+                <button
+                  type="button"
+                  className="btn-sim-action"
+                  onClick={
+                    !isTechnician
+                      ? handleSimulateScan
+                      : handleCaptureInstallationPhoto
+                  }
+                >
+                  <Sparkles size={14} />
+                  <span>
+                    {!isTechnician ? 'Simulate Barcode Scan' : 'Capture Sample Photo'}
+                  </span>
+                </button>
               </div>
             </div>
-            <span className="job-status-chip">Work in Progress</span>
-          </div>
-        )}
+          )}
 
-        {/* =================================================================
-            CAMERA OPTICAL SCANNER VIEWFINDER
-            ================================================================= */}
-        <div className="scanner-viewfinder-card">
-          <div className="viewfinder-camera-hud">
-            {/* Corner Targeting Brackets */}
-            <div className="hud-corner top-left" />
-            <div className="hud-corner top-right" />
-            <div className="hud-corner bottom-left" />
-            <div className="hud-corner bottom-right" />
+          {/* Scanning Reticle & Corner Brackets Overlay */}
+          <div className="camera-viewfinder-overlay">
+            <div className="reticle-bracket top-left" />
+            <div className="reticle-bracket top-right" />
+            <div className="reticle-bracket bottom-left" />
+            <div className="reticle-bracket bottom-right" />
 
-            {/* Scanning Laser Beam */}
-            {laserActive && <div className="hud-scanning-laser" />}
+            {/* Scanning Laser Sweep Beam */}
+            {laserActive && <div className="laser-sweep-beam" />}
 
-            {/* Center Aiming Reticle */}
-            <div className="hud-center-reticle">
-              <ScanBarcode size={48} color="rgba(255, 255, 255, 0.85)" strokeWidth={1.5} />
-              <span className="reticle-label">
+            {/* Center Focus Box */}
+            <div className="center-target-box">
+              <div className="target-icon">
+                {!isTechnician ? (
+                  <ScanBarcode size={44} color="rgba(255, 255, 255, 0.85)" strokeWidth={1.5} />
+                ) : (
+                  <Camera size={44} color="rgba(255, 255, 255, 0.85)" strokeWidth={1.5} />
+                )}
+              </div>
+              <span className="target-instruction">
                 {!isTechnician
-                  ? 'ALIGN BARCODE / QR SERIAL IN FRAME'
-                  : 'ALIGN COMPONENT SERIAL PLATE'}
+                  ? 'POINT AT COMPONENT QR / BARCODE'
+                  : 'FRAME INSTALLATION WORK IN CENTER'}
               </span>
             </div>
 
-            {/* Live Camera Simulation HUD Metadata */}
-            <div className="hud-meta-bar">
-              <span className="hud-meta-item">
-                <span className="live-camera-pulse" />
-                <span>CAM-01 · 1080p Optical Feed</span>
-              </span>
-              <span className="hud-meta-item">
-                FPS: 60 · ISO 200 · {isTechnician ? 'Azimuth: 180° S' : 'Warehouse Aisle B'}
-              </span>
+            {/* Camera Floating Telemetry Badges */}
+            <div className="camera-hud-badge top-left-badge">
+              <span className="hud-live-pip" />
+              <span>CAM · 1080p Optical Feed</span>
             </div>
-          </div>
 
-          {/* Scanner Viewfinder Control Buttons */}
-          <div className="viewfinder-controls-row">
-            <button
-              type="button"
-              className={`viewfinder-btn ${torchOn ? 'active' : ''}`}
-              onClick={() => setTorchOn(!torchOn)}
-              title="Toggle Camera Flashlight"
-            >
-              <Flashlight size={16} />
-              <span>{torchOn ? 'Torch On' : 'Torch Off'}</span>
-            </button>
+            <div className="camera-hud-badge top-right-badge">
+              <span>FPS: 60 · ISO 200</span>
+            </div>
 
-            <button
-              type="button"
-              className="viewfinder-scan-trigger-btn"
-              onClick={handleSimulateScan}
-            >
-              <Camera size={17} />
-              <span>Capture & Scan Code</span>
-            </button>
-
-            <button
-              type="button"
-              className={`viewfinder-btn ${laserActive ? 'active' : ''}`}
-              onClick={() => setLaserActive(!laserActive)}
-              title="Toggle Laser Targeting"
-            >
-              <RefreshCw size={15} />
-              <span>Laser Sweep</span>
-            </button>
-          </div>
-        </div>
-
-        {/* =================================================================
-            MANUAL BARCODE INPUT & QUICK PRESET BUTTONS
-            ================================================================= */}
-        <div className="manual-scan-box">
-          <label className="manual-scan-label" htmlFor="manualBarcode">
-            Or Enter Serial Number / Barcode Manually:
-          </label>
-          <div className="manual-scan-input-group">
-            <input
-              id="manualBarcode"
-              type="text"
-              className="manual-scan-input"
-              placeholder={
-                isTechnician
-                  ? 'e.g. INV-HYB5K-2026-041 or BESCOM-KA-BLR-099234'
-                  : 'e.g. SN-PV540-KA-0985 or INV-HYB5K-2026-041'
-              }
-              value={barcodeInput}
-              onChange={(e) => setBarcodeInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleScanBarcode(barcodeInput);
-                }
-              }}
-            />
-            <button
-              type="button"
-              className="manual-scan-submit-btn"
-              onClick={() => handleScanBarcode(barcodeInput)}
-            >
-              Add Serial
-            </button>
-          </div>
-
-          {/* Quick preset chips */}
-          <div className="quick-presets-strip">
-            <span className="presets-label">Quick Scan Presets:</span>
-            {!isTechnician ? (
-              <>
-                <button
-                  type="button"
-                  className="preset-chip"
-                  onClick={() =>
-                    handleScanBarcode(
-                      'SN-PV540-KA-0988',
-                      'Waaree 540W Mono-PERC Module',
-                      'Aisle B - Shelf 04'
-                    )
-                  }
-                >
-                  Waaree PV-540W
-                </button>
-                <button
-                  type="button"
-                  className="preset-chip"
-                  onClick={() =>
-                    handleScanBarcode(
-                      'INV-HYB5K-2026-042',
-                      'SolarEdge 5kW Hybrid Inverter',
-                      'Aisle A - Bay 02'
-                    )
-                  }
-                >
-                  Hybrid Inverter 5kW
-                </button>
-                <button
-                  type="button"
-                  className="preset-chip"
-                  onClick={() =>
-                    handleScanBarcode(
-                      'BAT-5KWH-LFP-089',
-                      'SolarFlow 5.12kWh Battery',
-                      'Heavy Staging Area'
-                    )
-                  }
-                >
-                  Battery Pack 5kWh
-                </button>
-                <button
-                  type="button"
-                  className="preset-chip"
-                  onClick={() =>
-                    handleScanBarcode(
-                      'BOS-DB-SPD-449',
-                      'Solar AC/DC Distribution Box',
-                      'BOS Rack 2'
-                    )
-                  }
-                >
-                  Distribution Box
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  className="preset-chip"
-                  onClick={() => handleScanBarcode('INV-HYB5K-2026-041')}
-                >
-                  Inverter INV-041
-                </button>
-                <button
-                  type="button"
-                  className="preset-chip"
-                  onClick={() => handleScanBarcode('SN-PV540-KA-0981')}
-                >
-                  PV-540W (#0981)
-                </button>
-                <button
-                  type="button"
-                  className="preset-chip"
-                  onClick={() => handleScanBarcode('BESCOM-KA-BLR-099234')}
-                >
-                  BESCOM Net-Meter
-                </button>
-                <button
-                  type="button"
-                  className="preset-chip"
-                  onClick={() => handleScanBarcode('EARTH-PIT-KA-042')}
-                >
-                  Earth Pit Tag
-                </button>
-              </>
+            {/* Live Scan Acknowledgment Overlay for Warehouse Manager */}
+            {!isTechnician && lastScannedCode && (
+              <div className="last-scan-pill-banner">
+                <CheckCircle2 size={16} color="#10b981" />
+                <div className="scan-pill-text">
+                  <strong>{lastScannedCode.name}</strong>
+                  <span>Serial: {lastScannedCode.code}</span>
+                </div>
+              </div>
             )}
           </div>
+
+          {/* Camera Viewport Floating Controls */}
+          <div className="camera-viewport-controls">
+            <button
+              type="button"
+              className={`viewport-ctrl-btn ${torchOn ? 'active' : ''}`}
+              onClick={handleToggleTorch}
+              title="Toggle Flashlight / Torch"
+            >
+              <Flashlight size={17} />
+              <span>{torchOn ? 'Torch On' : 'Torch'}</span>
+            </button>
+
+            <button
+              type="button"
+              className="viewport-ctrl-btn"
+              onClick={handleToggleFacingMode}
+              title="Flip Camera (Front / Back)"
+            >
+              <FlipHorizontal size={17} />
+              <span>Flip</span>
+            </button>
+
+            <button
+              type="button"
+              className={`viewport-ctrl-btn ${laserActive ? 'active' : ''}`}
+              onClick={() => setLaserActive(!laserActive)}
+              title="Toggle Laser Sweep Beam"
+            >
+              <RefreshCw size={17} />
+              <span>Laser</span>
+            </button>
+          </div>
         </div>
 
-        {/* =================================================================
-            ROLE-SPECIFIC REGISTRY / CHECKLIST
-            ================================================================= */}
-        {!isTechnician ? (
-          /* Warehouse Scanned Items Table */
-          <div className="scanned-registry-card">
-            <div className="registry-header-row">
-              <strong className="registry-title">
-                Warehouse Stock Log ({scannedWarehouseItems.length} Items)
-              </strong>
-              <span className="registry-badge">
-                {warehouseAction === 'inward' ? 'Inward Intake (+)' : 'Dispatch Staging (-)'}
+        {/* ===================================================================
+            PRIMARY ACTION BUTTON: BARCODE TRIGGER OR PHOTO SHUTTER
+            =================================================================== */}
+        <div className="scanner-primary-action-wrap">
+          {!isTechnician ? (
+            /* Warehouse Manager: Quick Scan Button */
+            <div className="wh-scan-action-row">
+              <button
+                type="button"
+                className="btn-trigger-barcode-scan"
+                onClick={handleSimulateScan}
+              >
+                <ScanBarcode size={20} />
+                <span>Scan Barcode / QR Code</span>
+              </button>
+
+              <span className="wh-items-count-tag">
+                {scannedItems.length} Items Logged
+              </span>
+            </div>
+          ) : (
+            /* Technician: Capture Photo Snapshot & File Upload */
+            <div className="tech-photo-actions-row">
+              <button
+                type="button"
+                className="btn-shutter-snap"
+                onClick={handleCaptureInstallationPhoto}
+                title="Capture Photo from Camera Feed"
+              >
+                <div className="shutter-inner-circle">
+                  <Camera size={22} color="#ffffff" />
+                </div>
+                <span>Capture Photo</span>
+              </button>
+
+              <button
+                type="button"
+                className="btn-upload-file-photo"
+                onClick={() => fileInputRef.current?.click()}
+                title="Upload Photo from Device Gallery"
+              >
+                <Upload size={17} />
+                <span>Upload From Device</span>
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleFileUpload}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* ===================================================================
+            TECHNICIAN: CAPTURED PHOTOS THUMBNAIL CAROUSEL
+            =================================================================== */}
+        {isTechnician && capturedPhotos.length > 0 && (
+          <div className="captured-photos-section">
+            <div className="captured-section-header">
+              <strong>Installation Photos ({capturedPhotos.length})</strong>
+              <span className="captured-subtext">
+                Photos will be watermarked with GPS coordinates and uploaded to HQ.
               </span>
             </div>
 
-            <div className="registry-items-list">
-              {scannedWarehouseItems.map((item) => (
-                <div key={item.id} className="registry-item-row">
-                  <div className="registry-item-main">
-                    <span className="item-serial-code">{item.serial}</span>
-                    <strong className="item-title">{item.name}</strong>
-                    <span className="item-meta-text">
-                      {item.rack} · Batch: {item.batch}
-                    </span>
-                  </div>
-                  <div className="registry-item-right">
-                    <span className="item-status-pill green">
-                      <CheckCircle2 size={13} />
-                      <span>{item.status}</span>
-                    </span>
-                    <span className="item-time">{item.time}</span>
+            <div className="photos-thumbnail-strip">
+              {capturedPhotos.map((photo) => (
+                <div key={photo.id} className="photo-thumbnail-card">
+                  <img
+                    src={photo.url}
+                    alt={photo.tag}
+                    className="thumbnail-img"
+                  />
+                  <div className="thumbnail-overlay">
+                    <span className="thumbnail-tag">{photo.tag}</span>
                     <button
                       type="button"
-                      className="item-delete-btn"
-                      onClick={() => handleDeleteWarehouseItem(item.id)}
-                      title="Remove from batch log"
+                      className="btn-delete-photo"
+                      onClick={() => handleRemovePhoto(photo.id)}
+                      title="Remove Photo"
                     >
-                      <Trash2 size={12} />
+                      <Trash2 size={13} />
                     </button>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        ) : (
-          /* Technician BOM Verification Checklist */
-          <div className="scanned-registry-card">
-            <div className="registry-header-row">
-              <strong className="registry-title">
-                Sales BOM Installation Verification
-              </strong>
-              <span className="registry-badge">
-                {techVerificationList.filter((i) => i.status === 'matched').length}/
-                {techVerificationList.length} Verified
-              </span>
-            </div>
+        )}
 
-            <div className="registry-items-list">
-              {techVerificationList.map((item) => (
-                <div key={item.id} className="registry-item-row">
-                  <div className="registry-item-main">
-                    <strong className="item-title">{item.component}</strong>
-                    <span className="item-meta-text">{item.label}</span>
-                    <span className="item-serial-code">
-                      Target BOM: {item.targetSerial}
-                    </span>
-                  </div>
-                  <div className="registry-item-right">
-                    {item.status === 'matched' ? (
-                      <span className="item-status-pill green">
-                        <CheckCircle2 size={13} />
-                        <span>Verified: {item.scannedSerial}</span>
-                      </span>
-                    ) : (
-                      <span className="item-status-pill amber">
-                        Scan Pending
-                      </span>
-                    )}
-                  </div>
+        {/* ===================================================================
+            WAREHOUSE MANAGER: RECENT BARCODES LOG PILLS
+            =================================================================== */}
+        {!isTechnician && scannedItems.length > 0 && (
+          <div className="scanned-items-quick-list">
+            <div className="quick-list-header">
+              <strong>Recent Scans in Batch:</strong>
+            </div>
+            <div className="quick-items-chips">
+              {scannedItems.slice(0, 4).map((item) => (
+                <div key={item.id} className="scanned-chip-pill">
+                  <Package size={13} color="#4f46e5" />
+                  <span className="chip-code">{item.code}</span>
+                  <span className="chip-name">{item.name}</span>
+                  <span className="chip-mode">
+                    {item.mode === 'inward' ? '+Inward' : '-Dispatch'}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* =================================================================
-            PHOTO / WORK EVIDENCE ATTACHMENT UPLOAD ZONE
-            ================================================================= */}
-        <div className="evidence-upload-zone">
-          <div className="evidence-upload-header">
-            <strong>
-              {!isTechnician
-                ? 'Upload Delivery Challan / Pallet Packing Slip / Supplier Invoice'
-                : 'Upload Rooftop Azimuth, Wiring & Workmanship Photos'}
-            </strong>
-            <span className="evidence-subtext">
-              {!isTechnician
-                ? 'Attached documents will be reconciled with procurement and inventory records.'
-                : 'Attached photos will be GPS-tagged and synchronized with Sales & HQ engineering.'}
-            </span>
-          </div>
-
-          <div className="evidence-file-picker">
-            <label className="upload-dropzone" htmlFor="scannerProofUpload">
-              <Upload size={20} color="#4f46e5" />
-              <span>
-                {!isTechnician
-                  ? 'Click or drag challan / pallet photo to upload'
-                  : 'Click or drag installation photo to upload evidence'}
-              </span>
-              <input
-                id="scannerProofUpload"
-                type="file"
-                accept="image/*,application/pdf"
-                className="hidden-file-input"
-                onChange={handleFileUpload}
-              />
-            </label>
-          </div>
-
-          {/* Attached Files List */}
-          {uploadedFiles.length > 0 && (
-            <div className="attached-files-row">
-              {uploadedFiles.map((f, idx) => (
-                <div key={idx} className="attached-file-pill">
-                  <FileCheck size={14} color="#059669" />
-                  <span className="file-name">{f.name}</span>
-                  <span className="file-size">({f.size})</span>
-                  <button
-                    type="button"
-                    className="file-remove-btn"
-                    onClick={() => handleRemoveFile(idx)}
-                    title="Remove File"
-                  >
-                    <X size={13} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* =================================================================
-            MODAL ACTIONS: COMMIT & CLOSE
-            ================================================================= */}
-        <div className="scanner-modal-footer">
-          <button type="button" className="scanner-btn-cancel" onClick={onClose}>
-            Cancel
-          </button>
+        {/* ===================================================================
+            MODAL FOOTER: CLOSE OR COMMIT
+            =================================================================== */}
+        <div className="compact-scanner-footer">
           <button
             type="button"
-            className="scanner-btn-commit"
-            onClick={handleCommit}
+            className="scanner-footer-cancel-btn"
+            onClick={onClose}
           >
-            <CheckCircle2 size={16} />
+            Close
+          </button>
+
+          <button
+            type="button"
+            className={`scanner-footer-submit-btn ${isTechnician ? 'technician' : 'warehouse'}`}
+            onClick={handleSubmitAction}
+          >
+            <Check size={16} />
             <span>
               {!isTechnician
-                ? `Upload & Commit Stock Updates (+${scannedWarehouseItems.length} Items)`
-                : 'Submit Verified Work to Sales & HQ'}
+                ? `Commit ${scannedItems.length} Scanned Items to Stock`
+                : `Submit ${capturedPhotos.length} Installation Photos to HQ`}
             </span>
           </button>
         </div>

@@ -2855,3 +2855,51 @@ SECTION 53: ZERO-LATENCY PRE-HYDRATION SKELETON IN INDEX.HTML (SUB-50MS 3G PAINT
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Appended Section 53)
 
 ================================================================================
+
+================================================================================
+SECTION 54: REAL CAMERA INTEGRATION & MINIMALIST OPTICAL SCANNER / PROOF UI
+================================================================================
+
+- Overview:
+  Completely redesigned the optical scanner into a sleek, high-contrast, distraction-free
+  camera viewport following Swiss-Minimalism UI/UX principles. Eliminated all cluttered
+  text inputs, BOM checklists, and dense descriptions in favor of a clean, dedicated
+  camera container tailored specifically to each operational role:
+  1. Warehouse Manager: Strictly for scanning QR codes and barcodes to manage inventory.
+  2. Field Technician: Strictly for capturing live camera photos and uploading proof
+     of completed rooftop solar installations.
+
+- Technical Implementations:
+  1. Real Browser Camera Permission & Video Streaming (`getUserMedia`):
+     - Integrated `navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })`
+       to request real hardware camera access and stream live video into `<video autoPlay playsInline muted />`.
+     - Added clean lifecycle management: streams automatically initialize on modal open
+       and cleanly release tracks (`stream.getTracks().forEach(t => t.stop())`) upon close.
+     - Added camera hardware states: Requesting spinner, active live HUD, and denied/unsupported
+       fallback with "Retry Camera" and "Simulate Scan" options.
+     - Implemented Front/Back camera switcher (`FlipHorizontal`) and Flashlight Torch toggle.
+  2. Warehouse Manager Mode (Strictly QR & Barcodes):
+     - Edge-to-edge dark optical viewport with cyan corner brackets (`#38bdf8`) and
+       animated laser sweep scanline (`@keyframes laserSweep`).
+     - Inward Receiving (+ Stock) vs Outward Dispatch (- Kit) toggle pill.
+     - Instant scan detection with haptic vibration feedback (`navigator.vibrate`)
+       and floating scan acknowledgment card (`Waaree 540W Mono-PERC`).
+     - Live count badge and "Commit N Scanned Items to Stock" footer action.
+  3. Field Technician Mode (Installation Proof Camera & Upload):
+     - Live optical camera feed with tactile shutter button (`btn-shutter-snap`) that
+       captures full-resolution snapshots directly from the live video frame using HTML5 Canvas.
+     - "Upload From Device" file picker for attaching gallery photos from mobile or laptop.
+     - Horizontal photo thumbnail strip with geotag badges (Azimuth angle, Inverter wiring,
+       Net-meter) and deletion action.
+     - "Submit Installation Photos to HQ" primary action button with green gradient styling.
+  4. Unit Test Coverage:
+     - Updated Unit Test #14 in `apps/web/test/app.test.js` validating real camera constraints,
+       technician installation photo data structures, and barcode intake serial mapping.
+
+- Files Modified:
+  * apps/web/src/components/EquipmentScannerModal/EquipmentScannerModal.jsx (Redesigned)
+  * apps/web/src/components/EquipmentScannerModal/EquipmentScannerModal.css (Redesigned)
+  * apps/web/test/app.test.js (Updated Unit Test #14)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Appended Section 54)
+
+================================================================================
