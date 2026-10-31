@@ -24,13 +24,17 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
     { href: "/customer/estimates", label: "Repair estimates" },
     { href: "/customer/bills", label: "Repair bills" },
     { href: "/customer/replacements", label: "Replacements" },
+    { href: "/customer/warranty-extensions", label: "Warranty extensions" },
+    { href: "/security", label: "Security" },
   ],
   technician: [
     { href: "/technician/labour", label: "Labour & payables" },
     { href: "/technician", label: "Assigned jobs" },
     { href: "/technician/surveys", label: "Surveys" },
-    { href: "/technician/repairs", label: "Repairs", planned: true },
+    { href: "/technician/repairs", label: "Repairs" },
     { href: "/technician/install", label: "Replacement install" },
+    { href: "/technician/offline", label: "Offline field work" },
+    { href: "/security", label: "Security" },
   ],
   sales: [
     { href: "/sales/subsidies", label: "Subsidy review" },
@@ -38,21 +42,19 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
     { href: "/sales/surveys", label: "Surveys" },
     { href: "/sales/quotations", label: "Quotations" },
     { href: "/sales/installations", label: "Installation scheduling" },
+    { href: "/security", label: "Security" },
   ],
   warehouse_staff: [
     { href: "/warehouse", label: "Stock" },
     { href: "/warehouse/picking", label: "Picking" },
+    { href: "/warehouse/replacements", label: "Replacements" },
+    { href: "/security", label: "Security" },
   ],
   warehouse_manager: [
     { href: "/warehouse", label: "Stock" },
     { href: "/warehouse/approvals", label: "Approvals" },
-    { href: "/warehouse/picking", label: "Picking", planned: true },
     { href: "/warehouse/replacements", label: "Replacements" },
-  ],
-  warehouse_manager: [
-    { href: "/warehouse", label: "Stock" },
-    { href: "/warehouse/approvals", label: "Approvals", planned: true },
-    { href: "/warehouse/replacements", label: "Replacements" },
+    { href: "/security", label: "Security" },
   ],
   support: [
     { href: "/support", label: "Support records" },
@@ -63,6 +65,8 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
     { href: "/support/estimates", label: "Estimates" },
     { href: "/support/replacements", label: "Replacements" },
     { href: "/support/billing", label: "Billing" },
+    { href: "/support/extensions", label: "Extension reviews" },
+    { href: "/security", label: "Security" },
   ],
   admin: [
     { href: "/admin", label: "Employees" },
@@ -74,6 +78,8 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
     { href: "/support", label: "Customer support" },
     { href: "/admin/pricing", label: "Warranty & pricing" },
     { href: "/admin/reports", label: "Finance & reports" },
+    { href: "/support/extensions", label: "Extension reviews" },
+    { href: "/security", label: "Security" },
   ],
 };
 

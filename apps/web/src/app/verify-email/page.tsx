@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 import { Button, ErrorState, TextField } from "@/components/ui";
 import { AuthFrame } from "@/components/auth-frame";
@@ -16,6 +16,9 @@ function VerifyForm() {
   const [formError, setFormError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, setPending] = useState(false);
+  useEffect(() => {
+    document.body.dataset.verifyReady = "1";
+  }, []);
   const devMailbox = process.env.NEXT_PUBLIC_SOLAROPS_ENV === "development";
 
   async function loadCapturedCode() {

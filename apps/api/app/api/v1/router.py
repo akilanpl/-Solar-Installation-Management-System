@@ -6,6 +6,7 @@ from app.api.v1 import (
     auth,
     calendar,
     coverage,
+    auth_extra,
     billing,
     dev,
     enquiries,
@@ -14,6 +15,7 @@ from app.api.v1 import (
     installation,
     operations,
     intelligence,
+    offline,
     orders,
     packages,
     payments,
@@ -26,11 +28,15 @@ from app.api.v1 import (
     work_context,
     workspace_reads,
     warranty,
+    warranty_extensions,
 )
 
 api_router = APIRouter(prefix="/api/v1", dependencies=[Depends(require_csrf)])
 api_router.include_router(health.router)
 api_router.include_router(auth.router)
+api_router.include_router(auth_extra.router)
+api_router.include_router(offline.router)
+api_router.include_router(warranty_extensions.router)
 api_router.include_router(enquiries.router)
 api_router.include_router(packages.router)
 api_router.include_router(surveys.router)

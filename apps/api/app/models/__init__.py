@@ -36,6 +36,18 @@ from app.models.phase4d import (  # noqa: F401
     SysCacheOutbox,
     WeatherAdvisory,
 )
+from app.models.phase4e import (  # noqa: F401
+    MfaFactor,
+    MfaRecoveryCode,
+    MfaTicket,
+    StrongAuthGrant,
+    TechnicianSyncOperation,
+    WarrantyExtension,
+    WarrantyExtensionOffer,
+    WarrantyExtensionTerms,
+    WebauthnChallenge,
+    WebauthnCredential,
+)
 from app.models.support import (  # noqa: F401
     ResolutionAcknowledgment,
     ServiceTicket,

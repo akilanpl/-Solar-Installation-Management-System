@@ -64,6 +64,18 @@ class Settings(BaseSettings):
     quotation_validity_days: int = 14
     evidence_dir: str = "var/survey-evidence"
     evidence_max_bytes: int = 5_000_000
+    webauthn_rp_id: str = "localhost"
+    webauthn_rp_name: str = "SolarOps"
+    webauthn_allowed_origins: str = ""
+    webauthn_challenge_ttl_minutes: int = 5
+    totp_issuer: str = "SolarOps"
+    totp_window: int = 1
+    mfa_recovery_code_count: int = 10
+    mfa_ticket_ttl_minutes: int = 10
+    mfa_max_attempts: int = 5
+    mfa_lockout_minutes: int = 15
+    strong_auth_ttl_minutes: int = 10
+    strong_auth_roles: str = "admin,finance,support"
 
     @field_validator("app_env")
     @classmethod
@@ -102,11 +114,29 @@ class Settings(BaseSettings):
                 raise ValueError("Production requires Secure cookies.")
             if not self.origins or any(not origin.startswith("https://") or "*" in origin for origin in self.origins):
                 raise ValueError("Production requires explicit HTTPS trusted origins.")
+            if self.webauthn_rp_id in {"localhost", "127.0.0.1"}:
+                raise ValueError("Production requires an explicit WebAuthn relying-party ID.")
+            if any(
+                not origin.startswith("https://") or "*" in origin
+                for origin in self.webauthn_origins
+            ):
+                raise ValueError("Production requires explicit HTTPS WebAuthn origins.")
         return self
 
     @property
     def origins(self) -> list[str]:
         return [item.strip() for item in self.trusted_origins.split(",") if item.strip()]
+
+    @property
+    def webauthn_origins(self) -> list[str]:
+        explicit = [
+            item.strip() for item in self.webauthn_allowed_origins.split(",") if item.strip()
+        ]
+        return explicit or self.origins
+
+    @property
+    def strong_auth_role_set(self) -> set[str]:
+        return {item.strip() for item in self.strong_auth_roles.split(",") if item.strip()}
 
     @property
     def mailbox_file(self) -> Path:

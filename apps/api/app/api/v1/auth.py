@@ -25,7 +25,7 @@ from app.schemas import (
     SignupResponse,
     VerifyEmailRequest,
 )
-from app.services import auth_service
+from app.services import auth_service, mfa_service
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -90,7 +90,11 @@ def resend_verification(
     return MessageResponse(message="If the account exists and is unverified, a new code was sent.")
 
 
-@router.post("/login", response_model=LoginResponse)
+@router.post(
+    "/login",
+    response_model=LoginResponse,
+    responses={202: {"description": "Second factor required; redeem the ticket."}},
+)
 def login(
     payload: LoginRequest,
     request: Request,
@@ -98,7 +102,7 @@ def login(
     db: Session = Depends(get_db_dep, scope="function"),
     settings: Settings = Depends(get_settings),
     limiter: RateLimiter = Depends(get_limiter),
-) -> LoginResponse:
+):
     # The browser may send intended_role. It is not read for authorization.
     _ignored_client_role_hint = payload.intended_role
     del _ignored_client_role_hint
@@ -120,6 +124,25 @@ def login(
         user_agent=request.headers.get("user-agent"),
         ip_address=client_ip(request),
     )
+    if raw is None:
+        # Password was correct but the account has a verified second factor.
+        # No session exists yet; the ticket below must be redeemed first.
+        limiter.check(
+            f"mfa-login:{user.id}", limit=10, window_seconds=settings.rate_limit_window_seconds
+        )
+        ticket, ticket_raw = mfa_service.issue_ticket(db, settings, user, "login")
+        db.flush()
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(  # type: ignore[return-value]
+            status_code=202,
+            content={
+                "mfa_required": True,
+                "ticket": ticket_raw,
+                "methods": ticket.methods,
+                "expires_at": ticket.expires_at.isoformat(),
+            },
+        )
     set_session_cookie(response, settings, raw)
     set_csrf_cookie(response, settings, issue_csrf())
     return LoginResponse(user=auth_service.to_current_user(user))
