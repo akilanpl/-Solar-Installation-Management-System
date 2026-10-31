@@ -63,3 +63,33 @@ def test_stock_precision_and_finite_bounds_fail_before_database(client, applicat
         headers={**_warehouse(client), "Idempotency-Key": uuid.uuid4().hex},
     )
     assert result.status_code == 422, result.text
+
+
+def test_cancellation_never_reverses_validated_ledger_or_revives_cancelled_draft(
+    client, application
+):
+    _all_staff(application)
+    headers = _warehouse(client)
+    receipt = _receipt_validate(client, headers, "PANEL-550", "1")
+    refused = client.post(f"/api/v1/stock/operations/{receipt['id']}/cancel", headers=headers)
+    assert refused.status_code == 409
+    assert refused.json()["error"]["code"] == "invalid_transition"
+    draft = client.post(
+        "/api/v1/stock/operations",
+        json={
+            "operation_type": "receipt",
+            "lines": [{"component_code": "PANEL-550", "quantity": "1", "to_location": "MAIN"}],
+        },
+        headers={**headers, "Idempotency-Key": uuid.uuid4().hex},
+    )
+    assert draft.status_code == 201, draft.text
+    identity = draft.json()["id"]
+    cancelled = client.post(f"/api/v1/stock/operations/{identity}/cancel", headers=headers)
+    assert cancelled.status_code == 200 and cancelled.json()["status"] == "cancelled"
+    for action in ("ready", "validate", "cancel"):
+        result = client.post(f"/api/v1/stock/operations/{identity}/{action}", headers=headers)
+        assert result.status_code == 409
+        assert result.json()["error"]["code"] == "invalid_transition"
+    with Session(application.state.engine) as db:
+        assert db.scalar(select(func.count()).select_from(StockLedger)) == 1
+        assert db.scalar(select(func.sum(StockLedger.quantity_delta))) == 1
