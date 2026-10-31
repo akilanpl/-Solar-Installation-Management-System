@@ -70,7 +70,7 @@ def _credit_response(note: ServiceCreditNote) -> CreditNoteResponse:
 
 @router.post("/service-price-books", response_model=PriceBookResponse, status_code=201)
 def create_price_book(payload: PriceBookCreate, user: User = Depends(current_user),
-                      db: Session = Depends(get_db)):
+                      db: Session = Depends(get_db, scope="function")):
     book = billing_service.create_price_book(
         db, user, payload.label, payload.labour_rates, payload.part_prices,
         payload.effective_from)
@@ -81,7 +81,7 @@ def create_price_book(payload: PriceBookCreate, user: User = Depends(current_use
 
 
 @router.get("/service-price-books", response_model=list[PriceBookResponse])
-def list_price_books(user: User = Depends(current_user), db: Session = Depends(get_db)):
+def list_price_books(user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     from app.models.warranty import ServicePriceBook
 
     billing_service.require_support(user)
@@ -94,7 +94,7 @@ def list_price_books(user: User = Depends(current_user), db: Session = Depends(g
 
 @router.post("/service-tax-policies", response_model=TaxPolicyResponse, status_code=201)
 def create_tax_policy(payload: TaxPolicyCreate, user: User = Depends(current_user),
-                      db: Session = Depends(get_db)):
+                      db: Session = Depends(get_db, scope="function")):
     policy = billing_service.create_tax_policy(
         db, user, payload.label, payload.rate_bps, payload.effective_from)
     return TaxPolicyResponse(
@@ -103,7 +103,7 @@ def create_tax_policy(payload: TaxPolicyCreate, user: User = Depends(current_use
 
 
 @router.get("/service-tax-policies", response_model=list[TaxPolicyResponse])
-def list_tax_policies(user: User = Depends(current_user), db: Session = Depends(get_db)):
+def list_tax_policies(user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     from app.models.warranty import ServiceTaxPolicy
 
     billing_service.require_support(user)
@@ -117,7 +117,7 @@ def list_tax_policies(user: User = Depends(current_user), db: Session = Depends(
 @router.post("/tickets/{ticket_id}/estimates", response_model=EstimateResponse,
              status_code=201)
 def create_estimate(ticket_id: UUID, response: Response,
-                    user: User = Depends(current_user), db: Session = Depends(get_db),
+                    user: User = Depends(current_user), db: Session = Depends(get_db, scope="function"),
                     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key")):
     estimate, created = billing_service.build_estimate(db, user, ticket_id, _key(idempotency_key))
     if not created:
@@ -127,14 +127,14 @@ def create_estimate(ticket_id: UUID, response: Response,
 
 @router.get("/tickets/{ticket_id}/estimates", response_model=list[EstimateResponse])
 def list_estimates(ticket_id: UUID, user: User = Depends(current_user),
-                   db: Session = Depends(get_db)):
+                   db: Session = Depends(get_db, scope="function")):
     return [_estimate_response(estimate) for estimate in
             billing_service.ticket_estimates(db, user, ticket_id)]
 
 
 @router.get("/estimates/{estimate_id}", response_model=EstimateResponse)
 def read_estimate(estimate_id: UUID, user: User = Depends(current_user),
-                  db: Session = Depends(get_db)):
+                  db: Session = Depends(get_db, scope="function")):
     from app.models.warranty import ServiceEstimate
 
     estimate = db.get(ServiceEstimate, estimate_id)
@@ -146,14 +146,14 @@ def read_estimate(estimate_id: UUID, user: User = Depends(current_user),
 
 @router.post("/estimates/{estimate_id}/decision", response_model=EstimateResponse)
 def decide_estimate(estimate_id: UUID, payload: EstimateDecisionCreate,
-                    user: User = Depends(current_user), db: Session = Depends(get_db)):
+                    user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return _estimate_response(billing_service.decide_estimate(
         db, user, estimate_id, payload.decision, payload.estimate_version, payload.note))
 
 
 @router.post("/service-invoices", response_model=InvoiceResponse, status_code=201)
 def create_invoice(payload: InvoiceCreate, response: Response,
-                   user: User = Depends(current_user), db: Session = Depends(get_db),
+                   user: User = Depends(current_user), db: Session = Depends(get_db, scope="function"),
                    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key")):
     invoice, created = billing_service.create_invoice(
         db, user, payload.estimate_id, _key(idempotency_key))
@@ -164,27 +164,27 @@ def create_invoice(payload: InvoiceCreate, response: Response,
 
 @router.get("/service-invoices", response_model=list[InvoiceResponse])
 def list_invoices(ticket_id: UUID | None = Query(default=None),
-                  user: User = Depends(current_user), db: Session = Depends(get_db)):
+                  user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return [_invoice_response(invoice) for invoice in
             billing_service.list_invoices(db, user, ticket_id)]
 
 
 @router.get("/service-invoices/{invoice_id}", response_model=InvoiceResponse)
 def read_invoice(invoice_id: UUID, user: User = Depends(current_user),
-                 db: Session = Depends(get_db)):
+                 db: Session = Depends(get_db, scope="function")):
     return _invoice_response(billing_service.get_invoice(db, user, invoice_id))
 
 
 @router.post("/service-invoices/{invoice_id}/consume", response_model=InvoiceResponse)
 def consume_parts(invoice_id: UUID, user: User = Depends(current_user),
-                  db: Session = Depends(get_db)):
+                  db: Session = Depends(get_db, scope="function")):
     return _invoice_response(billing_service.consume_invoice_parts(db, user, invoice_id))
 
 
 @router.post("/service-invoices/{invoice_id}/credit-notes",
              response_model=CreditNoteResponse, status_code=201)
 def create_credit_note(invoice_id: UUID, payload: CreditNoteCreate,
-                       user: User = Depends(current_user), db: Session = Depends(get_db)):
+                       user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return _credit_response(billing_service.create_credit_note(
         db, user, invoice_id, payload.amount_minor, payload.reason))
 
@@ -192,7 +192,7 @@ def create_credit_note(invoice_id: UUID, payload: CreditNoteCreate,
 @router.get("/service-invoices/{invoice_id}/credit-notes",
             response_model=list[CreditNoteResponse])
 def list_credit_notes(invoice_id: UUID, user: User = Depends(current_user),
-                      db: Session = Depends(get_db)):
+                      db: Session = Depends(get_db, scope="function")):
     invoice = billing_service.get_invoice(db, user, invoice_id)
     notes = billing_service.invoice_credit_notes(db, user, invoice.id)
     return [_credit_response(note) for note in notes]

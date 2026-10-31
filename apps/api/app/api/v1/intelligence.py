@@ -74,7 +74,7 @@ def _snapshot_response(payload: dict) -> SnapshotResponse:
 def read_snapshot(
     customer_id: UUID,
     scope: str = Query(default=SYSCACHE_SCOPE_SUPPORT_OVERVIEW),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
     settings: Settings = Depends(get_settings),
 ) -> SnapshotResponse:
@@ -97,7 +97,7 @@ def read_snapshot(
 def refresh_snapshot(
     customer_id: UUID,
     scope: str = Query(default=SYSCACHE_SCOPE_SUPPORT_OVERVIEW),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
     settings: Settings = Depends(get_settings),
 ) -> SnapshotResponse:
@@ -117,7 +117,7 @@ def refresh_snapshot(
 @router.post("/cache/invalidate", response_model=InvalidateResponse)
 def invalidate_cache(
     body: InvalidateRequest,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
 ) -> InvalidateResponse:
     """Phase 4C integration contract: finance/payment writers emit events here.
@@ -141,7 +141,7 @@ def invalidate_cache(
 
 @router.get("/cache/metrics", response_model=CacheMetricsResponse)
 def cache_metrics(
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
 ) -> CacheMetricsResponse:
     _actor(user, STAFF_INTELLIGENCE)
@@ -153,7 +153,7 @@ def cache_metrics(
 @router.post("/ai-assists", response_model=AssistResponse, status_code=201)
 def create_assist(
     body: AssistCreate,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
     settings: Settings = Depends(get_settings),
 ) -> AssistResponse:
@@ -191,7 +191,7 @@ def create_assist(
 def confirm_assist(
     session_id: UUID,
     body: AssistConfirm,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
 ) -> AssistResponse:
     _actor(user, STAFF_INTELLIGENCE)
@@ -214,7 +214,7 @@ def confirm_assist(
 def upsert_geolocation(
     site_id: UUID,
     body: GeolocationUpsert,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
 ) -> GeolocationResponse:
     _actor(user, STAFF_INTELLIGENCE)
@@ -242,7 +242,7 @@ def upsert_geolocation(
 @router.post("/weather/forecasts", response_model=ForecastResponse, status_code=201)
 def fetch_forecast(
     body: ForecastFetch,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
     settings: Settings = Depends(get_settings),
 ) -> ForecastResponse:
@@ -281,7 +281,7 @@ def fetch_forecast(
 def list_advisories(
     site_id: UUID | None = Query(default=None),
     status: str | None = Query(default=None, pattern="^(open|acknowledged|dismissed)$"),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
 ) -> list[AdvisoryResponse]:
     _actor(user, OPS_ROLES)
@@ -320,7 +320,7 @@ def list_advisories(
 def ack_advisory(
     advisory_id: UUID,
     body: AdvisoryAction,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
 ) -> AdvisoryResponse:
     _actor(user, OPS_ROLES)
@@ -368,7 +368,7 @@ def generation_estimate(
     scenario: str = Query(default="expected"),
     interval: str = Query(default="day"),
     month: int | None = Query(default=None),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
 ) -> GenerationEstimateResponse:
     order = generation_service.assert_order_visible(
@@ -387,7 +387,7 @@ def generation_summary(
     scenario: str = Query(default="expected"),
     interval: str = Query(default="day"),
     month: int | None = Query(default=None),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
 ) -> GenerationSummaryResponse:
     order = generation_service.assert_order_visible(
@@ -403,7 +403,7 @@ def generation_summary(
 @router.post("/generation/readings", response_model=ReadingResponse, status_code=201)
 def ingest_reading(
     body: ReadingCreate,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
 ) -> ReadingResponse:
     _actor(user, STAFF_INTELLIGENCE | {"technician"})
@@ -440,7 +440,7 @@ def ingest_reading(
 def list_readings(
     order_id: UUID = Query(),
     status: str | None = Query(default=None),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     user: User = Depends(current_user),
 ) -> list[ReadingResponse]:
     order = generation_service.assert_order_visible(

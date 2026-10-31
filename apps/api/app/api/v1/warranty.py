@@ -102,7 +102,7 @@ def _decision_response(db: Session, decision: CoverageDecision) -> DecisionRespo
 
 @router.post("/warranty/policies", response_model=PolicyResponse, status_code=201)
 def create_policy(payload: PolicyCreate, user: User = Depends(current_user),
-                  db: Session = Depends(get_db)):
+                  db: Session = Depends(get_db, scope="function")):
     policy = warranty_service.create_policy(
         db, user, payload.code, payload.issuer, payload.category, payload.description)
     return PolicyResponse(
@@ -111,7 +111,7 @@ def create_policy(payload: PolicyCreate, user: User = Depends(current_user),
 
 
 @router.get("/warranty/policies", response_model=list[PolicyResponse])
-def list_policies(user: User = Depends(current_user), db: Session = Depends(get_db)):
+def list_policies(user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return [
         PolicyResponse(
             id=policy.id, code=policy.code, issuer=policy.issuer, category=policy.category,
@@ -124,7 +124,7 @@ def list_policies(user: User = Depends(current_user), db: Session = Depends(get_
              status_code=201)
 def create_policy_version(policy_id: UUID, payload: PolicyVersionCreate,
                            user: User = Depends(current_user),
-                           db: Session = Depends(get_db)):
+                           db: Session = Depends(get_db, scope="function")):
     return _version_response(warranty_service.create_policy_version(
         db, user, policy_id, payload.model_dump()))
 
@@ -132,7 +132,7 @@ def create_policy_version(policy_id: UUID, payload: PolicyVersionCreate,
 @router.get("/warranty/policies/{policy_id}/versions",
             response_model=list[PolicyVersionResponse])
 def list_policy_versions(policy_id: UUID, user: User = Depends(current_user),
-                         db: Session = Depends(get_db)):
+                         db: Session = Depends(get_db, scope="function")):
     return [_version_response(version)
             for version in warranty_service.list_policy_versions(db, user, policy_id)]
 
@@ -140,14 +140,14 @@ def list_policy_versions(policy_id: UUID, user: User = Depends(current_user),
 @router.post("/warranty/orders/{order_id}/activate-coverages",
              response_model=list[CoverageResponse], status_code=201)
 def activate_coverages(order_id: UUID, user: User = Depends(current_user),
-                       db: Session = Depends(get_db)):
+                       db: Session = Depends(get_db, scope="function")):
     return [_coverage_response(db, coverage) for coverage in
             warranty_service.activate_coverages_for_order(db, user, order_id)]
 
 
 @router.post("/warranty/coverage-decisions", response_model=DecisionResponse, status_code=201)
 def decide_coverage(payload: DecisionCreate, response: Response,
-                    user: User = Depends(current_user), db: Session = Depends(get_db),
+                    user: User = Depends(current_user), db: Session = Depends(get_db, scope="function"),
                     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key")):
     decision, created = warranty_service.evaluate_coverage(
         db, user, payload.ticket_id, payload.serial_number, payload.fault_category,
@@ -159,13 +159,13 @@ def decide_coverage(payload: DecisionCreate, response: Response,
 
 @router.get("/warranty/coverage-decisions", response_model=list[DecisionResponse])
 def list_ticket_decisions(ticket_id: UUID = Query(...), user: User = Depends(current_user),
-                          db: Session = Depends(get_db)):
+                          db: Session = Depends(get_db, scope="function")):
     return [_decision_response(db, decision) for decision in
             warranty_service.ticket_decisions(db, user, ticket_id)]
 
 
 @router.get("/warranty/serials/mine", response_model=list[CoverageResponse])
-def my_coverages(user: User = Depends(current_user), db: Session = Depends(get_db)):
+def my_coverages(user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     result = []
     for entry in warranty_service.my_coverages(db, user):
         coverage = db.get(SerializedAssetCoverage, entry["coverage_id"])
@@ -176,7 +176,7 @@ def my_coverages(user: User = Depends(current_user), db: Session = Depends(get_d
 
 @router.get("/warranty/serials/lookup")
 def lookup_serial(serial_number: str = Query(min_length=1, max_length=64),
-                  user: User = Depends(current_user), db: Session = Depends(get_db)):
+                  user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     found = warranty_service.lookup_serial(db, user, serial_number)
     coverage = found.pop("coverage")
     if coverage is not None:
@@ -189,7 +189,7 @@ def lookup_serial(serial_number: str = Query(min_length=1, max_length=64),
 
 @router.post("/warranty/exceptions", response_model=ExceptionResponse, status_code=201)
 def create_exception(payload: ExceptionCreate, user: User = Depends(current_user),
-                     db: Session = Depends(get_db)):
+                     db: Session = Depends(get_db, scope="function")):
     row = warranty_service.create_exception(
         db, user, payload.ticket_id, payload.serial_number, payload.decision,
         payload.reason, payload.evidence_ref)
@@ -200,6 +200,6 @@ def create_exception(payload: ExceptionCreate, user: User = Depends(current_user
 
 @router.post("/warranty/coverages/{coverage_id}/void", response_model=CoverageResponse)
 def void_coverage(coverage_id: UUID, payload: VoidCreate,
-                  user: User = Depends(current_user), db: Session = Depends(get_db)):
+                  user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return _coverage_response(
         db, warranty_service.void_coverage(db, user, coverage_id, payload.reason))

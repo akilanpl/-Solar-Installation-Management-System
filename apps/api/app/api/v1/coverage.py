@@ -34,7 +34,7 @@ class PolicyResponse(PolicyInput):
     version: int
 
 
-@router.post("/warranty-policies", response_model=PolicyResponse)
+@router.post("/warranty-policies", response_model=PolicyResponse, operation_id="create_product_warranty_policy")
 def create_policy(
     payload: PolicyInput,
     user: User = Depends(current_user),

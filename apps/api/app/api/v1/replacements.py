@@ -46,7 +46,7 @@ def _response(db: Session, row: ReplacementDecision) -> ReplacementResponse:
 
 @router.post("/replacements", response_model=ReplacementResponse, status_code=201)
 def propose(payload: ReplacementCreate, response: Response,
-            user: User = Depends(current_user), db: Session = Depends(get_db),
+            user: User = Depends(current_user), db: Session = Depends(get_db, scope="function"),
             idempotency_key: str | None = Header(default=None, alias="Idempotency-Key")):
     row, created = replacement_service.propose_replacement(
         db, user, payload.ticket_id, payload.old_serial_number, payload.new_serial_number,
@@ -58,40 +58,40 @@ def propose(payload: ReplacementCreate, response: Response,
 
 @router.get("/replacements", response_model=list[ReplacementResponse])
 def list_all(ticket_id: UUID | None = Query(default=None),
-             user: User = Depends(current_user), db: Session = Depends(get_db)):
+             user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return [_response(db, row) for row in
             replacement_service.list_replacements(db, user, ticket_id)]
 
 
 @router.get("/replacements/{replacement_id}", response_model=ReplacementResponse)
 def read_one(replacement_id: UUID, user: User = Depends(current_user),
-             db: Session = Depends(get_db)):
+             db: Session = Depends(get_db, scope="function")):
     return _response(db, replacement_service.get_replacement(db, user, replacement_id))
 
 
 @router.post("/replacements/{replacement_id}/approve", response_model=ReplacementResponse)
 def approve(replacement_id: UUID, user: User = Depends(current_user),
-            db: Session = Depends(get_db)):
+            db: Session = Depends(get_db, scope="function")):
     return _response(db, replacement_service.approve_replacement(db, user, replacement_id))
 
 
 @router.post("/replacements/{replacement_id}/manufacturer-auth",
              response_model=ReplacementResponse)
 def manufacturer_auth(replacement_id: UUID, payload: ManufacturerAuth,
-                      user: User = Depends(current_user), db: Session = Depends(get_db)):
+                      user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return _response(db, replacement_service.record_manufacturer_auth(
         db, user, replacement_id, payload.evidence_ref))
 
 
 @router.post("/replacements/{replacement_id}/reserve", response_model=ReplacementResponse)
 def reserve(replacement_id: UUID, user: User = Depends(current_user),
-            db: Session = Depends(get_db)):
+            db: Session = Depends(get_db, scope="function")):
     return _response(db, replacement_service.reserve_replacement(db, user, replacement_id))
 
 
 @router.post("/replacements/{replacement_id}/issue", response_model=ReplacementResponse)
 def issue(replacement_id: UUID, user: User = Depends(current_user),
-          db: Session = Depends(get_db),
+          db: Session = Depends(get_db, scope="function"),
           idempotency_key: str | None = Header(default=None, alias="Idempotency-Key")):
     _key(idempotency_key)
     return _response(db, replacement_service.issue_replacement(
@@ -100,14 +100,14 @@ def issue(replacement_id: UUID, user: User = Depends(current_user),
 
 @router.post("/replacements/{replacement_id}/install", response_model=ReplacementResponse)
 def install(replacement_id: UUID, user: User = Depends(current_user),
-            db: Session = Depends(get_db)):
+            db: Session = Depends(get_db, scope="function")):
     return _response(db, replacement_service.confirm_install(db, user, replacement_id))
 
 
 @router.post("/replacements/{replacement_id}/inspect", response_model=InspectionResponse,
              status_code=201)
 def inspect_return(replacement_id: UUID, payload: InspectionCreate,
-                   user: User = Depends(current_user), db: Session = Depends(get_db)):
+                   user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     row = replacement_service.inspect_return(
         db, user, replacement_id, payload.verdict, payload.note)
     return InspectionResponse(
@@ -117,6 +117,6 @@ def inspect_return(replacement_id: UUID, payload: InspectionCreate,
 
 @router.post("/replacements/{replacement_id}/cancel", response_model=ReplacementResponse)
 def cancel(replacement_id: UUID, payload: ReasonedAction,
-           user: User = Depends(current_user), db: Session = Depends(get_db)):
+           user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return _response(db, replacement_service.cancel_replacement(
         db, user, replacement_id, payload.reason))

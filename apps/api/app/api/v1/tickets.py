@@ -176,7 +176,7 @@ def create_ticket(
     payload: TicketCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ):
     ticket, created = ticket_service.create_ticket(
@@ -193,7 +193,7 @@ def list_tickets(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     rows, total = ticket_service.list_tickets(db, user, status, page, page_size)
     return TicketList(
@@ -208,20 +208,20 @@ def list_tickets(
 def assignable_staff(
     role: str = Query(default="technician"),
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return [StaffEntry(**entry) for entry in ticket_service.list_assignable_staff(db, user, role)]
 
 
 @router.get("/tickets/{ticket_id}", response_model=TicketDetail)
 def read_ticket(ticket_id: UUID, user: User = Depends(current_user),
-                db: Session = Depends(get_db)):
+                db: Session = Depends(get_db, scope="function")):
     return _detail(db, ticket_service.get_ticket(db, user, ticket_id))
 
 
 @router.post("/tickets/{ticket_id}/triage", response_model=TicketDetail)
 def triage(ticket_id: UUID, payload: TriageUpdate, user: User = Depends(current_user),
-           db: Session = Depends(get_db)):
+           db: Session = Depends(get_db, scope="function")):
     ticket = ticket_service.triage_ticket(
         db, user, ticket_id, payload.category, payload.verified_priority, payload.note
     )
@@ -230,7 +230,7 @@ def triage(ticket_id: UUID, payload: TriageUpdate, user: User = Depends(current_
 
 @router.post("/tickets/{ticket_id}/support-assignment", response_model=TicketDetail)
 def assign_owner(ticket_id: UUID, payload: SupportAssignmentUpdate,
-                 user: User = Depends(current_user), db: Session = Depends(get_db)):
+                 user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     ticket = ticket_service.assign_support_owner(
         db, user, ticket_id, payload.support_user_id, payload.note
     )
@@ -239,25 +239,25 @@ def assign_owner(ticket_id: UUID, payload: SupportAssignmentUpdate,
 
 @router.post("/tickets/{ticket_id}/request-info", response_model=TicketDetail)
 def ask_customer(ticket_id: UUID, payload: InfoRequest,
-                 user: User = Depends(current_user), db: Session = Depends(get_db)):
+                 user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return _detail(db, ticket_service.request_info(db, user, ticket_id, payload.message))
 
 
 @router.post("/tickets/{ticket_id}/customer-reply", response_model=TicketDetail)
 def reply(ticket_id: UUID, payload: CustomerReply, user: User = Depends(current_user),
-          db: Session = Depends(get_db)):
+          db: Session = Depends(get_db, scope="function")):
     return _detail(db, ticket_service.customer_reply(db, user, ticket_id, payload.message))
 
 
 @router.post("/tickets/{ticket_id}/notes", response_model=TicketDetail)
 def add_note(ticket_id: UUID, payload: NoteCreate, user: User = Depends(current_user),
-             db: Session = Depends(get_db)):
+             db: Session = Depends(get_db, scope="function")):
     return _detail(db, ticket_service.add_note(db, user, ticket_id, payload.note))
 
 
 @router.post("/tickets/{ticket_id}/escalation", response_model=TicketDetail)
 def escalate(ticket_id: UUID, payload: EscalationCreate,
-             user: User = Depends(current_user), db: Session = Depends(get_db)):
+             user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return _detail(
         db, ticket_service.escalate_ticket(
             db, user, ticket_id, payload.reason, payload.verified_priority)
@@ -271,7 +271,7 @@ def create_repair_job(
     payload: RepairJobCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ):
     job, created = ticket_service.create_repair_job(
@@ -287,26 +287,26 @@ def create_repair_job(
 def list_repair_jobs(
     ticket_id: UUID | None = Query(default=None),
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ):
     return [_job_response(job) for job in ticket_service.list_repair_jobs(db, user, ticket_id)]
 
 
 @router.get("/repair-jobs/{job_id}", response_model=RepairJobResponse)
 def read_repair_job(job_id: UUID, user: User = Depends(current_user),
-                    db: Session = Depends(get_db)):
+                    db: Session = Depends(get_db, scope="function")):
     return _job_response(ticket_service.get_repair_job(db, user, job_id))
 
 
 @router.post("/repair-jobs/{job_id}/arrival", response_model=RepairJobResponse)
 def job_arrival(job_id: UUID, user: User = Depends(current_user),
-                db: Session = Depends(get_db)):
+                db: Session = Depends(get_db, scope="function")):
     return _job_response(ticket_service.record_arrival(db, user, job_id))
 
 
 @router.post("/repair-jobs/{job_id}/diagnostics", response_model=RepairJobResponse)
 def job_diagnostics(job_id: UUID, payload: DiagnosticsUpdate,
-                    user: User = Depends(current_user), db: Session = Depends(get_db)):
+                    user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return _job_response(
         ticket_service.record_diagnostics(db, user, job_id, payload.model_dump(mode="json"))
     )
@@ -314,7 +314,7 @@ def job_diagnostics(job_id: UUID, payload: DiagnosticsUpdate,
 
 @router.post("/repair-jobs/{job_id}/work", response_model=RepairJobResponse)
 def job_work(job_id: UUID, payload: WorkUpdate, user: User = Depends(current_user),
-             db: Session = Depends(get_db)):
+             db: Session = Depends(get_db, scope="function")):
     return _job_response(
         ticket_service.record_work(db, user, job_id, payload.model_dump())
     )
@@ -322,7 +322,7 @@ def job_work(job_id: UUID, payload: WorkUpdate, user: User = Depends(current_use
 
 @router.post("/repair-jobs/{job_id}/submit", response_model=RepairJobResponse)
 def job_submit(job_id: UUID, payload: RepairSubmit, user: User = Depends(current_user),
-               db: Session = Depends(get_db)):
+               db: Session = Depends(get_db, scope="function")):
     return _job_response(ticket_service.submit_repair_job(db, user, job_id, payload.summary))
 
 
@@ -333,7 +333,7 @@ def upload_attachment(
     request: Request,
     upload: UploadFile = File(...),
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     repair_job_id: UUID | None = Query(default=None),
 ):
     settings = request.app.state.settings
@@ -354,7 +354,7 @@ def upload_attachment(
 
 @router.get("/tickets/{ticket_id}/attachments", response_model=list[AttachmentResponse])
 def list_attachments(ticket_id: UUID, user: User = Depends(current_user),
-                     db: Session = Depends(get_db)):
+                     db: Session = Depends(get_db, scope="function")):
     return [_attachment_response(row)
             for row in ticket_service.ticket_attachments(db, user, ticket_id)]
 
@@ -362,7 +362,7 @@ def list_attachments(ticket_id: UUID, user: User = Depends(current_user),
 @router.get("/tickets/{ticket_id}/attachments/{attachment_id}")
 def download_attachment(ticket_id: UUID, attachment_id: UUID, request: Request,
                         user: User = Depends(current_user),
-                        db: Session = Depends(get_db)):
+                        db: Session = Depends(get_db, scope="function")):
     row = ticket_service.get_attachment(db, user, ticket_id, attachment_id)
     return FileResponse(
         evidence_file(request.app.state.settings, row.storage_key),
@@ -374,7 +374,7 @@ def download_attachment(ticket_id: UUID, attachment_id: UUID, request: Request,
 
 @router.post("/tickets/{ticket_id}/resolution-ready", response_model=TicketDetail)
 def resolution_ready(ticket_id: UUID, payload: ResolutionReady,
-                     user: User = Depends(current_user), db: Session = Depends(get_db)):
+                     user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return _detail(db, ticket_service.mark_resolution_ready(
         db, user, ticket_id, payload.summary))
 
@@ -382,7 +382,7 @@ def resolution_ready(ticket_id: UUID, payload: ResolutionReady,
 @router.get("/tickets/{ticket_id}/resolution-summary",
             response_model=ResolutionSummaryResponse)
 def read_resolution_summary(ticket_id: UUID, user: User = Depends(current_user),
-                            db: Session = Depends(get_db)):
+                            db: Session = Depends(get_db, scope="function")):
     ticket = ticket_service.get_ticket(db, user, ticket_id)
     payload = ticket_service.resolution_payload(ticket)
     return ResolutionSummaryResponse(
@@ -399,32 +399,32 @@ def read_resolution_summary(ticket_id: UUID, user: User = Depends(current_user),
 
 @router.post("/tickets/{ticket_id}/confirmation", response_model=TicketDetail)
 def confirm(ticket_id: UUID, payload: ConfirmationCreate,
-            user: User = Depends(current_user), db: Session = Depends(get_db)):
+            user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
     return _detail(db, ticket_service.confirm_resolution(
         db, user, ticket_id, payload.decision, payload.summary_version, payload.note))
 
 
 @router.post("/tickets/{ticket_id}/close", response_model=TicketDetail)
 def close(ticket_id: UUID, payload: ReasonedAction, user: User = Depends(current_user),
-          db: Session = Depends(get_db)):
+          db: Session = Depends(get_db, scope="function")):
     return _detail(db, ticket_service.close_ticket(db, user, ticket_id, payload.reason))
 
 
 @router.post("/tickets/{ticket_id}/reopen", response_model=TicketDetail)
 def reopen(ticket_id: UUID, payload: ReasonedAction, user: User = Depends(current_user),
-           db: Session = Depends(get_db)):
+           db: Session = Depends(get_db, scope="function")):
     return _detail(db, ticket_service.reopen_ticket(db, user, ticket_id, payload.reason))
 
 
 @router.post("/tickets/{ticket_id}/cancel", response_model=TicketDetail)
 def cancel(ticket_id: UUID, payload: ReasonedAction, user: User = Depends(current_user),
-           db: Session = Depends(get_db)):
+           db: Session = Depends(get_db, scope="function")):
     return _detail(db, ticket_service.cancel_ticket(db, user, ticket_id, payload.reason))
 
 
 @router.get("/tickets/{ticket_id}/history", response_model=list[TicketEventResponse])
 def history(ticket_id: UUID, user: User = Depends(current_user),
-            db: Session = Depends(get_db)):
+            db: Session = Depends(get_db, scope="function")):
     return [
         TicketEventResponse(
             id=event.id,
