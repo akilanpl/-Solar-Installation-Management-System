@@ -16,6 +16,10 @@ import {
   Calendar,
   Camera,
   Upload,
+  RefreshCw,
+  ExternalLink,
+  ClipboardCheck,
+  Sparkles,
 } from 'lucide-react';
 import './TechnicianDashboard.css';
 import '../Customer/CustomerDashboard.css';
@@ -24,6 +28,7 @@ export function TechnicianDashboard() {
   const { user, showToast } = useAuth();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterStatus, setFilterStatus] = useState('all'); // 'all' | 'assigned' | 'pending' | 'scheduled'
 
   const fetchJobs = () => {
     setLoading(true);
@@ -47,6 +52,18 @@ export function TechnicianDashboard() {
     });
   };
 
+  const totalChecks = jobs.reduce((acc, j) => acc + (j.checklist?.length || 0), 0);
+  const completedChecks = jobs.reduce(
+    (acc, j) => acc + (j.checklist?.filter((c) => c.done).length || 0),
+    0
+  );
+  const overallPercent = totalChecks > 0 ? Math.round((completedChecks / totalChecks) * 100) : 0;
+
+  const filteredJobs = jobs.filter((job) => {
+    if (filterStatus === 'all') return true;
+    return job.status?.toLowerCase() === filterStatus;
+  });
+
   return (
     <AppShell requiredRole="technician">
       {loading ? (
@@ -59,56 +76,149 @@ export function TechnicianDashboard() {
           <DashboardView
             role="technician"
             jobs={jobs}
-            onNewAction={() => showToast({ type: 'info', title: 'Inspection Mode', message: 'Field inspection mode active.' })}
+            onNewAction={() =>
+              showToast({
+                type: 'info',
+                title: 'Inspection Mode',
+                message: 'Field inspection mode active.',
+              })
+            }
           />
 
           {/* Interactive Site Inspection Checklist Cards */}
-          <div className="bento-card" style={{ padding: '28px' }}>
-            <div className="bento-card-header" style={{ marginBottom: '20px' }}>
-              <div>
-                <h3 className="bento-card-title">Assigned Rooftop Field Surveys</h3>
-                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: '#64748b' }}>
-                  Conduct on-site shadow raytracing, verify structural roof integrity, and check off items.
-                </p>
+          <div className="survey-workbench-card">
+            {/* Header with Title, Stats & Filter Controls */}
+            <div className="survey-workbench-header">
+              <div className="survey-header-main">
+                <div className="survey-icon-pill">
+                  <ClipboardCheck size={22} color="#4f46e5" strokeWidth={2.2} />
+                </div>
+                <div>
+                  <div className="survey-title-row">
+                    <h3 className="survey-workbench-title">Assigned Rooftop Field Surveys</h3>
+                    <span className="survey-count-pill">{jobs.length} Active Jobs</span>
+                  </div>
+                  <p className="survey-workbench-subtitle">
+                    Conduct on-site shadow raytracing, verify structural roof integrity, and check off items.
+                  </p>
+                </div>
               </div>
-              <button type="button" className="export-data-btn" onClick={fetchJobs}>
-                <Clock size={13} />
-                <span>Refresh Jobs</span>
-              </button>
+
+              <div className="survey-header-actions">
+                {/* Overall Progress Meter */}
+                <div className="survey-overall-meter">
+                  <div className="meter-info">
+                    <span className="meter-label">Verification Progress</span>
+                    <span className="meter-value">{completedChecks}/{totalChecks} ({overallPercent}%)</span>
+                  </div>
+                  <div className="meter-track">
+                    <div className="meter-fill" style={{ width: `${overallPercent}%` }} />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="survey-refresh-btn"
+                  onClick={fetchJobs}
+                  title="Refresh Assigned Jobs"
+                >
+                  <RefreshCw size={14} className={loading ? 'spinning-refresh' : ''} />
+                  <span>Refresh Jobs</span>
+                </button>
+              </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {jobs.map((job) => {
-                const completedCount = job.checklist.filter((c) => c.done).length;
-                const totalCount = job.checklist.length;
-                const isAllDone = completedCount === totalCount;
+            {/* Filter Tabs Bar */}
+            <div className="survey-filter-tabs-row">
+              <div className="survey-filter-tabs">
+                <button
+                  type="button"
+                  className={`survey-tab ${filterStatus === 'all' ? 'active' : ''}`}
+                  onClick={() => setFilterStatus('all')}
+                >
+                  All Surveys ({jobs.length})
+                </button>
+                <button
+                  type="button"
+                  className={`survey-tab ${filterStatus === 'assigned' ? 'active' : ''}`}
+                  onClick={() => setFilterStatus('assigned')}
+                >
+                  Assigned ({jobs.filter((j) => j.status?.toLowerCase() === 'assigned').length})
+                </button>
+                <button
+                  type="button"
+                  className={`survey-tab ${filterStatus === 'pending' ? 'active' : ''}`}
+                  onClick={() => setFilterStatus('pending')}
+                >
+                  Pending ({jobs.filter((j) => j.status?.toLowerCase() === 'pending').length})
+                </button>
+                <button
+                  type="button"
+                  className={`survey-tab ${filterStatus === 'scheduled' ? 'active' : ''}`}
+                  onClick={() => setFilterStatus('scheduled')}
+                >
+                  Scheduled ({jobs.filter((j) => j.status?.toLowerCase() === 'scheduled').length})
+                </button>
+              </div>
+            </div>
+
+            {/* Job Cards Container */}
+            <div className="survey-jobs-container">
+              {filteredJobs.map((job) => {
+                const completedCount = job.checklist?.filter((c) => c.done).length || 0;
+                const totalCount = job.checklist?.length || 0;
+                const isAllDone = totalCount > 0 && completedCount === totalCount;
+                const jobPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+                const customerName = job.client_name || job.customer_name || 'Commercial Client';
+                const address = job.location || job.address || 'Bengaluru Site';
 
                 return (
-                  <div key={job.id} className="floating-event-card" style={{ padding: '24px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <span style={{ fontSize: '16px', fontWeight: '700', color: '#111827' }}>
-                            {job.reference} · {job.customer_name}
-                          </span>
-                          <Badge variant={isAllDone ? 'success' : 'warning'}>
-                            {job.status.replace(/_/g, ' ')}
-                          </Badge>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#64748b', marginTop: '4px' }}>
-                          <MapPin size={14} color="#6366f1" />
-                          <span>{job.address}</span>
-                        </div>
+                  <div
+                    key={job.id}
+                    className={`survey-job-card ${isAllDone ? 'job-complete' : ''} status-${job.status?.toLowerCase()}`}
+                  >
+                    {/* Card Top Meta Strip */}
+                    <div className="job-card-top-bar">
+                      <div className="job-meta-left">
+                        <span className="job-ref-badge">{job.reference}</span>
+                        {job.enquiry_reference && (
+                          <span className="job-enquiry-badge">{job.enquiry_reference}</span>
+                        )}
+                        {job.type && (
+                          <span className="job-type-pill">{job.type}</span>
+                        )}
+                        <span className={`job-status-pill pill-${job.status?.toLowerCase()}`}>
+                          <span className="status-dot" />
+                          {job.status?.replace(/_/g, ' ').toUpperCase()}
+                        </span>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <span style={{ fontSize: '13px', fontWeight: '600', color: completedCount === totalCount ? '#10b981' : '#4f46e5' }}>
-                          {completedCount}/{totalCount} Completed
-                        </span>
+                      <div className="job-meta-right">
+                        {/* Individual Progress Pill */}
+                        <div className="job-progress-widget">
+                          <div className="progress-text-row">
+                            <span className="progress-fraction">{completedCount}/{totalCount} Completed</span>
+                            <span className="progress-percentage">{jobPercent}%</span>
+                          </div>
+                          <div className="job-progress-bar">
+                            <div
+                              className={`job-progress-fill ${isAllDone ? 'fill-done' : ''}`}
+                              style={{ width: `${jobPercent}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Upload Photos Trigger */}
                         <button
                           type="button"
-                          className="export-data-btn"
-                          onClick={() => showToast({ type: 'info', title: 'Camera Mode', message: 'Rooftop photo camera modal opened.' })}
+                          className="job-camera-btn"
+                          onClick={() =>
+                            showToast({
+                              type: 'info',
+                              title: 'Camera Mode',
+                              message: `Rooftop photo camera modal opened for ${job.reference}.`,
+                            })
+                          }
                         >
                           <Camera size={14} />
                           <span>Upload Photos</span>
@@ -116,55 +226,135 @@ export function TechnicianDashboard() {
                       </div>
                     </div>
 
-                    {/* Interactive Checklist Items */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '10px', marginTop: '12px' }}>
-                      {job.checklist.map((item) => (
-                        <div
-                          key={item.id}
-                          className="notification-item-compact"
-                          style={{
-                            cursor: 'pointer',
-                            backgroundColor: item.done ? '#ecfdf5' : '#f8fafc',
-                            borderColor: item.done ? '#a7f3d0' : '#f1f5f9',
-                          }}
-                          onClick={() => handleToggleCheck(job.id, item.id)}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div
-                              style={{
-                                width: '20px',
-                                height: '20px',
-                                borderRadius: '6px',
-                                border: item.done ? 'none' : '2px solid #cbd5e1',
-                                backgroundColor: item.done ? '#10b981' : '#ffffff',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: '#ffffff',
-                              }}
-                            >
-                              {item.done && <Check size={14} strokeWidth={3} />}
-                            </div>
-                            <span style={{ fontSize: '12.5px', fontWeight: item.done ? '600' : '500', color: item.done ? '#065f46' : '#374151' }}>
-                              {item.label}
-                            </span>
-                          </div>
+                    {/* Customer & Location Row */}
+                    <div className="job-client-row">
+                      <h4 className="job-customer-name">{customerName}</h4>
+                      <div className="job-details-chips">
+                        <div className="job-detail-chip">
+                          <MapPin size={13.5} className="detail-icon loc" />
+                          <span>{address}</span>
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="open-map-link"
+                            title="Open Site in Google Maps"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <ExternalLink size={12} />
+                          </a>
                         </div>
-                      ))}
+                        {job.date && (
+                          <div className="job-detail-chip">
+                            <Calendar size={13.5} className="detail-icon cal" />
+                            <span>{job.date}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
-                    {isAllDone && (
-                      <div style={{ marginTop: '18px', display: 'flex', justifyContent: 'flex-end' }}>
-                        <button
-                          type="button"
-                          className="primary-board-btn"
-                          onClick={() => showToast({ type: 'success', title: 'Survey Submitted', message: `Survey ${job.reference} submitted to sales review queue.` })}
-                        >
-                          <CheckCircle2 size={16} />
-                          <span>Submit Signed Survey to Sales</span>
-                        </button>
+                    {/* Interactive Checklist Section */}
+                    <div className="job-checklist-section">
+                      <div className="checklist-section-header">
+                        <span className="checklist-section-title">Field Inspection & Engineering Checklist</span>
+                        <span className="checklist-hint">Click any tile to toggle verification status</span>
                       </div>
-                    )}
+
+                      <div className="survey-checklist-grid">
+                        {job.checklist?.map((item, idx) => (
+                          <div
+                            key={item.id}
+                            className={`survey-check-tile ${item.done ? 'tile-checked' : 'tile-pending'}`}
+                            onClick={() => handleToggleCheck(job.id, item.id)}
+                            role="checkbox"
+                            aria-checked={item.done}
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === ' ' || e.key === 'Enter') {
+                                e.preventDefault();
+                                handleToggleCheck(job.id, item.id);
+                              }
+                            }}
+                          >
+                            <div className="check-tile-left">
+                              <div className={`check-custom-box ${item.done ? 'box-checked' : ''}`}>
+                                {item.done ? (
+                                  <Check size={13} strokeWidth={3.2} />
+                                ) : (
+                                  <span className="check-index-num">{idx + 1}</span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="check-tile-content">
+                              <span className="check-item-text">{item.label}</span>
+                              <span className="check-status-tag">
+                                {item.done ? 'Verified' : 'Pending Check'}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Card Footer Bar */}
+                    <div className="survey-card-footer">
+                      <div className="footer-status-msg">
+                        {isAllDone ? (
+                          <div className="footer-badge success">
+                            <CheckCircle2 size={15} color="#059669" />
+                            <span>All {totalCount} engineering checks verified. Ready for sales handoff.</span>
+                          </div>
+                        ) : (
+                          <div className="footer-badge pending">
+                            <Clock size={15} color="#d97706" />
+                            <span>{totalCount - completedCount} checks remaining before digital sign-off.</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="footer-actions-group">
+                        {!isAllDone && (
+                          <button
+                            type="button"
+                            className="quick-verify-btn"
+                            onClick={async () => {
+                              for (const item of job.checklist) {
+                                if (!item.done) {
+                                  await api.toggleJobChecklistItem(job.id, item.id);
+                                }
+                              }
+                              const fresh = await api.getTechnicianJobs();
+                              setJobs([...fresh]);
+                              showToast({
+                                type: 'success',
+                                title: 'All Checks Verified',
+                                message: `Marked all items complete for ${job.reference}.`,
+                              });
+                            }}
+                          >
+                            <Sparkles size={13} />
+                            <span>Verify All</span>
+                          </button>
+                        )}
+
+                        {isAllDone && (
+                          <button
+                            type="button"
+                            className="submit-survey-btn"
+                            onClick={() =>
+                              showToast({
+                                type: 'success',
+                                title: 'Survey Submitted to Sales',
+                                message: `Survey ${job.reference} signed & transmitted to sales review queue.`,
+                              })
+                            }
+                          >
+                            <CheckCircle2 size={16} />
+                            <span>Submit Signed Survey to Sales</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 );
               })}

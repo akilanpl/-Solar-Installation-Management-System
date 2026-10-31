@@ -2322,3 +2322,57 @@ A4: Vite provides near-instant Hot Module Replacement (HMR) powered by native ES
   * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
 
 ================================================================================
+
+--------------------------------------------------------------------------------
+42. COMPLETE REDESIGN OF ASSIGNED ROOFTOP FIELD SURVEYS WORKBENCH
+--------------------------------------------------------------------------------
+- Date & Context:
+  Completely redesigned the "Assigned Rooftop Field Surveys" workbench section in
+  TechnicianDashboard.jsx and TechnicianDashboard.css. Resolved missing data bindings,
+  flat unstyled cards, and awkward horizontal green rows. Elevated visual fidelity
+  to the Bento Design System with dimensional layering, status-themed left borders,
+  overall and per-card progress meters, interactive numbered checklist tiles,
+  and dedicated card action footers.
+
+- Key Architecture & Visual Elements:
+  1. Data Schema Binding Fixes:
+     - Fixed client name binding (`job.client_name || job.customer_name`), restoring
+       client titles ("TechSpark Innovation Labs (Rajesh Mehra)", "Arun Kumar", etc.).
+     - Fixed location binding (`job.location || job.address`), restoring site addresses
+       with direct Google Maps deep-link navigation shortcuts.
+     - Added enquiry reference badge (`job.enquiry_reference`) and survey category pill (`job.type`).
+  2. Section Header & Verification Metrics:
+     - Prominent icon badge with `ClipboardCheck` in an indigo squircle (`#eef2ff`).
+     - Overall progress meter displaying cumulative item verification across all jobs
+       (e.g., "8/10 Checks Done (80%)") with animated gradient fill.
+     - Filter tabs bar supporting rapid queue segmentation:
+       * All Surveys ({count})
+       * Assigned ({count})
+       * Pending ({count})
+       * Scheduled ({count})
+     - Polished "Refresh Jobs" button with spinning reload indicator.
+  3. Structured Bento Survey Cards (`.survey-job-card`):
+     - Left accent status bar indicating urgency and lifecycle status (assigned = blue,
+       pending = amber, scheduled = purple, completed = emerald).
+     - Individual progress widget featuring fraction completed, percentage pill,
+       and real-time smooth progress track.
+     - Modern glassmorphic "Upload Photos" camera action button.
+  4. Interactive Inspection Checklist Tiles (`.survey-checklist-grid`):
+     - Replaced stretched horizontal green bars with responsive, card-based tiles
+       with ordered sequence badges (1, 2, 3...).
+     - Checkbox states: Pending items feature clean `#ffffff` surfaces with subtle
+       focus borders; verified items highlight in soft mint/emerald (`#f0fdf4`) with
+       green check badges (`#10b981`) and "Verified" tags.
+     - Full accessibility with `role="checkbox"`, `aria-checked`, and keyboard space/enter toggles.
+  5. Dedicated Card Action Footers:
+     - Status notification badge distinguishing incomplete items from ready-to-submit surveys.
+     - "Verify All" shortcut button for rapid verification during testing/walk-throughs.
+     - High-impact "Submit Signed Survey to Sales" primary button with checkmark icon
+       and emerald gradient hover lift.
+
+- Files Modified:
+  * apps/web/src/pages/Technician/TechnicianDashboard.jsx (Modified)
+  * apps/web/src/pages/Technician/TechnicianDashboard.css (Modified)
+  * SOLARFLOW_TECHNICAL_DOCUMENTATION.txt (Modified)
+
+================================================================================
