@@ -23,6 +23,29 @@ from tests.test_phase4a_support import (
 
 pytestmark = pytest.mark.database
 
+@pytest.fixture(autouse=True)
+def _clean_phase4d_tables(application):
+    """Isolated slate for Phase 4D tables.
+
+    The shared truncate covers core tables only; Phase 4D counters and
+    consumer cursors would otherwise leak between tests (e.g. a
+    sequence reset makes a persisted cursor overshoot new events).
+    """
+    from sqlalchemy import text as _text
+
+    with application.state.engine.begin() as connection:
+        connection.execute(
+            _text(
+                "TRUNCATE TABLE phase4d_customer_snapshots, phase4d_cache_outbox, "
+                "phase4d_cache_consumers, phase4d_cache_metrics, phase4d_ai_assists, "
+                "phase4d_site_geolocations, phase4d_forecast_snapshots, "
+                "phase4d_weather_advisories, phase4d_generation_readings "
+                "RESTART IDENTITY CASCADE"
+            )
+        )
+    yield
+
+
 
 def _login_customer(client, email="leela@example.com") -> dict[str, str]:
     response = login(client, kind="customer", identifier=email, password="Solarops123")

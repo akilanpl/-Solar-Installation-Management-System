@@ -522,6 +522,13 @@ def drain_outbox(db: Session, consumer_name: str = CONSUMER_NAME, limit: int = 5
         cursor = CacheConsumerCursor(consumer_name=consumer_name, last_event_id=0)
         db.add(cursor)
         db.flush()
+    stream_max = db.scalar(select(func.max(SysCacheOutbox.id))) or 0
+    if cursor.last_event_id > stream_max:
+        # The event stream was reset (restore, clone or test truncate)
+        # while this cursor persisted. Realign instead of skipping
+        # everything forever; replays only re-mark snapshots stale,
+        # which is idempotent and safe.
+        cursor.last_event_id = stream_max
     events = db.scalars(
         select(SysCacheOutbox)
         .where(SysCacheOutbox.id > cursor.last_event_id)

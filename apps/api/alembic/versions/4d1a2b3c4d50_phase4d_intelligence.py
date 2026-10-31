@@ -137,7 +137,7 @@ def upgrade():
         sa.Column("unit", sa.String(16), nullable=False, server_default="Wh"),
         sa.Column("status", sa.String(16), nullable=False),
         sa.Column("rejection_reason", sa.String(240)),
-        sa.Column("received_by_user_id", sa.Uuid(), sa.ForeignKey("users.id")),
+        sa.Column("received_by_user_id", sa.Uuid(), sa.ForeignKey("users.id"), nullable=False),
         sa.Column("received_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
         sa.CheckConstraint("status IN ('accepted', 'rejected', 'quarantined')", name="ck_phase4d_reading_status"),
         sa.UniqueConstraint("device_ref", "event_id", name="uq_phase4d_readings_device_event"),
