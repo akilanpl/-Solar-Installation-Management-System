@@ -92,17 +92,60 @@ def verify_ci(root, sha):
     if match is None or match[1] != repository:
         raise ValueError("GitHub repository differs from checkout origin")
     run = api(root, f"repos/{repository}/actions/runs/{run_id}")
-    # pull_request checkout may be a merge SHA differing from head_sha. Fail
-    # closed; a push workflow on the candidate branch certifies its exact SHA.
+    verify_run_identity(root, sha, repository, run)
+    return repository, run_id
+
+
+def verify_run_identity(root, sha, repository, run):
+    if os.environ.get("GITHUB_SHA") != sha:
+        raise ValueError("GitHub checkout SHA differs from exact tested HEAD")
+    if not run["path"].startswith(".github/workflows/pushgate.yml"):
+        raise ValueError("Actions run does not belong to the pushgate workflow")
+    if run.get("repository", {}).get("full_name") != repository:
+        raise ValueError("Actions run repository identity mismatch")
+    event = run["event"]
+    if os.environ.get("GITHUB_EVENT_NAME") != event:
+        raise ValueError(
+            "Actions event context differs from authenticated run metadata"
+        )
+    if event == "push":
+        if run["head_sha"] != sha:
+            raise ValueError("Push run must certify its exact head SHA")
+        return
+    if event != "pull_request":
+        raise ValueError(
+            "Only authenticated push or pull_request runs may certify this checkout"
+        )
+    linked = run.get("pull_requests", [])
+    if len(linked) != 1 or type(linked[0].get("number")) is not int:
+        raise ValueError("PR run must identify exactly one actual pull request")
+    reference = linked[0]
+    number = reference["number"]
+    if os.environ.get("GITHUB_REF") != f"refs/pull/{number}/merge":
+        raise ValueError("PR checkout is not the expected synthetic merge ref")
+    live = api(root, f"repos/{repository}/pulls/{number}")
+    if live["state"] != "open" or live["base"]["repo"]["full_name"] != repository:
+        raise ValueError("PR is closed or targets a different repository")
+    head, base = live["head"]["sha"], live["base"]["sha"]
     if (
-        run["head_sha"] != sha
-        or run["event"] != "push"
-        or not run["path"].startswith(".github/workflows/pushgate.yml")
+        reference["head"]["sha"] != head
+        or reference["base"]["sha"] != base
+        or run["head_sha"] not in {head, sha}
+        or live["merge_commit_sha"] != sha
     ):
         raise ValueError(
-            "This campaign must run in the real exact-SHA pushgate push workflow"
+            "PR head/base or synthetic merge changed since this Actions run"
         )
-    return repository, run_id
+    parents = execute(root, ["git", "rev-list", "--parents", "-n", "1", "HEAD"]).split()
+    if parents != [sha, base, head]:
+        raise ValueError(
+            "Tested synthetic merge parents do not match verified current PR base/head"
+        )
+    remote_merge = execute(
+        root, ["git", "ls-remote", "origin", f"refs/pull/{number}/merge"]
+    ).split()
+    if remote_merge != [sha, f"refs/pull/{number}/merge"]:
+        raise ValueError("Live GitHub PR merge ref no longer matches tested checkout")
 
 
 def baseline_score(root, repository, sha):
@@ -506,6 +549,69 @@ def self_test():
                         tree.write(folder / "backend.xml")
                     with self.assertRaises(ValueError):
                         verify_normal_order(folder, folder, "a" * 40, nodes, began)
+
+        def test_push_identity_and_synthetic_pr_identity(self):
+            sha, head, base = "a" * 40, "b" * 40, "c" * 40
+            repository = "owner/repo"
+            run = {
+                "path": ".github/workflows/pushgate.yml",
+                "head_sha": sha,
+                "repository": {"full_name": repository},
+                "event": "push",
+            }
+            environment = {"GITHUB_SHA": sha, "GITHUB_EVENT_NAME": "push"}
+            with patch.dict(os.environ, environment):
+                verify_run_identity(Path("."), sha, repository, run)
+            run.update(
+                event="pull_request",
+                head_sha=head,
+                pull_requests=[
+                    {"number": 3, "head": {"sha": head}, "base": {"sha": base}}
+                ],
+            )
+            live = {
+                "state": "open",
+                "head": {"sha": head},
+                "base": {"sha": base, "repo": {"full_name": repository}},
+                "merge_commit_sha": sha,
+            }
+            environment.update(
+                GITHUB_EVENT_NAME="pull_request", GITHUB_REF="refs/pull/3/merge"
+            )
+            for wrong in (
+                None,
+                "head",
+                "base",
+                "parents",
+                "merge",
+                "checkout",
+                "event",
+            ):
+                with self.subTest(wrong=wrong):
+                    actual = json.loads(json.dumps(live))
+                    parents = f"{sha} {base} {head}"
+                    ref = f"{sha} refs/pull/3/merge"
+                    env = dict(environment)
+                    if wrong in {"head", "base"}:
+                        actual[wrong]["sha"] = "d" * 40
+                    if wrong == "parents":
+                        parents = f"{sha} {head} {base}"
+                    if wrong == "merge":
+                        ref = f"{'d' * 40} refs/pull/3/merge"
+                    if wrong == "checkout":
+                        env["GITHUB_SHA"] = "d" * 40
+                    if wrong == "event":
+                        env["GITHUB_EVENT_NAME"] = "pull_request_target"
+                    with (
+                        patch.dict(os.environ, env),
+                        patch(__name__ + ".api", return_value=actual),
+                        patch(__name__ + ".execute", side_effect=[parents, ref]),
+                    ):
+                        if wrong is None:
+                            verify_run_identity(Path("."), sha, repository, run)
+                        else:
+                            with self.assertRaises(ValueError):
+                                verify_run_identity(Path("."), sha, repository, run)
 
     outcome = unittest.TextTestRunner().run(
         unittest.defaultTestLoader.loadTestsFromTestCase(Checks)
