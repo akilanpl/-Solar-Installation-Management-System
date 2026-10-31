@@ -33,7 +33,7 @@ function CustomerDashboard({ user }: { user: CurrentUser }) {
     <>
       <PageHeader
         title={`Hello, ${user.full_name}`}
-        description="This list is loaded from PostgreSQL. Quotations, payments, and warranties are not available yet."
+        description="Track your enquiries here. Issued quotations and recorded payment requirements are available from the workspace menu."
         action={
           <Link href="/customer/enquiries/new" className="rounded-md bg-moss-700 px-4 py-2 text-sm font-semibold text-white">
             New enquiry

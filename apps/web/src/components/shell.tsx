@@ -11,8 +11,9 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
   customer: [
     { href: "/customer", label: "Overview" },
     { href: "/customer/enquiries/new", label: "New enquiry" },
-    { href: "/customer/quotations", label: "Quotations", planned: true },
-    { href: "/customer/payments", label: "Payments", planned: true },
+    { href: "/customer/quotations", label: "Quotations" },
+    { href: "/customer/payments", label: "Payments" },
+    { href: "/customer/installations", label: "Installation work" },
     { href: "/customer/support", label: "Support", planned: true },
   ],
   technician: [
@@ -23,7 +24,7 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
   sales: [
     { href: "/sales", label: "Enquiries" },
     { href: "/sales/surveys", label: "Surveys", planned: true },
-    { href: "/sales/quotations", label: "Quotations", planned: true },
+    { href: "/sales/quotations", label: "Quotations" },
   ],
   warehouse_staff: [
     { href: "/warehouse", label: "Stock" },
