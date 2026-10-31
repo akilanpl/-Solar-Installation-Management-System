@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="7" failures="0" errors="0" time="0.019496874">
+    <testsuite name="src/lib/access.test.ts" timestamp="2026-10-31T11:32:20.504Z" hostname="Akilans-MacBook-Air.local" tests="4" failures="0" errors="0" skipped="0" time="0.001530583">
+        <testcase classname="src/lib/access.test.ts" name="access &gt; sends each role to its own workspace" time="0.000711167">
+        </testcase>
+        <testcase classname="src/lib/access.test.ts" name="access &gt; does not let a customer open staff workspaces" time="0.000141625">
+        </testcase>
+        <testcase classname="src/lib/access.test.ts" name="access &gt; ignores a requested admin path for a customer" time="0.000081667">
+        </testcase>
+        <testcase classname="src/lib/access.test.ts" name="access &gt; rejects open redirects" time="0.000054667">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/format.test.ts" timestamp="2026-10-31T11:32:20.504Z" hostname="Akilans-MacBook-Air.local" tests="3" failures="0" errors="0" skipped="0" time="0.017966291">
+        <testcase classname="src/lib/format.test.ts" name="money and capacity formatting &gt; converts whole rupees to integer paise" time="0.000733042">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="money and capacity formatting &gt; formats paise without binary floating point" time="0.016604625">
+        </testcase>
+        <testcase classname="src/lib/format.test.ts" name="money and capacity formatting &gt; shows capacity in kilowatts" time="0.000081">
+        </testcase>
+    </testsuite>
+</testsuites>
