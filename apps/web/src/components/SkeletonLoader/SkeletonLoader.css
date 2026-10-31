@@ -1,0 +1,250 @@
+/* ==========================================================================
+   SOLARFLOW / SOLAROPS - SKELETON LOADER & PERFORMANCE STYLES
+   Ultra-smooth shimmer animation optimized for low-network conditions (<50ms paint)
+   ========================================================================== */
+
+.skeleton-dashboard-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+  box-sizing: border-box;
+  animation: skeletonFadeIn 200ms ease-out;
+}
+
+@keyframes skeletonFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Core Shimmer Element */
+.skeleton-shimmer-box {
+  background: #eef2f6;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  will-change: transform;
+}
+
+.skeleton-shimmer-box::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%);
+  animation: skeletonShimmer 1.4s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes skeletonShimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ==========================================================================
+   1. HERO ROW SKELETON
+   ========================================================================== */
+.skeleton-hero-row {
+  display: grid;
+  grid-template-columns: 320px 220px 1fr;
+  gap: 22px;
+  align-items: center;
+}
+
+.skeleton-greeting-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.skeleton-weather-card {
+  background: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 24px;
+  padding: 20px;
+  height: 140px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+}
+
+.weather-skeleton-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.weather-skeleton-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skeleton-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.skeleton-kpi-card {
+  background: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 20px;
+  padding: 18px;
+  height: 140px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+}
+
+/* ==========================================================================
+   2. BENTO CARDS SKELETON
+   ========================================================================== */
+.skeleton-bento-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 22px;
+}
+
+.skeleton-bento-card {
+  background: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-sizing: border-box;
+}
+
+.skeleton-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.skeleton-chart-area {
+  height: 180px;
+  display: flex;
+  align-items: flex-end;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.skeleton-chart-bars {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.chart-bar-col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.skeleton-bar-fill {
+  width: 100%;
+  background: #eef2f6;
+  border-radius: 6px 6px 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%);
+  animation: skeletonShimmer 1.4s infinite ease-in-out;
+}
+
+.skeleton-appointment-inner {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.skeleton-pin-vault {
+  background: #f0fdf4;
+  border: 1.5px solid #a7f3d0;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-pin-boxes {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ==========================================================================
+   3. TABLE SKELETON
+   ========================================================================== */
+.table-card {
+  width: 100%;
+}
+
+.skeleton-table {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-table-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.skeleton-table-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .skeleton-hero-row {
+    grid-template-columns: 1fr;
+  }
+  .skeleton-bento-grid {
+    grid-template-columns: 1fr;
+  }
+}

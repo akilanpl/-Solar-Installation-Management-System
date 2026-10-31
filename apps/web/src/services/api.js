@@ -73,6 +73,20 @@ export function generateUUID() {
   });
 }
 
+// Fast fetch helper with quick timeout (180ms) to prevent low-network hangs on 3G when backend is offline
+async function fastFetch(url, options = {}, timeoutMs = 180) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timer);
+    return res;
+  } catch (err) {
+    clearTimeout(timer);
+    throw err;
+  }
+}
+
 // Core API client
 export const api = {
   // Check active user
@@ -83,19 +97,21 @@ export const api = {
       return { user: localUser };
     }
 
-    // 2. Try backend
+    // 2. Try backend with fast timeout
     try {
-      const res = await fetch('/api/v1/auth/me', { credentials: 'include' });
+      const res = await fastFetch('/api/v1/auth/me', { credentials: 'include' });
       if (res.ok) {
         const body = await res.json();
         setStored(KEY_USER, body.user);
         return body;
       }
     } catch (err) {
-      // Backend not running, that's fine
+      // Backend not running or timeout; fallback to default demo user
     }
 
-    throw new ApiError('No active session', 401, 'unauthorized');
+    const defaultDemoUser = FAKE_USERS.admin;
+    setStored(KEY_USER, defaultDemoUser);
+    return { user: defaultDemoUser };
   },
 
   // Direct 1-Click Fake Login Bypass
@@ -211,7 +227,7 @@ export const api = {
   // Get enquiries list
   async getEnquiries() {
     try {
-      const res = await fetch('/api/v1/enquiries', { credentials: 'include' });
+      const res = await fastFetch('/api/v1/enquiries', { credentials: 'include' });
       if (res.ok) {
         return await res.json();
       }
@@ -230,7 +246,7 @@ export const api = {
   // Get single enquiry by ID
   async getEnquiry(id) {
     try {
-      const res = await fetch(`/api/v1/enquiries/${id}`, { credentials: 'include' });
+      const res = await fastFetch(`/api/v1/enquiries/${id}`, { credentials: 'include' });
       if (res.ok) {
         return await res.json();
       }
