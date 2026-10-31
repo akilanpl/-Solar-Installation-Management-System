@@ -85,3 +85,67 @@
 .receipt-printer-modal-overlay{align-items:flex-start;overflow-y:auto;overscroll-behavior:contain}.receipt-printer-root{margin:auto}
 @media(prefers-reduced-motion:reduce){.receipt-printer-modal-overlay,.receipt-paper-wrapper.anim-stepped-feed{animation:none;transition:none;transform:none}}
 @media print{.receipt-paper-wrapper.anim-stepped-feed{animation:none;transform:none}}
+
+/* Adapted from ashwin-hue e73c795f43da934543b421189ecd6b5acbc77172:
+   floating mobile dock. Keep real workspace links and 44px touch targets. */
+@media (max-width: 768px) {
+  .dock-sidebar-container {
+    width: calc(100% - 24px);
+    max-width: 520px;
+    height: 68px;
+    top: auto;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 28px;
+    padding: 8px;
+    flex-direction: row;
+    gap: 8px;
+    z-index: 100;
+    border: 1px solid rgba(255, 255, 255, .8);
+    background: linear-gradient(180deg, rgba(255, 255, 255, .94), rgba(238, 242, 255, .92) 60%, rgba(199, 210, 254, .92));
+    backdrop-filter: blur(28px);
+    box-shadow: 0 12px 36px rgba(15, 23, 42, .22), inset 0 1px 2px white;
+  }
+  .dock-sidebar-container::after { display: none; }
+  .dock-nav-column {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 6px;
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px;
+  }
+  .dock-brand { padding: 0; }
+  .dock-brand, .dock-nav-btn, .dock-item-active, .dock-bottom-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    flex-shrink: 0;
+    color: #4338ca;
+  }
+  .dock-bottom-column {
+    flex-direction: row;
+    flex-shrink: 0;
+    border-left: 1px solid #c7d2fe;
+    padding-left: 6px;
+  }
+  .dock-tooltip { display: none; }
+  .dock-nav-btn:focus-visible, .dock-item-active:focus-visible, .dock-bottom-btn:focus-visible {
+    outline: 2px solid #4338ca;
+    outline-offset: -2px;
+  }
+  .app-shell-main { margin-left: 0; width: 100%; }
+  .app-shell-content { padding: 16px 14px calc(108px + env(safe-area-inset-bottom, 0px)); }
+  .top-nav-bar { padding: 10px 14px; gap: 12px; }
+}
+@media (max-width: 480px) {
+  .app-shell-content { padding-left: 10px; padding-right: 10px; }
+  .top-nav-bar { padding: 8px 10px; gap: 8px; }
+  .top-nav-tab { font-size: 13px; gap: 6px; }
+  .top-nav-right { gap: 8px; }
+  .actual-dashboard-overview .dash-greeting-title { font-size: 23px; line-height: 1.22; }
+}
