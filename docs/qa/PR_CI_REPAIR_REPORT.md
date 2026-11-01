@@ -74,8 +74,30 @@ stages passed; mandatory campaign entries were not run.
   PR lockfile. The first reused dependency installation lacked lucide-react;
   one npm install hit ECONNRESET, and its cached retry succeeded.
 
-Exact committed-source full coverage, reverse-order suite, browser,
-contracts and remote runs are required next. No PR is claimed green here.
+### Committed backend verification and browser follow-up
+
+Implementation commit `d02c485c5d71258184b6b679c1c3a00d4ed65773` passed
+292 backend tests in each of normal and reverse order. Fresh measured
+coverage: 90.060% line, 71.013% branch, 100% changed backend statements.
+Gate self-tests, lint, frontend 27 tests, typecheck, lint, optimized build,
+dependency audit and full-ancestry secret scan passed. The gate remained
+INCOMPLETE; one browser case exposed another real stale-response race.
+
+`apps/web/src/app/sales/enquiries/[id]/page.tsx:Review.load` allowed the
+discarded Strict Mode effect's late GET response to reset a form after the
+sales user selected Qualified and started entering verified roof/grid data.
+The trace captured a filled roof area followed by a removed grid control.
+The effect now cancels state/error updates from an obsolete invocation.
+The seeded browser regression holds and releases actual persisted-record
+GET responses, then asserts that status, roof area and grid choice survive.
+All four browser cases passed after the fix; the final controlled-latency
+case passed twice more (38.9 seconds). No assertions or time limits were
+weakened. Frontend 27 tests and optimized 30-page build passed again.
+
+The shell launcher now uses the project virtual environment, ensuring that
+the runner can import its locked YAML dependency on GitHub-hosted machines.
+Its Bash syntax check passed. API/client contract regeneration and final
+remote checks follow publication; no PR is claimed green here.
 
 ### Remaining release blockers
 

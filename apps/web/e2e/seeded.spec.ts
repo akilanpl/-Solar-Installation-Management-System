@@ -25,6 +25,7 @@ test("seeded customer persists an enquiry, sales qualifies it, customer relogs a
   test.setTimeout(120_000);
   const salesContext = await browser.newContext();
   const anonymous = await browser.newContext();
+  let releaseFirst: () => void = () => {};
   try {
     expect((await anonymous.request.get("/api/v1/enquiries")).status()).toBe(401);
     await signIn(page, "customer.demo@solarops.example.com");
@@ -57,12 +58,28 @@ test("seeded customer persists an enquiry, sales qualifies it, customer relogs a
     expect(forbidden.status()).toBe(403);
 
     const sales = await salesContext.newPage();
+    // Hold the first real GET until the Strict Mode remount has loaded the
+    // same persisted record. Its late response must not reset user edits.
+    const firstMayFinish = new Promise<void>(resolve => { releaseFirst = resolve; });
+    let detailRequests = 0;
+    await sales.route(`**/api/v1/enquiries/${body.id}`, async route => {
+      if (route.request().method() !== "GET") return route.continue();
+      const index = ++detailRequests;
+      const response = await route.fetch();
+      if (index === 1) await firstMayFinish;
+      await route.fulfill({ response });
+    });
     await signIn(sales, "sales.demo@solarops.example.com");
     await expect(sales.getByRole("heading", { name: "Enquiries", exact: true })).toBeVisible();
     await sales.getByRole("link", { name: body.reference, exact: true }).click();
     await sales.getByLabel("Next status").selectOption("qualified");
     await sales.getByLabel("Verified shadow-free roof area (m²)").fill("35");
     await sales.getByLabel("Grid connection suitability").selectOption("true");
+    releaseFirst();
+    await sales.waitForLoadState("networkidle");
+    await expect(sales.getByLabel("Next status")).toHaveValue("qualified");
+    await expect(sales.getByLabel("Verified shadow-free roof area (m²)")).toHaveValue("35");
+    await expect(sales.getByLabel("Grid connection suitability")).toHaveValue("true");
     await sales.getByLabel(/^Note/).fill("QA demo: rooftop and customer details confirmed.");
     await sales.getByRole("button", { name: "Update status" }).click();
     const updateResponse = sales.waitForResponse((response) =>
@@ -85,6 +102,7 @@ test("seeded customer persists an enquiry, sales qualifies it, customer relogs a
     expect(saved.history.map((entry: { to_status: string }) => entry.to_status)).toEqual(["submitted", "qualified"]);
     expect(saved.history[1].actor_role).toBe("sales");
   } finally {
+    releaseFirst();
     await salesContext.close();
     await anonymous.close();
   }
