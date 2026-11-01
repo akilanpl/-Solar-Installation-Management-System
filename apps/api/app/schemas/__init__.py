@@ -14,6 +14,37 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from app.models.enquiry import CAPACITY_WATTS
+from app.schemas.phase4e import (  # noqa: F401
+    EligibilityResponse,
+    ExtensionDecisionRequest,
+    ExtensionOfferResponse,
+    ExtensionPaymentRequest,
+    ExtensionRequestCreate,
+    ExtensionResponse,
+    ExtensionTermsCreate,
+    ExtensionTermsResponse,
+    MfaRequiredResponse,
+    MfaStatusResponse,
+    MfaTicketVerifyRequest,
+    OfflineAssignmentResponse,
+    PasskeyCredentialResponse,
+    PasskeyOptionsResponse,
+    PasskeyVerifyLoginRequest,
+    PasskeyVerifyRequest,
+    RecoveryCodesResponse,
+    RevokeRequest,
+    StepUpPasskeyRequest,
+    StepUpStartResponse,
+    StrongGrantResponse,
+    SyncBatchRequest,
+    SyncBatchResponse,
+    SyncOperationRecord,
+    SyncOperationRequest,
+    SyncVerdictResponse,
+    TotpEnrollStartRequest,
+    TotpEnrollStartResponse,
+    TotpVerifyRequest,
+)
 
 PHONE = re.compile(r"^[6-9][0-9]{9}$")
 PIN = re.compile(r"^[1-9][0-9]{5}$")

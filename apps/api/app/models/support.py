@@ -206,6 +206,7 @@ class TicketRepairJob(Base):
     parts_used: Mapped[list | None] = mapped_column(JSONB)
     summary: Mapped[str | None] = mapped_column(Text)
     summary_version: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    field_version: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     cancelled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     idempotency_key: Mapped[str] = mapped_column(String(80), nullable=False)
     request_hash: Mapped[str] = mapped_column(String(64), nullable=False)

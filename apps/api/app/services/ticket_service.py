@@ -510,6 +510,7 @@ def record_diagnostics(db: Session, user: User, job_id: uuid.UUID,
         raise AppError(409, "invalid_transition", "This repair job was cancelled.")
     job.diagnostics = payload
     job.status = "in_progress"
+    job.field_version += 1
     _touch_ticket_for_job(db, user, job, "diagnostics_recorded", None,
                           {"repair_job_id": str(job.id)})
     db.flush()
@@ -551,6 +552,7 @@ def record_work(db: Session, user: User, job_id: uuid.UUID,
     job.work_finished_at = finished
     job.parts_used = parts
     job.status = "in_progress"
+    job.field_version += 1
     _touch_ticket_for_job(db, user, job, "work_recorded", None,
                           {"repair_job_id": str(job.id), "parts_used": parts})
     db.flush()
