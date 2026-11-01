@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { CustomerRecoveryDashboard } from "@/components/recovery/customer-dashboard";
 import { Workspace } from "@/components/workspace";
 import { EmptyState, ErrorState, LoadingState, PageHeader, StatusBadge } from "@/components/ui";
 import { api, type CurrentUser, type EnquiryList } from "@/lib/api";
@@ -31,6 +32,8 @@ function CustomerDashboard({ user }: { user: CurrentUser }) {
 
   return (
     <>
+      <CustomerRecoveryDashboard />
+      <section className="customer-enquiry-records">
       <PageHeader
         title={`Hello, ${user.full_name}`}
         description="Track your enquiries here. Issued quotations and recorded payment requirements are available from the workspace menu."
@@ -87,6 +90,7 @@ function CustomerDashboard({ user }: { user: CurrentUser }) {
           </table>
         </div>
       ) : null}
+      </section>
     </>
   );
 }

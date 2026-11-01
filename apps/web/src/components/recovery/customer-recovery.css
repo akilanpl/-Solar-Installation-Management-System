@@ -1,0 +1,787 @@
+/* Recovered visual geometry from teammate e73c795; business state is supplied by FastAPI. */
+/* MultiCardWallet.css - Interactive Multi-Card Leather Wallet Component */
+
+.customer-recovery .multi-card-wallet-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.customer-recovery .wallet-outer-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 36px 16px 40px;
+  position: relative;
+  width: 100%;
+  min-height: 330px;
+  box-sizing: border-box;
+}
+
+/* Wallet Scaler - Expands component size with smooth scaling */
+.customer-recovery .wallet-scaler {
+  transform: scale(1.32);
+  transform-origin: center center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 768px) {
+  .customer-recovery .wallet-scaler {
+    transform: scale(1.15);
+  }
+  .customer-recovery .wallet-outer-box {
+    min-height: 300px;
+    padding: 24px 10px 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .customer-recovery .wallet-scaler {
+    transform: scale(1.0);
+  }
+  .customer-recovery .wallet-outer-box {
+    min-height: 270px;
+    padding: 20px 6px 24px;
+  }
+}
+
+@media (max-width: 380px) {
+  .customer-recovery .wallet-scaler {
+    transform: scale(0.90);
+  }
+  .customer-recovery .wallet-outer-box {
+    min-height: 250px;
+    padding: 16px 4px 20px;
+  }
+}
+
+/* Wallet Wrapper */
+.customer-recovery .wallet {
+  position: relative;
+  width: 280px;
+  height: 230px;
+  cursor: pointer;
+  perspective: 1000px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  transition: transform 0.4s ease;
+}
+
+/* Entry animation for card as page loads */
+@keyframes slideIntoPocket {
+  0% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Wallet leather back */
+.customer-recovery .wallet-back {
+  position: absolute;
+  bottom: 0;
+  width: 280px;
+  height: 200px;
+  background: #1e341e;
+  border-radius: 22px 22px 60px 60px;
+  z-index: 5;
+  box-shadow:
+    inset 0 25px 35px rgba(0, 0, 0, 0.4),
+    inset 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Cards */
+.customer-recovery .wallet-record-card {
+  position: absolute;
+  width: 260px;
+  height: 140px;
+  left: 10px;
+  border-radius: 16px;
+  padding: 16px 18px;
+  color: white;
+  user-select: none;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.3),
+    0 -4px 15px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease,
+    z-index 0s;
+  animation: slideIntoPocket 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+.customer-recovery .card-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.customer-recovery .card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.customer-recovery .card-brand-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.customer-recovery .card-active-check {
+  font-size: 10px;
+  letter-spacing: 0;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-weight: 700;
+  text-transform: none;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.customer-recovery .card-active-check.dark {
+  background: rgba(0, 0, 0, 0.15);
+  color: #1e341e;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.customer-recovery .card-active-check.blue {
+  background: rgba(0, 121, 193, 0.12);
+  color: #0079c1;
+  border-color: rgba(0, 121, 193, 0.25);
+}
+
+.customer-recovery .chip {
+  width: 32px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.customer-recovery .card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.customer-recovery .label {
+  font-size: 8px;
+  opacity: 0.7;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  display: block;
+}
+
+.customer-recovery .value {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.customer-recovery .card-number-wrapper {
+  text-align: right;
+}
+
+.customer-recovery .hidden-stars {
+  font-size: 15px;
+  letter-spacing: 2px;
+  font-family: 'JetBrains Mono', monospace, sans-serif;
+}
+
+.customer-recovery .card-number {
+  display: none;
+  font-size: 13px;
+  letter-spacing: 1px;
+  font-family: 'JetBrains Mono', monospace, sans-serif;
+}
+
+/* Card variants */
+.customer-recovery .wallet-record-card.stripe {
+  background: #635bff;
+  bottom: 90px;
+  z-index: 10;
+  animation-delay: 0.1s;
+}
+
+.customer-recovery .wallet-record-card.wise {
+  background: #9bd86a;
+  color: #1a3311;
+  bottom: 65px;
+  z-index: 20;
+  animation-delay: 0.2s;
+}
+
+.customer-recovery .wallet-record-card.wise .chip {
+  background: rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.customer-recovery .wallet-record-card.paypal {
+  background: #ffffff;
+  color: #003087;
+  bottom: 40px;
+  z-index: 30;
+  animation-delay: 0.3s;
+  box-shadow:
+    inset 0 1px 1px rgba(0, 0, 0, 0.05),
+    0 -4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.customer-recovery .wallet-record-card.paypal .chip {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.customer-recovery .wallet-record-card.paypal .label {
+  color: #8c979d;
+}
+
+/* Selected Card Accent Indicator */
+.customer-recovery .wallet-record-card.selected {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    0 8px 24px rgba(0, 0, 0, 0.25),
+    0 0 14px rgba(56, 189, 248, 0.4);
+}
+
+/* Pocket */
+.customer-recovery .pocket {
+  position: absolute;
+  bottom: 0;
+  width: 280px;
+  height: 160px;
+  z-index: 40;
+  filter: drop-shadow(0 15px 25px rgba(20, 40, 20, 0.4));
+  pointer-events: none;
+}
+
+.customer-recovery .pocket-content {
+  position: absolute;
+  top: 45px;
+  width: 100%;
+  text-align: center;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.customer-recovery .balance-stars {
+  color: #839e7b;
+  font-size: 24px;
+  letter-spacing: 4px;
+  transition: 0.3s;
+  font-family: monospace;
+}
+
+.customer-recovery .balance-real {
+  color: #a7c59e;
+  font-size: 20px;
+  font-weight: 600;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 10px);
+  transition: 0.3s;
+  white-space: nowrap;
+}
+
+/* Eye Logic */
+.customer-recovery .eye-icon-wrapper {
+  margin-top: 8px;
+  height: 20px;
+  width: 20px;
+  position: relative;
+  opacity: 0.3;
+  transition: 0.3s;
+}
+
+.customer-recovery .eye-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  stroke: #3be60b;
+  transition: 0.3s;
+}
+
+/* Hovers */
+.customer-recovery .wallet:hover {
+  transform: translateY(-5px);
+}
+
+.customer-recovery .wallet:hover .eye-icon-wrapper {
+  opacity: 1;
+}
+
+/* Hover effects on cards */
+.customer-recovery .wallet:hover .stripe {
+  transform: translateY(-75px) rotate(-3deg);
+}
+
+.customer-recovery .wallet:hover .wise {
+  transform: translateY(-45px) rotate(2deg);
+}
+
+.customer-recovery .wallet:hover .paypal {
+  transform: translateY(-10px);
+}
+
+/* Individual card hover */
+.customer-recovery .wallet-record-card:hover {
+  z-index: 100 !important;
+  transition-delay: 0s !important;
+}
+
+.customer-recovery .wallet:hover .stripe:hover {
+  transform: translateY(-60px) scale(1.05) rotate(0);
+}
+
+.customer-recovery .wallet:hover .wise:hover {
+  transform: translateY(-70px) scale(1.05) rotate(0);
+}
+
+.customer-recovery .wallet:hover .paypal:hover {
+  transform: translateY(-60px) scale(1.05) rotate(0);
+}
+
+.customer-recovery .wallet-record-card:hover .hidden-stars {
+  display: none;
+}
+
+.customer-recovery .wallet-record-card:hover .card-number {
+  display: block;
+}
+
+.customer-recovery .wallet:hover .balance-stars {
+  opacity: 0;
+}
+
+.customer-recovery .wallet:hover .balance-real {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.customer-recovery .wallet:hover .eye-slash {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.customer-recovery .wallet:hover .eye-open {
+  opacity: 1 !important;
+  transform: scale(1.1);
+}
+
+
+/* CustomerAccessibility.css - Accessibility Suite for Disabled & Visually Impaired Customers */
+
+/* Floating Accessibility Trigger Button */
+.customer-recovery .customer-a11y-floating-trigger {
+  position: fixed;
+  bottom: 22px;
+  right: 24px;
+  z-index: 9999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.customer-recovery .a11y-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: #0f172a;
+  color: #ffffff;
+  border: 2px solid #38bdf8;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.35), 0 0 16px rgba(56, 189, 248, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 13px;
+  font-weight: 700;
+  user-select: none;
+}
+
+.customer-recovery .a11y-pill-btn:hover {
+  background: #1e293b;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.45), 0 0 20px rgba(56, 189, 248, 0.5);
+}
+
+.customer-recovery .a11y-pill-btn:focus-visible {
+  outline: 3px solid #facc15;
+  outline-offset: 3px;
+}
+
+.customer-recovery .a11y-pill-btn.active {
+  background: #0284c7;
+  border-color: #ffffff;
+}
+
+.customer-recovery .a11y-btn-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #38bdf8;
+}
+
+.customer-recovery .a11y-pill-btn.active .a11y-btn-icon-wrap {
+  color: #ffffff;
+}
+
+.customer-recovery .a11y-btn-label {
+  letter-spacing: 0.3px;
+}
+
+.customer-recovery .a11y-live-speaking-indicator {
+  display: flex;
+  align-items: center;
+  color: #4ade80;
+  animation: pulseSpeaking 1.2s infinite ease-in-out;
+}
+
+@keyframes pulseSpeaking {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* Accessibility Drawer Modal */
+.customer-recovery .customer-a11y-drawer {
+  position: absolute;
+  bottom: 56px;
+  right: 0;
+  width: 380px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #ffffff;
+  color: #0f172a;
+  border: 2px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25), 0 0 24px rgba(56, 189, 248, 0.2);
+  display: flex;
+  flex-direction: column;
+  animation: a11ySlideUp 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+}
+
+@keyframes a11ySlideUp {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.customer-recovery .a11y-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: #0f172a;
+  color: #ffffff;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+.customer-recovery .a11y-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.customer-recovery .a11y-close-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #ffffff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.customer-recovery .a11y-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.customer-recovery .a11y-drawer-content {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Feature 1: Page Screen Reader Card */
+.customer-recovery .a11y-feature-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.customer-recovery .feature-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.customer-recovery .feature-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.customer-recovery .feature-icon-badge.speaker {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+}
+
+.customer-recovery .feature-card-header h4 {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.customer-recovery .feature-card-header p {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.customer-recovery .screen-reader-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.customer-recovery .btn-reader-action {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  transition: all 0.15s;
+}
+
+.customer-recovery .btn-reader-action:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.customer-recovery .btn-reader-action.reading {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+}
+
+.customer-recovery .btn-reader-stop {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.customer-recovery .btn-reader-stop:hover {
+  background: #fecaca;
+}
+
+/* Setting Rows */
+.customer-recovery .a11y-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  gap: 12px;
+}
+
+.customer-recovery .setting-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.customer-recovery .setting-info div {
+  display: flex;
+  flex-direction: column;
+}
+
+.customer-recovery .setting-info strong {
+  font-size: 12.5px;
+  color: #0f172a;
+}
+
+.customer-recovery .setting-info span {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 1px;
+}
+
+/* Accessible Toggle Switches */
+.customer-recovery .a11y-toggle-switch {
+  width: 44px;
+  height: 24px;
+  background: #cbd5e1;
+  border: 2px solid transparent;
+  border-radius: 9999px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.customer-recovery .a11y-toggle-switch.active {
+  background: #0284c7;
+}
+
+.customer-recovery .switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.customer-recovery .a11y-toggle-switch.active .switch-knob {
+  left: 22px;
+}
+
+.customer-recovery .a11y-action-pill-btn {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.customer-recovery .a11y-action-pill-btn:hover {
+  background: #bae6fd;
+}
+
+.customer-recovery .a11y-drawer-footer {
+  padding: 10px 20px;
+  background: #f1f5f9;
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* ==========================================================================
+   GLOBAL CUSTOMER ACCESSIBILITY MODES (HTML ROOT MODIFIERS)
+   ========================================================================== */
+
+/* 1. HIGH CONTRAST MODE */
+
+/* 2. TEXT SIZE SCALING */
+
+/* 3. DYSLEXIA-FRIENDLY SPACING */
+
+/* 4. REDUCED MOTION (EPILEPSY & VESTIBULAR PROTECTION) */
+
+/* 5. READING RULER */
+.customer-recovery .customer-reading-ruler {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 38px;
+  background: rgba(56, 189, 248, 0.2);
+  border-top: 2px solid #38bdf8;
+  border-bottom: 2px solid #38bdf8;
+  pointer-events: none;
+  z-index: 99999;
+  backdrop-filter: invert(0.06);
+}
+
+/* 6. MOBILE RESPONSIVE FLOAT POSITIONING */
+@media (max-width: 768px) {
+  .customer-recovery .customer-a11y-floating-trigger {
+    bottom: 84px;
+    right: 14px;
+  }
+
+  .customer-recovery .a11y-pill-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .customer-recovery .customer-a11y-drawer {
+    width: calc(100vw - 28px);
+    max-width: 360px;
+    bottom: 52px;
+    right: 0;
+    max-height: 72vh;
+  }
+}
+
+
+
+.customer-recovery{margin:8px 0 32px;min-width:0}.customer-recovery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;align-items:stretch}.customer-recovery .bento-card{padding:24px;min-width:0;margin:0}.customer-recovery .bento-card-header{gap:10px;flex-wrap:wrap}.customer-recovery .bento-card-title{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700}.customer-card-intro{font-size:12px;line-height:1.65;color:#64748b;margin:9px 0}.customer-journey-links{display:grid;gap:10px;margin:22px 0}.customer-journey-item{display:flex;align-items:center;gap:12px;border:1px solid #edf0f5;border-radius:16px;padding:16px 12px}.customer-journey-item>span:nth-child(2){flex:1;min-width:0}.customer-journey-item strong{display:block;font-size:13px}.customer-journey-item small{display:block;font-size:11px;line-height:1.5;color:#64748b;margin-top:4px}.customer-journey-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;color:#4f46e5;background:#eef2ff;flex-shrink:0}.customer-provider-note{display:flex;gap:12px;border-radius:16px;padding:17px;background:linear-gradient(135deg,#eef2ff,#f0fdf4);font-size:12px;color:#4338ca}.customer-provider-note p{margin:5px 0;line-height:1.6}.customer-provider-note a,.customer-text-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#4f46e5;margin-top:12px}.customer-recovery .wallet-record-card{border:0;cursor:pointer;text-align:left}.customer-recovery .wallet-record-card:focus-visible{outline:3px solid #4f46e5;outline-offset:4px}.customer-recovery .wallet-unavailable{cursor:default}.customer-recovery .wallet-outer-box{min-height:285px;padding:20px 0 10px;overflow:visible}.customer-recovery .wallet-scaler{transform:scale(1.02)}.customer-recovery .customer-pocket-label{position:absolute;left:0;right:0;bottom:36px;text-align:center;color:#f0dec8;font-weight:700;font-size:15px;letter-spacing:.15em;pointer-events:none}.customer-pocket-label span{display:block;font-size:8px;letter-spacing:.2em;margin-top:7px}.customer-wallet-detail{display:grid;gap:4px;font-size:12px;background:#f8fafc;border:1px solid #edf0f5;border-radius:12px;padding:12px}.customer-wallet-detail span,.customer-wallet-detail p{font-size:11px;color:#64748b}.customer-recovery .card-number{font-size:15px;overflow-wrap:anywhere}.customer-recovery .otp-digits-display{gap:5px;justify-content:center}.customer-recovery .otp-box-digit{width:31px;height:42px;font-size:20px;display:grid;place-items:center}.customer-recovery .technician-info-col{display:grid;gap:2px;min-width:0}.customer-recovery .otp-copy-action-btn:disabled{opacity:.5;cursor:not-allowed}.customer-enquiry-records{margin-top:28px}.customer-recovery .customer-a11y-drawer{max-height:min(75vh,680px);overflow:auto}.customer-recovery .customer-toggle-dot{display:block;width:16px;height:16px;background:white;border-radius:50%;margin:3px;transition:transform .18s}.customer-recovery .a11y-toggle-switch.active .customer-toggle-dot{transform:translateX(18px)}.customer-recovery .a11y-toggle-switch{flex-shrink:0;min-width:44px;min-height:26px}.customer-recovery .customer-a11y-reset{font-size:12px;text-decoration:underline;min-height:44px;color:#bae6fd}.customer-recovery .customer-a11y-note{font-size:11px;line-height:1.7;color:#cbd5e1}.customer-recovery .a11y-feature-card h3{font-size:13px;font-weight:700}.customer-recovery .feature-card-header>div{flex:1}.customer-recovery .a11y-close-btn{min-width:44px;min-height:44px}.customer-recovery .btn-reader-action,.customer-recovery .btn-reader-stop{min-height:44px}.customer-recovery .customer-a11y-floating-trigger{z-index:105}.customer-recovery .pocket{pointer-events:none}
+html[data-customer-accessibility~="large"] .customer-recovery,html[data-customer-accessibility~="large"] .customer-enquiry-records{font-size:120%}html[data-customer-accessibility~="large"] .customer-recovery p,html[data-customer-accessibility~="large"] .customer-recovery strong,html[data-customer-accessibility~="large"] .customer-recovery a{font-size:1em}html[data-customer-accessibility~="spacing"] .customer-recovery,html[data-customer-accessibility~="spacing"] .customer-enquiry-records{letter-spacing:.06em;line-height:1.9}html[data-customer-accessibility~="contrast"] .customer-recovery .bento-card,html[data-customer-accessibility~="contrast"] .customer-enquiry-records{background:#fff;color:#111827;border:2px solid #111827}html[data-customer-accessibility~="contrast"] .customer-recovery p{color:#1f2937}html[data-customer-accessibility~="motion"] .customer-recovery *,html[data-customer-accessibility~="motion"] .customer-recovery *::before,html[data-customer-accessibility~="motion"] .customer-recovery *::after{animation:none!important;transition:none!important}
+@media(max-width:1200px){.customer-recovery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.customer-recovery .survey-visit-bento-card{grid-column:1/-1}.customer-recovery .wallet-scaler{transform:scale(1.05)}}@media(max-width:640px){.customer-recovery-grid{grid-template-columns:minmax(0,1fr);gap:16px}.customer-recovery .survey-visit-bento-card{grid-column:auto}.customer-recovery .bento-card{padding:20px 16px}.customer-recovery .wallet-scaler{transform:scale(.95)}.customer-recovery .customer-a11y-floating-trigger{bottom:calc(94px + env(safe-area-inset-bottom,0px));right:12px}.customer-recovery .customer-a11y-drawer{width:calc(100vw - 24px);right:0;max-height:65vh}.customer-recovery .otp-copy-action-btn{min-height:44px}.customer-recovery .otp-box-digit{width:35px;height:44px}.customer-recovery .wallet-outer-box{min-height:270px}}
+@media(prefers-reduced-motion:reduce){.customer-recovery *, .customer-recovery *::before,.customer-recovery *::after{animation:none!important;transition:none!important}}
