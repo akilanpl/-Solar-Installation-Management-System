@@ -2,7 +2,7 @@
 
 Catalogue packages and roles come from the Alembic migration. This script
 creates employee logins only. It refuses to run unless the database name is
-`solarops` and the environment is development. Passwords are never written
+`solarops_dev` and the environment is development. Passwords are never written
 into the repository. If SOLAROPS_SEED_PASSWORD is unset, a password is
 generated into var/dev-seed-password.txt.
 """
@@ -19,6 +19,8 @@ from app.db.session import build_engine, build_session_factory
 from app.models.identity import EmployeeProfile, User
 from app.repositories.queries import get_user_by_email
 from sqlalchemy.engine.url import make_url
+
+from local_secrets import protect
 
 STAFF = [
     ("admin@sunpower.example", "EMP-ADMIN-001", "Asha Menon", "9845011111", "admin"),
@@ -41,18 +43,23 @@ def password_from_env(settings: Settings) -> str:
     generated = f"Solarops-{secrets.token_urlsafe(9)}"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(generated + "\n", encoding="utf-8")
-    path.chmod(0o600)
+    protect(path)
     print(f"Wrote a development staff password to {path}")
     return generated
 
 
 def main() -> None:
     settings = Settings()
-    database = make_url(settings.database_url).database
-    if settings.app_env != "development" or database != "solarops":
+    url = make_url(settings.database_url)
+    database = url.database
+    if (
+        settings.app_env != "development"
+        or database != "solarops_dev"
+        or url.host not in {"127.0.0.1", "localhost"}
+    ):
         raise SystemExit(
             f"Refusing to seed app_env={settings.app_env} database={database}. "
-            "This command only runs for the local development database named solarops."
+            "This command only runs for the local development database named solarops_dev."
         )
     password = password_from_env(settings)
     engine = build_engine(settings.database_url)

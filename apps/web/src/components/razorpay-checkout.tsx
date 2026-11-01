@@ -1,0 +1,22 @@
+"use client";
+import {useEffect,useRef,useState} from "react";
+import Script from "next/script";
+import type {components} from "@/generated/schema";
+import {api} from "@/lib/api";
+import {decimalRupeesToPaise,formatInrFromPaise} from "@/lib/format";
+type S=components["schemas"];
+type CheckoutResult={razorpay_payment_id:string;razorpay_signature:string};
+type CheckoutOptions={key:string;order_id:string;amount:number;currency:string;name:string;description:string;handler:(r:CheckoutResult)=>void;modal:{ondismiss:()=>void}};
+type RazorpayInstance={open:()=>void;on:(event:string,fn:()=>void)=>void};
+export function RazorpayCheckout({quotationId,outstandingMinor,onChange}:{quotationId:string;outstandingMinor:number;onChange:()=>void}){
+ const [cap,setCap]=useState<S["ProviderCapability"]|null>(null),[sdk,setSdk]=useState(false),[amount,setAmount]=useState(""),[busy,setBusy]=useState(false),[message,setMessage]=useState("");
+ const key=useRef<string|null>(null);
+ useEffect(()=>{api<S["ProviderCapability"]>("/api/v1/payments/razorpay/capability").then(setCap).catch(()=>setMessage("Payment capability could not be checked. Checkout remains disabled."));},[]);
+ async function checkout(e:React.FormEvent<HTMLFormElement>){e.preventDefault();setMessage("");const minor=decimalRupeesToPaise(amount);if(minor===null||minor<100||minor>outstandingMinor){setMessage("Choose an amount from ₹1 up to the recorded outstanding balance.");return;}setBusy(true);
+ try{key.current??=crypto.randomUUID();const order=await api<S["RazorpayOrderResponse"]>("/api/v1/payments/razorpay/orders",{method:"POST",headers:{"Idempotency-Key":key.current},body:JSON.stringify({quotation_id:quotationId,amount_minor:minor} satisfies S["RazorpayOrderInput"])});
+ if(!order.provider_order_id||order.payment.status==="unresolved"){setMessage("Provider order creation is unresolved. Do not pay again; reconcile this existing intent with operations.");setBusy(false);return;}
+ const Factory=(window as Window&{Razorpay?:new(options:CheckoutOptions)=>RazorpayInstance}).Razorpay;if(!Factory)throw new Error("Provider checkout has not loaded. Retry when it becomes available.");
+ const instance=new Factory({key:order.public_key_id,order_id:order.provider_order_id,amount:order.payment.amount_minor,currency:order.payment.currency_code,name:"SolarOps · TEST MODE",description:"Isolated acceptance payment · no live charge",handler:async result=>{try{const verified=await api<S["PaymentIntentResponse"]>(`/api/v1/payments/razorpay/${order.payment.id}/reconcile`,{method:"POST",body:JSON.stringify({payment_id:result.razorpay_payment_id,signature:result.razorpay_signature} satisfies S["ReconcileInput"])});setMessage(verified.status==="verified"?"Provider-confirmed TEST payment recorded. No live money moved.":"Provider payment is pending capture; no verified payment has been claimed.");if(verified.status==="verified")key.current=null;onChange();}catch(error){setMessage(error instanceof Error?error.message:"Reconciliation unavailable. Do not pay again; retry verification.");}finally{setBusy(false);}},modal:{ondismiss:()=>{setBusy(false);setMessage("Checkout closed. Only authenticated provider responses can verify a payment.");}}});instance.on("payment.failed",()=>{setBusy(false);setMessage("The provider reported a failure. No successful payment was recorded by the browser.");});instance.open();
+ }catch(error){setBusy(false);setMessage(error instanceof Error?error.message:"Provider checkout is unavailable.");}}
+ return <section className="actual-subcard"><h3>Razorpay test checkout</h3><p>{cap?.reason??"Checking provider capability…"}</p>{cap?.enabled&&<><Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" onLoad={()=>setSdk(true)} onError={()=>setMessage("Provider checkout script could not load.")}/><p>Outstanding: {formatInrFromPaise(outstandingMinor)}. This adapter rejects live keys and production checkout.</p><form onSubmit={checkout}><label className="actual-field"><span>Amount to test (₹)</span><input type="number" step="0.01" min="1" required value={amount} onChange={e=>setAmount(e.target.value)}/></label><button type="submit" className="primary-board-btn" disabled={busy||!sdk||outstandingMinor<100}>{busy?"Awaiting provider…":"Open Razorpay TEST checkout"}</button></form></>}{!cap?.enabled&&<button type="button" disabled>Provider checkout blocked</button>}{message&&<p role="status">{message}</p>}</section>;
+}

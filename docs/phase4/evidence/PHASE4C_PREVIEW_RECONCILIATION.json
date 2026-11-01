@@ -1,0 +1,85 @@
+{
+  "database": "solarops_4c_preview",
+  "report": {
+    "currency": "INR",
+    "recognized_revenue_minor": 16092000,
+    "cash_minor": 18974400,
+    "receivables_minor": 14160,
+    "payables_minor": 6000,
+    "advances_minor": 0,
+    "deferred_revenue_minor": 0,
+    "outstanding_jobs": 0,
+    "service_liability_minor": null,
+    "service_liability_state": "unmeasured: approved warranty provision policy and cost estimates required",
+    "subsidy_status": {
+      "reviewed": 1
+    },
+    "jobs": [
+      {
+        "order_id": "00fef636-aa55-43ac-ad98-28ec3388a3ef",
+        "reference": "ORD-2026-000001",
+        "revenue_minor": 8052000,
+        "material_minor": 900,
+        "labour_minor": 6000,
+        "expense_minor": 0,
+        "profit_minor": 8045100,
+        "complete": true,
+        "missing": [],
+        "source_record_ids": [
+          "56588244-f99e-4567-892a-cdf184e7a125",
+          "b04864a7-1318-402b-8905-f145f9951afd",
+          "6f6219ba-00c9-46a3-9057-260a76666283",
+          "a559e656-3620-42dd-8af2-b4358dcbb93e",
+          "7665f740-edb1-4966-a7bb-7a0ac7f1e913",
+          "2a133f89-e2eb-4d65-bd51-2394ff138cb1",
+          "0a06c17a-3400-4940-82d2-db294a0df26f",
+          "8b5f8a1c-98aa-4f81-9425-80f3a0e6d39c",
+          "0a63327c-17c3-4b9d-b2be-27d4ab404a71",
+          "e14d8213-2cef-4934-b659-85e0c0e0b509",
+          "899bfcb6-1906-4bfd-99f9-6324bfe48270",
+          "426532cd-f76e-48fd-9ab5-22daea69df42",
+          "8a529979-c6e5-4133-9b1c-9814cd7b4453",
+          "a7b16094-9b0b-4468-b7c0-f17f0a8a3df3",
+          "a125c8df-7081-4b8d-a843-62b27df1ae9c",
+          "3c293134-2b5f-4d5f-8563-246c20a383a7",
+          "887b1bd3-685d-4d53-b989-544e072eb928",
+          "e9220a4d-7dfa-4bf8-9b80-11ee5e9ac5aa",
+          "349145a4-1ab8-4ca1-abae-4369e66059bb",
+          "520662f5-8fd5-40b9-960c-00afc84edc8c",
+          "18d63716-4fc5-4dd4-97cb-4972442e29b5",
+          "8fd1ec16-af85-458c-970f-d7fef7ed93fb"
+        ]
+      },
+      {
+        "order_id": "c9199b93-ba12-48b6-ae63-05bba3cedbc5",
+        "reference": "ORD-2026-000002",
+        "revenue_minor": 8040000,
+        "material_minor": 75897600,
+        "labour_minor": 0,
+        "expense_minor": 0,
+        "profit_minor": -67857600,
+        "complete": true,
+        "missing": [],
+        "source_record_ids": [
+          "0abc59c5-58c7-4cd9-ae14-7b98b9ef5ab0",
+          "13eb6649-4725-490b-b074-5054714a374a",
+          "6817364b-2f80-47fe-b278-411aa7474542",
+          "2e4df39a-c362-4c89-b45d-4a69efb97ed8",
+          "fe4747dd-7b2c-445a-90bf-e9e8296c678f",
+          "3c9bbbd1-8f1d-42b4-8017-a1912d46bd35",
+          "dfe90ec5-747a-4847-b598-96781afddba4",
+          "506fb68f-fb2e-4733-affe-1b0199fabffb",
+          "e1711ee7-e57a-421f-b574-54fe96706ae5",
+          "fb729af4-b39e-43bf-a9c0-dafbb59dbb9c",
+          "f3464b3d-d278-4a19-ba37-9fd38a276fe6",
+          "c026e51f-7232-48bb-a7a1-af2df3d120dd"
+        ]
+      }
+    ]
+  },
+  "unbalanced_entries": 0,
+  "settlement_records": 0,
+  "export_bytes_match_browser_download": true,
+  "csv_sha256": "4fced25a618650d34792fd579f9e288a91ebf3c2f5428150399ac90badd68d0b",
+  "runtime_source_sha": "9d49099e0b607772f59005c06f52025375ff9081"
+}

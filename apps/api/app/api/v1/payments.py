@@ -1,6 +1,9 @@
+from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, Response
+from pydantic import BaseModel
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.deps import current_user, get_settings
@@ -8,7 +11,8 @@ from app.core.config import Settings
 from app.core.errors import AppError
 from app.db.session import get_db
 from app.models.identity import User
-from app.models.workflow import PaymentIntent
+from app.models.provider import ProviderPaymentOrder
+from app.models.workflow import PaymentIntent, Quotation
 from app.schemas import parse_idempotency_key
 from app.schemas.workflow import (
     CashReceiptCreate,
@@ -51,7 +55,7 @@ def intent_response(intent: PaymentIntent) -> PaymentIntentResponse:
 def read_requirement(
     quotation_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> PaymentRequirementResponse:
     requirement, verified = payment_service.get_requirement(db, user, quotation_id)
     return PaymentRequirementResponse(
@@ -70,7 +74,7 @@ def create_intent(
     payload: PaymentIntentCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     settings: Settings = Depends(get_settings),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> PaymentIntentResponse:
@@ -86,7 +90,7 @@ def sandbox_outcome(
     intent_id: UUID,
     payload: SandboxOutcome,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     settings: Settings = Depends(get_settings),
 ) -> PaymentIntentResponse:
     return intent_response(
@@ -99,20 +103,63 @@ def cash_receipt(
     payload: CashReceiptCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> PaymentIntentResponse:
-    intent, replayed = payment_service.record_cash_receipt(
-        db, user, payload, _key(idempotency_key)
-    )
+    intent, replayed = payment_service.record_cash_receipt(db, user, payload, _key(idempotency_key))
     response.status_code = 200 if replayed else 201
     return intent_response(intent)
+
+
+class ReceiptResponse(BaseModel):
+    payment: PaymentIntentResponse
+    quotation_reference: str
+    recorded_at: datetime
+    notice: str
+    refunded_minor: int
+    unapplied_minor: int
+
+
+@router.get("/payments/receipts", response_model=list[ReceiptResponse])
+def receipts(user: User = Depends(current_user), db: Session = Depends(get_db, scope="function")):
+    if user.role_code not in {"customer", "sales", "admin"}:
+        raise AppError(403, "forbidden", "You cannot view receipts.")
+    query = (
+        select(PaymentIntent, Quotation)
+        .join(Quotation, PaymentIntent.quotation_id == Quotation.id)
+        .where(PaymentIntent.status == "verified")
+    )
+    if user.role_code == "customer":
+        query = query.where(Quotation.customer_user_id == user.id)
+    return [
+        ReceiptResponse(
+            payment=intent_response(p),
+            quotation_reference=q.reference,
+            recorded_at=p.created_at,
+            refunded_minor=(
+                db.get(ProviderPaymentOrder, p.id).refunded_minor
+                if db.get(ProviderPaymentOrder, p.id)
+                else 0
+            ),
+            unapplied_minor=(
+                db.get(ProviderPaymentOrder, p.id).unapplied_minor
+                if db.get(ProviderPaymentOrder, p.id)
+                else 0
+            ),
+            notice="Test-only record; no money moved"
+            if p.is_test_only
+            else "Staff-recorded cash receipt; not provider settlement"
+            if p.method == "cash"
+            else "Provider verification record",
+        )
+        for p, q in db.execute(query.order_by(PaymentIntent.created_at.desc()).limit(200))
+    ]
 
 
 @router.get("/payments/{intent_id}", response_model=PaymentIntentResponse)
 def read_payment(
     intent_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> PaymentIntentResponse:
     return intent_response(payment_service.get_intent(db, user, intent_id))

@@ -26,7 +26,7 @@ def _employee_response(user: User, profile) -> EmployeeResponse:
 @router.get("/employees", response_model=list[EmployeeResponse])
 def read_employees(
     _: User = Depends(require_role("admin")),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> list[EmployeeResponse]:
     return [_employee_response(user, profile) for user, profile in auth_service.list_staff(db)]
 
@@ -35,7 +35,7 @@ def read_employees(
 def create_employee(
     payload: EmployeeCreate,
     actor: User = Depends(require_role("admin")),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> EmployeeResponse:
     user, profile = auth_service.provision_employee(db, actor, payload)
     return _employee_response(user, profile)

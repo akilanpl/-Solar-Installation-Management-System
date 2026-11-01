@@ -1,0 +1,22 @@
+[
+  {
+    "portal": "technician",
+    "role": "technician",
+    "verified": true
+  },
+  {
+    "portal": "warehouse",
+    "role": "warehouse staff",
+    "verified": true
+  },
+  {
+    "portal": "support",
+    "role": "support",
+    "verified": true
+  },
+  {
+    "portal": "admin",
+    "role": "admin",
+    "verified": true
+  }
+]

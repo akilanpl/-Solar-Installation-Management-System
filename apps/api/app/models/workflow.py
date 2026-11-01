@@ -51,6 +51,10 @@ class DocumentCounter(Base):
 class CatalogueComponent(Base):
     __tablename__ = "catalogue_components"
 
+    requires_serial_tracking: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=text("false")
+    )
+
     code: Mapped[str] = mapped_column(String(32), primary_key=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     unit: Mapped[str] = mapped_column(String(16), nullable=False)
@@ -155,6 +159,7 @@ class Survey(Base):
     cable_distance_m: Mapped[Decimal | None] = mapped_column(Numeric(10, 2))
     grid_connection: Mapped[str | None] = mapped_column(String(16))
     notes: Mapped[str | None] = mapped_column(Text)
+    field_version: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     submitted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     reviewed_by_user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
@@ -176,7 +181,9 @@ class SurveyStatusHistory(Base):
     __tablename__ = "survey_status_history"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    survey_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("surveys.id"), nullable=False, index=True)
+    survey_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("surveys.id"), nullable=False, index=True
+    )
     from_status: Mapped[str | None] = mapped_column(String(32))
     to_status: Mapped[str] = mapped_column(String(32), nullable=False)
     actor_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
@@ -188,12 +195,12 @@ class SurveyStatusHistory(Base):
 
 class SurveyEvidence(Base):
     __tablename__ = "survey_evidence"
-    __table_args__ = (
-        CheckConstraint("size_bytes > 0 AND size_bytes <= 5000000", name="size"),
-    )
+    __table_args__ = (CheckConstraint("size_bytes > 0 AND size_bytes <= 5000000", name="size"),)
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    survey_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("surveys.id"), nullable=False, index=True)
+    survey_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("surveys.id"), nullable=False, index=True
+    )
     storage_key: Mapped[str] = mapped_column(String(80), nullable=False, unique=True)
     original_filename: Mapped[str] = mapped_column(String(200), nullable=False)
     content_type: Mapped[str] = mapped_column(String(64), nullable=False)
@@ -278,7 +285,9 @@ class QuotationLine(Base):
             "unit_cost_minor >= 0 AND unit_price_minor >= 0 AND line_total_minor >= 0",
             name="money",
         ),
-        CheckConstraint("line_kind IN ('material', 'installation', 'tax', 'discount')", name="kind"),
+        CheckConstraint(
+            "line_kind IN ('material', 'installation', 'tax', 'discount')", name="kind"
+        ),
         CheckConstraint("line_total_minor = quantity * unit_price_minor", name="extension"),
     )
 
@@ -323,9 +332,7 @@ class QuotationRevisionRequest(Base):
 class QuotationAcceptance(Base):
     __tablename__ = "quotation_acceptances"
 
-    quotation_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("quotations.id"), primary_key=True
-    )
+    quotation_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("quotations.id"), primary_key=True)
     customer_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
     accepted_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
@@ -356,7 +363,7 @@ class PaymentIntent(Base):
     __tablename__ = "payment_intents"
     __table_args__ = (
         CheckConstraint("amount_minor > 0", name="amount"),
-        CheckConstraint("method IN ('sandbox', 'cash')", name="method"),
+        CheckConstraint("method IN ('sandbox', 'cash', 'razorpay')", name="method"),
         CheckConstraint(
             "status IN ('pending', 'processing', 'verified', 'failed', 'unresolved')",
             name="status",
@@ -471,9 +478,7 @@ class SalesOrderLine(Base):
 
 class WarehousePreparationRequest(Base):
     __tablename__ = "warehouse_preparation_requests"
-    __table_args__ = (
-        CheckConstraint("status IN ('pending_preparation')", name="status"),
-    )
+    __table_args__ = (CheckConstraint("status IN ('pending_preparation')", name="status"),)
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     order_id: Mapped[uuid.UUID] = mapped_column(
@@ -505,9 +510,7 @@ class WarehousePreparationLine(Base):
 
 class InstallationSchedulingRequest(Base):
     __tablename__ = "installation_scheduling_requests"
-    __table_args__ = (
-        CheckConstraint("status IN ('unscheduled')", name="status"),
-    )
+    __table_args__ = (CheckConstraint("status IN ('unscheduled')", name="status"),)
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     order_id: Mapped[uuid.UUID] = mapped_column(

@@ -6,8 +6,9 @@ covers migrations, tests, and HTTP handlers. Async sessions would not remove
 a real bottleneck at the current scale (about 40 installations a month) and
 would force a second database driver pattern.
 
-Each HTTP request gets one session. The dependency commits if the handler
-returns and rolls back if it raises. Services flush inside that transaction.
+Each HTTP request gets one session. Every consumer uses function scope, so the
+dependency commits before success headers/cookies leave the app, and rolls back
+if the handler or commit fails. Services flush inside that transaction.
 The one exception is a failed OTP attempt, which must persist and is documented
 in the auth service.
 """
@@ -24,9 +25,16 @@ def build_engine(database_url: str):
 
     @event.listens_for(engine, "connect")
     def _set_utc(dbapi_connection, _connection_record) -> None:
-        cursor = dbapi_connection.cursor()
-        cursor.execute("SET TIME ZONE 'UTC'")
-        cursor.close()
+        # SET is transactional in PostgreSQL. Persist the session setting
+        # outside a transaction so pool rollback cannot restore the server's
+        # local timezone after the first checkout.
+        previous_autocommit = dbapi_connection.autocommit
+        try:
+            dbapi_connection.autocommit = True
+            with dbapi_connection.cursor() as cursor:
+                cursor.execute("SET TIME ZONE 'UTC'")
+        finally:
+            dbapi_connection.autocommit = previous_autocommit
 
     return engine
 

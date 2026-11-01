@@ -1,5 +1,6 @@
 """Account registration, verification, sessions, and staff provisioning."""
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
@@ -135,39 +136,34 @@ def resend_verification(db: Session, settings: Settings, sender, email: str) -> 
 
 
 def verify_email(db: Session, settings: Settings, email: str, code: str) -> None:
-    user = get_user_by_email(db, email)
-    challenge = active_challenge(db, user.id) if user is not None else None
-    if user is None or challenge is None:
-        raise AppError(
-            400, "invalid_verification_code", "The verification code is invalid or expired."
-        )
-    if challenge.expires_at <= utcnow() or challenge.consumed_at is not None:
-        challenge.consumed_at = challenge.consumed_at or utcnow()
-        db.commit()
-        raise AppError(
-            400, "invalid_verification_code", "The verification code is invalid or expired."
-        )
-    if not secrets_match(challenge.code_hash, code, settings.secret_key):
-        challenge.attempt_count += 1
-        if challenge.attempt_count >= settings.otp_max_attempts:
-            challenge.consumed_at = utcnow()
-        # Persist the failed attempt even though the request itself fails.
-        # The outer request dependency would roll this back if we only flushed.
-        db.commit()
-        raise AppError(
-            400, "invalid_verification_code", "The verification code is invalid or expired."
-        )
-    challenge.consumed_at = utcnow()
-    user.email_verified_at = utcnow()
-    user.updated_at = utcnow()
-    add_audit(
-        db,
-        actor_user_id=user.id,
-        action="user.email_verified",
-        entity_type="user",
-        entity_id=user.id,
-        metadata={},
-    )
+    # Verification has a dedicated security transaction. A rejected code must
+    # not commit unrelated objects staged by the caller.
+    failure = None
+    with Session(db.get_bind()) as security_db:
+        with security_db.begin():
+            user = security_db.scalar(select(User).where(User.email == email).with_for_update())
+            challenge = security_db.scalar(select(EmailVerificationChallenge).where(
+                EmailVerificationChallenge.user_id == user.id,
+                EmailVerificationChallenge.purpose == "signup_verify",
+                EmailVerificationChallenge.consumed_at.is_(None),
+            ).order_by(EmailVerificationChallenge.created_at.desc()).with_for_update()) if user else None
+            if user is None or challenge is None:
+                failure = True
+            elif challenge.expires_at <= utcnow() or challenge.attempt_count >= settings.otp_max_attempts:
+                challenge.consumed_at = utcnow()
+                failure = True
+            elif not secrets_match(challenge.code_hash, code, settings.secret_key):
+                challenge.attempt_count += 1
+                if challenge.attempt_count >= settings.otp_max_attempts:
+                    challenge.consumed_at = utcnow()
+                failure = True
+            else:
+                challenge.consumed_at = utcnow()
+                user.email_verified_at = utcnow()
+                user.updated_at = utcnow()
+                add_audit(security_db, actor_user_id=user.id, action="user.email_verified", entity_type="user", entity_id=user.id, metadata={})
+    if failure:
+        raise AppError(400, "invalid_verification_code", "The verification code is invalid or expired.")
 
 
 def authenticate(
@@ -207,6 +203,12 @@ def authenticate(
             "email_not_verified",
             "Verify the email address before signing in.",
         )
+    if _has_verified_second_factor(db, user):
+        # The password is correct but no session may exist yet: the login
+        # route stops at an MFA ticket. The "user.login" audit is written
+        # when the ticket is redeemed.
+        _load_profile(db, user)
+        return user, None
     raw = new_token()
     db.add(
         DbSession(
@@ -227,6 +229,54 @@ def authenticate(
     )
     _load_profile(db, user)
     return user, raw
+
+
+def _has_verified_second_factor(db: Session, user: User) -> bool:
+    from app.models.phase4e import MfaFactor
+
+    return (
+        db.scalar(
+            select(MfaFactor.id).where(
+                MfaFactor.user_id == user.id,
+                MfaFactor.kind == "totp",
+                MfaFactor.verified_at.is_not(None),
+                MfaFactor.revoked_at.is_(None),
+            )
+        )
+        is not None
+    )
+
+
+def create_session(
+    db: Session,
+    settings: Settings,
+    user: User,
+    *,
+    user_agent: str | None,
+    ip_address: str | None,
+    action: str = "user.login",
+    metadata: dict | None = None,
+) -> str:
+    raw = new_token()
+    db.add(
+        DbSession(
+            user_id=user.id,
+            token_hash=hash_secret(raw, settings.secret_key),
+            expires_at=expiry_from_now(hours=settings.session_ttl_hours),
+            user_agent=(user_agent or "")[:256] or None,
+            ip_address=(ip_address or "")[:64] or None,
+        )
+    )
+    add_audit(
+        db,
+        actor_user_id=user.id,
+        action=action,
+        entity_type="user",
+        entity_id=user.id,
+        metadata=metadata or {},
+    )
+    _load_profile(db, user)
+    return raw
 
 
 def _load_profile(db: Session, user: User) -> None:

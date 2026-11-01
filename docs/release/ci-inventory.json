@@ -1,0 +1,205 @@
+[
+  {
+    "conclusion": "success",
+    "databaseId": 41195733652,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "74f4734cc73212e235e7f256c2bd327634b3b5dd",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41195733652"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41195236250,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "cb748ca0335aa9b61eebe81909f923ac0f79301e",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41195236250"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41194831442,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "178affc81c50a61eab971416dfbe244403fff861",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41194831442"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41193947386,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "219918d618cb33b82488fc8afea08c76b0014716",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41193947386"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41193327252,
+    "headBranch": "test/qa-integration",
+    "headSha": "c83bd1150d07e26e9fc8769cc7ea52a9a49a016e",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41193327252"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41192556328,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "1c72ff12cb3c855f133edee19108be394387741b",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41192556328"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41192267010,
+    "headBranch": "test/qa-integration",
+    "headSha": "772c284c93b77d45419bab20edb1e18f9ba80c33",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41192267010"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41191101754,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "a8d23d36813e4eea5b7faadd4c5b19c4ca0a3424",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41191101754"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41190345977,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "a44b37e8944a98b0620aa17c3ab7669801332a8f",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41190345977"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41190081449,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "03d27c0c083fac993a7485122a9be9864477609c",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41190081449"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41189472643,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "48ca1653fbe105b52a83a89d575dd06a5fd3eb85",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41189472643"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41189100476,
+    "headBranch": "feature/phase3-warehouse-installation",
+    "headSha": "ae212b2cdfce755b69ec9a73df15f3907873bf0d",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41189100476"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41189023321,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "4343981168a018af740c755f394f9eebd3d9d278",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41189023321"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41188506372,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "1b6890fd306106cab83f7fa4f4c9915f4632bc99",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41188506372"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41187644598,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "4051b027ba9c59539b34d66542a3278b39f9e356",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41187644598"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41187401681,
+    "headBranch": "test/qa-integration",
+    "headSha": "7b0e80742e47c3b612e455a8839b138061760320",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41187401681"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41187055105,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "b1e1d137ddc561d2abf93881115c1d5132b7e1ae",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41187055105"
+  },
+  {
+    "conclusion": "failure",
+    "databaseId": 41186977094,
+    "headBranch": "feature/frontend-workplaces",
+    "headSha": "48fc7faef67b631719d39cb4c9bedf872e4d6e3e",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41186977094"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41184060240,
+    "headBranch": "main",
+    "headSha": "a95533838fd4413233ed69edf2ce671260ea8c3a",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41184060240"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41182752732,
+    "headBranch": "fix/phase2-quotation-integrity",
+    "headSha": "32cdc247a228a23f0e8d087914cb8f377d4acc6f",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41182752732"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41182749294,
+    "headBranch": "fix/phase2-quotation-integrity",
+    "headSha": "32cdc247a228a23f0e8d087914cb8f377d4acc6f",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41182749294"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41182086506,
+    "headBranch": "main",
+    "headSha": "8423f9b5bdf282c3b3f72289fd7cb60cb0cd5c9e",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41182086506"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41181921845,
+    "headBranch": "feature/backend-workflows",
+    "headSha": "b979ec6fa01974265faf0275f520b8fa41d33017",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41181921845"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41181918875,
+    "headBranch": "feature/backend-workflows",
+    "headSha": "b979ec6fa01974265faf0275f520b8fa41d33017",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41181918875"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41180008526,
+    "headBranch": "test/qa-integration",
+    "headSha": "81addc8539d69e5d39df3db545567c833350a87a",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41180008526"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41180006157,
+    "headBranch": "feature/backend-workflows",
+    "headSha": "81addc8539d69e5d39df3db545567c833350a87a",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41180006157"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41180003245,
+    "headBranch": "feature/frontend-workspaces",
+    "headSha": "81addc8539d69e5d39df3db545567c833350a87a",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41180003245"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41180000341,
+    "headBranch": "main",
+    "headSha": "81addc8539d69e5d39df3db545567c833350a87a",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41180000341"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41180000284,
+    "headBranch": "phase-1/foundation",
+    "headSha": "81addc8539d69e5d39df3db545567c833350a87a",
+    "url": "https://github.com/akilanpl/-Solar-Installation-Management-System/actions/runs/41180000284"
+  }
+]

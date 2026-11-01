@@ -1,17 +1,5 @@
 "use client";
-
-import { PlannedWorkspace } from "@/components/planned";
-
-export default function TechnicianPage() {
-  return (
-    <PlannedWorkspace
-      path="/technician"
-      title="Technician"
-      description="Jobs, arrival confirmation, and installation evidence are planned. No assignments are loaded because none exist yet."
-      sections={[
-        { title: "Assigned jobs", body: "When sales schedules a survey or installation, it will appear here from the database." },
-        { title: "Arrival and OTP", body: "Customer arrival verification is a planned contract, not a working screen." },
-      ]}
-    />
-  );
-}
+import { OperationsDashboard } from "@/components/recovery/operations";
+import { Workspace } from "@/components/workspace";
+import { Jobs } from "@/components/jobs";
+export default function Page() { return <Workspace path="/technician">{() => <><OperationsDashboard role="technician"/><div id="assigned-installation-jobs"><Jobs customer={false}/></div></>}</Workspace>; }

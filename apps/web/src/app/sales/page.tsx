@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { OperationsDashboard } from "@/components/recovery/operations";
 import { Workspace } from "@/components/workspace";
 import { EmptyState, ErrorState, LoadingState, PageHeader, StatusBadge } from "@/components/ui";
 import { api, type EnquiryList } from "@/lib/api";
@@ -11,7 +12,7 @@ import { formatCapacity, formatWhen, GRID_LABEL } from "@/lib/format";
 export default function SalesHome() {
   return (
     <Workspace path="/sales">
-      {() => <SalesQueue />}
+      {() => <><OperationsDashboard role="sales"/><SalesQueue /></>}
     </Workspace>
   );
 }
@@ -32,7 +33,7 @@ function SalesQueue() {
     <>
       <PageHeader
         title="Enquiries"
-        description="Sales can read every customer enquiry in the database and update qualification. Survey assignment and quotations are later phases."
+        description="Sales can read every customer enquiry in the database and update qualification. Open survey assignment, quotations and installation scheduling from the workspace dock."
       />
       {error ? <ErrorState message={error} onRetry={load} /> : null}
       {!data && !error ? <LoadingState label="Loading enquiries" /> : null}

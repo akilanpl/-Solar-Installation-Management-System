@@ -20,6 +20,7 @@ htmlcov/
 node_modules/
 apps/web/node_modules/
 apps/web/.next/
+apps/web/.next-qa/
 apps/web/out/
 apps/web/coverage/
 apps/web/test-results/
@@ -43,3 +44,12 @@ pgdata/
 dist/
 build/
 *.tsbuildinfo
+
+# Release gate evidence stays local; sanitized reports are in docs/release.
+.pushgate/reports/
+apps/web/.next-release-preview/
+
+# Local audit of explicitly approved review-only gate overrides
+.pushgate/bypass.log
+
+apps/web/.next-ultimate/

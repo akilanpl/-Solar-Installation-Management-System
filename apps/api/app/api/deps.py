@@ -28,7 +28,11 @@ def get_email_sender(request: Request):
 
 
 def client_ip(request: Request) -> str:
-    forwarded = request.headers.get("x-forwarded-for")
+    # Arbitrary clients can set forwarding headers. Trust only explicitly
+    # configured proxies which sanitize those headers before forwarding.
+    peer = request.client.host if request.client else "unknown"
+    trusted = request.app.state.settings.trusted_proxy_ips.split(",")
+    forwarded = request.headers.get("x-forwarded-for") if peer in trusted else None
     if forwarded:
         return forwarded.split(",")[0].strip()[:64]
     if request.client is None:
@@ -60,7 +64,7 @@ def issue_csrf() -> str:
 
 def current_user(
     request: Request,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     settings: Settings = Depends(get_settings),
 ) -> User:
     return user_from_session_token(db, settings, request.cookies.get(SESSION_COOKIE))

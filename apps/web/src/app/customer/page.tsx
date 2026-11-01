@@ -3,20 +3,21 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { CustomerRecoveryDashboard } from "@/components/recovery/customer-dashboard";
 import { Workspace } from "@/components/workspace";
 import { EmptyState, ErrorState, LoadingState, PageHeader, StatusBadge } from "@/components/ui";
-import { api, type CurrentUser, type EnquiryList } from "@/lib/api";
+import { api, type EnquiryList } from "@/lib/api";
 import { formatCapacity, formatInrFromPaise, formatWhen, GRID_LABEL } from "@/lib/format";
 
 export default function CustomerHome() {
   return (
     <Workspace path="/customer">
-      {(user) => <CustomerDashboard user={user} />}
+      {() => <CustomerDashboard />}
     </Workspace>
   );
 }
 
-function CustomerDashboard({ user }: { user: CurrentUser }) {
+function CustomerDashboard() {
   const [data, setData] = useState<EnquiryList | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,9 +32,11 @@ function CustomerDashboard({ user }: { user: CurrentUser }) {
 
   return (
     <>
+      <CustomerRecoveryDashboard />
+      <section className="customer-enquiry-records">
       <PageHeader
-        title={`Hello, ${user.full_name}`}
-        description="This list is loaded from PostgreSQL. Quotations, payments, and warranties are not available yet."
+        title="Your enquiries"
+        description="Track your enquiries here. Issued quotations and recorded payment requirements are available from the workspace menu."
         action={
           <Link href="/customer/enquiries/new" className="rounded-md bg-moss-700 px-4 py-2 text-sm font-semibold text-white">
             New enquiry
@@ -87,6 +90,7 @@ function CustomerDashboard({ user }: { user: CurrentUser }) {
           </table>
         </div>
       ) : null}
+      </section>
     </>
   );
 }

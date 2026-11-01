@@ -1,5 +1,4 @@
 "use client";
-import { PlannedRoute } from "@/components/planned-route";
-export default function Page() {
-  return <PlannedRoute path="/customer/quotations" kind="quotations" />;
-}
+import { Workspace } from "@/components/workspace";
+import { Quotations } from "@/components/quotations";
+export default function Page() { return <Workspace path="/customer/quotations">{() => <Quotations customer={true} />}</Workspace>; }

@@ -1,3 +1,4 @@
+import { decimalRupeesToPaise } from "./format";
 import { describe, expect, it } from "vitest";
 
 import { formatCapacity, formatInrFromPaise, rupeesToPaise } from "./format";
@@ -17,5 +18,15 @@ describe("money and capacity formatting", () => {
 
   it("shows capacity in kilowatts", () => {
     expect(formatCapacity(3000)).toBe("3 kW");
+  });
+});
+
+
+describe("decimal INR receipt amounts", () => {
+  it.each([["0",0],["0.01",1],["12.3",1230],["12.34",1234],["1000000",100000000]])("converts %s exactly", (input, expected) => {
+    expect(decimalRupeesToPaise(String(input))).toBe(expected);
+  });
+  it.each(["-1","NaN","1.001","1e3","1000000.01",""])("rejects %s", input => {
+    expect(decimalRupeesToPaise(input)).toBeNull();
   });
 });

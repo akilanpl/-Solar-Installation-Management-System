@@ -25,7 +25,7 @@ def create_enquiry(
     payload: EnquiryCreate,
     response: Response,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> EnquiryDetail:
     try:
@@ -40,7 +40,7 @@ def create_enquiry(
 @router.get("", response_model=EnquiryList)
 def list_enquiries(
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
 ) -> EnquiryList:
@@ -57,7 +57,7 @@ def list_enquiries(
 def read_enquiry(
     enquiry_id: UUID,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> EnquiryDetail:
     return detail_from(enquiry_service.get_visible_enquiry(db, user, enquiry_id))
 
@@ -67,6 +67,6 @@ def qualify_enquiry(
     enquiry_id: UUID,
     payload: QualificationUpdate,
     user: User = Depends(current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db, scope="function"),
 ) -> EnquiryDetail:
     return detail_from(enquiry_service.qualify_enquiry(db, user, enquiry_id, payload))

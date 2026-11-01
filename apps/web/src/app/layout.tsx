@@ -1,6 +1,19 @@
 import type { Metadata } from "next";
 
 import "./globals.css";
+import "@/styles/teammate-tokens.css";
+import "@/styles/teammate-auth.css";
+import "@/styles/teammate-shell.css";
+import "@/styles/teammate-dock.css";
+import "@/styles/teammate-header.css";
+import "@/styles/teammate-dashboard.css";
+import "@/styles/teammate-records.css";
+import "@/styles/teammate-transaction.css";
+import "@/styles/teammate-receipt.css";
+import "@/styles/teammate-surveys.css";
+import "@/styles/integration.css";
+import "@/components/recovery/shell-recovery.css";
+import { PreviewIdentity } from "@/components/recovery/preview-identity";
 
 export const metadata: Metadata = {
   title: "SolarOps",
@@ -18,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <div id="content">{children}</div>
+        <PreviewIdentity/>
       </body>
     </html>
   );

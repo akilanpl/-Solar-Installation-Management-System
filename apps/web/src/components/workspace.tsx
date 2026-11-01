@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { AccessDenied, ErrorState, LoadingState } from "@/components/ui";
+import { DashboardOverview } from "@/components/dashboard-overview";
 import { AppShell } from "@/components/shell";
 import { api, ApiError, type CurrentUser } from "@/lib/api";
 import { canAccessPath, homeForRole, isRole } from "@/lib/access";
@@ -43,5 +44,5 @@ export function Workspace({
     const home = isRole(user.role) ? homeForRole(user.role) : "/login";
     return <AccessDenied home={home} />;
   }
-  return <AppShell user={user}>{children(user)}</AppShell>;
+  return <AppShell user={user}>{["/customer", "/sales", "/technician", "/warehouse", "/support", "/admin"].includes(path) && <DashboardOverview user={user} />}{children(user)}</AppShell>;
 }

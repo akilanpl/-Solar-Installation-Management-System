@@ -1,0 +1,1031 @@
+{
+  "sha": "ffae1ecf63d8d99b71f6a3d02ee6f531e275c253",
+  "seed": 20261031,
+  "duration_seconds": 47.07,
+  "tests": [
+    {
+      "id": "lint-api",
+      "family": "S02",
+      "sev": "P1",
+      "status": "pass"
+    },
+    {
+      "id": "test_valid_signup",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_duplicate_email_rejected",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_registration_rejected",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_unverified_account_cannot_login",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_otp_fails",
+      "family": "Z01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_expired_and_reused_otp_fail",
+      "family": "Z01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_login_sets_session_and_logout_revokes_it",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_incorrect_credentials_do_not_authenticate",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_intended_role_does_not_grant_admin",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_missing_csrf_rejected",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_dev_mailbox_hidden_in_test_env",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_non_sales_staff_cannot_access_enquiries[technician]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_non_sales_staff_cannot_access_enquiries[support]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_non_sales_staff_cannot_access_enquiries[warehouse_staff]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_non_sales_staff_cannot_access_enquiries[warehouse_manager]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_constraint_failure_rolls_back_without_damaging_saved_enquiry[monthly_bill_minor--1]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_constraint_failure_rolls_back_without_damaging_saved_enquiry[preferred_capacity_w-1500]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_constraint_failure_rolls_back_without_damaging_saved_enquiry[status-invented]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_constraint_failure_rolls_back_without_damaging_saved_enquiry[site_id-value3]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_logout_revokes_captured_cookie_not_just_browser_cookie",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_auth_endpoint_rate_limits[login-body0-login_ip_limit]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_auth_endpoint_rate_limits[verify-email-body1-otp_attempt_limit]",
+      "family": "Z01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_valid_enquiry_persists",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_enquiry_rejected",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_duplicate_submission_is_idempotent",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_customer_cannot_read_another_customers_enquiry",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_sales_can_read_and_qualify_and_invalid_transition_fails",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_customer_cannot_open_staff_qualification",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_malformed_uuid_and_unknown_route_errors",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_packages_come_from_database",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_health_does_not_require_a_database_session_cookie",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_ready_checks_database",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_ready_reports_database_outage",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_expected_phase1_tables_exist",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_no_live_weather_or_payment_provider",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_code_is_not_in_staff_responses_and_is_keyed_and_bound",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_rejected_attempt_commits_only_security_state",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_simultaneous_otp_consumption_succeeds_once",
+      "family": "Z01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_uploads_reject_content_without_metadata[]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_uploads_reject_content_without_metadata[not an image]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_uploads_reject_content_without_metadata[\\x89PNG\\r\\n\\x1a\\nfake]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_uploads_reject_content_without_metadata[%PDF-1.7 fake]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_upload_size_and_customer_authorization",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_upload_custody_hash_and_foreign_customer_denial",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_arbitrary_photo_reference_rejected",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_work_measurements_rejected[patch0]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_work_measurements_rejected[patch1]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_work_measurements_rejected[patch2]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_work_measurements_rejected[patch3]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_work_measurements_rejected[patch4]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_work_measurements_rejected[patch5]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_technician_cannot_sign_and_customer_cannot_replay_or_change_summary",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_modified_stored_file_rejected_before_download_and_completion",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_email_rejected_attempt_does_not_commit_pending_business_changes",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_evidence_cannot_be_reused_on_another_job",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_only_customer_can_reissue_code_and_old_code_is_revoked",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_unqualified_enquiry_cannot_be_surveyed",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_qualification_requires_roof_and_grid",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_only_assigned_technician_submits_and_bad_measurements_fail",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_rejected_survey_cannot_be_quoted_and_resurvey_keeps_history",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_approved_survey_quotes_exact_bom_and_total",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_revision_history_acceptance_and_foreign_customer",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_unverified_payment_blocks_order_and_sandbox_is_test_only",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_cash_receipt_is_not_a_sandbox_payment",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_downstream_qualification_does_not_rewrite_survey",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_expired_and_withdrawn_quotations_cannot_be_accepted",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_failed_order_transaction_rolls_back",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_concurrent_acceptance_and_order_confirmation",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_evidence_upload_and_role_guards",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_migrated_schema_matches_current_sqlalchemy_metadata",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_phase3_round_trip_keeps_existing_phase1_record",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_phase3_anonymous_reads_require_authentication[/stock]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_phase3_anonymous_reads_require_authentication[/stock/reservations]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_phase3_anonymous_reads_require_authentication[/deliveries]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_phase3_anonymous_reads_require_authentication[/jobs]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_phase3_mutations_enforce_csrf_before_business_operations[/stock/operations]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_phase3_mutations_enforce_csrf_before_business_operations[/serials/scan]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_phase3_mutations_enforce_csrf_before_business_operations[/deliveries]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_phase3_mutations_enforce_csrf_before_business_operations[/jobs]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_stock_creation_rolls_back_header_lines_and_ledger[patch0-400]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_stock_creation_rolls_back_header_lines_and_ledger[patch1-400]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_stock_creation_rolls_back_header_lines_and_ledger[patch2-400]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_stock_creation_rolls_back_header_lines_and_ledger[patch3-400]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_stock_creation_rolls_back_header_lines_and_ledger[patch4-400]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_stock_mass_assignment_and_bad_uuid_are_rejected",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_replenishment_suggestion_uses_ledger_minus_reserved_without_writes",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_delivery_retry_replays_without_second_pick_and_changed_body_conflicts",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_foreign_customer_cannot_read_or_list_job_and_job_get_does_not_repeat_code",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_delivery_and_warranty_are_hidden_from_a_different_customer",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_customer_otp_wrong_attempts_persist_and_lock_after_five",
+      "family": "Z01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_inactive_technician_cannot_be_assigned_to_a_new_job",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_completion_requires_recorded_arrival_even_after_otp_evidence_and_signature",
+      "family": "Z01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_stock_receipt_validates_and_reports_on_hand",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_draft_operation_cannot_validate_and_double_validate_fails",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_failed_transfer_and_delivery_leave_ledger_unchanged",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_concurrent_validation_has_a_single_winner",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_confirmed_order_creates_reservations",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_serial_scan_is_unique_and_rejects_done_operations",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_replenishment_staff_cannot_approve",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_delivery_confirm_activates_warranty_and_blocks_replay",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_picking_without_stock_fails",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_job_completion_requires_otp_evidence_and_signature",
+      "family": "Z01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_customer_cannot_touch_warehouse_and_scheduling_guards",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_cross_phase_order_to_completed_installation",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_competing_orders_cannot_pick_the_same_stock",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_duplicate_delivery_confirmation_fails",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_site_stock_must_transfer_to_main_before_pick",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_serial_assign_install_and_mismatch",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_foreign_technician_cannot_touch_assigned_job",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_expired_and_reused_customer_otp_fail",
+      "family": "Z01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_warranty_void_guards_and_failed_pick_creates_nothing",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_delivery_cancel_restocks_main",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_concurrent_picks_serialize_on_component_locks",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_tax_rounds_half_up",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_discount_above_ten_percent_is_rejected",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_cable_adjustment_is_explicit",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_off_grid_template_includes_battery_and_controller",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_a_second_open_quotation_is_rejected",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_concurrent_quotation_creation_keeps_one",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_verified_payment_follows_a_revision_without_a_second_charge",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_concurrent_full_payments_cannot_both_verify",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_withdrawn_quotation_can_be_replaced",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_liveness_and_docs_without_database",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_openapi_matches_checked_in_contract",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_anonymous_reads_rejected_without_database[/api/v1/auth/me]",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_anonymous_reads_rejected_without_database[/api/v1/enquiries]",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_anonymous_reads_rejected_without_database[/api/v1/admin/employees]",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_csrf_boundary_precedes_database_access[missing]",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_csrf_boundary_precedes_database_access[mismatch]",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_csrf_boundary_precedes_database_access[untrusted_origin]",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_signup_never_reaches_database[missing-fields]",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_signup_never_reaches_database[invalid-values]",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_invalid_signup_never_reaches_database[role-mass-assignment]",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_readiness_reports_real_connection_failure",
+      "family": "A01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_unexpected_exception_returns_safe_error",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_mailbox_hidden_in_test",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_unknown_route_and_unsupported_method[get-/api/v1/not-a-route-404]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_unknown_route_and_unsupported_method[delete-/api/v1/health-405]",
+      "family": "A01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_missing_required_configuration_is_controlled",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_database_guard_rejects_non_test_names[solarops]",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_database_guard_rejects_non_test_names[solarops_dev]",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_database_guard_rejects_non_test_names[production]",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_database_guard_rejects_non_test_names[solarops_test_copy]",
+      "family": "D01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_production_rejects_insecure_config[changes0]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_production_rejects_insecure_config[changes1]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_production_rejects_insecure_config[changes2]",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "test_forwarded_ip_requires_explicit_trusted_proxy",
+      "family": "B03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "access > sends each role to its own workspace",
+      "family": "F01",
+      "sev": "P1",
+      "status": "pass"
+    },
+    {
+      "id": "access > does not let a customer open staff workspaces",
+      "family": "F01",
+      "sev": "P1",
+      "status": "pass"
+    },
+    {
+      "id": "access > ignores a requested admin path for a customer",
+      "family": "F01",
+      "sev": "P1",
+      "status": "pass"
+    },
+    {
+      "id": "access > rejects open redirects",
+      "family": "F01",
+      "sev": "P1",
+      "status": "pass"
+    },
+    {
+      "id": "money and capacity formatting > converts whole rupees to integer paise",
+      "family": "F01",
+      "sev": "P1",
+      "status": "pass"
+    },
+    {
+      "id": "money and capacity formatting > formats paise without binary floating point",
+      "family": "F01",
+      "sev": "P1",
+      "status": "pass"
+    },
+    {
+      "id": "money and capacity formatting > shows capacity in kilowatts",
+      "family": "F01",
+      "sev": "P1",
+      "status": "pass"
+    },
+    {
+      "id": "typecheck",
+      "family": "S03",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "lint-web",
+      "family": "S02",
+      "sev": "P1",
+      "status": "pass"
+    },
+    {
+      "id": "build",
+      "family": "S01",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "dependency-audit",
+      "family": "S06",
+      "sev": "P0",
+      "status": "pass"
+    },
+    {
+      "id": "mandatory-D-campaign",
+      "family": "D00",
+      "sev": "P0",
+      "status": "notrun"
+    },
+    {
+      "id": "mandatory-E-campaign",
+      "family": "E00",
+      "sev": "P0",
+      "status": "notrun"
+    },
+    {
+      "id": "mandatory-X-campaign",
+      "family": "X00",
+      "sev": "P0",
+      "status": "notrun"
+    },
+    {
+      "id": "mandatory-V-campaign",
+      "family": "V00",
+      "sev": "P0",
+      "status": "notrun"
+    },
+    {
+      "id": "mandatory-Z-campaign",
+      "family": "Z00",
+      "sev": "P0",
+      "status": "notrun"
+    },
+    {
+      "id": "mandatory-P-campaign",
+      "family": "P00",
+      "sev": "P0",
+      "status": "notrun"
+    },
+    {
+      "id": "mandatory-R-campaign",
+      "family": "R00",
+      "sev": "P0",
+      "status": "notrun"
+    },
+    {
+      "id": "mandatory-C-campaign",
+      "family": "C00",
+      "sev": "P0",
+      "status": "notrun"
+    },
+    {
+      "id": "mandatory-Y-campaign",
+      "family": "Y00",
+      "sev": "P0",
+      "status": "notrun"
+    },
+    {
+      "id": "mandatory-O-campaign",
+      "family": "O00",
+      "sev": "P0",
+      "status": "notrun"
+    }
+  ],
+  "missing_evidence": [
+    "Full customer-to-warranty browser journey",
+    "Load, resilience and accessibility campaign",
+    "Mutation, diff and branch coverage",
+    "Secret scan of all outgoing commits",
+    "Main baseline ratchet and two-order CI run",
+    "Phase 3 partial delivery/returns/procurement/scheduling/serial warranty requirements"
+  ],
+  "score": 55.4,
+  "decision": "INCOMPLETE"
+}

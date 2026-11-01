@@ -42,14 +42,19 @@ async function ensureCsrf(): Promise<string> {
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
   headers.set("Accept", "application/json");
-  if (init.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+  if (init.body && !(init.body instanceof FormData) && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
   const method = (init.method ?? "GET").toUpperCase();
   if (method !== "GET" && method !== "HEAD") {
     headers.set("X-CSRF-Token", await ensureCsrf());
   }
-  const response = await fetch(path, { ...init, headers, credentials: "include" });
+  let response: Response;
+  try { response = await fetch(path, { ...init, headers, credentials: "include" }); }
+  catch { throw new ApiError(0, "network_unavailable", "Cannot connect to SolarOps. Check your connection and try again."); }
   if (response.status === 204) return undefined as T;
-  const payload = (await response.json()) as T & {
+  let decoded: unknown;
+  try { decoded = await response.json(); }
+  catch { throw new ApiError(response.status, "invalid_response", "SolarOps returned an unavailable or invalid response. Please try again."); }
+  const payload = decoded as T & {
     error?: { code: string; message: string; details?: ApiError["details"] };
   };
   if (!response.ok) {

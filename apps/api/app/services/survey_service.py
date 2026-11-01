@@ -52,9 +52,7 @@ def get_survey(db: Session, user: User, survey_id: uuid.UUID) -> Survey:
     return _visible(user, survey)
 
 
-def list_surveys(
-    db: Session, user: User, *, page: int, page_size: int
-) -> tuple[list[Survey], int]:
+def list_surveys(db: Session, user: User, *, page: int, page_size: int) -> tuple[list[Survey], int]:
     query = select(Survey).options(selectinload(Survey.history), selectinload(Survey.evidence))
     count_query = select(func.count()).select_from(Survey)
     if user.role_code == "customer":
@@ -160,11 +158,15 @@ def create_survey(db: Session, user: User, enquiry_id: uuid.UUID) -> Survey:
 
 
 def _next_revision(db: Session, enquiry_id: uuid.UUID) -> int:
-    current = db.scalar(select(func.max(Survey.revision_number)).where(Survey.enquiry_id == enquiry_id))
+    current = db.scalar(
+        select(func.max(Survey.revision_number)).where(Survey.enquiry_id == enquiry_id)
+    )
     return int(current or 0) + 1
 
 
-def assign_survey(db: Session, user: User, survey_id: uuid.UUID, payload: SurveyAssignment) -> Survey:
+def assign_survey(
+    db: Session, user: User, survey_id: uuid.UUID, payload: SurveyAssignment
+) -> Survey:
     if user.role_code not in SALES:
         raise AppError(403, "forbidden", "Only sales can assign a survey.")
     survey = _load(db, survey_id)
@@ -175,6 +177,20 @@ def assign_survey(db: Session, user: User, survey_id: uuid.UUID, payload: Survey
     technician = db.get(User, payload.technician_user_id)
     if technician is None or technician.role_code != "technician" or not technician.is_active:
         raise AppError(422, "validation_error", "Choose an active technician.")
+    from app.models.scheduling import TechnicianAppointment
+
+    if payload.appointment_starts_at is not None or db.scalar(
+        select(TechnicianAppointment.id)
+        .where(
+            TechnicianAppointment.survey_id == survey.id, TechnicianAppointment.status == "booked"
+        )
+        .limit(1)
+    ):
+        raise AppError(
+            409,
+            "use_calendar_booking",
+            "Use the calendar with an explicit start/end interval to book or reschedule this survey.",
+        )
     survey.assigned_technician_user_id = technician.id
     if payload.appointment_starts_at is None:
         survey.appointment_status = "pending"
@@ -359,4 +375,3 @@ def approved_survey_exists(db: Session, enquiry_id: uuid.UUID) -> bool:
         select(Survey.id).where(Survey.enquiry_id == enquiry_id, Survey.status == "approved")
     )
     return found is not None
-

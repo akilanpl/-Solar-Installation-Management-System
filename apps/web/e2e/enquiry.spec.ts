@@ -9,9 +9,12 @@ test("customer enquiry persists and sales can qualify it", async ({ page, browse
   await page.getByLabel("Password").fill("Solarops123");
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page.getByRole("heading", { name: "Verify your email" })).toBeVisible();
+  await page.waitForLoadState("load");
   await page.getByRole("button", { name: "Load code from local mailbox" }).click();
+  await expect(page.getByText("Loaded the code from the local development mailbox. This button is not available in production.", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Verify email" }).click();
   await expect(page.getByRole("heading", { name: "Sign in to SolarOps" })).toBeVisible();
+  await page.waitForLoadState("load");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill("Solarops123");
   await page.getByRole("button", { name: "Sign in" }).click();
@@ -19,8 +22,8 @@ test("customer enquiry persists and sales can qualify it", async ({ page, browse
   await page.getByRole("link", { name: "New enquiry" }).first().click();
   await page.getByLabel("Estimated monthly electricity bill (₹)").fill("4500");
   await page.getByLabel("Site address").fill("12 Lake View Road");
-  await page.getByLabel("City").fill("Hyderabad");
-  await page.getByLabel("State").fill("Telangana");
+  await page.getByLabel("City", { exact: true }).fill("Hyderabad");
+  await page.getByLabel("State", { exact: true }).fill("Telangana");
   await page.getByLabel("PIN code").fill("500081");
   await page.getByRole("button", { name: "Submit enquiry" }).click();
   await expect(page.getByRole("heading", { name: /ENQ-/ })).toBeVisible();
@@ -40,7 +43,7 @@ test("customer enquiry persists and sales can qualify it", async ({ page, browse
   await sales.getByRole("link", { name: reference }).click();
   await sales.getByRole("button", { name: "Update status" }).click();
   await sales.getByRole("button", { name: "Save status" }).click();
-  await expect(sales.getByText("Under review")).toBeVisible();
+  await expect(sales.getByText("Under review", { exact: true })).toBeVisible();
 
   await page.goto("/customer");
   await expect(page.getByText("Under review")).toBeVisible();

@@ -1,4 +1,6 @@
-import type { ComponentProps } from "react";
+"use client";
+
+import { useId, type ComponentProps } from "react";
 
 export function Button({
   variant = "primary",
@@ -26,7 +28,8 @@ export function TextField({
   id,
   ...props
 }: ComponentProps<"input"> & { label: string; error?: string; hint?: string }) {
-  const fieldId = id ?? props.name;
+  const generatedId = useId();
+  const fieldId = id ?? generatedId;
   return (
     <label className="block text-sm" htmlFor={fieldId}>
       <span className="font-medium text-ink">{label}</span>
@@ -58,25 +61,27 @@ export function SelectField({
   children,
   ...props
 }: ComponentProps<"select"> & { label: string; error?: string }) {
-  const fieldId = id ?? props.name;
+  const generatedId = useId();
+  const fieldId = id ?? generatedId;
   return (
     <label className="block text-sm" htmlFor={fieldId}>
       <span className="font-medium text-ink">{label}</span>
       <select
         id={fieldId}
         aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${fieldId}-error` : undefined}
         className="mt-1 w-full rounded-md border border-moss-200 bg-white px-3 py-2"
         {...props}
       >
         {children}
       </select>
-      {error ? <span className="mt-1 block text-xs text-clay-700">{error}</span> : null}
+      {error ? <span id={`${fieldId}-error`} className="mt-1 block text-xs text-clay-700">{error}</span> : null}
     </label>
   );
 }
 
 export function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <section className={`rounded-xl bg-white p-5 shadow-card ${className}`}>{children}</section>;
+  return <section className={`card ${className}`}>{children}</section>;
 }
 
 export function PageHeader({
@@ -131,9 +136,9 @@ export function LoadingState({ label = "Loading" }: { label?: string }) {
 
 export function EmptyState({ title, body, action }: { title: string; body: string; action?: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-dashed border-moss-200 bg-white p-8">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      <p className="mt-2 max-w-xl text-sm text-moss-900/80">{body}</p>
+    <div className="empty-state-card">
+      <h2 className="empty-state-title">{title}</h2>
+      <p className="empty-state-body">{body}</p>
       {action ? <div className="mt-4">{action}</div> : null}
     </div>
   );

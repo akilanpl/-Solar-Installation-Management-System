@@ -1,0 +1,78 @@
+
+> solarops-web@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.28
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 2.5s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/42) ...
+   Generating static pages (10/42)
+   Generating static pages (20/42)
+   Generating static pages (31/42)
+ ✓ Generating static pages (42/42)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    2.79 kB         106 kB
+├ ○ /_not-found                             1 kB         104 kB
+├ ○ /admin                               1.57 kB         112 kB
+├ ○ /admin/pricing                         290 B         118 kB
+├ ○ /admin/reports                         132 B         115 kB
+├ ƒ /api/[...path]                         124 B         103 kB
+├ ○ /customer                            1.52 kB         112 kB
+├ ○ /customer/bills                        288 B         118 kB
+├ ƒ /customer/bills/[id]                   321 B         118 kB
+├ ○ /customer/complaints                   290 B         117 kB
+├ ƒ /customer/complaints/[id]              327 B         117 kB
+├ ƒ /customer/enquiries/[id]              1.5 kB         112 kB
+├ ○ /customer/enquiries/new              2.02 kB         112 kB
+├ ○ /customer/equipment                    293 B         118 kB
+├ ○ /customer/estimates                    292 B         118 kB
+├ ƒ /customer/estimates/[id]               320 B         118 kB
+├ ○ /customer/installations              2.46 kB         113 kB
+├ ○ /customer/payments                   2.07 kB         112 kB
+├ ○ /customer/quotations                 2.06 kB         112 kB
+├ ○ /customer/replacements                 298 B         118 kB
+├ ○ /customer/subsidies                    133 B         115 kB
+├ ○ /customer/support                      336 B         103 kB
+├ ○ /icon.svg                                0 B            0 B
+├ ○ /login                               3.75 kB         110 kB
+├ ○ /sales                               1.42 kB         112 kB
+├ ƒ /sales/enquiries/[id]                1.83 kB         112 kB
+├ ○ /sales/quotations                    2.06 kB         112 kB
+├ ○ /sales/subsidies                       133 B         115 kB
+├ ○ /sales/surveys                         960 B         111 kB
+├ ○ /signup                              3.25 kB         109 kB
+├ ○ /support                               280 B         117 kB
+├ ○ /support/billing                       291 B         118 kB
+├ ○ /support/estimates                     290 B         118 kB
+├ ƒ /support/estimates/[id]                322 B         118 kB
+├ ○ /support/lookup                        955 B         111 kB
+├ ○ /support/replacements                  290 B         118 kB
+├ ƒ /support/replacements/[id]             323 B         118 kB
+├ ƒ /support/tickets/[id]                  323 B         117 kB
+├ ○ /support/warranty                      291 B         118 kB
+├ ○ /technician                          2.46 kB         113 kB
+├ ○ /technician/install                    393 B         118 kB
+├ ○ /technician/labour                     132 B         115 kB
+├ ○ /technician/repairs                    286 B         117 kB
+├ ƒ /technician/repairs/[id]               326 B         117 kB
+├ ○ /technician/surveys                    962 B         111 kB
+├ ○ /verify-email                        3.37 kB         109 kB
+├ ○ /warehouse                             716 B         111 kB
+├ ○ /warehouse/approvals                   958 B         111 kB
+├ ○ /warehouse/picking                     958 B         111 kB
+├ ○ /warehouse/replacements                299 B         118 kB
+└ ƒ /warehouse/replacements/[id]           331 B         118 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/1255-dc3ddf72a1dc71a7.js      46.6 kB
+  ├ chunks/4bd1b696-f785427dddbba9fb.js  54.2 kB
+  └ other shared chunks (total)          1.92 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

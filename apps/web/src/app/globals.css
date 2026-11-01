@@ -16,3 +16,110 @@ body {
   outline: 2px solid #0f6e56;
   outline-offset: 2px;
 }
+
+/* Adapted from ashwin-hue, origin/feature/frontend-workplaces @ 178affc; see release audit. */
+/* Card Component Styles - Harmonized with Dashboard UI Theme */
+.card {
+  background: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 20px;
+  padding: 24px;
+  color: #111827;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.card-elevated {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 10px 30px rgba(100, 116, 139, 0.08);
+}
+
+.card-interactive {
+  cursor: pointer;
+}
+
+.card-interactive:hover {
+  border-color: #5b5fc7;
+  box-shadow: 0 8px 24px rgba(91, 95, 199, 0.12);
+  transform: translateY(-2px);
+}
+
+.card-accent-violet {
+  border-top: 3px solid #5b5fc7;
+}
+
+.card-accent-lime {
+  border-top: 3px solid #10b981;
+}
+
+.card-header {
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.card-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 4px;
+  line-height: 1.45;
+}
+
+/* EmptyState Component Styles - Harmonized with Dashboard UI Theme */
+.empty-state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+  background: #ffffff;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 20px;
+  margin: 20px 0;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+  box-sizing: border-box;
+}
+
+.empty-state-icon-box {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5b5fc7;
+  margin-bottom: 16px;
+}
+
+.empty-state-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 6px;
+  letter-spacing: -0.2px;
+}
+
+.empty-state-body {
+  font-size: 13.5px;
+  color: #64748b;
+  max-width: 420px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.empty-state-action {
+  margin-top: 4px;
+}

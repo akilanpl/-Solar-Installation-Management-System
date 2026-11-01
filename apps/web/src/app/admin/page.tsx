@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import {ExecutiveAnalytics} from "@/components/recovery/operations";
+import {CalendarAdministration} from "@/components/calendar-board";
 import { Workspace } from "@/components/workspace";
 import { Button, Card, EmptyState, ErrorState, LoadingState, PageHeader, SelectField, TextField } from "@/components/ui";
 import { api, ApiError, type EmployeeCreate, type EmployeeResponse } from "@/lib/api";
@@ -9,7 +11,7 @@ import { api, ApiError, type EmployeeCreate, type EmployeeResponse } from "@/lib
 export default function AdminHome() {
   return (
     <Workspace path="/admin">
-      {() => <Employees />}
+      {() => <><ExecutiveAnalytics/><Employees /></>}
     </Workspace>
   );
 }
@@ -29,7 +31,8 @@ function Employees() {
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const payload: EmployeeCreate = {
       full_name: String(form.get("full_name")),
       email: String(form.get("email")),
@@ -42,7 +45,7 @@ function Employees() {
     setError(null);
     try {
       await api("/api/v1/admin/employees", { method: "POST", body: JSON.stringify(payload) });
-      event.currentTarget.reset();
+      formElement.reset();
       load();
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : "The employee was not created.");
@@ -55,7 +58,7 @@ function Employees() {
     <>
       <PageHeader
         title="Employees"
-        description="Staff accounts come from the database. Revenue, labour, and report figures are not implemented, so this page does not show them."
+        description="Manage staff accounts here. Open Finance & reports for revenue, cash, labour and job profitability."
       />
       {error ? <div className="mb-4"><ErrorState message={error} /></div> : null}
       {!rows ? <LoadingState label="Loading employees" /> : null}
@@ -84,12 +87,12 @@ function Employees() {
           </table>
         </div>
       ) : null}
-      <Card className="mt-6">
+      <div id="employee-roster"><Card className="mt-6">
         <h2 className="font-semibold">Provision an employee</h2>
         <p className="mt-1 text-sm text-moss-900/80">
           The new account is marked verified because the company checked identity outside this form. Customers cannot use this action.
         </p>
-        <form className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={onSubmit}>
+        <form autoComplete="off" className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={onSubmit}>
           <TextField label="Full name" name="full_name" required />
           <TextField label="Email" name="email" type="email" required />
           <TextField label="Mobile" name="phone" required />
@@ -102,12 +105,13 @@ function Employees() {
             <option value="support">Support</option>
             <option value="admin">Admin</option>
           </SelectField>
-          <TextField label="Temporary password" name="password" type="password" required />
+          <TextField label="Temporary password" name="password" type="password" autoComplete="new-password" required />
           <div className="md:col-span-2">
             <Button type="submit" disabled={pending}>{pending ? "Saving…" : "Create employee"}</Button>
           </div>
         </form>
-      </Card>
+      </Card></div>
+      <CalendarAdministration/>
     </>
   );
 }

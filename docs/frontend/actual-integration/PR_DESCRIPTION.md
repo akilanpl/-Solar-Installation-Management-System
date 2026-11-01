@@ -1,0 +1,9 @@
+The local app still served the old Next.js auth pages while the redesigned frontend lived on an unrelated Vite branch. Port the teammate's genuine hero/video, typography, dock, shared dashboard styles and latest payment-card presentation into the canonical Next.js app, retaining server-side authentication, CSRF and PostgreSQL records.
+
+Remove mock personas/local-storage auth and simulated Google/Razorpay success. Connect role workflows to actual APIs, including missing qualification inputs and scoped read models. Preserve explicit unavailable states for providers and Phase 4.
+
+Validation: 159 backend tests and 27 frontend tests pass; typecheck, lint, generated contracts, frozen dependency installation and optimized build pass. App-browser verification covers all six logins, signup/email verification, enquiry/qualification persistence, survey assignment, a clearly isolated stock fixture, role isolation, logout and forced preview-session expiry. Signup/login screenshots cover all four requested viewports with no horizontal overflow.
+
+This is a review-only integration PR, not a main release. The inherited comprehensive release gate remains INCOMPLETE at 55.4/100 because full lifecycle, performance/resilience, coverage/mutation and unfinished Phase 3 requirements remain. No live payment, payout or physical goods event occurred. See REPORT.md and evidence for exact limits; do not merge to main while these gates remain open.
+
+Publication override: on 2026-10-31 the user explicitly approved “Publish draft PR with documented gate override.” The incomplete 55.4/100 release result is retained. A mandatory-reason pre-push override records each branch SHA/ref locally and refuses protected targets, tags and deletions. Normal pushes and CI continue enforcing the existing gate. This approval permits draft review publication only; it does not authorize a main merge or production release.
