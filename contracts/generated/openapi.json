@@ -219,6 +219,9 @@
               }
             }
           },
+          "202": {
+            "description": "Second factor required; redeem the ticket."
+          },
           "422": {
             "description": "Validation Error",
             "content": {
@@ -260,6 +263,1201 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/passkeys/registration/options": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Passkey Registration Options",
+        "operationId": "passkey_registration_options_api_v1_auth_passkeys_registration_options_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PasskeyOptionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/passkeys/registration/verify": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Passkey Registration Verify",
+        "operationId": "passkey_registration_verify_api_v1_auth_passkeys_registration_verify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasskeyVerifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PasskeyCredentialResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/passkeys": {
+      "get": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "List Passkeys",
+        "operationId": "list_passkeys_api_v1_auth_passkeys_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PasskeyCredentialResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Passkeys Api V1 Auth Passkeys Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/passkeys/authentication/options": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Passkey Authentication Options",
+        "operationId": "passkey_authentication_options_api_v1_auth_passkeys_authentication_options_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PasskeyOptionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/passkeys/authentication/verify": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Passkey Authentication Verify",
+        "operationId": "passkey_authentication_verify_api_v1_auth_passkeys_authentication_verify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasskeyVerifyLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/passkeys/{credential_id}/revoke": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Revoke Passkey",
+        "operationId": "revoke_passkey_api_v1_auth_passkeys__credential_id__revoke_post",
+        "parameters": [
+          {
+            "name": "credential_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Credential Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PasskeyCredentialResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/mfa/status": {
+      "get": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Mfa Status",
+        "operationId": "mfa_status_api_v1_auth_mfa_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MfaStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/mfa/totp/enroll/start": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Totp Enroll Start",
+        "operationId": "totp_enroll_start_api_v1_auth_mfa_totp_enroll_start_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TotpEnrollStartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TotpEnrollStartResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/mfa/totp/enroll/confirm": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Totp Enroll Confirm",
+        "operationId": "totp_enroll_confirm_api_v1_auth_mfa_totp_enroll_confirm_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TotpVerifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MfaStatusResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/mfa/ticket/verify-totp": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Ticket Verify Totp",
+        "operationId": "ticket_verify_totp_api_v1_auth_mfa_ticket_verify_totp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MfaTicketVerifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/mfa/ticket/verify-recovery": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Ticket Verify Recovery",
+        "operationId": "ticket_verify_recovery_api_v1_auth_mfa_ticket_verify_recovery_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MfaTicketVerifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/mfa/recovery-codes": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Issue Recovery Codes",
+        "operationId": "issue_recovery_codes_api_v1_auth_mfa_recovery_codes_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TotpEnrollStartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecoveryCodesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/mfa/factors/{factor_id}/revoke": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Revoke Factor",
+        "operationId": "revoke_factor_api_v1_auth_mfa_factors__factor_id__revoke_post",
+        "parameters": [
+          {
+            "name": "factor_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Factor Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MfaStatusResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/step-up/start": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Step Up Start",
+        "operationId": "step_up_start_api_v1_auth_step_up_start_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StepUpStartResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/step-up/verify-totp": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Step Up Verify Totp",
+        "operationId": "step_up_verify_totp_api_v1_auth_step_up_verify_totp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MfaTicketVerifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrongGrantResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/step-up/verify-passkey": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Step Up Verify Passkey",
+        "operationId": "step_up_verify_passkey_api_v1_auth_step_up_verify_passkey_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StepUpPasskeyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StrongGrantResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/sessions/revoke-others": {
+      "post": {
+        "tags": [
+          "auth-4e"
+        ],
+        "summary": "Revoke Other Sessions",
+        "operationId": "revoke_other_sessions_api_v1_auth_sessions_revoke_others_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Revoke Other Sessions Api V1 Auth Sessions Revoke Others Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/offline/sync": {
+      "post": {
+        "tags": [
+          "offline-4e"
+        ],
+        "summary": "Sync Batch",
+        "operationId": "sync_batch_api_v1_offline_sync_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncBatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncBatchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/offline/evidence": {
+      "post": {
+        "tags": [
+          "offline-4e"
+        ],
+        "summary": "Upload Evidence",
+        "operationId": "upload_evidence_api_v1_offline_evidence_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_evidence_api_v1_offline_evidence_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncVerdictResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/offline/operations": {
+      "get": {
+        "tags": [
+          "offline-4e"
+        ],
+        "summary": "List Operations",
+        "operationId": "list_operations_api_v1_offline_operations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SyncOperationRecord"
+                  },
+                  "type": "array",
+                  "title": "Response List Operations Api V1 Offline Operations Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/offline/assignments": {
+      "get": {
+        "tags": [
+          "offline-4e"
+        ],
+        "summary": "Offline Assignments",
+        "operationId": "offline_assignments_api_v1_offline_assignments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfflineAssignmentResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/extensions/eligibility": {
+      "get": {
+        "tags": [
+          "warranty-extensions-4e"
+        ],
+        "summary": "Check Eligibility",
+        "operationId": "check_eligibility_api_v1_warranty_extensions_eligibility_get",
+        "parameters": [
+          {
+            "name": "serial_number",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "title": "Serial Number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EligibilityResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/extensions/terms": {
+      "get": {
+        "tags": [
+          "warranty-extensions-4e"
+        ],
+        "summary": "List Terms",
+        "operationId": "list_terms_api_v1_warranty_extensions_terms_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExtensionTermsResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Terms Api V1 Warranty Extensions Terms Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "warranty-extensions-4e"
+        ],
+        "summary": "Create Terms",
+        "operationId": "create_terms_api_v1_warranty_extensions_terms_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtensionTermsCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionTermsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/extensions/offers": {
+      "post": {
+        "tags": [
+          "warranty-extensions-4e"
+        ],
+        "summary": "Issue Offer",
+        "operationId": "issue_offer_api_v1_warranty_extensions_offers_post",
+        "parameters": [
+          {
+            "name": "coverage_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Coverage Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionOfferResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/extensions/requests": {
+      "get": {
+        "tags": [
+          "warranty-extensions-4e"
+        ],
+        "summary": "List Extensions",
+        "operationId": "list_extensions_api_v1_warranty_extensions_requests_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExtensionResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Extensions Api V1 Warranty Extensions Requests Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "warranty-extensions-4e"
+        ],
+        "summary": "Request Extension",
+        "operationId": "request_extension_api_v1_warranty_extensions_requests_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtensionRequestCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/extensions/requests/{extension_id}": {
+      "get": {
+        "tags": [
+          "warranty-extensions-4e"
+        ],
+        "summary": "Get Extension",
+        "operationId": "get_extension_api_v1_warranty_extensions_requests__extension_id__get",
+        "parameters": [
+          {
+            "name": "extension_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Extension Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/extensions/requests/{extension_id}/approve": {
+      "post": {
+        "tags": [
+          "warranty-extensions-4e"
+        ],
+        "summary": "Approve Extension",
+        "operationId": "approve_extension_api_v1_warranty_extensions_requests__extension_id__approve_post",
+        "parameters": [
+          {
+            "name": "extension_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Extension Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtensionDecisionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/extensions/requests/{extension_id}/reject": {
+      "post": {
+        "tags": [
+          "warranty-extensions-4e"
+        ],
+        "summary": "Reject Extension",
+        "operationId": "reject_extension_api_v1_warranty_extensions_requests__extension_id__reject_post",
+        "parameters": [
+          {
+            "name": "extension_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Extension Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtensionDecisionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/extensions/requests/{extension_id}/cancel": {
+      "post": {
+        "tags": [
+          "warranty-extensions-4e"
+        ],
+        "summary": "Cancel Extension",
+        "operationId": "cancel_extension_api_v1_warranty_extensions_requests__extension_id__cancel_post",
+        "parameters": [
+          {
+            "name": "extension_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Extension Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty/extensions/requests/{extension_id}/activate": {
+      "post": {
+        "tags": [
+          "warranty-extensions-4e"
+        ],
+        "summary": "Record Payment And Activate",
+        "operationId": "record_payment_and_activate_api_v1_warranty_extensions_requests__extension_id__activate_post",
+        "parameters": [
+          {
+            "name": "extension_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Extension Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtensionPaymentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -6786,6 +7984,36 @@
         ],
         "title": "Body_upload_attachment_api_v1_tickets__ticket_id__attachments_post"
       },
+      "Body_upload_evidence_api_v1_offline_evidence_post": {
+        "properties": {
+          "client_operation_id": {
+            "type": "string",
+            "title": "Client Operation Id"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "entity_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Entity Id"
+          },
+          "upload": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Upload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "client_operation_id",
+          "target",
+          "entity_id",
+          "upload"
+        ],
+        "title": "Body_upload_evidence_api_v1_offline_evidence_post"
+      },
       "Body_upload_evidence_api_v1_surveys__survey_id__evidence_post": {
         "properties": {
           "upload": {
@@ -7402,6 +8630,173 @@
           "findings"
         ],
         "title": "DiagnosticsUpdate"
+      },
+      "EligibilityResponse": {
+        "properties": {
+          "eligible": {
+            "type": "boolean",
+            "title": "Eligible"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "serial_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Serial Number"
+          },
+          "coverage_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Id"
+          },
+          "coverage_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Status"
+          },
+          "coverage_ends_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Ends At"
+          },
+          "policy_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Code"
+          },
+          "policy_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Version"
+          },
+          "extension_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extension Days"
+          },
+          "price_minor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Minor"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "payment_required": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payment Required"
+          },
+          "window_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Window Days"
+          },
+          "offer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Offer Id"
+          },
+          "offer_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Offer Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "eligible"
+        ],
+        "title": "EligibilityResponse"
       },
       "EmployeeCreate": {
         "properties": {
@@ -8177,6 +9572,360 @@
         ],
         "title": "ExceptionResponse"
       },
+      "ExtensionDecisionRequest": {
+        "properties": {
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "title": "ExtensionDecisionRequest"
+      },
+      "ExtensionOfferResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "coverage_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Coverage Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "extension_days": {
+            "type": "integer",
+            "title": "Extension Days"
+          },
+          "price_minor": {
+            "type": "integer",
+            "title": "Price Minor"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "payment_required": {
+            "type": "boolean",
+            "title": "Payment Required"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "coverage_id",
+          "version",
+          "extension_days",
+          "price_minor",
+          "currency",
+          "payment_required",
+          "status",
+          "expires_at"
+        ],
+        "title": "ExtensionOfferResponse"
+      },
+      "ExtensionPaymentRequest": {
+        "properties": {
+          "payment_reference": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 4,
+            "title": "Payment Reference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payment_reference"
+        ],
+        "title": "ExtensionPaymentRequest"
+      },
+      "ExtensionRequestCreate": {
+        "properties": {
+          "coverage_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Coverage Id"
+          },
+          "idempotency_key": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 8,
+            "title": "Idempotency Key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "coverage_id",
+          "idempotency_key"
+        ],
+        "title": "ExtensionRequestCreate"
+      },
+      "ExtensionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "offer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Offer Id"
+          },
+          "offer_version": {
+            "type": "integer",
+            "title": "Offer Version"
+          },
+          "serial_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Serial Id"
+          },
+          "coverage_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Coverage Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "extension_days": {
+            "type": "integer",
+            "title": "Extension Days"
+          },
+          "price_minor": {
+            "type": "integer",
+            "title": "Price Minor"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "original_ends_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Original Ends At"
+          },
+          "new_ends_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Ends At"
+          },
+          "payment_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payment Reference"
+          },
+          "decision_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Note"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "offer_id",
+          "offer_version",
+          "serial_id",
+          "coverage_id",
+          "status",
+          "extension_days",
+          "price_minor",
+          "currency",
+          "original_ends_at",
+          "new_ends_at",
+          "payment_reference",
+          "decision_note",
+          "created_at"
+        ],
+        "title": "ExtensionResponse"
+      },
+      "ExtensionTermsCreate": {
+        "properties": {
+          "policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policy Id"
+          },
+          "extension_days": {
+            "type": "integer",
+            "maximum": 3650.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Extension Days"
+          },
+          "price_minor": {
+            "type": "integer",
+            "maximum": 100000000.0,
+            "minimum": 0.0,
+            "title": "Price Minor"
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 8,
+            "minLength": 3,
+            "title": "Currency",
+            "default": "INR"
+          },
+          "window_days": {
+            "type": "integer",
+            "maximum": 3650.0,
+            "minimum": 0.0,
+            "title": "Window Days"
+          },
+          "eligible_categories": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Eligible Categories"
+          },
+          "max_extensions": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Max Extensions",
+            "default": 1
+          },
+          "requires_approval": {
+            "type": "boolean",
+            "title": "Requires Approval",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "policy_id",
+          "extension_days",
+          "price_minor",
+          "window_days",
+          "eligible_categories"
+        ],
+        "title": "ExtensionTermsCreate"
+      },
+      "ExtensionTermsResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "policy_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Policy Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "extension_days": {
+            "type": "integer",
+            "title": "Extension Days"
+          },
+          "price_minor": {
+            "type": "integer",
+            "title": "Price Minor"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "window_days": {
+            "type": "integer",
+            "title": "Window Days"
+          },
+          "eligible_categories": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Eligible Categories"
+          },
+          "max_extensions": {
+            "type": "integer",
+            "title": "Max Extensions"
+          },
+          "requires_approval": {
+            "type": "boolean",
+            "title": "Requires Approval"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "policy_id",
+          "version",
+          "extension_days",
+          "price_minor",
+          "currency",
+          "window_days",
+          "eligible_categories",
+          "max_extensions",
+          "requires_approval",
+          "is_active",
+          "created_at"
+        ],
+        "title": "ExtensionTermsResponse"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -8882,6 +10631,63 @@
         ],
         "title": "MessageResponse"
       },
+      "MfaStatusResponse": {
+        "properties": {
+          "totp_enrolled": {
+            "type": "boolean",
+            "title": "Totp Enrolled"
+          },
+          "totp_factor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Totp Factor Id"
+          },
+          "passkeys_registered": {
+            "type": "boolean",
+            "title": "Passkeys Registered"
+          },
+          "recovery_codes_remaining": {
+            "type": "integer",
+            "title": "Recovery Codes Remaining"
+          }
+        },
+        "type": "object",
+        "required": [
+          "totp_enrolled",
+          "passkeys_registered",
+          "recovery_codes_remaining"
+        ],
+        "title": "MfaStatusResponse"
+      },
+      "MfaTicketVerifyRequest": {
+        "properties": {
+          "ticket": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 16,
+            "title": "Ticket"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 4,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticket",
+          "code"
+        ],
+        "title": "MfaTicketVerifyRequest"
+      },
       "NoteCreate": {
         "properties": {
           "note": {
@@ -8897,6 +10703,42 @@
           "note"
         ],
         "title": "NoteCreate"
+      },
+      "OfflineAssignmentResponse": {
+        "properties": {
+          "retention_days": {
+            "type": "integer",
+            "title": "Retention Days"
+          },
+          "cached_until": {
+            "type": "string",
+            "title": "Cached Until"
+          },
+          "surveys": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Surveys"
+          },
+          "repair_jobs": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Repair Jobs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "retention_days",
+          "cached_until",
+          "surveys",
+          "repair_jobs"
+        ],
+        "title": "OfflineAssignmentResponse"
       },
       "OrderCreate": {
         "properties": {
@@ -9185,6 +11027,97 @@
           "is_active"
         ],
         "title": "PackageResponse"
+      },
+      "PasskeyCredentialResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "credential_id": {
+            "type": "string",
+            "title": "Credential Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "backed_up": {
+            "type": "boolean",
+            "title": "Backed Up"
+          },
+          "sign_count": {
+            "type": "integer",
+            "title": "Sign Count"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "credential_id",
+          "label",
+          "backed_up",
+          "sign_count",
+          "created_at"
+        ],
+        "title": "PasskeyCredentialResponse"
+      },
+      "PasskeyOptionsResponse": {
+        "properties": {
+          "options": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Options"
+          }
+        },
+        "type": "object",
+        "required": [
+          "options"
+        ],
+        "title": "PasskeyOptionsResponse"
+      },
+      "PasskeyVerifyLoginRequest": {
+        "properties": {
+          "credential": {
+            "additionalProperties": true,
+            "type": "object",
+            "minProperties": 1,
+            "title": "Credential"
+          }
+        },
+        "type": "object",
+        "required": [
+          "credential"
+        ],
+        "title": "PasskeyVerifyLoginRequest"
+      },
+      "PasskeyVerifyRequest": {
+        "properties": {
+          "credential": {
+            "additionalProperties": true,
+            "type": "object",
+            "minProperties": 1,
+            "title": "Credential"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Label",
+            "default": "Passkey"
+          }
+        },
+        "type": "object",
+        "required": [
+          "credential"
+        ],
+        "title": "PasskeyVerifyRequest"
       },
       "PaymentIntentCreate": {
         "properties": {
@@ -10162,6 +12095,22 @@
         ],
         "title": "RecommendationResponse"
       },
+      "RecoveryCodesResponse": {
+        "properties": {
+          "codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Codes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "codes"
+        ],
+        "title": "RecoveryCodesResponse"
+      },
       "RepairJobCreate": {
         "properties": {
           "technician_user_id": {
@@ -10803,6 +12752,25 @@
         ],
         "title": "RevisionRequestResponse"
       },
+      "RevokeRequest": {
+        "properties": {
+          "password": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "title": "RevokeRequest"
+      },
       "SandboxOutcome": {
         "properties": {
           "outcome": {
@@ -11218,6 +13186,55 @@
         ],
         "title": "StaffEntry"
       },
+      "StepUpPasskeyRequest": {
+        "properties": {
+          "ticket": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 16,
+            "title": "Ticket"
+          },
+          "credential": {
+            "additionalProperties": true,
+            "type": "object",
+            "minProperties": 1,
+            "title": "Credential"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticket",
+          "credential"
+        ],
+        "title": "StepUpPasskeyRequest"
+      },
+      "StepUpStartResponse": {
+        "properties": {
+          "ticket": {
+            "type": "string",
+            "title": "Ticket"
+          },
+          "methods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Methods"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticket",
+          "methods",
+          "expires_at"
+        ],
+        "title": "StepUpStartResponse"
+      },
       "StockLevelResponse": {
         "properties": {
           "component_code": {
@@ -11474,6 +13491,30 @@
           "validated_at"
         ],
         "title": "StockOperationResponse"
+      },
+      "StrongGrantResponse": {
+        "properties": {
+          "grant": {
+            "type": "string",
+            "title": "Grant"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "grant",
+          "method",
+          "expires_at"
+        ],
+        "title": "StrongGrantResponse"
       },
       "SupportAssignmentUpdate": {
         "properties": {
@@ -11965,6 +14006,210 @@
           "notes"
         ],
         "title": "SurveySubmit"
+      },
+      "SyncBatchRequest": {
+        "properties": {
+          "operations": {
+            "items": {
+              "$ref": "#/components/schemas/SyncOperationRequest"
+            },
+            "type": "array",
+            "maxItems": 25,
+            "minItems": 1,
+            "title": "Operations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "operations"
+        ],
+        "title": "SyncBatchRequest"
+      },
+      "SyncBatchResponse": {
+        "properties": {
+          "verdicts": {
+            "items": {
+              "$ref": "#/components/schemas/SyncVerdictResponse"
+            },
+            "type": "array",
+            "title": "Verdicts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "verdicts"
+        ],
+        "title": "SyncBatchResponse"
+      },
+      "SyncOperationRecord": {
+        "properties": {
+          "client_operation_id": {
+            "type": "string",
+            "title": "Client Operation Id"
+          },
+          "operation_id": {
+            "type": "string",
+            "title": "Operation Id"
+          },
+          "op_type": {
+            "type": "string",
+            "title": "Op Type"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "duplicate": {
+            "type": "boolean",
+            "title": "Duplicate",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "client_operation_id",
+          "operation_id",
+          "op_type",
+          "status"
+        ],
+        "title": "SyncOperationRecord"
+      },
+      "SyncOperationRequest": {
+        "properties": {
+          "op_type": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Op Type"
+          },
+          "entity_type": {
+            "type": "string",
+            "maxLength": 32,
+            "title": "Entity Type",
+            "default": ""
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "client_operation_id": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 8,
+            "title": "Client Operation Id"
+          },
+          "base_field_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Field Version"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "op_type",
+          "client_operation_id"
+        ],
+        "title": "SyncOperationRequest"
+      },
+      "SyncVerdictResponse": {
+        "properties": {
+          "client_operation_id": {
+            "type": "string",
+            "title": "Client Operation Id"
+          },
+          "operation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operation Id"
+          },
+          "op_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Op Type"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "duplicate": {
+            "type": "boolean",
+            "title": "Duplicate",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "client_operation_id",
+          "status"
+        ],
+        "title": "SyncVerdictResponse"
       },
       "TaxPolicyCreate": {
         "properties": {
@@ -12559,6 +14804,62 @@
           "updated_at"
         ],
         "title": "TicketSummary"
+      },
+      "TotpEnrollStartRequest": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Label",
+            "default": "Authenticator app"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "password"
+        ],
+        "title": "TotpEnrollStartRequest"
+      },
+      "TotpEnrollStartResponse": {
+        "properties": {
+          "factor_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Factor Id"
+          },
+          "otpauth_uri": {
+            "type": "string",
+            "title": "Otpauth Uri"
+          }
+        },
+        "type": "object",
+        "required": [
+          "factor_id",
+          "otpauth_uri"
+        ],
+        "title": "TotpEnrollStartResponse"
+      },
+      "TotpVerifyRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 6,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "TotpVerifyRequest"
       },
       "TriageUpdate": {
         "properties": {

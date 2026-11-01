@@ -203,6 +203,12 @@ def authenticate(
             "email_not_verified",
             "Verify the email address before signing in.",
         )
+    if _has_verified_second_factor(db, user):
+        # The password is correct but no session may exist yet: the login
+        # route stops at an MFA ticket. The "user.login" audit is written
+        # when the ticket is redeemed.
+        _load_profile(db, user)
+        return user, None
     raw = new_token()
     db.add(
         DbSession(
@@ -223,6 +229,54 @@ def authenticate(
     )
     _load_profile(db, user)
     return user, raw
+
+
+def _has_verified_second_factor(db: Session, user: User) -> bool:
+    from app.models.phase4e import MfaFactor
+
+    return (
+        db.scalar(
+            select(MfaFactor.id).where(
+                MfaFactor.user_id == user.id,
+                MfaFactor.kind == "totp",
+                MfaFactor.verified_at.is_not(None),
+                MfaFactor.revoked_at.is_(None),
+            )
+        )
+        is not None
+    )
+
+
+def create_session(
+    db: Session,
+    settings: Settings,
+    user: User,
+    *,
+    user_agent: str | None,
+    ip_address: str | None,
+    action: str = "user.login",
+    metadata: dict | None = None,
+) -> str:
+    raw = new_token()
+    db.add(
+        DbSession(
+            user_id=user.id,
+            token_hash=hash_secret(raw, settings.secret_key),
+            expires_at=expiry_from_now(hours=settings.session_ttl_hours),
+            user_agent=(user_agent or "")[:256] or None,
+            ip_address=(ip_address or "")[:64] or None,
+        )
+    )
+    add_audit(
+        db,
+        actor_user_id=user.id,
+        action=action,
+        entity_type="user",
+        entity_id=user.id,
+        metadata=metadata or {},
+    )
+    _load_profile(db, user)
+    return raw
 
 
 def _load_profile(db: Session, user: User) -> None:

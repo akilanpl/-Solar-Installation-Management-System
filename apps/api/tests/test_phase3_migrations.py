@@ -46,7 +46,9 @@ def test_phase3_round_trip_keeps_existing_phase1_record(client, application):
         _assert_safe(TEST_DATABASE_URL)
         command.upgrade(config, "head")
     with application.state.engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "4b1c2d3e4f51"
+        # Tracks the newest migration: Phase 4E head. Sibling Phase 4C/4D
+        # heads merge at integration time via ``alembic merge``.
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "35958a00676d"
     schema = inspect(application.state.engine)
     for name in (
         "stock_ledger",

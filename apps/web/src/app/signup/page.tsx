@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button, Card, ErrorState, TextField } from "@/components/ui";
 import { api, ApiError, fieldErrors } from "@/lib/api";
@@ -10,6 +10,9 @@ export default function SignupPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  useEffect(() => {
+    document.body.dataset.signupReady = "1";
+  }, []);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

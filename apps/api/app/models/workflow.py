@@ -155,6 +155,7 @@ class Survey(Base):
     cable_distance_m: Mapped[Decimal | None] = mapped_column(Numeric(10, 2))
     grid_connection: Mapped[str | None] = mapped_column(String(16))
     notes: Mapped[str | None] = mapped_column(Text)
+    field_version: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     submitted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     reviewed_by_user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))

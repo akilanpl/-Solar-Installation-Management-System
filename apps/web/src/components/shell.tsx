@@ -19,27 +19,34 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
     { href: "/customer/estimates", label: "Repair estimates" },
     { href: "/customer/bills", label: "Repair bills" },
     { href: "/customer/replacements", label: "Replacements" },
+    { href: "/customer/warranty-extensions", label: "Warranty extensions" },
+    { href: "/security", label: "Security" },
   ],
   technician: [
     { href: "/technician", label: "Assigned jobs" },
     { href: "/technician/surveys", label: "Surveys", planned: true },
     { href: "/technician/repairs", label: "Repairs" },
     { href: "/technician/install", label: "Replacement install" },
+    { href: "/technician/offline", label: "Offline field work" },
+    { href: "/security", label: "Security" },
   ],
   sales: [
     { href: "/sales", label: "Enquiries" },
     { href: "/sales/surveys", label: "Surveys", planned: true },
     { href: "/sales/quotations", label: "Quotations" },
+    { href: "/security", label: "Security" },
   ],
   warehouse_staff: [
     { href: "/warehouse", label: "Stock" },
     { href: "/warehouse/picking", label: "Picking", planned: true },
     { href: "/warehouse/replacements", label: "Replacements" },
+    { href: "/security", label: "Security" },
   ],
   warehouse_manager: [
     { href: "/warehouse", label: "Stock" },
     { href: "/warehouse/approvals", label: "Approvals", planned: true },
     { href: "/warehouse/replacements", label: "Replacements" },
+    { href: "/security", label: "Security" },
   ],
   support: [
     { href: "/support", label: "Tickets" },
@@ -48,12 +55,16 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
     { href: "/support/estimates", label: "Estimates" },
     { href: "/support/replacements", label: "Replacements" },
     { href: "/support/billing", label: "Billing" },
+    { href: "/support/extensions", label: "Extension reviews" },
+    { href: "/security", label: "Security" },
   ],
   admin: [
     { href: "/admin", label: "Employees" },
     { href: "/sales", label: "Enquiries" },
     { href: "/admin/pricing", label: "Warranty & pricing" },
     { href: "/admin/reports", label: "Reports", planned: true },
+    { href: "/support/extensions", label: "Extension reviews" },
+    { href: "/security", label: "Security" },
   ],
 };
 

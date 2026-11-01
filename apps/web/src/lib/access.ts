@@ -36,6 +36,10 @@ export function workspaceFromPath(pathname: string): Workspace | null {
 }
 
 export function canAccessPath(role: Role, pathname: string): boolean {
+  // Phase 4E: every signed-in role gets one shared security page. It only
+  // touches the caller's own factors and sessions, so role checks add
+  // nothing; the Workspace guard still requires authentication.
+  if (pathname === "/security" || pathname.startsWith("/security/")) return true;
   const workspace = workspaceFromPath(pathname);
   if (!workspace) return false;
   return WORKSPACE_ROLES[workspace].includes(role);

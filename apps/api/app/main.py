@@ -35,7 +35,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_origins=settings.origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-        allow_headers=["Content-Type", "X-CSRF-Token", "Idempotency-Key"],
+        allow_headers=["Content-Type", "X-CSRF-Token", "Idempotency-Key", "X-Strong-Auth"],
     )
     application.include_router(api_router)
 
