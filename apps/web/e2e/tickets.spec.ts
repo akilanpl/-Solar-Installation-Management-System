@@ -1,8 +1,7 @@
-import { readFileSync } from "node:fs";
+import { previewPassword } from "./preview-accounts";
 import { randomUUID } from "node:crypto";
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 
-const STAFF_PASSWORD = readFileSync("../../var/dev-seed-password.txt", "utf8").trim();
 
 async function csrf(ctx: APIRequestContext): Promise<string> {
   const response = await ctx.get("/api/v1/auth/csrf");
@@ -12,6 +11,7 @@ async function csrf(ctx: APIRequestContext): Promise<string> {
 }
 
 async function apiLogin(ctx: APIRequestContext, kind: string, identifier: string, password: string) {
+  password = previewPassword(identifier, password);
   const login = await ctx.post("/api/v1/auth/login", {
     headers: { "X-CSRF-Token": await csrf(ctx) },
     data: { account_kind: kind, identifier, password },
@@ -39,6 +39,7 @@ async function patch(ctx: APIRequestContext, url: string, data: unknown) {
 }
 
 async function signIn(page: Page, kind: string, identifier: string, password: string) {
+  password = previewPassword(identifier, password);
   await page.goto("/login");
   await page.getByLabel("I am signing in as").selectOption(kind);
   const idBox = page.locator('input[name="identifier"]');
@@ -81,7 +82,7 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
   const salesApi = await browser.newContext();
   const warehouseApi = await browser.newContext();
   const supportApi = await browser.newContext();
-  await apiLogin((await supportApi.newPage()).request, "employee", "EMP-SUP-001", STAFF_PASSWORD);
+  await apiLogin((await supportApi.newPage()).request, "employee", "EMP-SUP-001", "");
   try {
     await apiLogin((await customerApi.newPage()).request, "customer", email, "Solarops123");
     const customer = await customerApi.newPage();
@@ -91,7 +92,7 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
       site: { line1: "12 Lake View Road", city: "Hyderabad", state: "Telangana", postal_code: "500081" },
       preferred_capacity_w: 3000, grid_preference: "on_grid", monthly_bill_minor: 450000, subsidy_interest: true,
     }, true)).json() as { id: string };
-    await apiLogin((await salesApi.newPage()).request, "employee", "EMP-SALES-001", STAFF_PASSWORD);
+    await apiLogin((await salesApi.newPage()).request, "employee", "EMP-SALES-001", "");
     const sales = await salesApi.newPage();
     const s = sales.request;
     expect((await patch(s, `/api/v1/enquiries/${enquiry.id}/qualification`, { status: "under_review", note: "Checking the roof." })).status()).toBe(200);
@@ -107,10 +108,10 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
     const techId = staff.find((row) => row.employee_code === "EMP-TECH-001")?.user_id;
     expect(techId).toBeTruthy();
     expect((await post(s, `/api/v1/surveys/${survey.id}/assignment`, { technician_user_id: techId })).status()).toBe(200);
-    await apiLogin((await warehouseApi.newPage()).request, "employee", "EMP-WH-001", STAFF_PASSWORD);
+    await apiLogin((await warehouseApi.newPage()).request, "employee", "EMP-WH-001", "");
 
     const techApi = await browser.newContext();
-    await apiLogin((await techApi.newPage()).request, "employee", "EMP-TECH-001", STAFF_PASSWORD);
+    await apiLogin((await techApi.newPage()).request, "employee", "EMP-TECH-001", "");
     const tech = await techApi.newPage();
     const t = tech.request;
     expect((await post(t, `/api/v1/surveys/${survey.id}/start`, {})).status()).toBe(200);
@@ -163,7 +164,7 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
     await expect(page.getByRole("heading", { name: `Complaint ${ticketRef.trim()}` })).toBeVisible();
 
     const supportPage = await (await browser.newContext()).newPage();
-    await signIn(supportPage, "support", "EMP-SUP-001", STAFF_PASSWORD);
+    await signIn(supportPage, "support", "EMP-SUP-001", "");
     await expect(supportPage.getByRole("heading", { name: "Support inbox" })).toBeVisible();
     await supportPage.getByRole("link", { name: ticketRef.trim(), exact: true }).click();
     await expect(supportPage.getByRole("heading", { name: `Ticket ${ticketRef.trim()}` })).toBeVisible();
@@ -180,7 +181,7 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
     await expect(supportPage.getByText("Saved.")).toBeVisible();
 
     const techPage = await (await browser.newContext()).newPage();
-    await signIn(techPage, "technician", "EMP-TECH-001", STAFF_PASSWORD);
+    await signIn(techPage, "technician", "EMP-TECH-001", "");
     await techPage.waitForURL("**/technician*", { timeout: 30000 });
     await techPage.waitForLoadState("load");
     await techPage.goto("/technician/repairs");

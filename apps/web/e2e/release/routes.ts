@@ -18,6 +18,7 @@ export function discoverPages() {
   return pages.sort();
 }
 export function owner(route: string) {
+  if(route==="/warehouse/approvals")return "warehouse_manager";
   const area = route.split("/")[1];
   return ["customer", "sales", "technician", "support", "admin"].includes(area) ? area
     : area === "warehouse" ? "warehouse_staff" : area === "security" ? "customer" : "public";
