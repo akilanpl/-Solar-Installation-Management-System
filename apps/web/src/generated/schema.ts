@@ -696,7 +696,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Operations */
+        get: operations["operations_api_v1_stock_operations_get"];
         put?: never;
         /** Create Stock Operation */
         post: operations["create_stock_operation_api_v1_stock_operations_post"];
@@ -833,7 +834,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Replenishments */
+        get: operations["replenishments_api_v1_replenishment_requests_get"];
         put?: never;
         /** Request Replenishment */
         post: operations["request_replenishment_api_v1_replenishment_requests_post"];
@@ -957,6 +959,57 @@ export interface paths {
         put?: never;
         /** Delivery Cancel */
         post: operations["delivery_cancel_api_v1_deliveries__delivery_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspace/technicians": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Technicians */
+        get: operations["technicians_api_v1_workspace_technicians_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspace/warehouse-catalogue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Catalogue */
+        get: operations["catalogue_api_v1_workspace_warehouse_catalogue_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/serials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Serials */
+        get: operations["serials_api_v1_serials_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1307,6 +1360,15 @@ export interface components {
             amount_minor: number;
             /** Receipt Reference */
             receipt_reference: string;
+        };
+        /** ComponentChoice */
+        ComponentChoice: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Unit */
+            unit: string;
         };
         /** CsrfResponse */
         CsrfResponse: {
@@ -1758,6 +1820,13 @@ export interface components {
             customer_confirmed: boolean;
             /** Summary Hash */
             summary_hash: string;
+        };
+        /** LocationChoice */
+        LocationChoice: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
         };
         /**
          * LoginRequest
@@ -2663,6 +2732,18 @@ export interface components {
             /** Notes */
             notes: string;
         };
+        /** TechnicianChoice */
+        TechnicianChoice: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Full Name */
+            full_name: string;
+            /** Employee Code */
+            employee_code: string;
+        };
         /** TemplateLineResponse */
         TemplateLineResponse: {
             /** Component Code */
@@ -2722,6 +2803,13 @@ export interface components {
             email: string;
             /** Code */
             code: string;
+        };
+        /** WarehouseCatalogue */
+        WarehouseCatalogue: {
+            /** Components */
+            components: components["schemas"]["ComponentChoice"][];
+            /** Locations */
+            locations: components["schemas"]["LocationChoice"][];
         };
         /** WarehouseLineResponse */
         WarehouseLineResponse: {
@@ -4191,6 +4279,26 @@ export interface operations {
             };
         };
     };
+    operations_api_v1_stock_operations_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StockOperationResponse"][];
+                };
+            };
+        };
+    };
     create_stock_operation_api_v1_stock_operations_post: {
         parameters: {
             query?: never;
@@ -4482,6 +4590,26 @@ export interface operations {
             };
         };
     };
+    replenishments_api_v1_replenishment_requests_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplenishmentResponse"][];
+                };
+            };
+        };
+    };
     request_replenishment_api_v1_replenishment_requests_post: {
         parameters: {
             query?: never;
@@ -4756,6 +4884,66 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    technicians_api_v1_workspace_technicians_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TechnicianChoice"][];
+                };
+            };
+        };
+    };
+    catalogue_api_v1_workspace_warehouse_catalogue_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WarehouseCatalogue"];
+                };
+            };
+        };
+    };
+    serials_api_v1_serials_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SerialResponse"][];
                 };
             };
         };

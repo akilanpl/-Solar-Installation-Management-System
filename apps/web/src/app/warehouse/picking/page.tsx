@@ -1,5 +1,4 @@
 "use client";
-import { PlannedRoute } from "@/components/planned-route";
-export default function Page() {
-  return <PlannedRoute path="/warehouse/picking" kind="picking" />;
-}
+import {Workspace} from "@/components/workspace";
+import {WarehouseBoard} from "@/components/warehouse-board";
+export default function Page(){return <Workspace path="/warehouse/picking">{user=><WarehouseBoard user={user}/>}</Workspace>;}

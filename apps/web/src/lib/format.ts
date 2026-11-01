@@ -37,3 +37,12 @@ export const GRID_LABEL: Record<string, string> = {
   on_grid: "On-grid",
   off_grid: "Off-grid",
 };
+
+/** Exact decimal INR parsing for receipts and discounts, without float rounding. */
+export function decimalRupeesToPaise(input: string): number | null {
+  const cleaned = input.trim();
+  if (!/^[0-9]+(?:\.[0-9]{1,2})?$/.test(cleaned)) return null;
+  const [whole, fraction = ""] = cleaned.split(".");
+  const result = Number(whole) * 100 + Number(fraction.padEnd(2, "0"));
+  return Number.isSafeInteger(result) && result <= 100_000_000 ? result : null;
+}

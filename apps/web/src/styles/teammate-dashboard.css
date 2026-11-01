@@ -1,0 +1,712 @@
+/* Ported from ashwin-hue at 74f4734cc73212e235e7f256c2bd327634b3b5dd. */
+/* ==========================================================================
+   SOLARFLOW / SOLAROPS - ROLE-TAILORED BENTO GRID STYLES
+   Tailored containers strictly derived from the Odoo Solar Problem Statement:
+   - BOM parts lists
+   - Serial number scanning
+   - SysCache instant lookup
+   - Customer digital signatures
+   - Job-level cost & profitability accounting
+   - Subsidy tracking & warranties
+   ========================================================================== */
+
+.dash-container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   ROW 1: HERO GREETING & TOP FEATURE CARDS
+   ========================================================================== */
+.dash-hero-row {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.dash-greeting-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dash-greeting-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.18;
+  letter-spacing: -0.6px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-greeting-header-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dash-avatar-cluster {
+  display: inline-flex;
+  align-items: center;
+}
+
+.dash-avatar-ring {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.dash-greeting-sub {
+  font-size: 13.5px;
+  color: #64748b;
+  line-height: 1.5;
+  margin-top: 14px;
+  max-width: 340px;
+}
+
+/* Top Feature Cards (4 Columns) */
+.dash-feature-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.dash-feature-card {
+  background-color: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 24px;
+  padding: 20px 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 160px;
+  box-sizing: border-box;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  cursor: pointer;
+}
+
+.dash-feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.dash-feature-card.create-new {
+  background-color: #eef2ff;
+  border: 1.5px dashed #c7d2fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-create-icon-box {
+  width: 38px;
+  height: 38px;
+  background-color: #6366f1;
+  color: #ffffff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+  transition: transform 150ms ease;
+}
+
+.dash-feature-card.create-new:hover .dash-create-icon-box {
+  transform: scale(1.1);
+}
+
+.dash-feature-illustration {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  color: #4f46e5;
+}
+
+.dash-feature-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.dash-feature-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   ROW 2 & ROW 3: BENTO GRID LAYOUTS
+   ========================================================================== */
+.dash-middle-grid,
+.dash-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.bento-card {
+  background-color: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.bento-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.bento-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.bento-header-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 150ms ease;
+  font-family: inherit;
+  padding: 0;
+}
+
+.bento-header-btn:hover {
+  color: #4f46e5;
+}
+
+/* ==========================================================================
+   ROLE-SPECIFIC BENTO WIDGETS
+   ========================================================================== */
+
+/* 1. Customer Lifecycle Stepper */
+.lifecycle-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stepper-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+}
+
+.stepper-step.completed {
+  background-color: #ecfdf5;
+  border-color: #d1fae5;
+}
+
+.stepper-step.active {
+  background-color: #eef2ff;
+  border-color: #c7d2fe;
+}
+
+.stepper-icon-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.stepper-step.completed .stepper-icon-circle {
+  background-color: #10b981;
+  color: #ffffff;
+}
+
+.stepper-step.active .stepper-icon-circle {
+  background-color: #4f46e5;
+  color: #ffffff;
+}
+
+.stepper-step.pending .stepper-icon-circle {
+  background-color: #e2e8f0;
+  color: #64748b;
+}
+
+.stepper-text {
+  flex: 1;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* 2. BOM Package Itemized Breakdown Table */
+.bom-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.bom-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-radius: 10px;
+  font-size: 12.5px;
+}
+
+.bom-item-name {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.bom-item-qty {
+  color: #64748b;
+  font-size: 11.5px;
+  margin-left: 6px;
+}
+
+.bom-item-price {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.bom-summary-box {
+  margin-top: 14px;
+  padding: 12px;
+  background-color: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 3. SysCache Instant Lookup Widget */
+.syscache-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background-color: #ecfdf5;
+  color: #047857;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.syscache-search-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.syscache-input {
+  flex: 1;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  padding: 0 12px;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+}
+
+.syscache-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.syscache-result-card {
+  padding: 14px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #10b981;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12.5px;
+}
+
+/* 4. Serial Number Barcode Scanner Box */
+.serial-scanner-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scanner-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.scanned-serials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.scanned-serial-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background-color: #f1f5f9;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 12px;
+  color: #1e293b;
+}
+
+/* 5. Customer Digital Signature Box */
+.signature-preview-box {
+  height: 90px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8fafc;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 150ms ease;
+  margin-bottom: 12px;
+}
+
+.signature-preview-box:hover {
+  border-color: #4f46e5;
+  background-color: #eef2ff;
+  color: #4f46e5;
+}
+
+.signature-signed {
+  font-family: 'Brush Script MT', cursive, sans-serif;
+  font-size: 28px;
+  color: #1e1b4b;
+}
+
+/* 6. Job Profitability Accounting Table */
+.profitability-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profit-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  padding: 10px 12px;
+  background-color: #f8fafc;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.profit-row.header {
+  background-color: #f1f5f9;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.profit-margin-pill {
+  background-color: #d1fae5;
+  color: #065f46;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  display: inline-block;
+}
+
+/* 7. Focus Card (Replacing "Go Premium!") */
+.dash-focus-card {
+  background: linear-gradient(150deg, #605dec 0%, #5b5fc7 50%, #4f46e5 100%);
+  border-radius: 24px;
+  padding: 30px 24px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  box-shadow: 0 12px 30px rgba(91, 95, 199, 0.28);
+  position: relative;
+  overflow: hidden;
+}
+
+.focus-illustration-box {
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  margin-bottom: 14px;
+  backdrop-filter: blur(8px);
+}
+
+.focus-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.3px;
+}
+
+.focus-sub {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.45;
+  margin: 0 0 18px 0;
+  max-width: 260px;
+}
+
+.focus-cta-btn {
+  background-color: #111827;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 9px 22px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  font-family: inherit;
+}
+
+.focus-cta-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* Circular Gauges */
+.gauges-card {
+  background-color: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 20px;
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+}
+
+.gauge-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gauge-svg-box {
+  width: 48px;
+  height: 48px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.gauge-svg-box svg {
+  transform: rotate(-90deg);
+}
+
+.gauge-center-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.gauge-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.gauge-category {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.gauge-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #111827;
+  margin: 1px 0;
+}
+
+.gauge-subnote {
+  font-size: 10px;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+/* Additional Role-Specific UI Widgets */
+.bom-pkg-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.bom-pkg-btn {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  padding: 5px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.bom-pkg-btn:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.bom-pkg-btn.active {
+  background-color: #4f46e5;
+  color: #ffffff;
+  border-color: #4f46e5;
+}
+
+.tech-checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: background-color 140ms ease;
+}
+
+.tech-checklist-item:hover {
+  background-color: #f1f5f9;
+}
+
+.tech-checklist-item.checked {
+  background-color: #ecfdf5;
+  color: #065f46;
+}
+
+.otp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  background-color: #fef3c7;
+  color: #92400e;
+  border-radius: 6px;
+  border: 1px dashed #f59e0b;
+}
+
+.scan-progress-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.scan-progress-bar {
+  height: 6px;
+  background-color: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.scan-progress-fill {
+  height: 100%;
+  background-color: #10b981;
+  transition: width 200ms ease;
+}
+
+.invoice-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+
+.subsidy-claim-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .dash-hero-row {
+    grid-template-columns: 1fr;
+  }
+  .dash-middle-grid,
+  .dash-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dash-feature-cards-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

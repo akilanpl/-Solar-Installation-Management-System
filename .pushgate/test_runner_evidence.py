@@ -12,11 +12,14 @@ RUNNER = Path(__file__).resolve().with_name("run.py")
 
 
 class RunnerEvidenceTests(unittest.TestCase):
-    def run_campaign(self, *, partial_xml=False, timeout=False):
+    def run_campaign(
+        self, *, partial_xml=False, timeout=False, malformed_xml=False, backend_code=1
+    ):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             folder = root / ".pushgate/reports/test-sha"
             folder.mkdir(parents=True)
+            (root / ".pushgate/config.yml").write_text("comparison_base: test-base\n")
             xml = folder / "backend.xml"
             xml.write_text('<testsuite><testcase name="stale-pass"/></testsuite>')
             for name in (
@@ -36,9 +39,11 @@ class RunnerEvidenceTests(unittest.TestCase):
                         xml.write_text(
                             '<testsuite><testcase name="partial-pass"/></testsuite>'
                         )
+                    if malformed_xml:
+                        xml.write_text("<testsuite><testcase")
                     if timeout:
                         raise subprocess.TimeoutExpired(command, 600)
-                    return subprocess.CompletedProcess(command, 1)
+                    return subprocess.CompletedProcess(command, backend_code)
                 if ".pushgate/score.py" in command:
                     return subprocess.CompletedProcess(command, 1)
                 return subprocess.CompletedProcess(command, 0)
@@ -70,6 +75,17 @@ class RunnerEvidenceTests(unittest.TestCase):
         report = self.run_campaign(partial_xml=True, timeout=True)
         rows = {row["id"]: row for row in report["tests"]}
         self.assertEqual(rows["stage-backend"]["status"], "notrun")
+
+    def test_malformed_junit_fails_without_losing_report(self):
+        report = self.run_campaign(malformed_xml=True, backend_code=0)
+        rows = {row["id"]: row for row in report["tests"]}
+        self.assertEqual(rows["stage-backend"]["status"], "fail")
+        self.assertNotIn("stale-pass", rows)
+
+    def test_success_without_junit_is_not_test_evidence(self):
+        report = self.run_campaign(backend_code=0)
+        rows = {row["id"]: row for row in report["tests"]}
+        self.assertEqual(rows["stage-backend"]["status"], "fail")
 
 
 if __name__ == "__main__":

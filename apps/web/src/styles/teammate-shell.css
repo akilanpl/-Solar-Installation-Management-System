@@ -1,0 +1,65 @@
+/* Ported from ashwin-hue at 74f4734cc73212e235e7f256c2bd327634b3b5dd. */
+/* ==========================================================================
+   SOLARFLOW / SOLAROPS - MASTER DASHBOARD APPSHELL LAYOUT
+   Hosts fixed organic dock on left, sticky top navigation, & independent scroll
+   ========================================================================== */
+
+.app-shell-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #f6f8fb;
+  position: relative;
+  overflow: hidden; /* Viewport frame does not scroll as whole */
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.app-shell-main {
+  flex: 1;
+  margin-left: 76px; /* Offset for the fixed dock sidebar */
+  height: 100vh;
+  overflow-y: auto; /* Independent smooth scrolling for all content! */
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+  background-color: #f6f8fb;
+}
+
+.app-shell-content {
+  flex: 1;
+  padding: 32px 36px 48px 36px;
+  max-width: 1560px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Access Denied Card */
+.access-denied-box {
+  background-color: #ffffff;
+  border-radius: 24px;
+  padding: 48px 36px;
+  text-align: center;
+  max-width: 500px;
+  margin: 60px auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid #edf0f5;
+}
+
+@media (max-width: 1024px) {
+  .app-shell-main {
+    margin-left: 60px;
+  }
+  .app-shell-content {
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell-content {
+    padding: 18px 14px;
+  }
+}

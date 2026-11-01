@@ -1,0 +1,649 @@
+/* Ported from ashwin-hue at 74f4734cc73212e235e7f256c2bd327634b3b5dd. */
+/* ==========================================================================
+   SOLARFLOW / SOLAROPS - FULL-SCREEN DUAL-PANEL AUTHENTICATION (LOGIN / SIGNUP)
+   Full viewport (100vw × 100vh) edge-to-edge layout matching the design reference:
+   Left: Full-height vibrant royal/electric blue hero panel with brand, badge,
+         heading & 3-step cards.
+   Right: Full-height clean white form panel with phone input, 2-column fields,
+          password with requirements, continue CTA, Google SSO & 1-click bypass.
+   ========================================================================== */
+
+/* Full Screen Edge-to-Edge Viewport */
+.auth-page-viewport {
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+  display: flex;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  font-family: inherit;
+  position: relative;
+}
+
+/* ==========================================================================
+   LEFT HERO PANEL (Full-Height Royal Blue / Electric Gradient Canvas)
+   ========================================================================== */
+.auth-hero-panel {
+  flex: 1.15;
+  width: 52%;
+  min-height: calc(100vh - 28px);
+  margin: 14px 10px 14px 14px;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.22) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(30, 64, 175, 0.35) 0%, transparent 50%),
+    linear-gradient(145deg, #1d4ed8 0%, #2563eb 35%, #1e40af 70%, #172554 100%);
+  border-radius: 28px;
+  padding: 44px 44px 38px 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  box-shadow: 0 16px 40px rgba(29, 78, 216, 0.22);
+}
+
+/* Background Video & Gradient Overlay */
+.auth-hero-video-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.auth-hero-video-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    145deg,
+    rgba(29, 78, 216, 0.74) 0%,
+    rgba(37, 99, 235, 0.62) 35%,
+    rgba(30, 64, 175, 0.76) 70%,
+    rgba(23, 37, 84, 0.90) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Brand Logo (Top Left) */
+.auth-hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #ffffff;
+  z-index: 2;
+  transition: opacity 150ms ease;
+}
+
+.auth-hero-brand:hover {
+  opacity: 0.9;
+}
+
+.auth-hero-brand-icon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-hero-brand-name {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  color: #ffffff;
+}
+
+/* Center / Bottom Hero Content */
+.auth-hero-content {
+  z-index: 2;
+  margin-top: auto;
+  max-width: 560px;
+}
+
+/* "Join Us" Pill Badge */
+.auth-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 9999px;
+  padding: 8px 18px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #ffffff;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Heading & Subtitle */
+.auth-hero-title {
+  font-size: 44px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 12px 0;
+  letter-spacing: -1px;
+  line-height: 1.12;
+}
+
+.auth-hero-subtitle {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.88);
+  margin: 0 0 32px 0;
+  line-height: 1.5;
+  max-width: 480px;
+}
+
+/* 3-Step Process Cards Row */
+.auth-hero-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  width: 100%;
+}
+
+.auth-step-card {
+  height: 120px;
+  border-radius: 18px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: default;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.auth-step-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Step 1: Active Solid White Card */
+.auth-step-card.active {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+}
+
+.auth-step-card.active .auth-step-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.auth-step-card.active .auth-step-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.25;
+}
+
+/* Steps 2 & 3: Translucent Glassmorphic Cards */
+.auth-step-card.inactive {
+  background: rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.auth-step-card.inactive .auth-step-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.auth-step-card.inactive .auth-step-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.25;
+}
+
+/* ==========================================================================
+   RIGHT FORM PANEL (Full-Height Clean White Form Canvas)
+   ========================================================================== */
+.auth-form-panel {
+  flex: 1;
+  width: 48%;
+  min-height: 100vh;
+  background-color: #ffffff;
+  padding: 44px 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.auth-form-inner {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Heading: "Join Us" */
+.auth-form-heading {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  text-align: center;
+  margin: 0 0 26px 0;
+  letter-spacing: -0.6px;
+}
+
+/* Form Groups & Labels */
+.auth-field-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+  letter-spacing: -0.1px;
+}
+
+/* Phone Number Input with Country Code & Flag */
+.auth-phone-box {
+  display: flex;
+  align-items: center;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0 14px;
+  height: 48px;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+  box-sizing: border-box;
+}
+
+.auth-phone-box:focus-within {
+  border-color: #2563eb;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.auth-phone-prefix {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+  flex-shrink: 0;
+}
+
+.auth-phone-divider {
+  width: 1px;
+  height: 20px;
+  background-color: #cbd5e1;
+  margin: 0 12px;
+  flex-shrink: 0;
+}
+
+.auth-phone-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #1e293b;
+  outline: none;
+  font-family: inherit;
+  width: 100%;
+}
+
+.auth-phone-input::placeholder {
+  color: #94a3b8;
+}
+
+/* 2-Column Row (Full Name + Username) */
+.auth-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.auth-field-row .auth-field-group {
+  margin-bottom: 0;
+}
+
+/* Standard Clean Input Box */
+.auth-input-box {
+  display: flex;
+  align-items: center;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0 14px;
+  height: 48px;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.auth-input-box:focus-within {
+  border-color: #2563eb;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.auth-input-control {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #1e293b;
+  outline: none;
+  font-family: inherit;
+  width: 100%;
+}
+
+.auth-input-control::placeholder {
+  color: #94a3b8;
+}
+
+/* Validated Checkmark Icon */
+.auth-check-icon {
+  color: #10b981;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* Password Toggle Action */
+.auth-password-toggle {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 150ms ease;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.auth-password-toggle:hover {
+  color: #475569;
+}
+
+/* Helper Text Under Password */
+.auth-input-note {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin-top: 6px;
+}
+
+/* Primary "Continue" Button */
+.auth-continue-btn {
+  width: 100%;
+  height: 48px;
+  background-color: #2563eb;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+  transition: background-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  font-family: inherit;
+}
+
+.auth-continue-btn:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+}
+
+.auth-continue-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-continue-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Switch Mode Link: "Already have an account? Log in" */
+.auth-switch-prompt {
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 14px;
+}
+
+.auth-switch-link {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 4px;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.auth-switch-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* "Or" Divider */
+.auth-divider-row {
+  display: flex;
+  align-items: center;
+  margin: 18px 0;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.auth-divider-line {
+  flex: 1;
+  height: 1px;
+  background-color: #e2e8f0;
+}
+
+.auth-divider-text {
+  padding: 0 12px;
+}
+
+/* Google Sign-In / SSO Button */
+.auth-google-btn {
+  width: 100%;
+  height: 46px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  font-family: inherit;
+}
+
+.auth-google-btn:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/*   1-Click Demo Bypass Helper (Requirement Compliance) */
+.auth-bypass-container {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auth-bypass-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.auth-bypass-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.auth-bypass-pill-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.auth-bypass-pill {
+  padding: 6px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #1e293b;
+  cursor: pointer;
+  text-align: center;
+  transition: all 150ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.auth-bypass-pill:hover {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+/* Legal Disclaimer */
+.auth-disclaimer-note {
+  font-size: 11px;
+  color: #94a3b8;
+  text-align: center;
+  margin-top: 18px;
+  line-height: 1.45;
+}
+
+.auth-disclaimer-note a {
+  color: #64748b;
+  text-decoration: underline;
+  transition: color 150ms ease;
+}
+
+.auth-disclaimer-note a:hover {
+  color: #2563eb;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (Tablets & Mobile Viewports)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .auth-page-viewport {
+    flex-direction: column;
+    min-height: 100vh;
+    height: auto;
+  }
+
+  .auth-hero-panel {
+    width: auto;
+    margin: 12px;
+    padding: 32px 24px;
+    min-height: auto;
+    border-radius: 20px;
+  }
+
+  .auth-hero-title {
+    font-size: 32px;
+  }
+
+  .auth-hero-steps-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .auth-step-card {
+    height: auto;
+    min-height: 60px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+
+  .auth-form-panel {
+    width: 100%;
+    min-height: auto;
+    padding: 36px 24px 44px 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-hero-panel {
+    margin: 8px;
+    padding: 24px 18px;
+    border-radius: 16px;
+  }
+
+  .auth-hero-title {
+    font-size: 26px;
+  }
+
+  .auth-field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-form-panel {
+    padding: 24px 16px 36px 16px;
+  }
+}

@@ -2035,6 +2035,29 @@
             }
           }
         }
+      },
+      "get": {
+        "tags": [
+          "workspace-read-models"
+        ],
+        "summary": "Operations",
+        "operationId": "operations_api_v1_stock_operations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StockOperationResponse"
+                  },
+                  "title": "Response Operations Api V1 Stock Operations Get"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/stock/operations/{operation_id}": {
@@ -2401,6 +2424,29 @@
       }
     },
     "/api/v1/replenishment/requests": {
+      "get": {
+        "tags": [
+          "workspace-read-models"
+        ],
+        "summary": "Replenishments",
+        "operationId": "replenishments_api_v1_replenishment_requests_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReplenishmentResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Replenishments Api V1 Replenishment Requests Get"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "warehouse"
@@ -2784,6 +2830,77 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspace/technicians": {
+      "get": {
+        "tags": [
+          "workspace-read-models"
+        ],
+        "summary": "Technicians",
+        "operationId": "technicians_api_v1_workspace_technicians_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TechnicianChoice"
+                  },
+                  "type": "array",
+                  "title": "Response Technicians Api V1 Workspace Technicians Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspace/warehouse-catalogue": {
+      "get": {
+        "tags": [
+          "workspace-read-models"
+        ],
+        "summary": "Catalogue",
+        "operationId": "catalogue_api_v1_workspace_warehouse_catalogue_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WarehouseCatalogue"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/serials": {
+      "get": {
+        "tags": [
+          "workspace-read-models"
+        ],
+        "summary": "Serials",
+        "operationId": "serials_api_v1_serials_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SerialResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Serials Api V1 Serials Get"
                 }
               }
             }
@@ -3722,6 +3839,29 @@
           "receipt_reference"
         ],
         "title": "CashReceiptCreate"
+      },
+      "ComponentChoice": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "unit"
+        ],
+        "title": "ComponentChoice"
       },
       "CsrfResponse": {
         "properties": {
@@ -4860,6 +5000,24 @@
           "summary_hash"
         ],
         "title": "JobSignature"
+      },
+      "LocationChoice": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name"
+        ],
+        "title": "LocationChoice"
       },
       "LoginRequest": {
         "properties": {
@@ -7142,6 +7300,30 @@
         ],
         "title": "SurveySubmit"
       },
+      "TechnicianChoice": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "employee_code": {
+            "type": "string",
+            "title": "Employee Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "full_name",
+          "employee_code"
+        ],
+        "title": "TechnicianChoice"
+      },
       "TemplateLineResponse": {
         "properties": {
           "component_code": {
@@ -7292,6 +7474,30 @@
           "code"
         ],
         "title": "VerifyEmailRequest"
+      },
+      "WarehouseCatalogue": {
+        "properties": {
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/ComponentChoice"
+            },
+            "type": "array",
+            "title": "Components"
+          },
+          "locations": {
+            "items": {
+              "$ref": "#/components/schemas/LocationChoice"
+            },
+            "type": "array",
+            "title": "Locations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "components",
+          "locations"
+        ],
+        "title": "WarehouseCatalogue"
       },
       "WarehouseLineResponse": {
         "properties": {

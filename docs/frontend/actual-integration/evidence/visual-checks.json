@@ -1,0 +1,82 @@
+[
+  {
+    "page": "signup",
+    "width": 1440,
+    "height": 900,
+    "scrollWidth": 1440,
+    "source": "teammate-386f356-next-integration",
+    "videoWidth": 480,
+    "viewportHeight": 900,
+    "viewportWidth": 1440
+  },
+  {
+    "page": "signup",
+    "width": 1280,
+    "height": 800,
+    "scrollWidth": 1280,
+    "source": "teammate-386f356-next-integration",
+    "videoWidth": 480,
+    "viewportHeight": 800,
+    "viewportWidth": 1280
+  },
+  {
+    "page": "signup",
+    "width": 768,
+    "height": 1024,
+    "scrollWidth": 768,
+    "source": "teammate-386f356-next-integration",
+    "videoWidth": 480,
+    "viewportHeight": 1024,
+    "viewportWidth": 768
+  },
+  {
+    "page": "signup",
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "source": "teammate-386f356-next-integration",
+    "videoWidth": 480,
+    "viewportHeight": 844,
+    "viewportWidth": 390
+  },
+  {
+    "page": "login",
+    "width": 1440,
+    "height": 900,
+    "scrollWidth": 1440,
+    "source": "teammate-386f356-next-integration",
+    "videoWidth": 480,
+    "viewportHeight": 900,
+    "viewportWidth": 1440
+  },
+  {
+    "page": "login",
+    "width": 1280,
+    "height": 800,
+    "scrollWidth": 1280,
+    "source": "teammate-386f356-next-integration",
+    "videoWidth": 480,
+    "viewportHeight": 800,
+    "viewportWidth": 1280
+  },
+  {
+    "page": "login",
+    "width": 768,
+    "height": 1024,
+    "scrollWidth": 768,
+    "source": "teammate-386f356-next-integration",
+    "videoWidth": 480,
+    "viewportHeight": 1024,
+    "viewportWidth": 768
+  },
+  {
+    "page": "login",
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "source": "teammate-386f356-next-integration",
+    "videoWidth": 480,
+    "viewportHeight": 844,
+    "viewportWidth": 390
+  }
+]

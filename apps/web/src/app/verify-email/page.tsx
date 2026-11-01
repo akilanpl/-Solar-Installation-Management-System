@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
-import { Button, Card, ErrorState, TextField } from "@/components/ui";
+import { Button, ErrorState, TextField } from "@/components/ui";
+import { AuthFrame } from "@/components/auth-frame";
 import { api, ApiError, fieldErrors } from "@/lib/api";
 
 function VerifyForm() {
@@ -51,9 +52,8 @@ function VerifyForm() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md items-center px-4 py-10">
-      <Card className="w-full">
-        <h1 className="text-2xl font-semibold">Verify your email</h1>
+    <AuthFrame><div className="auth-verification">
+        <h1 className="auth-form-heading">Verify your email</h1>
         <p className="mt-2 text-sm text-moss-900/80">
           Enter the one-time code from your verification message. It expires in 10 minutes and works once.
         </p>
@@ -91,8 +91,7 @@ function VerifyForm() {
             Back to sign in
           </Link>
         </p>
-      </Card>
-    </main>
+      </div></AuthFrame>
   );
 }
 
