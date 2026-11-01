@@ -48,6 +48,7 @@ build/
 # Release gate evidence stays local; sanitized reports are in docs/release.
 .pushgate/reports/
 apps/web/.next-release-preview/
+apps/web/.next-ci-browser/
 
 # Local audit of explicitly approved review-only gate overrides
 .pushgate/bypass.log

@@ -6,7 +6,7 @@ test("customer enquiry persists and sales can qualify it", async ({ page, browse
   await page.getByLabel("Full name").fill("Leela Nair");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Mobile").fill("9845099999");
-  await page.getByLabel("Password").fill("Solarops123");
+  await page.getByLabel("Password", { exact: true }).fill("Solarops123");
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page.getByRole("heading", { name: "Verify your email" })).toBeVisible();
   await page.waitForLoadState("load");
@@ -16,7 +16,7 @@ test("customer enquiry persists and sales can qualify it", async ({ page, browse
   await expect(page.getByRole("heading", { name: "Sign in to SolarOps" })).toBeVisible();
   await page.waitForLoadState("load");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill("Solarops123");
+  await page.getByLabel("Password", { exact: true }).fill("Solarops123");
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page.getByRole("heading", { name: /Hello, Leela Nair/ })).toBeVisible();
   await page.getByRole("link", { name: "New enquiry" }).first().click();
@@ -37,7 +37,7 @@ test("customer enquiry persists and sales can qualify it", async ({ page, browse
   await sales.getByLabel("Employee ID").fill("EMP-SALES-001");
   const password = process.env.SOLAROPS_SEED_PASSWORD;
   if (!password) throw new Error("Set SOLAROPS_SEED_PASSWORD to the seeded staff password.");
-  await sales.getByLabel("Password").fill(password);
+  await sales.getByLabel("Password", { exact: true }).fill(password);
   await sales.getByRole("button", { name: "Sign in" }).click();
   await expect(sales.getByRole("heading", { name: "Enquiries" })).toBeVisible();
   await sales.getByRole("link", { name: reference }).click();

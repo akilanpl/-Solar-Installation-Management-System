@@ -1,12 +1,12 @@
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 
 import { expect, test, type Page } from "@playwright/test";
 
 type DemoAccount = { identifier: string; password: string; role: string };
 
 function account(email: string): DemoAccount {
-  const path = resolve(process.cwd(), "../../var/demo-credentials.json");
+  const path = process.env.SOLAROPS_E2E_CREDENTIALS_FILE;
+  if (!path) throw new Error("Run the isolated browser runner with disposable credentials.");
   const accounts = JSON.parse(readFileSync(path, "utf8")) as Record<string, DemoAccount>;
   if (!accounts[email]) throw new Error("Run the local development demo seed before this test.");
   return accounts[email];
@@ -61,6 +61,8 @@ test("seeded customer persists an enquiry, sales qualifies it, customer relogs a
     await expect(sales.getByRole("heading", { name: "Enquiries", exact: true })).toBeVisible();
     await sales.getByRole("link", { name: body.reference, exact: true }).click();
     await sales.getByLabel("Next status").selectOption("qualified");
+    await sales.getByLabel("Verified shadow-free roof area (m²)").fill("35");
+    await sales.getByLabel("Grid connection suitability").selectOption("true");
     await sales.getByLabel(/^Note/).fill("QA demo: rooftop and customer details confirmed.");
     await sales.getByRole("button", { name: "Update status" }).click();
     const updateResponse = sales.waitForResponse((response) =>
@@ -69,7 +71,7 @@ test("seeded customer persists an enquiry, sales qualifies it, customer relogs a
     expect((await updateResponse).status()).toBe(200);
     await expect(sales.getByText("Qualified", { exact: true })).toBeVisible();
 
-    await page.getByRole("button", { name: "Sign out", exact: true }).click();
+    await page.getByRole("button", { name: "Sign out", exact: true }).first().click();
     await expect(page.getByRole("heading", { name: "Sign in to SolarOps" })).toBeVisible();
     expect((await page.request.get("/api/v1/auth/me")).status()).toBe(401);
     await signIn(page, "customer.demo@solarops.example.com");
