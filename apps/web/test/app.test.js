@@ -471,6 +471,10 @@ test('Customer Accessibility: scoped screen reader, speech-to-text dictation, an
   assert.ok(a11yCss.includes('customer-text-large'), 'CSS must include text zoom rules');
   assert.ok(a11yCss.includes('customer-dyslexia-spacing'), 'CSS must include dyslexia spacing rules');
   assert.ok(a11yCss.includes('customer-reading-ruler'), 'CSS must include reading ruler styling');
+  assert.ok(a11yJsx.includes('segmented-zoom-control'), 'Customer accessibility must include segmented zoom controller');
+  assert.ok(a11yJsx.includes('audio-waveform-bars'), 'Customer accessibility must include live audio equalizer visualizer');
+  assert.ok(a11yJsx.includes('a11y-reset-all-btn'), 'Customer accessibility must include reset all aids action');
+  assert.ok(a11yCss.includes('a11y-drawer-backdrop'), 'CSS must include frosted backdrop to eliminate button overlap');
 });
 
 test('Mobile Responsiveness: floating bottom liquid-glass dock, zero app-shell margin, and phone scaling', () => {

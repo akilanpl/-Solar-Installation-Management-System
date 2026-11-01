@@ -16,6 +16,10 @@ import {
   Sun,
   Layers,
   ChevronRight,
+  Mic,
+  ShieldCheck,
+  Headphones,
+  Sliders,
 } from 'lucide-react';
 import { useRouter } from '../../router/Router';
 import { useAuth } from '../../context/AuthContext';
@@ -35,6 +39,7 @@ export function CustomerAccessibility() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [speechRate, setSpeechRate] = useState(0.92);
 
   // Accessibility Preferences
   const [highContrast, setHighContrast] = useState(() => {
@@ -79,6 +84,16 @@ export function CustomerAccessibility() {
 
   const [readingRuler, setReadingRuler] = useState(false);
   const [rulerTop, setRulerTop] = useState(200);
+
+  // Active helpers count
+  const activeAidsCount = [
+    highContrast,
+    textSize !== 'normal',
+    dyslexicFont,
+    readingRuler,
+    audioFeedback,
+    reduceMotion,
+  ].filter(Boolean).length;
 
   // Web Audio Earcon Synthesizer (Zero network asset requirement)
   const playEarcon = (frequency = 600, type = 'sine', duration = 0.12) => {
@@ -277,7 +292,7 @@ export function CustomerAccessibility() {
     window.speechSynthesis.cancel();
     const narrationText = getPageNarration();
     const utterance = new SpeechSynthesisUtterance(narrationText);
-    utterance.rate = 0.92; // Clear, comfortable speech rate
+    utterance.rate = speechRate;
     utterance.pitch = 1.0;
     utterance.lang = 'en-IN';
 
@@ -315,12 +330,6 @@ export function CustomerAccessibility() {
     playEarcon(!highContrast ? 700 : 440);
   };
 
-  const cycleTextSize = () => {
-    const next = textSize === 'normal' ? 'large' : textSize === 'large' ? 'xlarge' : 'normal';
-    setTextSize(next);
-    playEarcon(600);
-  };
-
   const toggleDyslexic = () => {
     setDyslexicFont(!dyslexicFont);
     playEarcon(!dyslexicFont ? 650 : 480);
@@ -340,6 +349,22 @@ export function CustomerAccessibility() {
     if (next) playEarcon(800, 'sine', 0.2);
   };
 
+  const handleResetAll = () => {
+    setHighContrast(false);
+    setTextSize('normal');
+    setDyslexicFont(false);
+    setReadingRuler(false);
+    setAudioFeedback(false);
+    setReduceMotion(false);
+    handleStopSpeech();
+    playEarcon(400, 'triangle');
+    showToast({
+      type: 'info',
+      title: 'Accessibility Reset',
+      message: 'All visual and auditory helpers restored to standard defaults.',
+    });
+  };
+
   return (
     <>
       {/* Visual Reading Tracking Ruler */}
@@ -352,7 +377,10 @@ export function CustomerAccessibility() {
       )}
 
       {/* Floating Accessibility Trigger Pill */}
-      <aside className="customer-a11y-floating-trigger" aria-label="Customer Accessibility Assistant">
+      <aside
+        className={`customer-a11y-floating-trigger ${isOpen ? 'is-open' : ''}`}
+        aria-label="Customer Accessibility Assistant"
+      >
         <button
           type="button"
           className={`a11y-pill-btn ${isOpen ? 'active' : ''} ${isSpeaking ? 'speaking-pulse' : ''}`}
@@ -375,19 +403,49 @@ export function CustomerAccessibility() {
           )}
         </button>
 
+        {/* Backdrop for outside click & focus isolation */}
+        {isOpen && (
+          <div
+            className="a11y-drawer-backdrop"
+            onClick={() => {
+              setIsOpen(false);
+              playEarcon(420);
+            }}
+            aria-hidden="true"
+          />
+        )}
+
         {/* Accessibility Quick Panel Drawer */}
         {isOpen && (
           <div
             id="customer-a11y-panel"
             className="customer-a11y-drawer"
-            role="region"
-            aria-label="Customer Accessibility Controls"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Customer Accessibility Assistant Suite"
           >
+            {/* Mobile Grab Bar */}
+            <div className="a11y-mobile-grab-handle" aria-hidden="true" />
+
+            {/* Glassmorphic Gradient Header */}
             <div className="a11y-drawer-header">
-              <div className="a11y-header-title">
-                <Accessibility size={18} color="#38bdf8" />
-                <span>Customer Accessibility Assistant</span>
+              <div className="a11y-header-left">
+                <div className="a11y-header-icon-badge">
+                  <Accessibility size={20} color="#38bdf8" />
+                </div>
+                <div>
+                  <div className="a11y-header-title-row">
+                    <h3 className="a11y-header-title">Accessibility Assistant</h3>
+                    <span className={`a11y-status-pill ${activeAidsCount > 0 ? 'active' : ''}`}>
+                      {activeAidsCount > 0 ? `${activeAidsCount} Active Aids` : 'Standard Mode'}
+                    </span>
+                  </div>
+                  <p className="a11y-header-subtitle">
+                    Adaptive assistive tools tailored for solar customers
+                  </p>
+                </div>
               </div>
+
               <button
                 type="button"
                 className="a11y-close-btn"
@@ -402,18 +460,67 @@ export function CustomerAccessibility() {
             </div>
 
             <div className="a11y-drawer-content">
-              {/* Feature 1: Page Screen Reader */}
-              <div className="a11y-feature-card screen-reader-card">
+              {/* Feature 1: Page Screen Reader Hero Card */}
+              <div className={`a11y-feature-card screen-reader-card ${isSpeaking ? 'active-reading-border' : ''}`}>
                 <div className="feature-card-header">
                   <div className="feature-icon-badge speaker">
-                    <Volume2 size={17} color="#10b981" />
+                    <Volume2 size={18} color="#10b981" />
                   </div>
-                  <div>
-                    <h4>Page Screen Reader</h4>
-                    <p>Narrates your solar generation, OTPs, and milestone costs aloud.</p>
+                  <div className="feature-card-text">
+                    <div className="feature-title-row">
+                      <h4>Page Screen Reader</h4>
+                      {isSpeaking && (
+                        <span className="live-radar-chip">
+                          <span className="radar-dot" />
+                          <span>{isPaused ? 'Paused' : 'Narrating...'}</span>
+                        </span>
+                      )}
+                    </div>
+                    <p>Narrates solar generation, OTP verification, and milestone disbursements aloud.</p>
                   </div>
                 </div>
 
+                {/* Animated Waveform Equalizer when speaking */}
+                {isSpeaking && (
+                  <div className="live-equalizer-row" aria-hidden="true">
+                    <div className={`audio-waveform-bars ${isPaused ? 'paused' : ''}`}>
+                      <span className="eq-bar bar-1" />
+                      <span className="eq-bar bar-2" />
+                      <span className="eq-bar bar-3" />
+                      <span className="eq-bar bar-4" />
+                      <span className="eq-bar bar-5" />
+                    </div>
+                    <span className="waveform-caption">
+                      {isPaused ? 'Speech paused' : `Speaking at ${speechRate}x pace (Indian English)`}
+                    </span>
+                  </div>
+                )}
+
+                {/* Speech Rate Cadence Selector */}
+                <div className="speech-speed-row">
+                  <span className="speed-label">Voice Speed:</span>
+                  <div className="speed-pill-group">
+                    {[
+                      { rate: 0.8, label: '0.8x Slow' },
+                      { rate: 0.92, label: '1.0x Normal' },
+                      { rate: 1.2, label: '1.2x Fast' },
+                    ].map((s) => (
+                      <button
+                        key={s.rate}
+                        type="button"
+                        className={`speed-pill ${speechRate === s.rate ? 'active' : ''}`}
+                        onClick={() => {
+                          setSpeechRate(s.rate);
+                          playEarcon(550);
+                        }}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Primary Screen Reader Control Buttons */}
                 <div className="screen-reader-controls">
                   <button
                     type="button"
@@ -448,9 +555,11 @@ export function CustomerAccessibility() {
               </div>
 
               {/* Feature 2: High Contrast Vision Mode */}
-              <div className="a11y-setting-row">
+              <div className={`a11y-setting-row ${highContrast ? 'active-amber' : ''}`}>
                 <div className="setting-info">
-                  <Eye size={17} color="#f59e0b" />
+                  <div className="setting-icon-box amber">
+                    <Eye size={17} color="#f59e0b" />
+                  </div>
                   <div>
                     <strong>High Contrast Mode</strong>
                     <span>Deep black background & high luminance yellow text</span>
@@ -458,7 +567,7 @@ export function CustomerAccessibility() {
                 </div>
                 <button
                   type="button"
-                  className={`a11y-toggle-switch ${highContrast ? 'active' : ''}`}
+                  className={`a11y-toggle-switch amber-switch ${highContrast ? 'active' : ''}`}
                   onClick={toggleHighContrast}
                   aria-pressed={highContrast}
                   aria-label="Toggle High Contrast Vision Mode"
@@ -467,35 +576,67 @@ export function CustomerAccessibility() {
                 </button>
               </div>
 
-              {/* Feature 3: Font Sizing (Zoom) */}
-              <div className="a11y-setting-row">
+              {/* Feature 3: Interactive Segmented Text Zoom */}
+              <div className={`a11y-setting-row column-card ${textSize !== 'normal' ? 'active-sky' : ''}`}>
                 <div className="setting-info">
-                  <Type size={17} color="#38bdf8" />
+                  <div className="setting-icon-box sky">
+                    <Type size={17} color="#0284c7" />
+                  </div>
                   <div>
                     <strong>Text Sizing (Zoom)</strong>
-                    <span>
-                      Current:{' '}
-                      {textSize === 'normal'
-                        ? '100% (Standard)'
-                        : textSize === 'large'
-                        ? '125% (Large)'
-                        : '150% (Extra Large)'}
-                    </span>
+                    <span>Scale font sizing proportionally across buttons & tables</span>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  className="a11y-action-pill-btn"
-                  onClick={cycleTextSize}
-                >
-                  {textSize === 'normal' ? '125% A+' : textSize === 'large' ? '150% A++' : '100% A'}
-                </button>
+
+                <div className="segmented-zoom-control" role="radiogroup" aria-label="Text Sizing Zoom">
+                  <button
+                    type="button"
+                    className={`zoom-segment-btn ${textSize === 'normal' ? 'active' : ''}`}
+                    onClick={() => {
+                      setTextSize('normal');
+                      playEarcon(500);
+                    }}
+                    role="radio"
+                    aria-checked={textSize === 'normal'}
+                  >
+                    <span>100%</span>
+                    <small>Standard</small>
+                  </button>
+                  <button
+                    type="button"
+                    className={`zoom-segment-btn ${textSize === 'large' ? 'active' : ''}`}
+                    onClick={() => {
+                      setTextSize('large');
+                      playEarcon(600);
+                    }}
+                    role="radio"
+                    aria-checked={textSize === 'large'}
+                  >
+                    <span>125%</span>
+                    <small>Large</small>
+                  </button>
+                  <button
+                    type="button"
+                    className={`zoom-segment-btn ${textSize === 'xlarge' ? 'active' : ''}`}
+                    onClick={() => {
+                      setTextSize('xlarge');
+                      playEarcon(700);
+                    }}
+                    role="radio"
+                    aria-checked={textSize === 'xlarge'}
+                  >
+                    <span>150%</span>
+                    <small>Extra</small>
+                  </button>
+                </div>
               </div>
 
               {/* Feature 4: Dyslexia Friendly Spacing */}
-              <div className="a11y-setting-row">
+              <div className={`a11y-setting-row ${dyslexicFont ? 'active-purple' : ''}`}>
                 <div className="setting-info">
-                  <Sparkles size={17} color="#a855f7" />
+                  <div className="setting-icon-box purple">
+                    <Sparkles size={17} color="#a855f7" />
+                  </div>
                   <div>
                     <strong>Dyslexia Reading Spacing</strong>
                     <span>Expands letter spacing and line heights for readability</span>
@@ -503,7 +644,7 @@ export function CustomerAccessibility() {
                 </div>
                 <button
                   type="button"
-                  className={`a11y-toggle-switch ${dyslexicFont ? 'active' : ''}`}
+                  className={`a11y-toggle-switch purple-switch ${dyslexicFont ? 'active' : ''}`}
                   onClick={toggleDyslexic}
                   aria-pressed={dyslexicFont}
                   aria-label="Toggle Dyslexia Reading Spacing"
@@ -513,9 +654,11 @@ export function CustomerAccessibility() {
               </div>
 
               {/* Feature 5: Reading Ruler (Eye Guide) */}
-              <div className="a11y-setting-row">
+              <div className={`a11y-setting-row ${readingRuler ? 'active-cyan' : ''}`}>
                 <div className="setting-info">
-                  <Layers size={17} color="#06b6d4" />
+                  <div className="setting-icon-box cyan">
+                    <Layers size={17} color="#06b6d4" />
+                  </div>
                   <div>
                     <strong>Reading Guide Ruler</strong>
                     <span>Highlighted guide line follows cursor to aid focus</span>
@@ -523,7 +666,7 @@ export function CustomerAccessibility() {
                 </div>
                 <button
                   type="button"
-                  className={`a11y-toggle-switch ${readingRuler ? 'active' : ''}`}
+                  className={`a11y-toggle-switch cyan-switch ${readingRuler ? 'active' : ''}`}
                   onClick={() => {
                     setReadingRuler(!readingRuler);
                     playEarcon(!readingRuler ? 680 : 420);
@@ -536,9 +679,11 @@ export function CustomerAccessibility() {
               </div>
 
               {/* Feature 6: Sound & Haptic Earcons */}
-              <div className="a11y-setting-row">
+              <div className={`a11y-setting-row ${audioFeedback ? 'active-emerald' : ''}`}>
                 <div className="setting-info">
-                  <Volume1 size={17} color="#10b981" />
+                  <div className="setting-icon-box emerald">
+                    <Volume1 size={17} color="#10b981" />
+                  </div>
                   <div>
                     <strong>Action Sound Earcons</strong>
                     <span>Subtle audio chimes on buttons to confirm clicks</span>
@@ -546,7 +691,7 @@ export function CustomerAccessibility() {
                 </div>
                 <button
                   type="button"
-                  className={`a11y-toggle-switch ${audioFeedback ? 'active' : ''}`}
+                  className={`a11y-toggle-switch emerald-switch ${audioFeedback ? 'active' : ''}`}
                   onClick={toggleAudioFeedback}
                   aria-pressed={audioFeedback}
                   aria-label="Toggle Audio Feedback"
@@ -556,9 +701,11 @@ export function CustomerAccessibility() {
               </div>
 
               {/* Feature 7: Reduce Motion (Epilepsy / Vestibular) */}
-              <div className="a11y-setting-row">
+              <div className={`a11y-setting-row ${reduceMotion ? 'active-rose' : ''}`}>
                 <div className="setting-info">
-                  <RotateCcw size={17} color="#ec4899" />
+                  <div className="setting-icon-box rose">
+                    <RotateCcw size={17} color="#ec4899" />
+                  </div>
                   <div>
                     <strong>Reduce Motion</strong>
                     <span>Pauses 3D transforms, shimmers & rapid animations</span>
@@ -566,7 +713,7 @@ export function CustomerAccessibility() {
                 </div>
                 <button
                   type="button"
-                  className={`a11y-toggle-switch ${reduceMotion ? 'active' : ''}`}
+                  className={`a11y-toggle-switch rose-switch ${reduceMotion ? 'active' : ''}`}
                   onClick={toggleReduceMotion}
                   aria-pressed={reduceMotion}
                   aria-label="Toggle Reduce Motion"
@@ -576,8 +723,22 @@ export function CustomerAccessibility() {
               </div>
             </div>
 
+            {/* Footer with Reset All & Compliance Tag */}
             <div className="a11y-drawer-footer">
-              <span>WCAG 2.2 AAA Compliant · Customer Portal</span>
+              <button
+                type="button"
+                className="a11y-reset-all-btn"
+                onClick={handleResetAll}
+                title="Restore all accessibility settings to standard default"
+              >
+                <RotateCcw size={13} />
+                <span>Reset to Defaults</span>
+              </button>
+
+              <div className="wcag-compliance-tag">
+                <ShieldCheck size={14} color="#10b981" />
+                <span>WCAG 2.2 AAA Compliant</span>
+              </div>
             </div>
           </div>
         )}
@@ -587,4 +748,3 @@ export function CustomerAccessibility() {
 }
 
 export default CustomerAccessibility;
-
