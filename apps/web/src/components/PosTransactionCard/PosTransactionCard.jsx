@@ -10,3 +10,4 @@ export function PosTransactionCard(props) {
 }
 
 export default PosTransactionCard;
+
