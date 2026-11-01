@@ -6,6 +6,7 @@ import { Button } from '../../components/Button/Button';
 import { Badge } from '../../components/Badge/Badge';
 import { TransactionCard } from '../../components/TransactionCard/TransactionCard';
 import { useAuth } from '../../context/AuthContext';
+import { useRouter } from '../../router/Router';
 import { CreditCard, CheckCircle2, Clock, Landmark, ArrowUpRight } from 'lucide-react';
 import './CustomerPayments.css';
 
@@ -45,10 +46,34 @@ const MILESTONES = [
 ];
 
 export function CustomerPayments() {
-  const { showToast } = useAuth();
+  const { user, showToast } = useAuth();
+  const { navigate } = useRouter();
 
-  const handlePay = (title) => {
-    showToast(`Payment portal simulation opened for: ${title}`);
+  const handlePay = (title, amount = '₹1,70,000') => {
+    try {
+      localStorage.setItem(
+        'solarops_pending_payment',
+        JSON.stringify({
+          orderId: 'TXN-MILESTONE-002',
+          systemTitle: '5 kW Hybrid Rooftop System',
+          systemSubtitle: title || 'Milestone 2: Material Dispatch from Warehouse',
+          amount: amount || '₹1,70,000',
+          customerName: user?.full_name || 'Arun Kumar',
+          items: [
+            { name: title || 'Milestone 2: Material Dispatch & BOS', qty: '1 lot', cost: amount || '₹1,70,000' },
+            { name: 'PM Surya Ghar Subsidy Deduction', qty: 'Credit', cost: '-₹78,000' },
+          ],
+        })
+      );
+    } catch (e) {
+      // ignore
+    }
+    showToast({
+      type: 'info',
+      title: 'Opening Payment Checkout',
+      message: `Directing to settlement gateway for ${title}`,
+    });
+    navigate('/customer/payments/razorpay');
   };
 
   return (
@@ -157,7 +182,11 @@ export function CustomerPayments() {
           </Card>
 
           {/* New Transaction Interactive POS Terminal */}
-          <TransactionCard currencySymbol="₹" />
+          <TransactionCard
+            label="New Transaction"
+            currencySymbol="₹"
+            onClick={() => handlePay('Milestone 2: Material Dispatch from Warehouse', '₹1,70,000')}
+          />
         </div>
       </div>
     </AppShell>

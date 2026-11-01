@@ -1,6 +1,7 @@
 /* ==========================================================================
-   SOLARFLOW / SOLAROPS - INTERACTIVE POS TRANSACTION & RAZORPAY CARD
-   Exact CSS keyframes, card-swipe physics & live payment receipt
+   SOLARFLOW / SOLAROPS - INTERACTIVE POS TRANSACTION & RAZORPAY TERMINAL CARD
+   Exact card-swipe physics, slide-top, slide-post, fade-in-fwd keyframes,
+   and mobile touch responsiveness.
    ========================================================================== */
 
 .pos-transaction-wrapper {
@@ -13,32 +14,31 @@
 }
 
 /* ==========================================================================
-   1. ANIMATED POS TERMINAL & CARD (Exact User Style Reference)
+   1. ANIMATED POS TERMINAL & CARD CONTAINER (Exact User Geometry)
    ========================================================================== */
 .pos-container {
   background-color: #ffffff;
   display: flex;
   width: 100%;
-  max-width: 440px;
-  height: 116px;
+  max-width: 460px;
+  height: 120px;
   position: relative;
-  border-radius: 16px;
+  border-radius: 8px;
   border: 1px solid #edf0f5;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease-in-out;
   cursor: pointer;
   overflow: hidden;
   box-sizing: border-box;
   margin: 0 auto;
-  align-self: center;
 }
 
 .pos-container:hover,
 .pos-container.active-swipe {
-  transform: scale(1.02);
+  transform: scale(1.03);
   width: 220px;
+  max-width: 220px;
   margin: 0 auto;
-  align-self: center;
 }
 
 .pos-container:hover .pos-left-side,
@@ -46,11 +46,12 @@
   width: 100%;
 }
 
+/* Green Left Chamber (Terminal Housing) */
 .pos-left-side {
   background-color: #5de2a3;
-  width: 125px;
-  height: 116px;
-  border-radius: 14px;
+  width: 130px;
+  height: 120px;
+  border-radius: 6px;
   position: relative;
   display: flex;
   justify-content: center;
@@ -61,8 +62,9 @@
   overflow: hidden;
 }
 
+/* Right Chamber (Label & Arrow Icon) */
 .pos-right-side {
-  width: calc(100% - 125px);
+  width: calc(100% - 130px);
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -70,7 +72,7 @@
   justify-content: space-between;
   white-space: nowrap;
   transition: 0.3s;
-  padding: 0 16px;
+  padding: 0 18px;
   box-sizing: border-box;
 }
 
@@ -79,28 +81,32 @@
 }
 
 .pos-arrow {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
+  margin-right: 4px;
   flex-shrink: 0;
   transition: transform 0.2s ease;
 }
 
-.pos-container:hover .pos-arrow {
+.pos-container:hover .pos-arrow,
+.pos-container.active-swipe .pos-arrow {
   transform: translateX(4px);
 }
 
 .pos-new {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 700;
   color: #111827;
   font-family: inherit;
   letter-spacing: -0.2px;
 }
 
-/* Simulated Credit Card */
+/* ==========================================================================
+   2. SIMULATED CREDIT CARD
+   ========================================================================== */
 .pos-card {
-  width: 68px;
-  height: 44px;
+  width: 70px;
+  height: 46px;
   background-color: #c7ffbc;
   border-radius: 6px;
   position: absolute;
@@ -108,15 +114,17 @@
   z-index: 10;
   flex-direction: column;
   align-items: center;
-  box-shadow: 6px 6px 12px -2px rgba(77, 200, 143, 0.65);
+  -webkit-box-shadow: 9px 9px 9px -2px rgba(77, 200, 143, 0.72);
+  -moz-box-shadow: 9px 9px 9px -2px rgba(77, 200, 143, 0.72);
+  box-shadow: 9px 9px 9px -2px rgba(77, 200, 143, 0.72);
 }
 
 .pos-card-line {
-  width: 60px;
-  height: 12px;
+  width: 65px;
+  height: 13px;
   background-color: #80ea69;
   border-radius: 2px;
-  margin-top: 6px;
+  margin-top: 7px;
 }
 
 .pos-buttons {
@@ -127,119 +135,122 @@
   border-radius: 50%;
   margin-top: 5px;
   transform: rotate(90deg);
-  margin: 8px 0 0 -28px;
+  margin: 10px 0 0 -30px;
 }
 
+/* Card Animation Trigger */
 .pos-container:hover .pos-card,
 .pos-container.active-swipe .pos-card {
   animation: slide-top 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) both;
 }
 
-.pos-container:hover .pos-post,
-.pos-container.active-swipe .pos-post {
-  animation: slide-post 1s cubic-bezier(0.165, 0.84, 0.44, 1) both;
-}
-
 @keyframes slide-top {
   0% {
+    -webkit-transform: translateY(0);
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-68px) rotate(90deg);
+    -webkit-transform: translateY(-70px) rotate(90deg);
+    transform: translateY(-70px) rotate(90deg);
   }
   60% {
-    transform: translateY(-68px) rotate(90deg);
+    -webkit-transform: translateY(-70px) rotate(90deg);
+    transform: translateY(-70px) rotate(90deg);
   }
   100% {
+    -webkit-transform: translateY(-8px) rotate(90deg);
     transform: translateY(-8px) rotate(90deg);
   }
 }
 
-/* POS Terminal Base */
+/* ==========================================================================
+   3. POS TERMINAL BASE (POST)
+   ========================================================================== */
 .pos-post {
-  width: 62px;
-  height: 74px;
+  width: 63px;
+  height: 75px;
   background-color: #dddde0;
   position: absolute;
   z-index: 11;
   bottom: 10px;
-  top: 116px;
+  top: 120px;
   border-radius: 6px;
   overflow: hidden;
 }
 
 .pos-post-line {
-  width: 46px;
+  width: 47px;
   height: 9px;
   background-color: #545354;
-  position: absolute;
   border-radius: 0px 0px 3px 3px;
-  right: 8px;
-  top: 8px;
-}
-
-.pos-post-line:before {
-  content: "";
-  position: absolute;
-  width: 46px;
-  height: 9px;
-  background-color: #757375;
-  top: -8px;
+  margin-right: auto;
+  margin-left: auto;
+  clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
 }
 
 .pos-screen {
-  width: 46px;
-  height: 22px;
+  width: 47px;
+  height: 23px;
   background-color: #ffffff;
-  position: absolute;
-  top: 22px;
-  right: 8px;
+  margin-top: 6px;
   border-radius: 3px;
+  margin-right: auto;
+  margin-left: auto;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .pos-numbers {
-  width: 11px;
-  height: 11px;
+  width: 12px;
+  height: 12px;
   background-color: #838183;
-  box-shadow: 0 -16px 0 0 #838183, 0 16px 0 0 #838183;
+  box-shadow: 0 -18px 0 0 #838183, 0 18px 0 0 #838183;
   border-radius: 2px;
-  position: absolute;
   transform: rotate(90deg);
-  left: 25px;
-  top: 50px;
+  margin: 25px 0 0 22px;
 }
 
 .pos-numbers-line2 {
-  width: 11px;
-  height: 11px;
+  width: 12px;
+  height: 12px;
   background-color: #aaa9ab;
-  box-shadow: 0 -16px 0 0 #aaa9ab, 0 16px 0 0 #aaa9ab;
+  box-shadow: 0 -18px 0 0 #aaa9ab, 0 18px 0 0 #aaa9ab;
   border-radius: 2px;
-  position: absolute;
   transform: rotate(90deg);
-  left: 25px;
-  top: 66px;
+  margin: 7px 0 0 22px;
+}
+
+/* Post Slide Up Animation Trigger */
+.pos-container:hover .pos-post,
+.pos-container.active-swipe .pos-post {
+  animation: slide-post 1s cubic-bezier(0.165, 0.84, 0.44, 1) both;
 }
 
 @keyframes slide-post {
   50% {
-    transform: translateY(0);
+    -webkit-transform: translateY(-70px);
+    transform: translateY(-70px);
   }
   100% {
-    transform: translateY(-68px);
+    -webkit-transform: translateY(-70px);
+    transform: translateY(-70px);
   }
 }
 
+/* Screen Currency Display */
 .pos-dollar {
-  font-size: 15px;
+  position: absolute;
+  font-size: 16px;
   font-weight: 800;
   font-family: inherit;
-  color: #2e7d32;
+  width: 100%;
+  left: 0;
+  top: 1px;
+  color: #4b953b;
   text-align: center;
-  line-height: 1;
+  line-height: 20px;
 }
 
 .pos-container:hover .pos-dollar,
@@ -258,15 +269,35 @@
   }
 }
 
+/* ==========================================================================
+   4. RESPONSIVE MEDIA QUERIES (Mobile phone scaling)
+   ========================================================================== */
 @media only screen and (max-width: 480px) {
   .pos-container {
-    transform: scale(0.9);
+    transform: scale(0.85);
+    transform-origin: center center;
+    margin: -6px auto;
   }
-  .pos-container:hover {
-    transform: scale(0.94);
+
+  .pos-container:hover,
+  .pos-container.active-swipe {
+    transform: scale(0.88);
+    width: 220px;
   }
+
   .pos-new {
-    font-size: 16px;
+    font-size: 17px;
   }
 }
 
+@media only screen and (max-width: 360px) {
+  .pos-container {
+    transform: scale(0.75);
+    margin: -10px auto;
+  }
+
+  .pos-container:hover,
+  .pos-container.active-swipe {
+    transform: scale(0.78);
+  }
+}

@@ -4,8 +4,10 @@ import { PageHeader } from '../../components/PageHeader/PageHeader';
 import { Card } from '../../components/Card/Card';
 import { Button } from '../../components/Button/Button';
 import { Badge } from '../../components/Badge/Badge';
+import { TransactionCard } from '../../components/TransactionCard/TransactionCard';
 import { useAuth } from '../../context/AuthContext';
-import { Check, Zap, Sparkles, FileDown, ShieldCheck } from 'lucide-react';
+import { useRouter } from '../../router/Router';
+import { Check, Zap, Sparkles, FileDown, ShieldCheck, ArrowRight } from 'lucide-react';
 import './CustomerQuotations.css';
 
 const PACKAGES = [
@@ -63,12 +65,41 @@ const PACKAGES = [
 ];
 
 export function CustomerQuotations() {
-  const { showToast } = useAuth();
+  const { user, showToast } = useAuth();
+  const { navigate } = useRouter();
   const [selectedPkg, setSelectedPkg] = useState(null);
 
   const handleSelect = (pkgName) => {
     setSelectedPkg(pkgName);
     showToast(`Quotation requested for ${pkgName}. A technical executive will call you.`);
+  };
+
+  const handleLockBooking = () => {
+    const pkgTitle = selectedPkg || '5 kW Performance Hybrid Package';
+    try {
+      localStorage.setItem(
+        'solarops_pending_payment',
+        JSON.stringify({
+          orderId: 'DEP-PMSG-2026-' + Math.floor(1000 + Math.random() * 9000),
+          systemTitle: pkgTitle,
+          systemSubtitle: 'Priority Booking Advance & Engineering Deposit',
+          amount: '₹25,000',
+          customerName: user?.full_name || 'Arun Kumar',
+          items: [
+            { name: `${pkgTitle} · Token Deposit`, qty: '1 unit', cost: '₹25,000' },
+            { name: 'PM Surya Ghar Subsidy Deduction', qty: 'Deduction', cost: 'Eligible for ₹78,000' },
+          ],
+        })
+      );
+    } catch (e) {
+      // ignore
+    }
+    showToast({
+      type: 'success',
+      title: 'Booking Token Initiated',
+      message: `Opening checkout for ${pkgTitle} token deposit (₹25,000).`,
+    });
+    navigate('/customer/payments/razorpay');
   };
 
   return (
@@ -114,6 +145,24 @@ export function CustomerQuotations() {
             </Button>
           </div>
         ))}
+      </div>
+
+      {/* Direct Booking Token & Instant Settlement Callout */}
+      <div style={{ marginTop: '36px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ textAlign: 'center', maxWidth: '580px', marginBottom: '18px' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', marginBottom: '6px' }}>
+            Ready to Lock In Your Rooftop Installation Slot?
+          </h3>
+          <p style={{ fontSize: '13.5px', color: '#64748b', lineHeight: '1.5' }}>
+            Place a 100% refundable <strong>₹25,000 token deposit</strong> to secure prioritized BOM staging at our Bengaluru warehouse and expedite DISCOM statutory sanctioning.
+          </p>
+        </div>
+
+        <TransactionCard
+          label="Lock Booking Deposit"
+          currencySymbol="₹"
+          onClick={handleLockBooking}
+        />
       </div>
     </AppShell>
   );

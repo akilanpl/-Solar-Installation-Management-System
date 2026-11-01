@@ -6,35 +6,52 @@ import './TransactionCard.css';
  * Interactive POS Terminal Component
  *
  * Implements the card-swipe POS terminal animation on hover and click,
- * redirecting to the live payment checkout.
+ * with customizable label, currency symbol, and target action.
  */
 export function TransactionCard({
+  label = 'New Transaction',
   currencySymbol = '₹',
+  onClick,
+  targetRoute = '/customer/payments/razorpay',
+  className = '',
+  style = {},
+  ariaLabel,
 }) {
   const { navigate } = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleTriggerTransaction = () => {
+  const handleTriggerTransaction = (e) => {
+    e?.stopPropagation?.();
     setIsProcessing(true);
-    // Play terminal swipe animation, then redirect to Razorpay payment page
+
+    // Play terminal swipe animation, then execute target action
     setTimeout(() => {
-      navigate('/customer/payments/razorpay');
-    }, 420);
+      setIsProcessing(false);
+      if (typeof onClick === 'function') {
+        onClick(e);
+      } else if (targetRoute) {
+        navigate(targetRoute);
+      }
+    }, 450);
   };
 
   return (
-    <div className="pos-transaction-wrapper">
-      {/* ANIMATED POS TERMINAL & CARD SWIPE */}
+    <div
+      className={`pos-transaction-wrapper ${className}`.trim()}
+      style={style}
+    >
+      {/* ANIMATED POS TERMINAL & CARD SWIPE CONTAINER */}
       <div
         className={`pos-container ${isProcessing ? 'active-swipe' : ''}`}
         onClick={handleTriggerTransaction}
         role="button"
         tabIndex={0}
-        title="Click to view live settlement details"
+        aria-label={ariaLabel || label}
+        title={`Click to trigger ${label}`}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            handleTriggerTransaction();
+            handleTriggerTransaction(e);
           }
         }}
       >
@@ -54,7 +71,7 @@ export function TransactionCard({
         </div>
 
         <div className="pos-right-side">
-          <div className="pos-new">New Transaction</div>
+          <div className="pos-new">{label}</div>
           <svg
             viewBox="0 0 451.846 451.847"
             xmlns="http://www.w3.org/2000/svg"
@@ -72,4 +89,5 @@ export function TransactionCard({
   );
 }
 
+export { TransactionCard as PosTransactionCard };
 export default TransactionCard;

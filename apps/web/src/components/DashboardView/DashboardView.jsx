@@ -44,6 +44,7 @@ import { useRouter } from '../../router/Router';
 import { formatCapacity, formatInrFromPaise } from '../../lib/format';
 import { WeatherCard } from '../WeatherCard/WeatherCard';
 import { TechnicianSiteMap } from '../TechnicianSiteMap/TechnicianSiteMap';
+import { TransactionCard } from '../TransactionCard/TransactionCard';
 import './DashboardView.css';
 
 export function DashboardView({
@@ -613,6 +614,39 @@ export function DashboardView({
                   <DollarSign size={14} />
                   <span>{advancePaid ? 'Advance Paid ✓' : 'Pay 20% Advance'}</span>
                 </button>
+              </div>
+
+              {/* Interactive POS Transaction Terminal */}
+              <div style={{ marginTop: '14px', display: 'flex', justifyContent: 'center' }}>
+                <TransactionCard
+                  label={advancePaid ? 'Advance Confirmed ✓' : 'Pay 20% Advance'}
+                  currencySymbol="₹"
+                  onClick={() => {
+                    setAdvancePaid(true);
+                    try {
+                      localStorage.setItem(
+                        'solarops_pending_payment',
+                        JSON.stringify({
+                          orderId: 'ADV-SO-0042',
+                          systemTitle: '5 kW Hybrid Rooftop System',
+                          systemSubtitle: '20% Order Confirmation Advance',
+                          amount: '₹41,400',
+                          customerName: user?.full_name || 'Arun Kumar',
+                          items: [
+                            { name: '20% Order Booking Advance', qty: '1 unit', cost: '₹41,400' },
+                            { name: 'Warehouse Allocation & BOM Lock', qty: 'Staged', cost: 'Included' },
+                          ],
+                        })
+                      );
+                    } catch (e) {}
+                    showToast({
+                      type: 'success',
+                      title: 'Advance Payment Initiated',
+                      message: 'Directing to payment checkout for ₹41,400 booking advance.',
+                    });
+                    navigate('/customer/payments/razorpay');
+                  }}
+                />
               </div>
             </div>
 
@@ -1786,6 +1820,21 @@ export function DashboardView({
                     DISCOM Verification
                   </span>
                 </div>
+              </div>
+
+              {/* Admin DBT Direct Subsidy Disbursal Action */}
+              <div style={{ marginTop: '14px', display: 'flex', justifyContent: 'center' }}>
+                <TransactionCard
+                  label="Disburse DBT Subsidy"
+                  currencySymbol="₹"
+                  onClick={() => {
+                    showToast({
+                      type: 'success',
+                      title: 'Direct Benefit Transfer Processed',
+                      message: 'Disbursed ₹78,000 central subsidy to Arun Kumar (BESCOM Ref #PMSG-KA-2026-9912).',
+                    });
+                  }}
+                />
               </div>
             </>
           )}

@@ -553,6 +553,56 @@ test('Dashboard Polish & Sales Responsiveness: board meeting action buttons styl
   assert.ok(salesCss.includes('overflow-x: auto'), 'Must allow horizontal touch scrolling for filter tabs');
 });
 
+test('POS Terminal Card: card-swipe keyframes physics, component customization, and multi-surface re-use', () => {
+  // 1. TransactionCard.jsx and PosTransactionCard.jsx exist and export components
+  const txnCardJsxPath = path.join(__dirname, '../src/components/TransactionCard/TransactionCard.jsx');
+  const posCardJsxPath = path.join(__dirname, '../src/components/PosTransactionCard/PosTransactionCard.jsx');
+  assert.ok(fs.existsSync(txnCardJsxPath), 'TransactionCard.jsx must exist');
+  assert.ok(fs.existsSync(posCardJsxPath), 'PosTransactionCard.jsx must exist');
+
+  const txnJsx = fs.readFileSync(txnCardJsxPath, 'utf8');
+  assert.ok(txnJsx.includes('label = \'New Transaction\''), 'Must provide default label');
+  assert.ok(txnJsx.includes('currencySymbol = \'₹\''), 'Must provide default currency symbol');
+  assert.ok(txnJsx.includes('PosTransactionCard'), 'Must export PosTransactionCard alias');
+  assert.ok(txnJsx.includes('pos-container'), 'Must render pos-container');
+  assert.ok(txnJsx.includes('pos-card'), 'Must render simulated pos credit card');
+  assert.ok(txnJsx.includes('pos-post'), 'Must render pos terminal housing');
+
+  // 2. TransactionCard.css: exact physics and keyframes
+  const txnCssPath = path.join(__dirname, '../src/components/TransactionCard/TransactionCard.css');
+  const txnCss = fs.readFileSync(txnCssPath, 'utf8');
+  assert.ok(txnCss.includes('@keyframes slide-top'), 'Must include slide-top card swipe animation');
+  assert.ok(txnCss.includes('@keyframes slide-post'), 'Must include slide-post terminal lift animation');
+  assert.ok(txnCss.includes('@keyframes fade-in-fwd'), 'Must include fade-in-fwd dollar symbol animation');
+  assert.ok(txnCss.includes('clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%)'), 'Must include polygon clip-path for terminal slit');
+  assert.ok(txnCss.includes('@media only screen and (max-width: 480px)'), 'Must include 480px mobile breakpoint');
+
+  // 3. Re-use in Customer Payments Page
+  const paymentsPath = path.join(__dirname, '../src/pages/Customer/CustomerPayments.jsx');
+  const paymentsJsx = fs.readFileSync(paymentsPath, 'utf8');
+  assert.ok(paymentsJsx.includes('TransactionCard'), 'CustomerPayments must re-use TransactionCard');
+
+  // 4. Re-use in Customer Quotations Page
+  const quotationsPath = path.join(__dirname, '../src/pages/Customer/CustomerQuotations.jsx');
+  const quotationsJsx = fs.readFileSync(quotationsPath, 'utf8');
+  assert.ok(quotationsJsx.includes('TransactionCard'), 'CustomerQuotations must re-use TransactionCard');
+  assert.ok(quotationsJsx.includes('Lock Booking Deposit'), 'CustomerQuotations must provide booking token CTA');
+
+  // 5. Re-use in Dashboard Bento View
+  const dashboardPath = path.join(__dirname, '../src/components/DashboardView/DashboardView.jsx');
+  const dashboardJsx = fs.readFileSync(dashboardPath, 'utf8');
+  assert.ok(dashboardJsx.includes('TransactionCard'), 'DashboardView must re-use TransactionCard');
+  assert.ok(dashboardJsx.includes('Pay 20% Advance'), 'DashboardView must use TransactionCard for advance settlement');
+  assert.ok(dashboardJsx.includes('Disburse DBT Subsidy'), 'DashboardView must use TransactionCard for admin subsidy disbursal');
+
+  // 6. Re-use in Solar Store
+  const storePath = path.join(__dirname, '../src/pages/Customer/SolarStore.jsx');
+  const storeJsx = fs.readFileSync(storePath, 'utf8');
+  assert.ok(storeJsx.includes('TransactionCard'), 'SolarStore must re-use TransactionCard');
+  assert.ok(storeJsx.includes('Instant Card Checkout'), 'SolarStore must provide instant card checkout CTA');
+});
+
+
 
 
 

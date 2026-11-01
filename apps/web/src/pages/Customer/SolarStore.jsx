@@ -27,6 +27,7 @@ import {
   Sparkles,
   Check,
 } from 'lucide-react';
+import { TransactionCard } from '../../components/TransactionCard/TransactionCard';
 import './SolarStore.css';
 
 const PRODUCTS = [
@@ -913,6 +914,16 @@ export function SolarStore() {
                       <CheckCircle2 size={13} color="#059669" />
                       <span>You saved ₹{Math.round(subtotal * 0.14).toLocaleString('en-IN')} with direct factory distributor pricing</span>
                     </div>
+
+                    {paymentMethod === 'razorpay' && (
+                      <div className="cart-pos-terminal-row" style={{ marginTop: '14px', marginBottom: '4px' }}>
+                        <TransactionCard
+                          label="Instant Card Checkout"
+                          currencySymbol="₹"
+                          onClick={handleCheckout}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Fixed Sticky Footer for Checkout */}
