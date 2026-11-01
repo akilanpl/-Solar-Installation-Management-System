@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import {ExecutiveAnalytics} from "@/components/recovery/operations";
 import {CalendarAdministration} from "@/components/calendar-board";
 import { Workspace } from "@/components/workspace";
 import { Button, Card, EmptyState, ErrorState, LoadingState, PageHeader, SelectField, TextField } from "@/components/ui";
@@ -10,7 +11,7 @@ import { api, ApiError, type EmployeeCreate, type EmployeeResponse } from "@/lib
 export default function AdminHome() {
   return (
     <Workspace path="/admin">
-      {() => <Employees />}
+      {() => <><ExecutiveAnalytics/><Employees /></>}
     </Workspace>
   );
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { OperationsDashboard } from "@/components/recovery/operations";
 import { Workspace } from "@/components/workspace";
 import { EmptyState, ErrorState, LoadingState, PageHeader, StatusBadge } from "@/components/ui";
 import { api, type EnquiryList } from "@/lib/api";
@@ -11,7 +12,7 @@ import { formatCapacity, formatWhen, GRID_LABEL } from "@/lib/format";
 export default function SalesHome() {
   return (
     <Workspace path="/sales">
-      {() => <SalesQueue />}
+      {() => <><OperationsDashboard role="sales"/><SalesQueue /></>}
     </Workspace>
   );
 }

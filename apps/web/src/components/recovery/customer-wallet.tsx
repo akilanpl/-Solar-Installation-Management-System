@@ -1,0 +1,17 @@
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { CreditCard, Lock, ArrowUpRight } from "lucide-react";
+import { formatInrFromPaise, formatWhen } from "@/lib/format";
+import { receiptCards, type CustomerReceipt } from "./customer-data";
+
+/** Leather pocket/card geometry recovered from e73c795 MultiCardWallet. */
+export function CustomerWallet({receipts, loading, error}:{receipts:CustomerReceipt[]|null;loading:boolean;error:string|null}) {
+ const cards=receiptCards(receipts??[]),[selected,setSelected]=useState<string|null>(null);
+ const active=cards.find(r=>r.payment.id===selected)??cards[0];
+ return <section className="bento-card customer-wallet-panel" aria-label="Recorded payment wallet"><div className="bento-card-header"><h2 className="bento-card-title"><CreditCard size={18}/>Your payment wallet</h2><span className="event-pill">Recorded receipts</span></div><p className="customer-card-intro">Keep your solar payment records together.</p>
+ <div className="multi-card-wallet-wrapper"><div className="wallet-outer-box"><div className="wallet-scaler"><div className="wallet"><div className="wallet-back"/>
+ {cards.length?cards.map((r,i)=><button type="button" key={r.payment.id} className={`wallet-record-card ${["stripe","wise","paypal"][i]} ${active?.payment.id===r.payment.id?"selected":""}`} aria-label={`View recorded receipt ${r.quotation_reference}, ${formatInrFromPaise(r.payment.amount_minor)}`} aria-pressed={active?.payment.id===r.payment.id} onClick={()=>setSelected(r.payment.id)}><div className="card-inner"><div className="card-top"><span className="card-brand-label">SolarOps · {r.payment.method}</span><div className="chip"/></div><div className="card-bottom"><div className="card-info"><span className="label">Quotation</span><span className="value">{r.quotation_reference}</span></div><span className="card-number">{formatInrFromPaise(r.payment.amount_minor)}</span></div></div></button>):<div className="wallet-record-card stripe wallet-unavailable"><div className="card-inner"><div className="card-top"><span className="card-brand-label">SolarOps</span><Lock size={18}/></div><div className="card-bottom"><div className="card-info"><span className="label">{loading?"Loading secure records":error?"Records unavailable":"No recorded receipts"}</span><span className="value">Your records belong here</span></div></div></div></div>}
+ <div className="pocket"><svg className="pocket-svg" viewBox="0 0 280 160" fill="none" aria-hidden="true"><path d="M 0 20 C 0 10,5 10,10 10 C 20 10,25 25,40 25 L240 25 C255 25,260 10,270 10 C275 10,280 10,280 20 L280 120 C280 155,260 160,240 160 L40 160 C20 160,0 155,0 120 Z" fill="#956445"/><path d="M8 30 Q8 20 20 27 L40 34 H240 L260 27 Q272 20 272 32 V120 Q272 151 240 152 H40 Q8 151 8 120 Z" stroke="#d9b68a" strokeDasharray="3 4" strokeWidth="1.5"/></svg><div className="customer-pocket-label">SOLAROPS <span>PAYMENT RECORDS</span></div></div></div></div></div></div>
+ {error&&<p role="alert">{error}</p>}{active?<div className="customer-wallet-detail" role="status"><strong>{active.quotation_reference} · {formatInrFromPaise(active.payment.amount_minor)}</strong><span>{formatWhen(active.recorded_at)}</span><p>{active.notice}</p></div>:<p className="customer-card-intro">No card details or balance are stored here. Checkout availability is shown for an actual quotation.</p>}<Link className="customer-text-link" href="/customer/payments">Open payments & receipts <ArrowUpRight size={15}/></Link></section>;
+}

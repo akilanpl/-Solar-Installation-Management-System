@@ -2,20 +2,14 @@ import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { previewAccount } from "../preview-accounts";
 import { discoverPages, owner } from "./routes";
 
-function account(role: string) {
-  const root = resolve(process.cwd(), "../..");
-  const demos = JSON.parse(readFileSync(resolve(root, "var/demo-credentials.json"), "utf8"));
-  if (role === "customer") return demos["customer.demo@solarops.example.com"];
-  const codes: Record<string, string> = {sales:"EMP-SALES-001",technician:"EMP-TECH-001",support:"EMP-SUP-001",admin:"EMP-ADMIN-001",warehouse_staff:"EMP-WH-001"};
-  return {identifier:codes[role],password:readFileSync(resolve(root,"var/dev-seed-password.txt"),"utf8").trim()};
-}
 async function login(page: Page, role: string) {
-  const user = account(role);
+  const user = previewAccount(role);
   await page.goto("/login");
   await page.waitForFunction(() => document.body.dataset.loginReady === "1");
-  if (role !== "customer") await page.getByLabel("I am signing in as").selectOption(role === "warehouse_staff" ? "warehouse" : role);
+  if (role !== "customer") await page.getByLabel("I am signing in as").selectOption(role.startsWith("warehouse_") ? "warehouse" : role);
   await page.locator('input[name="identifier"]').fill(user.identifier);
   await page.getByLabel("Password",{exact:true}).fill(user.password);
   await page.getByRole("button",{name:"Sign in",exact:true}).click();
@@ -31,7 +25,7 @@ function concrete(route: string) {
 }
 for (const route of discoverPages()) {
   for (const width of [390,768,1280]) {
-    test(`saved page ${route} accessible at ${width}`,async({page})=>{
+    test(`saved page ${route} accessible at ${width}`,async({page},testInfo)=>{
       const role=owner(route); const failures:string[]=[];
       page.on("pageerror",error=>failures.push(error.message));
       await page.setViewportSize({width,height:844});
@@ -50,6 +44,7 @@ for (const route of discoverPages()) {
       await page.reload();
       await expect(page.locator("main")).toBeVisible();
       expect(failures).toEqual([]);
+      await page.screenshot({path:resolve(process.cwd(),`../../var/ui-acceptance/screenshots/${testInfo.project.name}-${route.replace(/[^a-z0-9]/gi,"_")}-${width}.png`),fullPage:true});
     });
   }
   if(owner(route)!=="public"&&owner(route)!=="customer"&&route!=="/security") {

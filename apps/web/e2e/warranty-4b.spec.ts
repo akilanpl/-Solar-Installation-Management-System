@@ -1,8 +1,7 @@
-import { readFileSync } from "node:fs";
+import { previewPassword } from "./preview-accounts";
 import { randomUUID } from "node:crypto";
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 
-const STAFF_PASSWORD = readFileSync("../../var/dev-seed-password.txt", "utf8").trim();
 const CUSTOMER_PASSWORD = "Solarops123";
 
 async function csrf(ctx: APIRequestContext): Promise<string> {
@@ -12,6 +11,7 @@ async function csrf(ctx: APIRequestContext): Promise<string> {
 }
 
 async function apiLogin(ctx: APIRequestContext, kind: string, identifier: string, password: string) {
+  password = previewPassword(identifier, password);
   const login = await ctx.post("/api/v1/auth/login", {
     headers: { "X-CSRF-Token": await csrf(ctx) },
     data: { account_kind: kind, identifier, password },
@@ -57,6 +57,7 @@ async function signUpCustomer(page: Page, email: string, name: string) {
 }
 
 async function signIn(page: Page, kind: string, identifier: string, password: string) {
+  password = previewPassword(identifier, password);
   await page.goto("/login");
   await page.getByLabel("I am signing in as").selectOption(kind);
   if (kind === "customer") {
@@ -223,11 +224,11 @@ test("4B covered inverter fault: zero charge, immutable bill, confirmed resoluti
     await signUpCustomer(page, email, "Leela Nair");
 
     const customerApi = await apiCtx(browser, "customer", email, CUSTOMER_PASSWORD); contexts.push(customerApi);
-    const salesApi = await apiCtx(browser, "employee", "EMP-SALES-001", STAFF_PASSWORD); contexts.push(salesApi);
-    const warehouseApi = await apiCtx(browser, "employee", "EMP-WH-001", STAFF_PASSWORD); contexts.push(warehouseApi);
-    const techApi = await apiCtx(browser, "employee", "EMP-TECH-001", STAFF_PASSWORD); contexts.push(techApi);
-    const supportApi = await apiCtx(browser, "employee", "EMP-SUP-001", STAFF_PASSWORD); contexts.push(supportApi);
-    const adminApi = await apiCtx(browser, "employee", "EMP-ADMIN-001", STAFF_PASSWORD); contexts.push(adminApi);
+    const salesApi = await apiCtx(browser, "employee", "EMP-SALES-001", ""); contexts.push(salesApi);
+    const warehouseApi = await apiCtx(browser, "employee", "EMP-WH-001", ""); contexts.push(warehouseApi);
+    const techApi = await apiCtx(browser, "employee", "EMP-TECH-001", ""); contexts.push(techApi);
+    const supportApi = await apiCtx(browser, "employee", "EMP-SUP-001", ""); contexts.push(supportApi);
+    const adminApi = await apiCtx(browser, "employee", "EMP-ADMIN-001", ""); contexts.push(adminApi);
     const c = customerApi.request; const s = salesApi.request; const w = warehouseApi.request;
     const t = techApi.request; const sup = supportApi.request; const a = adminApi.request;
 
@@ -241,7 +242,7 @@ test("4B covered inverter fault: zero charge, immutable bill, confirmed resoluti
     await recordRepair(t, sup, techId, ticket.id, 90);
 
     const supportPage = await (await browser.newContext()).newPage();
-    await signIn(supportPage, "support", "EMP-SUP-001", STAFF_PASSWORD);
+    await signIn(supportPage, "support", "EMP-SUP-001", "");
     await expect(supportPage.getByRole("heading", { name: "Support inbox" })).toBeVisible({ timeout: 60000 });
     await supportPage.goto("/support/warranty");
     await expect(supportPage.getByRole("heading", { name: "Warranty intelligence" })).toBeVisible();
@@ -317,11 +318,11 @@ test("4B expired warranty: rejection blocks billing, accepted version bills exac
     await signUpCustomer(page, email, "Leela Nair");
 
     const customerApi = await apiCtx(browser, "customer", email, CUSTOMER_PASSWORD); contexts.push(customerApi);
-    const salesApi = await apiCtx(browser, "employee", "EMP-SALES-001", STAFF_PASSWORD); contexts.push(salesApi);
-    const warehouseApi = await apiCtx(browser, "employee", "EMP-WH-001", STAFF_PASSWORD); contexts.push(warehouseApi);
-    const techApi = await apiCtx(browser, "employee", "EMP-TECH-001", STAFF_PASSWORD); contexts.push(techApi);
-    const supportApi = await apiCtx(browser, "employee", "EMP-SUP-001", STAFF_PASSWORD); contexts.push(supportApi);
-    const adminApi = await apiCtx(browser, "employee", "EMP-ADMIN-001", STAFF_PASSWORD); contexts.push(adminApi);
+    const salesApi = await apiCtx(browser, "employee", "EMP-SALES-001", ""); contexts.push(salesApi);
+    const warehouseApi = await apiCtx(browser, "employee", "EMP-WH-001", ""); contexts.push(warehouseApi);
+    const techApi = await apiCtx(browser, "employee", "EMP-TECH-001", ""); contexts.push(techApi);
+    const supportApi = await apiCtx(browser, "employee", "EMP-SUP-001", ""); contexts.push(supportApi);
+    const adminApi = await apiCtx(browser, "employee", "EMP-ADMIN-001", ""); contexts.push(adminApi);
     const c = customerApi.request; const s = salesApi.request; const w = warehouseApi.request;
     const t = techApi.request; const sup = supportApi.request; const a = adminApi.request;
 
@@ -401,11 +402,11 @@ test("4B replacement: custody chain, warranty transfer, quarantine inspection", 
     await signUpCustomer(page, email, "Leela Nair");
 
     const customerApi = await apiCtx(browser, "customer", email, CUSTOMER_PASSWORD); contexts.push(customerApi);
-    const salesApi = await apiCtx(browser, "employee", "EMP-SALES-001", STAFF_PASSWORD); contexts.push(salesApi);
-    const warehouseApi = await apiCtx(browser, "employee", "EMP-WH-001", STAFF_PASSWORD); contexts.push(warehouseApi);
-    const techApi = await apiCtx(browser, "employee", "EMP-TECH-001", STAFF_PASSWORD); contexts.push(techApi);
-    const supportApi = await apiCtx(browser, "employee", "EMP-SUP-001", STAFF_PASSWORD); contexts.push(supportApi);
-    const adminApi = await apiCtx(browser, "employee", "EMP-ADMIN-001", STAFF_PASSWORD); contexts.push(adminApi);
+    const salesApi = await apiCtx(browser, "employee", "EMP-SALES-001", ""); contexts.push(salesApi);
+    const warehouseApi = await apiCtx(browser, "employee", "EMP-WH-001", ""); contexts.push(warehouseApi);
+    const techApi = await apiCtx(browser, "employee", "EMP-TECH-001", ""); contexts.push(techApi);
+    const supportApi = await apiCtx(browser, "employee", "EMP-SUP-001", ""); contexts.push(supportApi);
+    const adminApi = await apiCtx(browser, "employee", "EMP-ADMIN-001", ""); contexts.push(adminApi);
     const c = customerApi.request; const s = salesApi.request; const w = warehouseApi.request;
     const t = techApi.request; const sup = supportApi.request; const a = adminApi.request;
 
@@ -440,7 +441,7 @@ test("4B replacement: custody chain, warranty transfer, quarantine inspection", 
     expect(proposed.status).toBe("proposed");
 
     const supportPage = await (await browser.newContext()).newPage();
-    await signIn(supportPage, "support", "EMP-SUP-001", STAFF_PASSWORD);
+    await signIn(supportPage, "support", "EMP-SUP-001", "");
     await supportPage.goto(`/support/replacements/${proposed.id}`);
     await expect(supportPage.getByRole("heading", { name: new RegExp(proposed.reference) })).toBeVisible({ timeout: 30000 });
     await supportPage.getByRole("button", { name: "Approve replacement" }).click();
@@ -455,14 +456,14 @@ test("4B replacement: custody chain, warranty transfer, quarantine inspection", 
     expect(lookupOld.status).toBe("returned");
 
     const techPage = await (await browser.newContext()).newPage();
-    await signIn(techPage, "technician", "EMP-TECH-001", STAFF_PASSWORD);
+    await signIn(techPage, "technician", "EMP-TECH-001", "");
     await techPage.goto("/technician/install");
     await techPage.getByLabel("Replacement ID").fill(proposed.id);
     await techPage.getByRole("button", { name: "Confirm installation" }).click();
     await expect(techPage.getByText(/now the linked unit/)).toBeVisible({ timeout: 30000 });
 
     const warehousePage = await (await browser.newContext()).newPage();
-    await signIn(warehousePage, "warehouse", "EMP-WH-001", STAFF_PASSWORD);
+    await signIn(warehousePage, "warehouse", "EMP-WH-001", "");
     await warehousePage.goto(`/warehouse/replacements/${proposed.id}`);
     await warehousePage.getByLabel("Returned-unit verdict").selectOption("quarantined");
     await warehousePage.getByLabel(/Inspection note/).fill(" returned unit held for bench review; contacts show heat damage. ");

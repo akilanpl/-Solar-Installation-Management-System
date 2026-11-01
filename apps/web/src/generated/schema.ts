@@ -11555,7 +11555,9 @@ export interface operations {
     };
     serials_api_v1_serials_get: {
         parameters: {
-            query?: never;
+            query?: {
+                serial_number?: string | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -11569,6 +11571,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SerialResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
