@@ -3175,3 +3175,69 @@ Target Workspaces:
    - All 19 unit tests passing (19/19).
    - Production build verified in 2.27s with zero build warnings or errors.
 ================================================================================
+
+================================================================================
+SECTION 60: TARGETED MOBILE RESPONSIVENESS FIXES (FIELD NAVIGATION MAP & STORE CHECKOUT DRAWER)
+================================================================================
+Date: 2026-11-01
+Author: SolarFlow Lead Frontend Architect
+Target Workspaces: 
+       apps/web/src/components/TechnicianSiteMap/TechnicianSiteMap.css,
+       apps/web/src/pages/Technician/TechnicianMapPage.css,
+       apps/web/src/pages/Customer/SolarStore.css,
+       apps/web/src/components/CustomerAccessibility/CustomerAccessibility.css,
+       apps/web/src/pages/Customer/CustomerPayments.css,
+       apps/web/test/app.test.js
+
+1. Executive Summary:
+   - Resolved specific visual overlap and responsive layout issues identified in mobile screenshots:
+     1. Screenshot 1: The Technician Field Dispatch & Navigation Map header suffered from cramped
+        word-by-word vertical wrapping ("Field", "Dispatch", "&", "Navigation", "Map") due to side-by-side
+        header actions crowding the title column into < 80px, and the 3 itinerary cards stacked vertically,
+        pushing the actual map viewport off the bottom of the screen.
+     2. Screenshot 2: The Solar Store checkout drawer ("Pay on Delivery & Site Inspection" / "Pay with Razorpay")
+        had a lower z-index (150) than the floating bottom dock (1000) and accessibility button (9999),
+        causing the bottom dock and accessibility button to render on top of the checkout button and block clicks.
+
+2. Technician Field Dispatch & Navigation Map Fixes:
+   - Header Layout Restructure:
+     * Added @media (max-width: 768px) and @media (max-width: 480px) in TechnicianSiteMap.css:
+       - .tech-map-header: flex-direction: column; align-items: stretch; gap: 12px;
+       - .header-title-column: max-width: 100%; width: 100%;
+       - .tech-map-title: font-size: 1.1rem; line-height: 1.25; white-space: normal;
+       - .live-road-map-chip: white-space: nowrap; prevents chip text from breaking into multiple lines.
+       - .tech-map-actions & .map-stats-group: width: 100%; justify-content: space-between;
+   - Swipeable Horizontal Stops Strip:
+     * Converted .tech-stops-tabs-row from a vertical 3-card stack into a swipeable horizontal strip:
+       display: flex; overflow-x: auto; gap: 8px; padding-bottom: 6px; -webkit-overflow-scrolling: touch;
+     * Each stop card (.tech-stop-tab-card) scales to flex: 0 0 220px on tablets and flex: 0 0 190px on phones,
+       allowing the technician to flick between stops while keeping the map immediately visible above the fold.
+   - Map Viewport & HUD Scaling:
+     * .tech-map-viewport: aspect-ratio: auto; height: 300px (260px on phones) with 14px border-radius.
+     * .tech-map-hud-row: overflow-x: auto; white-space: nowrap; fits compass, routing, and traffic cleanly.
+     * .site-actions-column: full-width stacked buttons with comfortable touch heights.
+
+3. Solar Store Cart Drawer & Sticky Footer Clearance:
+   - Z-Index Elevation:
+     * Elevated .cart-drawer-overlay from z-index: 150 to z-index: 10050, placing the full-screen drawer
+       above the floating bottom navigation dock (z-index: 1000) and floating assistant triggers.
+   - Floating Trigger Collision Prevention:
+     * In CustomerAccessibility.css, added body:has(.cart-drawer-overlay) .customer-a11y-floating-trigger
+       rule that automatically hides the accessibility pill when the cart drawer or any modal is open,
+       ensuring the "Pay with Razorpay" button is 100% unobstructed.
+   - Sticky Checkout Footer Clearance:
+     * .cart-drawer-body: added padding-bottom: 140px on mobile so the bill breakdown, 12% concessional GST,
+       and savings highlight banner can scroll with ample breathing room above the sticky button.
+     * .cart-drawer-sticky-footer: padding: 12px 16px max(14px, env(safe-area-inset-bottom, 14px));
+       with 0 -6px 20px rgba(0, 0, 0, 0.08) drop shadow and solid white background.
+
+4. Customer Milestone Payments:
+   - In CustomerPayments.css, added @media (max-width: 600px) switching .payment-milestone-card to
+     column flex with a dashed border separating title and amount column for edge-to-edge readability.
+
+5. Testing & Verification:
+   - Added Unit Test #20 in apps/web/test/app.test.js asserting road map chip nowrap, touch-tab horizontal
+     scroll, cart drawer z-index: 10050 elevation, sticky footer padding, and :has() auto-hide rules.
+   - All 20 unit tests pass (20/20).
+   - Production build verified in 2.73s.
+================================================================================

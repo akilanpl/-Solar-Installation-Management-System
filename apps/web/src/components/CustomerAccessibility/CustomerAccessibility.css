@@ -423,6 +423,14 @@ html.customer-reduce-motion *::after {
 }
 
 /* 6. MOBILE RESPONSIVE FLOAT POSITIONING */
+/* Automatically hide floating trigger when cart drawer, full-screen modal, or drawer overlays are open */
+body:has(.cart-drawer-overlay) .customer-a11y-floating-trigger,
+body:has(.modal-backdrop) .customer-a11y-floating-trigger,
+body:has(.notif-drawer-backdrop.open) .customer-a11y-floating-trigger,
+body:has(.user-settings-fullscreen-overlay) .customer-a11y-floating-trigger {
+  display: none !important;
+}
+
 @media (max-width: 768px) {
   .customer-a11y-floating-trigger {
     bottom: 84px;
@@ -440,6 +448,19 @@ html.customer-reduce-motion *::after {
     bottom: 52px;
     right: 0;
     max-height: 72vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .customer-a11y-floating-trigger {
+    bottom: 82px;
+    right: 12px;
+  }
+
+  .a11y-pill-btn {
+    padding: 7px 11px;
+    font-size: 11.5px;
+    gap: 6px;
   }
 }
 

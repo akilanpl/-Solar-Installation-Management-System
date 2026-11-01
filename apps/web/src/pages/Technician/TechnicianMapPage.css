@@ -601,3 +601,42 @@
     flex-wrap: wrap;
   }
 }
+
+@media (max-width: 640px) {
+  .tech-map-page-header {
+    padding: 16px 14px;
+    border-radius: 16px;
+    gap: 14px;
+  }
+
+  .page-title-row h1 {
+    font-size: 1.25rem;
+  }
+
+  .dispatch-stat-box {
+    flex: 1;
+    min-width: 130px;
+    padding: 10px 12px;
+  }
+
+  .standalone-dark-map-viewport {
+    min-height: 280px;
+    height: 300px;
+    border-radius: 14px;
+  }
+
+  .floating-route-summary-hud {
+    position: static;
+    margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .itinerary-drawer-header {
+    padding: 14px 16px;
+  }
+
+  .itinerary-list-container {
+    padding: 12px;
+  }
+}

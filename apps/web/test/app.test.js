@@ -511,6 +511,28 @@ test('Mobile Responsiveness: floating bottom liquid-glass dock, zero app-shell m
   assert.ok(modalCss.includes('max-width: 100%'), 'Modal must adapt to full width on mobile screens');
 });
 
+test('Field Map & Store Cart Responsiveness: header column collapse, touch tab row, and cart checkout clearance', () => {
+  // 1. TechnicianSiteMap.css: Responsive header collapse & swipeable stop cards
+  const siteMapCssPath = path.join(__dirname, '../src/components/TechnicianSiteMap/TechnicianSiteMap.css');
+  const siteMapCss = fs.readFileSync(siteMapCssPath, 'utf8');
+  assert.ok(siteMapCss.includes('white-space: nowrap'), 'Road map chip must have nowrap protection');
+  assert.ok(siteMapCss.includes('.tech-map-header'), 'Site map must style header container');
+  assert.ok(siteMapCss.includes('@media (max-width: 768px)'), 'Site map must include 768px breakpoint');
+  assert.ok(siteMapCss.includes('overflow-x: auto'), 'Stop cards must allow horizontal touch scroll on mobile');
+
+  // 2. SolarStore.css: Cart drawer overlay elevation & sticky footer safe area clearance
+  const storeCssPath = path.join(__dirname, '../src/pages/Customer/SolarStore.css');
+  const storeCss = fs.readFileSync(storeCssPath, 'utf8');
+  assert.ok(storeCss.includes('z-index: 10050'), 'Cart drawer overlay must sit above bottom dock and floating triggers');
+  assert.ok(storeCss.includes('padding: 14px 16px 140px 16px'), 'Cart drawer body must provide bottom clearance for sticky footer');
+  assert.ok(storeCss.includes('.cart-drawer-sticky-footer'), 'Must style sticky checkout footer');
+
+  // 3. CustomerAccessibility.css: Auto-hide floating button during cart checkout
+  const a11yCssPath = path.join(__dirname, '../src/components/CustomerAccessibility/CustomerAccessibility.css');
+  const a11yCss = fs.readFileSync(a11yCssPath, 'utf8');
+  assert.ok(a11yCss.includes(':has(.cart-drawer-overlay)'), 'Accessibility trigger must auto-hide when cart drawer is active');
+});
+
 
 
 
