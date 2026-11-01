@@ -69,9 +69,11 @@ build and targeted typecheck passed; all five browser cases passed after
 the selector/session-wait corrections. Earlier failing artifacts were retained.
 No application fix was invented for the stale build cache.
 
-Status: **FIXED LOCALLY** for the implemented failures. Commit/push and new
-remote outcomes are recorded in the canonical workspace repair report after
-publication. The release remains BLOCKED by unimplemented mandatory campaign
+Status: **PUSHED / CI PENDING**. Verified implementation commit
+`1d8722f048768c58bd10f8de0fd835717249f900` was normal-pushed to the existing
+source branch after confirming its remote starting SHA was unchanged.
+Remote outcomes are monitored in the canonical workspace repair report.
+The release remains BLOCKED by unimplemented mandatory campaign
 and product evidence; ordinary suite passes do not claim a complete release.
 
 ## PR #3 — published evidence
