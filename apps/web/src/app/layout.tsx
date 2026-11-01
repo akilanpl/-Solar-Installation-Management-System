@@ -12,6 +12,8 @@ import "@/styles/teammate-transaction.css";
 import "@/styles/teammate-receipt.css";
 import "@/styles/teammate-surveys.css";
 import "@/styles/integration.css";
+import "@/components/recovery/shell-recovery.css";
+import { PreviewIdentity } from "@/components/recovery/preview-identity";
 
 export const metadata: Metadata = {
   title: "SolarOps",
@@ -29,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <div id="content">{children}</div>
+        <PreviewIdentity/>
       </body>
     </html>
   );
