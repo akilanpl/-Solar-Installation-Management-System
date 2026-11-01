@@ -1,5 +1,6 @@
 "use client";
-import { PlannedRoute } from "@/components/planned-route";
+import { useEffect } from "react";
 export default function Page() {
-  return <PlannedRoute path="/customer/support" kind="support" />;
+  useEffect(() => { window.location.replace("/customer/complaints"); }, []);
+  return <p className="p-6 text-sm">Opening your complaints…</p>;
 }

@@ -96,6 +96,33 @@ Planned routes below are not registered. Calling them returns 404 `not_found`.
 | POST | `/api/v1/jobs/{id}/completion` | Cookie | assigned technician | Requires OTP, evidence and signature. |
 | GET | `/api/v1/warranties/order/{order_id}` | Cookie | warehouse, sales, admin, technician, support, owner customer | Active after delivery confirmation. |
 | POST | `/api/v1/warranties/order/{order_id}/void` | Cookie | support, admin | Active to void. |
+| POST | `/api/v1/tickets` | Cookie | customer | 201, or 200 on idempotent replay. Own order and installed serial only. Idempotency-Key required. |
+| GET | `/api/v1/tickets` | Cookie | customer (own), technician (assigned), support, admin | Status filter and pagination. |
+| GET | `/api/v1/tickets/{id}` | Cookie | owner, assigned technician, support, admin | Serial number, warranty row or null, repair jobs, acknowledgments. Others 404. |
+| GET | `/api/v1/tickets/{id}/history` | Cookie | same as the ticket | Ordered transition and note events. |
+| POST | `/api/v1/tickets/{id}/triage` | Cookie | support, admin | Category, verified priority, note. 409 `invalid_transition`. |
+| POST | `/api/v1/tickets/{id}/support-assignment` | Cookie | support, admin | Active support/admin owner. |
+| POST | `/api/v1/tickets/{id}/request-info` | Cookie | support, admin | Moves to `waiting_customer`, records the return state. |
+| POST | `/api/v1/tickets/{id}/customer-reply` | Cookie | owning customer | Only from `waiting_customer`. |
+| POST | `/api/v1/tickets/{id}/notes` | Cookie | support, admin | Internal note event. |
+| POST | `/api/v1/tickets/{id}/escalation` | Cookie | support, admin | Reason and optional priority; sets the escalated flag. |
+| POST | `/api/v1/tickets/{id}/repair-jobs` | Cookie | support, admin | Active technician only; at most 5 open jobs and no exact-slot clash. Idempotency-Key required. |
+| GET | `/api/v1/repair-jobs` | Cookie | technician (own), support, admin | Optional `ticket_id` filter. |
+| GET | `/api/v1/repair-jobs/{id}` | Cookie | assigned technician, support, admin | Other technicians get 404. |
+| POST | `/api/v1/repair-jobs/{id}/arrival` | Cookie | assigned technician | Server clock. |
+| POST | `/api/v1/repair-jobs/{id}/diagnostics` | Cookie | assigned technician | Findings, optional root cause and readings. |
+| POST | `/api/v1/repair-jobs/{id}/work` | Cookie | assigned technician | Actual work, start/finish times, catalogue-validated parts. |
+| POST | `/api/v1/repair-jobs/{id}/submit` | Cookie | assigned technician | Requires arrival, diagnostics, and work. |
+| POST | `/api/v1/tickets/{id}/attachments` | Cookie | owner, assigned technician, support, admin | JPEG, PNG, WebP, or PDF, at most 5 MB. Optional `repair_job_id` link. |
+| GET | `/api/v1/tickets/{id}/attachments` | Cookie | same as the ticket | Metadata list. |
+| GET | `/api/v1/tickets/{id}/attachments/{attachment_id}` | Cookie | same as the ticket | Stored file, not a guessed URL. |
+| POST | `/api/v1/tickets/{id}/resolution-ready` | Cookie | support, admin | Submitted repair required. Bumps the version and snapshots the summary. |
+| GET | `/api/v1/tickets/{id}/resolution-summary` | Cookie | same as the ticket | Exact version, payload hash, and summary. |
+| POST | `/api/v1/tickets/{id}/confirmation` | Cookie | owning customer only | `confirmed` or `disputed` with the exact version. 409 `stale_summary` / `duplicate_confirmation`. |
+| POST | `/api/v1/tickets/{id}/close` | Cookie | support, admin | Only from `customer_confirmed` with a matching confirmed acknowledgment. |
+| POST | `/api/v1/tickets/{id}/reopen` | Cookie | owner, support, admin | Reason required. |
+| POST | `/api/v1/tickets/{id}/cancel` | Cookie | owner (from `open`), support, admin (before work starts) | Reason required. |
+| GET | `/api/v1/support/staff` | Cookie | support, admin | Active technicians and support owners with live open-job counts. |
 | GET | `/api/v1/admin/employees` | Cookie | admin | |
 | POST | `/api/v1/admin/employees` | Cookie | admin | Provisions a verified staff account. |
 | GET | `/api/v1/dev/mailbox/{email}` | No |  | 404 unless development without SMTP. Returns the captured email, including the code. |
@@ -166,13 +193,13 @@ and dispatcher-override audit events.
 
 | Method and path | Roles | Request | Response | Rules |
 | --- | --- | --- | --- | --- |
-| POST `/api/v1/tickets` | customer, support | installation id, text | ticket | Customer can only use their installation. |
-| GET `/api/v1/support/customers/{id}` | support, admin |  | profile and open work | |
-| GET `/api/v1/support/customers/{id}/snapshot` | support, admin, or that customer |  | SysCache snapshot with version | Miss falls back to the database. |
-| POST `/api/v1/tickets/{id}/assignment` | support, admin | technician id | assignment | Skill and schedule rules apply. |
-| POST `/api/v1/tickets/{id}/warranty-decision` | support, admin | covered or not, reason | decision | Out of warranty must not zero the charges. |
-| POST `/api/v1/tickets/{id}/charges` | support, admin | labour and parts minor | charges | Integer money. |
-| POST `/api/v1/tickets/{id}/resolution` | owning customer | confirm | `closed` | Support cannot close alone. |
+| POST `/api/v1/tickets/{id}/warranty-decision` | support, admin | covered or not, reason | decision | Out of warranty must not zero the charges. Phase 4B. |
+| POST `/api/v1/tickets/{id}/charges` | support, admin | labour and parts minor | charges | Integer money. Phase 4B. |
+| GET `/api/v1/support/customers/{id}/snapshot` | support, admin, or that customer |  | SysCache snapshot with version | Miss falls back to the database. Still planned. |
+
+Ticket intake, triage, assignment, repair jobs, attachments, resolution
+review, customer confirmation, closure, reopening, and history are implemented
+in Phase 4A and listed in the implemented table above.
 
 ### Management
 

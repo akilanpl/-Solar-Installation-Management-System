@@ -24,9 +24,15 @@ def build_engine(database_url: str):
 
     @event.listens_for(engine, "connect")
     def _set_utc(dbapi_connection, _connection_record) -> None:
-        cursor = dbapi_connection.cursor()
-        cursor.execute("SET TIME ZONE 'UTC'")
-        cursor.close()
+        # Session configuration must survive the rollback SQLAlchemy performs
+        # when a read-only/failed transaction returns its connection to the pool.
+        previous = dbapi_connection.autocommit
+        dbapi_connection.autocommit = True
+        try:
+            with dbapi_connection.cursor() as cursor:
+                cursor.execute("SET TIME ZONE 'UTC'")
+        finally:
+            dbapi_connection.autocommit = previous
 
     return engine
 

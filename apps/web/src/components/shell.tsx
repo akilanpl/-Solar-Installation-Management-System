@@ -14,12 +14,12 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
     { href: "/customer/quotations", label: "Quotations" },
     { href: "/customer/payments", label: "Payments" },
     { href: "/customer/installations", label: "Installation work" },
-    { href: "/customer/support", label: "Support", planned: true },
+    { href: "/customer/complaints", label: "Complaints" },
   ],
   technician: [
     { href: "/technician", label: "Assigned jobs" },
     { href: "/technician/surveys", label: "Surveys", planned: true },
-    { href: "/technician/repairs", label: "Repairs", planned: true },
+    { href: "/technician/repairs", label: "Repairs" },
   ],
   sales: [
     { href: "/sales", label: "Enquiries" },

@@ -1,4 +1,5 @@
 min_tests: 100
+comparison_base: origin/integration/final-release
 thresholds: { protected: 90, feature: 80, ratchet_drop: 2 }
 coverage: { line: 80, diff: 90, branch: 70 }
 not_applicable: []
