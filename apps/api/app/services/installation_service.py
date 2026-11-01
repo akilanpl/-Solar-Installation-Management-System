@@ -12,7 +12,7 @@ import hmac
 import json
 import secrets
 import uuid
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -275,7 +275,7 @@ def work_summary(db: Session, user: User, job_id: uuid.UUID) -> dict:
     for row in selected:
         verify_file(row)
     summary = {"job_id": str(job.id), "order_id": str(job.order_id),
-        "technician_user_id": str(job.technician_user_id), "arrival_at": job.arrival_at.isoformat() if job.arrival_at else None,
+        "technician_user_id": str(job.technician_user_id), "arrival_at": job.arrival_at.astimezone(UTC).isoformat() if job.arrival_at else None,
         "evidence": job.evidence, "files": [{"key": row.storage_key, "sha256": row.sha256} for row in selected]}
     digest = hashlib.sha256(json.dumps(summary, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     return {"summary": summary, "summary_hash": digest}
@@ -302,6 +302,29 @@ def record_signature(db: Session, user: User, job_id: uuid.UUID, signature: dict
     return job
 
 
+def _accepted_summary_matches(acceptance: dict, current: dict) -> bool:
+    if acceptance.get("summary_hash") == current["summary_hash"]:
+        return True
+    # Preserve already signed records from before UTC canonicalization. Their
+    # original payload/HMAC remains immutable; only compare the represented
+    # instant in a common timezone after the caller has verified that HMAC.
+    signed = acceptance.get("summary")
+    if not isinstance(signed, dict):
+        return False
+    signed = dict(signed)
+    arrival = signed.get("arrival_at")
+    if not isinstance(arrival, str):
+        return False
+    try:
+        instant = datetime.fromisoformat(arrival)
+        if instant.tzinfo is None:
+            return False
+        signed["arrival_at"] = instant.astimezone(UTC).isoformat()
+    except ValueError:
+        return False
+    return signed == current["summary"]
+
+
 def complete_job(db: Session, user: User, job_id: uuid.UUID) -> InstallationJob:
     job = _job_for_technician(db, user, job_id)
     if job.status == "completed":
@@ -319,7 +342,7 @@ def complete_job(db: Session, user: User, job_id: uuid.UUID) -> InstallationJob:
     summary = work_summary(db, user, job.id)
     acceptance = dict(job.signature)
     payload_hmac = acceptance.pop("payload_hmac", "")
-    if not secrets_match(payload_hmac, json.dumps(acceptance, sort_keys=True, separators=(",", ":")), get_settings().secret_key) or acceptance.get("summary_hash") != summary["summary_hash"]:
+    if not secrets_match(payload_hmac, json.dumps(acceptance, sort_keys=True, separators=(",", ":")), get_settings().secret_key) or not _accepted_summary_matches(acceptance, summary):
         raise AppError(409, "acceptance_invalid", "Customer acknowledgment integrity failed.")
     job.status = "completed"
     job.completed_at = utcnow()

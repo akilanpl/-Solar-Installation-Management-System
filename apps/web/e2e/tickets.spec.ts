@@ -1,8 +1,8 @@
-import { readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 
-const STAFF_PASSWORD = readFileSync("../../var/dev-seed-password.txt", "utf8").trim();
+const STAFF_PASSWORD = process.env.SOLAROPS_SEED_PASSWORD;
+if (!STAFF_PASSWORD) throw new Error("Use the isolated browser runner with disposable staff credentials.");
 
 async function csrf(ctx: APIRequestContext): Promise<string> {
   const response = await ctx.get("/api/v1/auth/csrf");
@@ -47,8 +47,10 @@ async function signIn(page: Page, kind: string, identifier: string, password: st
   } else {
     await idBox.fill(identifier);
   }
-  await page.getByLabel("Password", { exact: true }).fill(password);
+  await page.locator('input[name="password"]').fill(password);
+  const sessionReady = page.waitForResponse(response => response.url().endsWith("/api/v1/auth/me") && response.status() === 200);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await sessionReady;
 }
 
 test("Leela reports an inverter fault and confirms the repair in the browser", async ({ page, browser }) => {
@@ -61,7 +63,7 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
   await page.getByLabel("Full name").fill("Leela Nair");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Mobile").fill("9845099999");
-  await page.getByLabel("Password").fill("Solarops123");
+  await page.locator('input[name="password"]').fill("Solarops123");
   await page.getByRole("button", { name: "Create account" }).click();
   await page.waitForURL("**/verify-email*", { timeout: 30000 });
   await page.waitForLoadState("load");
@@ -73,8 +75,10 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
   await page.waitForLoadState("load");
   await expect(page.getByRole("heading", { name: "Sign in to SolarOps" })).toBeVisible({ timeout: 30000 });
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: true }).fill("Solarops123");
+  await page.locator('input[name="password"]').fill("Solarops123");
+  const customerSession = page.waitForResponse(response => response.url().endsWith("/api/v1/auth/me") && response.status() === 200);
   await page.getByRole("button", { name: "Sign in" }).click();
+  await customerSession;
   await expect(page.getByRole("heading", { name: /Hello, Leela Nair/ })).toBeVisible({ timeout: 30000 });
 
   const customerApi = await browser.newContext();

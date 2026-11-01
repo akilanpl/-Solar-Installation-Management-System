@@ -21,6 +21,7 @@ jobs:
       SOLAROPS_DATABASE_URL: postgresql+psycopg://solarops:solarops@127.0.0.1:5432/solarops_test
       SOLAROPS_SECRET_KEY: ci-test-only-not-a-production-secret-2026
       SOLAROPS_COOKIE_SECURE: "false"
+      SOLAROPS_GATE_BASE_REF: ${{ github.event.pull_request.base.sha }}
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -31,6 +32,11 @@ jobs:
       - run: uv sync --frozen
         working-directory: apps/api
       - run: npm ci
+        working-directory: apps/web
+      - name: Install verified secret scanner
+        run: python3 .pushgate/install_gitleaks.py
+      - name: Install Chromium for isolated browser acceptance
+        run: node node_modules/@playwright/test/cli.js install --with-deps chromium
         working-directory: apps/web
       - run: .pushgate/run.sh --mode=ci
       - uses: actions/upload-artifact@v4
