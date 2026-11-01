@@ -3241,3 +3241,56 @@ Target Workspaces:
    - All 20 unit tests pass (20/20).
    - Production build verified in 2.73s.
 ================================================================================
+
+================================================================================
+SECTION 61: UI/UX POLISH & MOBILE RESPONSIVENESS (MEETING ACTION BUTTONS, DATE BADGES & SALES ENQUIRIES HEADER)
+================================================================================
+Date: 2026-11-01
+Author: SolarFlow Lead Frontend Architect
+Target Workspaces: 
+       apps/web/src/components/DashboardView/DashboardView.jsx,
+       apps/web/src/components/DashboardView/DashboardView.css,
+       apps/web/src/pages/Sales/SalesDashboard.jsx,
+       apps/web/src/pages/Sales/SalesDashboard.css,
+       apps/web/test/app.test.js
+
+1. Executive Summary:
+   - Enhanced three key dashboard and operations areas identified in user screenshots:
+     1. Screenshots 1 & 3: Meeting Briefing Card ("Technical Consultation" and "Client Technical Briefing")
+        suffered from unstyled, glued-together action buttons ("RescheduleAccept invite") with zero padding,
+        borders, or separation.
+     2. Screenshot 2: "Survey & Site Visits" header badge ("Sat, 18 May 2026") suffered from awkward date
+        word-splitting across two lines ("Sat, 18 May" / "2026") due to missing nowrap protection and
+        rigid header width constraints on mobile screens.
+     3. Screenshot 3: "Incoming Customer Enquiries" in the Sales Dashboard suffered from extreme vertical
+        subtitle word-wrapping ("Filter, evaluate electrical load parameters...") because the search box and
+        refresh button were forced side-by-side with the header title on narrow mobile viewports.
+
+2. Meeting Briefing Card & Action Buttons Polish:
+   - Button Component Architecture in DashboardView.css:
+     * .board-meeting-card: rounded 16px background container (#f8fafc) with subtle border (#edf0f5).
+     * .board-meeting-actions: display: flex; align-items: center; gap: 10px; margin-top: 6px; padding-top: 10px; border-top: 1px dashed #e2e8f0;
+     * .btn-reschedule: high-finish outline button (#ffffff backdrop, #cbd5e1 border, #475569 text, 12.5px font size, 9px border-radius) with #f1f5f9 hover.
+     * .btn-accept-invite: primary indigo button (#4f46e5 backdrop, #ffffff text, 12.5px font size, 9px border-radius) with 0 2px 6px rgba(79, 70, 229, 0.25) elevation.
+     * Mobile phone breakpoint (< 480px): buttons dynamically split available row width with flex: 1 for comfortable thumb tapping.
+
+3. Survey & Site Visits Date Badge & Header Wrap:
+   - Nowrap Protection & Event Pill Styling in DashboardView.css:
+     * .event-pill: display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 9999px; white-space: nowrap; flex-shrink: 0;
+     * .month-badge: lavender theme (#eef2ff backdrop, #c7d2fe border, #4f46e5 text) with Calendar icon.
+     * .bento-card-header: flex-wrap: wrap; gap: 8px; ensures the title ("Survey & Site Visits"), status chip ("Upcoming Visit"), and date badge ("Sat, 18 May 2026") wrap gracefully without split text on narrow viewports.
+
+4. Sales Enquiries Header & Filter Tabs Responsiveness:
+   - Semantic Class Migration in SalesDashboard.jsx & SalesDashboard.css:
+     * Replaced rigid inline styles with .sales-enquiries-card and .sales-enquiries-header.
+     * Mobile breakpoint (<= 768px):
+       - .sales-enquiries-header: flex-direction: column; align-items: stretch; gap: 12px;
+       - .sales-title-col: full 100% width, eliminating single-word subtitle wrapping.
+       - .sales-search-actions: width: 100%; justify-content: space-between; with search box flexing to fill available width.
+       - .sales-filter-tabs: horizontal touch-scrolling strip with overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch;
+
+5. Testing & Production Build:
+   - Added Unit Test #21 in apps/web/test/app.test.js asserting meeting action buttons styling, date badge nowrap protection, and sales header column collapse.
+   - All 21 unit tests passing (21/21).
+   - Production build verified in 2.52s with zero warnings or errors.
+================================================================================

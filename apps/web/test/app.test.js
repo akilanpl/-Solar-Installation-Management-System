@@ -533,6 +533,26 @@ test('Field Map & Store Cart Responsiveness: header column collapse, touch tab r
   assert.ok(a11yCss.includes(':has(.cart-drawer-overlay)'), 'Accessibility trigger must auto-hide when cart drawer is active');
 });
 
+test('Dashboard Polish & Sales Responsiveness: board meeting action buttons styling, date badge nowrap, and sales header column collapse', () => {
+  // 1. DashboardView.css: Meeting card button styling and date badge nowrap
+  const dashCssPath = path.join(__dirname, '../src/components/DashboardView/DashboardView.css');
+  const dashCss = fs.readFileSync(dashCssPath, 'utf8');
+  assert.ok(dashCss.includes('.btn-reschedule'), 'Must style .btn-reschedule button');
+  assert.ok(dashCss.includes('.btn-accept-invite'), 'Must style .btn-accept-invite button');
+  assert.ok(dashCss.includes('.board-meeting-actions'), 'Must style .board-meeting-actions container');
+  assert.ok(dashCss.includes('.event-pill'), 'Must style .event-pill container');
+  assert.ok(dashCss.includes('white-space: nowrap'), 'Must prevent date badge word-splitting');
+
+  // 2. SalesDashboard.css: Responsive enquiries card & header column collapse
+  const salesCssPath = path.join(__dirname, '../src/pages/Sales/SalesDashboard.css');
+  const salesCss = fs.readFileSync(salesCssPath, 'utf8');
+  assert.ok(salesCss.includes('.sales-enquiries-card'), 'Must style .sales-enquiries-card');
+  assert.ok(salesCss.includes('.sales-enquiries-header'), 'Must style .sales-enquiries-header');
+  assert.ok(salesCss.includes('@media (max-width: 768px)'), 'Must include 768px responsive breakpoint');
+  assert.ok(salesCss.includes('flex-direction: column'), 'Must collapse sales header into column on mobile');
+  assert.ok(salesCss.includes('overflow-x: auto'), 'Must allow horizontal touch scrolling for filter tabs');
+});
+
 
 
 

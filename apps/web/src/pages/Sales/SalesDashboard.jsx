@@ -98,17 +98,17 @@ export function SalesDashboard() {
           />
 
           {/* Dedicated Enquiries Review Section */}
-          <div className="bento-card" style={{ padding: '28px' }}>
-            <div className="bento-card-header" style={{ marginBottom: '20px' }}>
-              <div>
+          <div className="bento-card sales-enquiries-card">
+            <div className="bento-card-header sales-enquiries-header">
+              <div className="sales-title-col">
                 <h3 className="bento-card-title">Incoming Customer Enquiries</h3>
-                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: '#64748b' }}>
+                <p className="sales-header-subtitle">
                   Filter, evaluate electrical load parameters, and schedule technician surveys.
                 </p>
               </div>
 
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <div className="top-nav-search-box" style={{ width: '220px' }}>
+              <div className="sales-search-actions">
+                <div className="top-nav-search-box sales-search-box">
                   <Search size={14} className="top-nav-search-icon" />
                   <input
                     type="text"
