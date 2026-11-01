@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -119,10 +119,15 @@ def replenishments(_: User = Depends(warehouse), db: Session = Depends(get_db, s
 
 
 @router.get("/serials", response_model=list[SerialResponse])
-def serials(_: User = Depends(warehouse), db: Session = Depends(get_db, scope="function")):
-    rows = db.scalars(
-        select(EquipmentSerial).order_by(EquipmentSerial.created_at.desc()).limit(200)
-    )
+def serials(
+    _: User = Depends(warehouse),
+    db: Session = Depends(get_db, scope="function"),
+    serial_number: str | None = Query(default=None, min_length=1, max_length=64, pattern=r"\S"),
+):
+    query = select(EquipmentSerial).order_by(EquipmentSerial.created_at.desc())
+    if serial_number is not None:
+        query = query.where(EquipmentSerial.serial_number == serial_number.strip().upper())
+    rows = db.scalars(query.limit(200))
     return [
         SerialResponse(
             id=r.id,

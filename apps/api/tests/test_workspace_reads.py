@@ -54,3 +54,32 @@ def test_warehouse_read_models_return_real_receipt_and_no_invented_serials(clien
     assert client.get("/api/v1/serials").json()==[]
     assert client.get("/api/v1/replenishment/requests").json()==[]
     assert client.get("/api/v1/stock/operations",headers=_technician(client)).status_code==403
+
+
+def test_exact_serial_query_finds_old_unit_and_normalizes_input(client, application):
+    from datetime import timedelta
+
+    from app.core.security import utcnow
+    from app.models.phase3 import EquipmentSerial
+
+    _all_staff(application)
+    warehouse = _warehouse(client)
+    receipt = _receipt_validate(client, warehouse, "PANEL-550", "201")
+    with Session(application.state.engine) as db:
+        for index in range(201):
+            db.add(EquipmentSerial(
+                serial_number=f"EXACT-READ-{index:03d}", component_code="PANEL-550",
+                status="registered", location_code="MAIN", operation_id=receipt["id"],
+                created_at=utcnow() + timedelta(seconds=index),
+            ))
+        db.commit()
+    latest = client.get("/api/v1/serials").json()
+    assert len(latest) == 200
+    assert all(row["serial_number"] != "EXACT-READ-000" for row in latest)
+    exact = client.get("/api/v1/serials", params={"serial_number": " exact-read-000 "})
+    assert exact.status_code == 200
+    assert [row["serial_number"] for row in exact.json()] == ["EXACT-READ-000"]
+    assert client.get("/api/v1/serials", params={"serial_number": "EXACT-READ-MISSING"}).json() == []
+    assert client.get("/api/v1/serials", params={"serial_number": " "}).status_code == 422
+    _customer(client, application)
+    assert client.get("/api/v1/serials", params={"serial_number": "EXACT-READ-000"}).status_code == 403

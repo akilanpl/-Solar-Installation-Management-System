@@ -4588,17 +4588,48 @@
         ],
         "summary": "Serials",
         "operationId": "serials_api_v1_serials_get",
+        "parameters": [
+          {
+            "name": "serial_number",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "\\S"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Serial Number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/SerialResponse"
                   },
-                  "type": "array",
                   "title": "Response Serials Api V1 Serials Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
