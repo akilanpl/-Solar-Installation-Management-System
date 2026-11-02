@@ -50,4 +50,3 @@ Verified browser means an actual operation/read was observed; discovered/capture
 |Startup/restore/recovery|Launcher repaired|`health` implementation + regression|`test_complete_launcher.py` regression scope|Migrations, 100-table restore PASS; final startup smoke in manifest|
 
 Prior release/preparation reports and launch scripts were inspected. The existing launcher used 3061/8061; 3062/8062 were also occupied, so this candidate uses 3063/8063. A new cluster was blocked by macOS shared-memory permissions; uniquely named demo/test/restore databases were created on the existing localhost PostgreSQL 15 service without resetting existing databases. Synthetic seeding created eight staff, three demo customers and four enquiries; the browser added a separate verified customer, enquiry, survey and quotation. No historical 500-record claim is reused.
-
