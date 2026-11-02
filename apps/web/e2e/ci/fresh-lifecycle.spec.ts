@@ -104,7 +104,23 @@ test('fresh customer through delivered serials, acknowledged installation, activ
   }
   monitor(page);
   try {
-    await test.step('Fresh verified customer via browser', async () => { await signup(page, email); await audit(page, 'customer-home'); });
+    await test.step('Fresh verified customer via browser', async () => {
+      await signup(page, email); await audit(page, 'customer-home');
+      const trigger = page.getByRole('button', { name: 'Accessibility', exact: true });
+      await trigger.click();
+      await page.getByRole('button', { name: 'Toggle Reading ruler', exact: true }).click();
+      await expect(page.locator('.customer-reading-ruler')).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(trigger).toBeFocused();
+      await page.reload();
+      await expect(page.locator('.customer-reading-ruler')).toBeVisible();
+      await trigger.click();
+      await page.getByRole('button', { name: 'Toggle Reading ruler', exact: true }).click();
+      await expect(page.locator('.customer-reading-ruler')).toHaveCount(0);
+      await expect(page.getByRole('button', { name: 'Toggle Audio feedback', exact: true })).toBeVisible();
+      await expect(page.getByRole('slider', { name: 'Reading speed' })).toBeVisible();
+      await page.keyboard.press('Escape');
+    });
     const staff: Record<string, Page> = {};
     for (const [role, code] of [['sales', 'SALES'], ['warehouse', 'WH'], ['technician', 'TECH'], ['support', 'SUP'], ['admin', 'ADMIN']]) {
       const context = await browser.newContext({ baseURL: 'http://127.0.0.1:3001', timezoneId: 'UTC' }); contexts.push(context);
@@ -157,6 +173,7 @@ test('fresh customer through delivered serials, acknowledged installation, activ
     const material = detail.lines.filter(line => line.line_kind === 'material' && line.component_code);
     expect(material.length).toBeGreaterThan(0);
     const serials: string[] = [];
+    const unitLabels = new Map<string, string>();
     for (const line of material) {
       const receipt = await command(w, '/stock/operations', { operation_type: 'receipt', note: synthetic,
         lines: [{ component_code: line.component_code, quantity: String(line.quantity), to_location: 'MAIN' }] }, 201);
@@ -165,8 +182,10 @@ test('fresh customer through delivered serials, acknowledged installation, activ
       if (catalogue.components.find(component => component.code === line.component_code)?.requires_serial_tracking) {
         const received: Row[] = [];
         for (let index = 0; index < line.quantity; index++) {
-          const serial = `TEST-CI-${tag}-${line.component_code}-${index}`; serials.push(serial);
+          const serial = `TEST-CI-${tag}-${line.component_code}-${index}`;
           const unit = await command(w, '/serials/scan', { serial_number: serial, component_code: line.component_code, operation_id: receipt.id }, 201);
+          serials.push(unit.serial_number);
+          unitLabels.set(unit.serial_number, `${line.component_code} · ${unit.serial_number}`);
           received.push(unit);
         }
         // Complete receipt reconciliation before reserving any physical unit.
@@ -191,7 +210,7 @@ test('fresh customer through delivered serials, acknowledged installation, activ
     await command(t, `/jobs/${job.id}/completion`, {}, 409); // OTP alone cannot accept work.
     await page.goto('/customer/installations');
     await page.getByRole('button', { name: 'Review work before acknowledging' }).click();
-    for (const serial of serials) await expect(page.getByText(serial, { exact: false })).toBeVisible();
+    for (const serial of serials) await expect(page.getByText(unitLabels.get(serial)!, { exact: true })).toBeVisible();
     await page.getByLabel('Your full name as acknowledgment').fill('Synthetic CI Customer');
     await uiMutation(page, `/jobs/${job.id}/signature`, () => page.getByRole('button', { name: 'I reviewed this work and accept it' }).click());
     expect((await command(t, `/jobs/${job.id}/completion`)).status).toBe('completed');
