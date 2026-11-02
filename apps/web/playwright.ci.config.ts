@@ -16,7 +16,7 @@ export default defineConfig({
   reporter: [['list'], ['html', { outputFolder: '../../var/browser-ci/report', open: 'never' }],
     ['junit', { outputFile: '../../var/browser-ci/junit.xml' }],
     ['json', { outputFile: '../../var/browser-ci/results.json' }]],
-  use: { baseURL: 'http://127.0.0.1:3001', timezoneId: 'UTC',
+  use: { baseURL: 'http://127.0.0.1:3001', timezoneId: 'UTC', actionTimeout: 30_000, navigationTimeout: 30_000,
     trace: 'on', screenshot: 'only-on-failure', video: 'retain-on-failure' },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: [

@@ -25,12 +25,16 @@ it("preserves an explicit input id for callers", () => {
 });
 it("independently labels same-name selects and connects each error", () => {
   const html = renderToStaticMarkup(createElement(Fragment, null,
-    createElement(SelectField, { name: "state", label: "Decision state", error: "Choose a decision" }),
+    createElement(SelectField, { name: "state", label: "Decision state", error: "Choose a decision" }, createElement("option", { value: "recorded-order" }, "Actual recorded order")),
     createElement(SelectField, { name: "state", label: "Exception state" }),
   ));
   const ids = [...html.matchAll(/<select[^>]*?\sid="([^"]+)"/g)].map(match => match[1]);
   expect(ids).toHaveLength(2);
   expect(new Set(ids).size).toBe(2);
+  // Option and error text must not become part of the select name.
+  for (const id of ids) expect(html).toContain(`aria-labelledby="${id}-label"`);
+  expect(html).toContain(`id="${ids[0]}-label" class="font-medium text-ink">Decision state</span>`);
+  expect(html).toContain(`id="${ids[1]}-label" class="font-medium text-ink">Exception state</span>`);
   expect(html).toContain(`aria-describedby="${ids[0]}-error"`);
   expect(html).toContain(`id="${ids[0]}-error"`);
 });

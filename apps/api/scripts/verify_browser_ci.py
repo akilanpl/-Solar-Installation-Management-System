@@ -33,6 +33,8 @@ def main():
         payment = row("SELECT status, is_test_only, method, quotation_id FROM payment_intents WHERE id=:id", id=records["payment"])
         assert payment["status"] == "verified" and payment["is_test_only"] and payment["method"] == "sandbox"
         assert str(payment["quotation_id"]) == records["quote"]
+        assert row("SELECT count(*) AS n FROM payment_intents WHERE quotation_id=:id", id=records["quote"])["n"] == 1
+        assert row("SELECT count(*) AS n FROM sales_orders WHERE quotation_id=:id", id=records["quote"])["n"] == 1
         repair = row("SELECT status, ticket_id FROM ticket_repair_jobs WHERE id=:id", id=records["repair"])
         assert repair["status"] == "work_submitted" and str(repair["ticket_id"]) == records["ticket"]
         delivery = row("SELECT status, order_id, confirmed_at FROM deliveries WHERE id=:id", id=records["delivery"])

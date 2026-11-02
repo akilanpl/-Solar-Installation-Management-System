@@ -165,6 +165,9 @@ test('fresh customer through delivered serials, acknowledged installation, activ
     expect(payment.is_test_only).toBe(true);
     const verified = await command(c, `/payments/intents/${payment.id}/sandbox-outcome`, { outcome: 'succeeded' });
     expect(verified.status).toBe('verified'); expect(verified.is_test_only).toBe(true);
+    const replay = await command(c, `/payments/intents/${payment.id}/sandbox-outcome`, { outcome: 'succeeded' });
+    expect(replay.id).toBe(payment.id); expect(replay.status).toBe('verified');
+    await command(c, `/payments/intents/${payment.id}/sandbox-outcome`, { outcome: 'failed' }, 409);
     const order = await command(s, '/orders', { quotation_id: quote.id }, 201);
     await command(s, '/orders', { quotation_id: quote.id }, 409);
     await command(w, '/deliveries', { order_id: order.id }, 409); // No invented opening stock.
@@ -252,6 +255,10 @@ test('fresh customer through delivered serials, acknowledged installation, activ
     await audit(persisted, 'closed-complaint');
     expect((await read(persisted.request, `/jobs/${job.id}`)).status).toBe('completed');
     expect(await read<Row[]>(persisted.request, `/orders/${order.id}/unit-warranties`)).toHaveLength(7);
+    await persisted.goto('/customer/equipment');
+    for (const serial of serials) await expect(persisted.getByRole('region', { name: 'Order-bound product warranties' }).getByText(serial, { exact: false })).toBeVisible();
+    await persisted.reload();
+    for (const serial of serials) await expect(persisted.getByRole('region', { name: 'Order-bound product warranties' }).getByText(serial, { exact: false })).toBeVisible();
     expect((await c.get('/api/v1/admin/employees')).status()).toBe(403);
     expect((await c.post('/api/v1/auth/logout')).status()).toBe(403); // Missing CSRF.
     const outsider = await browser.newContext({ baseURL: 'http://127.0.0.1:3001' }); contexts.push(outsider);
