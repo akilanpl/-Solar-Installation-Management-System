@@ -1,0 +1,30 @@
+{
+  "backend-regression": {
+    "tests": "508",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "299.607"
+  },
+  "campaigns": {
+    "tests": "89",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "352.999"
+  },
+  "launcher": {
+    "tests": "4",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.016"
+  },
+  "frontend": {
+    "tests": 85,
+    "files": 17,
+    "failures": 0
+  },
+  "total_backend_executions": 601,
+  "note": "Release campaigns repeat selected existing tests; counts are executions, not independent newly authored coverage."
+}

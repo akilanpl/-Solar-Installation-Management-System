@@ -1,11 +1,17 @@
-# Final release verdict
+# Final Release Verdict
 
-BLOCKED — local release candidate, not an accepted release.
+Current completion audit, 2 November 2026 (Asia/Kolkata). Branch `completion/solarops-20261102`, integrated base `2f6e7122494ce214036d9baf98128411bdbea3c5`. Final commit/build identity and post-commit smoke are recorded in the delivered `FINAL_EXECUTION_MANIFEST.json`. Historical reports describe earlier candidates and are not current evidence.
 
-Phase 1–4 source histories are preserved and combined locally. Approved Phase 4 source branches are remotely published at exact verified SHAs with draft PRs 4–8. Source publication is not acceptance. Integrated candidate is not published, main remains a95533838fd4413233ed69edf2ce671260ea8c3a at last verification, and no deployment occurred.
+**INCOMPLETE / BLOCKED — do not release.**
 
-Required final-source evidence is written outside tracked source to the exact-SHA gate report and delivery manifest. Read their actual decision; this document does not predeclare a pass. The clean checkout is explicitly local-only until a permitted GitHub integration publication and fresh GitHub clone can be verified.
+Achieved: preserved latest integrated history; dedicated completion branch; fresh isolated migration and synthetic seed; repaired safe launcher ports/frontend readiness; 508-test backend regression, four launcher tests, frontend 85 tests, lint/type/build, synchronized contracts, 100-table backup/restore; actual multi-role browser journey through accepted quotation; all static routes captured at three widths. Read the exact final campaign and startup results in the execution manifest.
 
-Outstanding acceptance includes final branch coverage, complete populated multi-role/browser journey for all 66pages and role/viewport failures, extension-specific legitimate settlement integration, real passkey/offline acceptance, provider credentials/acceptance, mutation/diff/main baseline and two-orderCI evidence, review and branch protection enforcement. Broader external frontend history contains a weather-key exposure requiring its owner's rotation; it was not copied into the candidate.
+Required gates still open:
 
-No merge is authorized until the full exact finalSHA meets mandatory acceptance. Keep draft PRs blocked, preserve original worktrees/backups and do not bypass or weaken controls. See other release reports and SOURCE_PUBLICATION_AUDIT.md for exact evidence and reproduction.
+1. Legitimate Razorpay TEST payment, authenticated reconciliation/webhook and funded order in the primary browser campaign. No provider credentials are available; configure only authorized test credentials privately, then rerun.
+2. Same-record warehouse → delivery → installation → customer acknowledgment → warranty → support/repair browser journey, without manufactured business success.
+3. Ten populated dynamic route patterns and complete individual visual/accessibility acceptance, including axe/keyboard/negative cases. In-app capture is not automated Playwright acceptance.
+4. Supported automated browser execution: macOS Chromium process launch is denied. CI source is available but this branch was not pushed or remotely dispatched.
+5. Device passkeys/offline/camera/speech and unsupported external providers remain explicitly unverified.
+
+No confirmed P0 defect remains in the executed scope; unexecuted gates can still contain P0/P1 defects. No claim of full product completion, exhaustive security or production readiness is made. Do not merge, push, deploy publicly or execute live payments from this verdict. Current historical blockers were reverified, not carried over as passing evidence.

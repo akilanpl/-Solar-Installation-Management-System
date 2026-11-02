@@ -1,0 +1,1994 @@
+[
+  {
+    "path": "/api/v1/health",
+    "method": "GET",
+    "tags": [
+      "health"
+    ],
+    "operation_id": "health_api_v1_health_get"
+  },
+  {
+    "path": "/api/v1/ready",
+    "method": "GET",
+    "tags": [
+      "health"
+    ],
+    "operation_id": "ready_api_v1_ready_get"
+  },
+  {
+    "path": "/api/v1/auth/csrf",
+    "method": "GET",
+    "tags": [
+      "auth"
+    ],
+    "operation_id": "read_csrf_api_v1_auth_csrf_get"
+  },
+  {
+    "path": "/api/v1/auth/signup",
+    "method": "POST",
+    "tags": [
+      "auth"
+    ],
+    "operation_id": "signup_api_v1_auth_signup_post"
+  },
+  {
+    "path": "/api/v1/auth/verify-email",
+    "method": "POST",
+    "tags": [
+      "auth"
+    ],
+    "operation_id": "verify_email_api_v1_auth_verify_email_post"
+  },
+  {
+    "path": "/api/v1/auth/resend-verification",
+    "method": "POST",
+    "tags": [
+      "auth"
+    ],
+    "operation_id": "resend_verification_api_v1_auth_resend_verification_post"
+  },
+  {
+    "path": "/api/v1/auth/login",
+    "method": "POST",
+    "tags": [
+      "auth"
+    ],
+    "operation_id": "login_api_v1_auth_login_post"
+  },
+  {
+    "path": "/api/v1/auth/logout",
+    "method": "POST",
+    "tags": [
+      "auth"
+    ],
+    "operation_id": "logout_api_v1_auth_logout_post"
+  },
+  {
+    "path": "/api/v1/auth/me",
+    "method": "GET",
+    "tags": [
+      "auth"
+    ],
+    "operation_id": "me_api_v1_auth_me_get"
+  },
+  {
+    "path": "/api/v1/auth/passkeys/registration/options",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "passkey_registration_options_api_v1_auth_passkeys_registration_options_post"
+  },
+  {
+    "path": "/api/v1/auth/passkeys/registration/verify",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "passkey_registration_verify_api_v1_auth_passkeys_registration_verify_post"
+  },
+  {
+    "path": "/api/v1/auth/passkeys",
+    "method": "GET",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "list_passkeys_api_v1_auth_passkeys_get"
+  },
+  {
+    "path": "/api/v1/auth/passkeys/authentication/options",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "passkey_authentication_options_api_v1_auth_passkeys_authentication_options_post"
+  },
+  {
+    "path": "/api/v1/auth/passkeys/authentication/verify",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "passkey_authentication_verify_api_v1_auth_passkeys_authentication_verify_post"
+  },
+  {
+    "path": "/api/v1/auth/passkeys/{credential_id}/revoke",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "revoke_passkey_api_v1_auth_passkeys__credential_id__revoke_post"
+  },
+  {
+    "path": "/api/v1/auth/mfa/status",
+    "method": "GET",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "mfa_status_api_v1_auth_mfa_status_get"
+  },
+  {
+    "path": "/api/v1/auth/mfa/totp/enroll/start",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "totp_enroll_start_api_v1_auth_mfa_totp_enroll_start_post"
+  },
+  {
+    "path": "/api/v1/auth/mfa/totp/enroll/confirm",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "totp_enroll_confirm_api_v1_auth_mfa_totp_enroll_confirm_post"
+  },
+  {
+    "path": "/api/v1/auth/mfa/ticket/verify-totp",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "ticket_verify_totp_api_v1_auth_mfa_ticket_verify_totp_post"
+  },
+  {
+    "path": "/api/v1/auth/mfa/ticket/verify-recovery",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "ticket_verify_recovery_api_v1_auth_mfa_ticket_verify_recovery_post"
+  },
+  {
+    "path": "/api/v1/auth/mfa/recovery-codes",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "issue_recovery_codes_api_v1_auth_mfa_recovery_codes_post"
+  },
+  {
+    "path": "/api/v1/auth/mfa/factors/{factor_id}/revoke",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "revoke_factor_api_v1_auth_mfa_factors__factor_id__revoke_post"
+  },
+  {
+    "path": "/api/v1/auth/step-up/start",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "step_up_start_api_v1_auth_step_up_start_post"
+  },
+  {
+    "path": "/api/v1/auth/step-up/verify-totp",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "step_up_verify_totp_api_v1_auth_step_up_verify_totp_post"
+  },
+  {
+    "path": "/api/v1/auth/step-up/verify-passkey",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "step_up_verify_passkey_api_v1_auth_step_up_verify_passkey_post"
+  },
+  {
+    "path": "/api/v1/auth/sessions/revoke-others",
+    "method": "POST",
+    "tags": [
+      "auth-4e"
+    ],
+    "operation_id": "revoke_other_sessions_api_v1_auth_sessions_revoke_others_post"
+  },
+  {
+    "path": "/api/v1/offline/sync",
+    "method": "POST",
+    "tags": [
+      "offline-4e"
+    ],
+    "operation_id": "sync_batch_api_v1_offline_sync_post"
+  },
+  {
+    "path": "/api/v1/offline/evidence",
+    "method": "POST",
+    "tags": [
+      "offline-4e"
+    ],
+    "operation_id": "upload_evidence_api_v1_offline_evidence_post"
+  },
+  {
+    "path": "/api/v1/offline/operations",
+    "method": "GET",
+    "tags": [
+      "offline-4e"
+    ],
+    "operation_id": "list_operations_api_v1_offline_operations_get"
+  },
+  {
+    "path": "/api/v1/offline/assignments",
+    "method": "GET",
+    "tags": [
+      "offline-4e"
+    ],
+    "operation_id": "offline_assignments_api_v1_offline_assignments_get"
+  },
+  {
+    "path": "/api/v1/warranty/extensions/eligibility",
+    "method": "GET",
+    "tags": [
+      "warranty-extensions-4e"
+    ],
+    "operation_id": "check_eligibility_api_v1_warranty_extensions_eligibility_get"
+  },
+  {
+    "path": "/api/v1/warranty/extensions/terms",
+    "method": "GET",
+    "tags": [
+      "warranty-extensions-4e"
+    ],
+    "operation_id": "list_terms_api_v1_warranty_extensions_terms_get"
+  },
+  {
+    "path": "/api/v1/warranty/extensions/terms",
+    "method": "POST",
+    "tags": [
+      "warranty-extensions-4e"
+    ],
+    "operation_id": "create_terms_api_v1_warranty_extensions_terms_post"
+  },
+  {
+    "path": "/api/v1/warranty/extensions/offers",
+    "method": "POST",
+    "tags": [
+      "warranty-extensions-4e"
+    ],
+    "operation_id": "issue_offer_api_v1_warranty_extensions_offers_post"
+  },
+  {
+    "path": "/api/v1/warranty/extensions/requests",
+    "method": "GET",
+    "tags": [
+      "warranty-extensions-4e"
+    ],
+    "operation_id": "list_extensions_api_v1_warranty_extensions_requests_get"
+  },
+  {
+    "path": "/api/v1/warranty/extensions/requests",
+    "method": "POST",
+    "tags": [
+      "warranty-extensions-4e"
+    ],
+    "operation_id": "request_extension_api_v1_warranty_extensions_requests_post"
+  },
+  {
+    "path": "/api/v1/warranty/extensions/requests/{extension_id}",
+    "method": "GET",
+    "tags": [
+      "warranty-extensions-4e"
+    ],
+    "operation_id": "get_extension_api_v1_warranty_extensions_requests__extension_id__get"
+  },
+  {
+    "path": "/api/v1/warranty/extensions/requests/{extension_id}/approve",
+    "method": "POST",
+    "tags": [
+      "warranty-extensions-4e"
+    ],
+    "operation_id": "approve_extension_api_v1_warranty_extensions_requests__extension_id__approve_post"
+  },
+  {
+    "path": "/api/v1/warranty/extensions/requests/{extension_id}/reject",
+    "method": "POST",
+    "tags": [
+      "warranty-extensions-4e"
+    ],
+    "operation_id": "reject_extension_api_v1_warranty_extensions_requests__extension_id__reject_post"
+  },
+  {
+    "path": "/api/v1/warranty/extensions/requests/{extension_id}/cancel",
+    "method": "POST",
+    "tags": [
+      "warranty-extensions-4e"
+    ],
+    "operation_id": "cancel_extension_api_v1_warranty_extensions_requests__extension_id__cancel_post"
+  },
+  {
+    "path": "/api/v1/warranty/extensions/requests/{extension_id}/activate",
+    "method": "POST",
+    "tags": [
+      "warranty-extensions-4e"
+    ],
+    "operation_id": "record_payment_and_activate_api_v1_warranty_extensions_requests__extension_id__activate_post"
+  },
+  {
+    "path": "/api/v1/enquiries",
+    "method": "POST",
+    "tags": [
+      "enquiries"
+    ],
+    "operation_id": "create_enquiry_api_v1_enquiries_post"
+  },
+  {
+    "path": "/api/v1/enquiries",
+    "method": "GET",
+    "tags": [
+      "enquiries"
+    ],
+    "operation_id": "list_enquiries_api_v1_enquiries_get"
+  },
+  {
+    "path": "/api/v1/enquiries/{enquiry_id}",
+    "method": "GET",
+    "tags": [
+      "enquiries"
+    ],
+    "operation_id": "read_enquiry_api_v1_enquiries__enquiry_id__get"
+  },
+  {
+    "path": "/api/v1/enquiries/{enquiry_id}/qualification",
+    "method": "PATCH",
+    "tags": [
+      "enquiries"
+    ],
+    "operation_id": "qualify_enquiry_api_v1_enquiries__enquiry_id__qualification_patch"
+  },
+  {
+    "path": "/api/v1/packages",
+    "method": "GET",
+    "tags": [
+      "packages"
+    ],
+    "operation_id": "read_packages_api_v1_packages_get"
+  },
+  {
+    "path": "/api/v1/packages/{package_code}/versions/current",
+    "method": "GET",
+    "tags": [
+      "packages"
+    ],
+    "operation_id": "read_current_version_api_v1_packages__package_code__versions_current_get"
+  },
+  {
+    "path": "/api/v1/packages/{package_code}/versions/{version_number}",
+    "method": "GET",
+    "tags": [
+      "packages"
+    ],
+    "operation_id": "read_version_api_v1_packages__package_code__versions__version_number__get"
+  },
+  {
+    "path": "/api/v1/surveys",
+    "method": "POST",
+    "tags": [
+      "surveys"
+    ],
+    "operation_id": "create_survey_api_v1_surveys_post"
+  },
+  {
+    "path": "/api/v1/surveys",
+    "method": "GET",
+    "tags": [
+      "surveys"
+    ],
+    "operation_id": "list_surveys_api_v1_surveys_get"
+  },
+  {
+    "path": "/api/v1/surveys/{survey_id}",
+    "method": "GET",
+    "tags": [
+      "surveys"
+    ],
+    "operation_id": "read_survey_api_v1_surveys__survey_id__get"
+  },
+  {
+    "path": "/api/v1/surveys/{survey_id}/assignment",
+    "method": "POST",
+    "tags": [
+      "surveys"
+    ],
+    "operation_id": "assign_survey_api_v1_surveys__survey_id__assignment_post"
+  },
+  {
+    "path": "/api/v1/surveys/{survey_id}/start",
+    "method": "POST",
+    "tags": [
+      "surveys"
+    ],
+    "operation_id": "start_survey_api_v1_surveys__survey_id__start_post"
+  },
+  {
+    "path": "/api/v1/surveys/{survey_id}/submission",
+    "method": "POST",
+    "tags": [
+      "surveys"
+    ],
+    "operation_id": "submit_survey_api_v1_surveys__survey_id__submission_post"
+  },
+  {
+    "path": "/api/v1/surveys/{survey_id}/approval",
+    "method": "POST",
+    "tags": [
+      "surveys"
+    ],
+    "operation_id": "decide_survey_api_v1_surveys__survey_id__approval_post"
+  },
+  {
+    "path": "/api/v1/surveys/{survey_id}/resurvey",
+    "method": "POST",
+    "tags": [
+      "surveys"
+    ],
+    "operation_id": "resurvey_api_v1_surveys__survey_id__resurvey_post"
+  },
+  {
+    "path": "/api/v1/surveys/{survey_id}/evidence",
+    "method": "POST",
+    "tags": [
+      "surveys"
+    ],
+    "operation_id": "upload_evidence_api_v1_surveys__survey_id__evidence_post"
+  },
+  {
+    "path": "/api/v1/surveys/{survey_id}/evidence/{evidence_id}",
+    "method": "GET",
+    "tags": [
+      "surveys"
+    ],
+    "operation_id": "download_evidence_api_v1_surveys__survey_id__evidence__evidence_id__get"
+  },
+  {
+    "path": "/api/v1/quotations",
+    "method": "POST",
+    "tags": [
+      "quotations"
+    ],
+    "operation_id": "create_quotation_api_v1_quotations_post"
+  },
+  {
+    "path": "/api/v1/quotations",
+    "method": "GET",
+    "tags": [
+      "quotations"
+    ],
+    "operation_id": "list_quotations_api_v1_quotations_get"
+  },
+  {
+    "path": "/api/v1/quotations/{quotation_id}",
+    "method": "GET",
+    "tags": [
+      "quotations"
+    ],
+    "operation_id": "read_quotation_api_v1_quotations__quotation_id__get"
+  },
+  {
+    "path": "/api/v1/quotations/{quotation_id}/revisions",
+    "method": "POST",
+    "tags": [
+      "quotations"
+    ],
+    "operation_id": "revise_quotation_api_v1_quotations__quotation_id__revisions_post"
+  },
+  {
+    "path": "/api/v1/quotations/{quotation_id}/revision-requests",
+    "method": "POST",
+    "tags": [
+      "quotations"
+    ],
+    "operation_id": "request_revision_api_v1_quotations__quotation_id__revision_requests_post"
+  },
+  {
+    "path": "/api/v1/quotations/{quotation_id}/revision-requests",
+    "method": "GET",
+    "tags": [
+      "quotations"
+    ],
+    "operation_id": "list_revision_requests_api_v1_quotations__quotation_id__revision_requests_get"
+  },
+  {
+    "path": "/api/v1/quotations/{quotation_id}/acceptance",
+    "method": "POST",
+    "tags": [
+      "quotations"
+    ],
+    "operation_id": "accept_quotation_api_v1_quotations__quotation_id__acceptance_post"
+  },
+  {
+    "path": "/api/v1/quotations/{quotation_id}/withdrawal",
+    "method": "POST",
+    "tags": [
+      "quotations"
+    ],
+    "operation_id": "withdraw_quotation_api_v1_quotations__quotation_id__withdrawal_post"
+  },
+  {
+    "path": "/api/v1/quotations/{quotation_id}/payment-requirement",
+    "method": "GET",
+    "tags": [
+      "payments"
+    ],
+    "operation_id": "read_requirement_api_v1_quotations__quotation_id__payment_requirement_get"
+  },
+  {
+    "path": "/api/v1/payments/intents",
+    "method": "POST",
+    "tags": [
+      "payments"
+    ],
+    "operation_id": "create_intent_api_v1_payments_intents_post"
+  },
+  {
+    "path": "/api/v1/payments/intents/{intent_id}/sandbox-outcome",
+    "method": "POST",
+    "tags": [
+      "payments"
+    ],
+    "operation_id": "sandbox_outcome_api_v1_payments_intents__intent_id__sandbox_outcome_post"
+  },
+  {
+    "path": "/api/v1/payments/cash-receipts",
+    "method": "POST",
+    "tags": [
+      "payments"
+    ],
+    "operation_id": "cash_receipt_api_v1_payments_cash_receipts_post"
+  },
+  {
+    "path": "/api/v1/payments/receipts",
+    "method": "GET",
+    "tags": [
+      "payments"
+    ],
+    "operation_id": "receipts_api_v1_payments_receipts_get"
+  },
+  {
+    "path": "/api/v1/payments/{intent_id}",
+    "method": "GET",
+    "tags": [
+      "payments"
+    ],
+    "operation_id": "read_payment_api_v1_payments__intent_id__get"
+  },
+  {
+    "path": "/api/v1/payments/razorpay/capability",
+    "method": "GET",
+    "tags": [
+      "razorpay-test"
+    ],
+    "operation_id": "capability_api_v1_payments_razorpay_capability_get"
+  },
+  {
+    "path": "/api/v1/payments/razorpay/orders",
+    "method": "POST",
+    "tags": [
+      "razorpay-test"
+    ],
+    "operation_id": "create_order_api_v1_payments_razorpay_orders_post"
+  },
+  {
+    "path": "/api/v1/payments/razorpay/{intent_id}/reconcile",
+    "method": "POST",
+    "tags": [
+      "razorpay-test"
+    ],
+    "operation_id": "reconcile_api_v1_payments_razorpay__intent_id__reconcile_post"
+  },
+  {
+    "path": "/api/v1/orders",
+    "method": "POST",
+    "tags": [
+      "orders"
+    ],
+    "operation_id": "create_order_api_v1_orders_post"
+  },
+  {
+    "path": "/api/v1/orders",
+    "method": "GET",
+    "tags": [
+      "orders"
+    ],
+    "operation_id": "list_orders_api_v1_orders_get"
+  },
+  {
+    "path": "/api/v1/orders/{order_id}",
+    "method": "GET",
+    "tags": [
+      "orders"
+    ],
+    "operation_id": "read_order_api_v1_orders__order_id__get"
+  },
+  {
+    "path": "/api/v1/warehouse/preparation",
+    "method": "GET",
+    "tags": [
+      "orders"
+    ],
+    "operation_id": "warehouse_queue_api_v1_warehouse_preparation_get"
+  },
+  {
+    "path": "/api/v1/scheduling/installations",
+    "method": "GET",
+    "tags": [
+      "orders"
+    ],
+    "operation_id": "scheduling_queue_api_v1_scheduling_installations_get"
+  },
+  {
+    "path": "/api/v1/stock",
+    "method": "GET",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "read_stock_api_v1_stock_get"
+  },
+  {
+    "path": "/api/v1/stock/operations",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "create_stock_operation_api_v1_stock_operations_post"
+  },
+  {
+    "path": "/api/v1/stock/operations",
+    "method": "GET",
+    "tags": [
+      "workspace-read-models"
+    ],
+    "operation_id": "operations_api_v1_stock_operations_get"
+  },
+  {
+    "path": "/api/v1/stock/operations/{operation_id}",
+    "method": "GET",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "read_stock_operation_api_v1_stock_operations__operation_id__get"
+  },
+  {
+    "path": "/api/v1/stock/operations/{operation_id}/ready",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "ready_stock_operation_api_v1_stock_operations__operation_id__ready_post"
+  },
+  {
+    "path": "/api/v1/stock/operations/{operation_id}/validate",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "validate_stock_operation_api_v1_stock_operations__operation_id__validate_post"
+  },
+  {
+    "path": "/api/v1/stock/operations/{operation_id}/cancel",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "cancel_stock_operation_api_v1_stock_operations__operation_id__cancel_post"
+  },
+  {
+    "path": "/api/v1/stock/reservations",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "create_reservations_api_v1_stock_reservations_post"
+  },
+  {
+    "path": "/api/v1/stock/reservations",
+    "method": "GET",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "read_reservations_api_v1_stock_reservations_get"
+  },
+  {
+    "path": "/api/v1/serials/scan",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "scan_serial_api_v1_serials_scan_post"
+  },
+  {
+    "path": "/api/v1/serials/{serial_id}/assign",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "assign_serial_api_v1_serials__serial_id__assign_post"
+  },
+  {
+    "path": "/api/v1/replenishment/requests",
+    "method": "GET",
+    "tags": [
+      "workspace-read-models"
+    ],
+    "operation_id": "replenishments_api_v1_replenishment_requests_get"
+  },
+  {
+    "path": "/api/v1/replenishment/requests",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "request_replenishment_api_v1_replenishment_requests_post"
+  },
+  {
+    "path": "/api/v1/replenishment/requests/{request_id}/decision",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "decide_replenishment_api_v1_replenishment_requests__request_id__decision_post"
+  },
+  {
+    "path": "/api/v1/deliveries",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "create_delivery_api_v1_deliveries_post"
+  },
+  {
+    "path": "/api/v1/deliveries",
+    "method": "GET",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "list_deliveries_api_v1_deliveries_get"
+  },
+  {
+    "path": "/api/v1/deliveries/{delivery_id}",
+    "method": "GET",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "read_delivery_api_v1_deliveries__delivery_id__get"
+  },
+  {
+    "path": "/api/v1/deliveries/{delivery_id}/transit",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "delivery_in_transit_api_v1_deliveries__delivery_id__transit_post"
+  },
+  {
+    "path": "/api/v1/deliveries/{delivery_id}/deliver",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "delivery_delivered_api_v1_deliveries__delivery_id__deliver_post"
+  },
+  {
+    "path": "/api/v1/deliveries/{delivery_id}/confirm",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "delivery_confirm_api_v1_deliveries__delivery_id__confirm_post"
+  },
+  {
+    "path": "/api/v1/deliveries/{delivery_id}/cancel",
+    "method": "POST",
+    "tags": [
+      "warehouse"
+    ],
+    "operation_id": "delivery_cancel_api_v1_deliveries__delivery_id__cancel_post"
+  },
+  {
+    "path": "/api/v1/stock/allocations",
+    "method": "POST",
+    "tags": [
+      "operational-custody"
+    ],
+    "operation_id": "allocate_api_v1_stock_allocations_post"
+  },
+  {
+    "path": "/api/v1/stock/allocations",
+    "method": "GET",
+    "tags": [
+      "operational-custody"
+    ],
+    "operation_id": "allocations_api_v1_stock_allocations_get"
+  },
+  {
+    "path": "/api/v1/stock/returns",
+    "method": "POST",
+    "tags": [
+      "operational-custody"
+    ],
+    "operation_id": "authorize_return_api_v1_stock_returns_post"
+  },
+  {
+    "path": "/api/v1/stock/returns",
+    "method": "GET",
+    "tags": [
+      "operational-custody"
+    ],
+    "operation_id": "returns_api_v1_stock_returns_get"
+  },
+  {
+    "path": "/api/v1/stock/returns/{return_id}/inspection",
+    "method": "POST",
+    "tags": [
+      "operational-custody"
+    ],
+    "operation_id": "inspect_return_api_v1_stock_returns__return_id__inspection_post"
+  },
+  {
+    "path": "/api/v1/procurement/orders",
+    "method": "GET",
+    "tags": [
+      "operational-custody"
+    ],
+    "operation_id": "supplier_orders_api_v1_procurement_orders_get"
+  },
+  {
+    "path": "/api/v1/procurement/orders",
+    "method": "POST",
+    "tags": [
+      "operational-custody"
+    ],
+    "operation_id": "supplier_order_api_v1_procurement_orders_post"
+  },
+  {
+    "path": "/api/v1/procurement/orders/{order_id}/receipt",
+    "method": "POST",
+    "tags": [
+      "operational-custody"
+    ],
+    "operation_id": "supplier_receipt_api_v1_procurement_orders__order_id__receipt_post"
+  },
+  {
+    "path": "/api/v1/workspace/technicians",
+    "method": "GET",
+    "tags": [
+      "workspace-read-models"
+    ],
+    "operation_id": "technicians_api_v1_workspace_technicians_get"
+  },
+  {
+    "path": "/api/v1/workspace/warehouse-catalogue",
+    "method": "GET",
+    "tags": [
+      "workspace-read-models"
+    ],
+    "operation_id": "catalogue_api_v1_workspace_warehouse_catalogue_get"
+  },
+  {
+    "path": "/api/v1/serials",
+    "method": "GET",
+    "tags": [
+      "workspace-read-models"
+    ],
+    "operation_id": "serials_api_v1_serials_get"
+  },
+  {
+    "path": "/api/v1/surveys/{survey_id}/site-context",
+    "method": "GET",
+    "tags": [
+      "assigned-work-context"
+    ],
+    "operation_id": "survey_context_api_v1_surveys__survey_id__site_context_get"
+  },
+  {
+    "path": "/api/v1/jobs/{job_id}/site-context",
+    "method": "GET",
+    "tags": [
+      "assigned-work-context"
+    ],
+    "operation_id": "job_context_api_v1_jobs__job_id__site_context_get"
+  },
+  {
+    "path": "/api/v1/scheduling/installations/{scheduling_id}/slot",
+    "method": "POST",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "schedule_slot_api_v1_scheduling_installations__scheduling_id__slot_post"
+  },
+  {
+    "path": "/api/v1/assignments/recommendations",
+    "method": "POST",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "recommend_api_v1_assignments_recommendations_post"
+  },
+  {
+    "path": "/api/v1/jobs",
+    "method": "GET",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "list_jobs_api_v1_jobs_get"
+  },
+  {
+    "path": "/api/v1/jobs",
+    "method": "POST",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "create_job_api_v1_jobs_post"
+  },
+  {
+    "path": "/api/v1/jobs/{job_id}",
+    "method": "GET",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "read_job_api_v1_jobs__job_id__get"
+  },
+  {
+    "path": "/api/v1/jobs/{job_id}/en-route",
+    "method": "POST",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "job_en_route_api_v1_jobs__job_id__en_route_post"
+  },
+  {
+    "path": "/api/v1/jobs/{job_id}/arrival",
+    "method": "POST",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "job_arrival_api_v1_jobs__job_id__arrival_post"
+  },
+  {
+    "path": "/api/v1/jobs/{job_id}/customer-otp",
+    "method": "POST",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "job_otp_api_v1_jobs__job_id__customer_otp_post"
+  },
+  {
+    "path": "/api/v1/jobs/{job_id}/evidence",
+    "method": "POST",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "job_evidence_api_v1_jobs__job_id__evidence_post"
+  },
+  {
+    "path": "/api/v1/jobs/{job_id}/signature",
+    "method": "POST",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "job_signature_api_v1_jobs__job_id__signature_post"
+  },
+  {
+    "path": "/api/v1/jobs/{job_id}/completion",
+    "method": "POST",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "job_completion_api_v1_jobs__job_id__completion_post"
+  },
+  {
+    "path": "/api/v1/warranties/order/{order_id}",
+    "method": "GET",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "read_warranty_api_v1_warranties_order__order_id__get"
+  },
+  {
+    "path": "/api/v1/warranties/order/{order_id}/void",
+    "method": "POST",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "void_warranty_api_v1_warranties_order__order_id__void_post"
+  },
+  {
+    "path": "/api/v1/jobs/{job_id}/work-summary",
+    "method": "GET",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "work_summary_api_v1_jobs__job_id__work_summary_get"
+  },
+  {
+    "path": "/api/v1/jobs/{job_id}/uploads",
+    "method": "POST",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "upload_job_evidence_api_v1_jobs__job_id__uploads_post"
+  },
+  {
+    "path": "/api/v1/jobs/{job_id}/uploads/{storage_key}",
+    "method": "GET",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "download_job_evidence_api_v1_jobs__job_id__uploads__storage_key__get"
+  },
+  {
+    "path": "/api/v1/jobs/{job_id}/verification-code/request",
+    "method": "POST",
+    "tags": [
+      "installation"
+    ],
+    "operation_id": "request_verification_code_api_v1_jobs__job_id__verification_code_request_post"
+  },
+  {
+    "path": "/api/v1/scheduling/availability/{tech_id}",
+    "method": "PUT",
+    "tags": [
+      "technician-calendar"
+    ],
+    "operation_id": "availability_api_v1_scheduling_availability__tech_id__put"
+  },
+  {
+    "path": "/api/v1/scheduling/availability/{tech_id}",
+    "method": "GET",
+    "tags": [
+      "technician-calendar"
+    ],
+    "operation_id": "read_availability_api_v1_scheduling_availability__tech_id__get"
+  },
+  {
+    "path": "/api/v1/scheduling/leave/{tech_id}",
+    "method": "POST",
+    "tags": [
+      "technician-calendar"
+    ],
+    "operation_id": "leave_api_v1_scheduling_leave__tech_id__post"
+  },
+  {
+    "path": "/api/v1/scheduling/appointments",
+    "method": "GET",
+    "tags": [
+      "technician-calendar"
+    ],
+    "operation_id": "appointments_api_v1_scheduling_appointments_get"
+  },
+  {
+    "path": "/api/v1/scheduling/appointments",
+    "method": "POST",
+    "tags": [
+      "technician-calendar"
+    ],
+    "operation_id": "book_api_v1_scheduling_appointments_post"
+  },
+  {
+    "path": "/api/v1/scheduling/eligibility",
+    "method": "POST",
+    "tags": [
+      "technician-calendar"
+    ],
+    "operation_id": "eligibility_api_v1_scheduling_eligibility_post"
+  },
+  {
+    "path": "/api/v1/warranty-policies",
+    "method": "GET",
+    "tags": [
+      "product-warranty"
+    ],
+    "operation_id": "policies_api_v1_warranty_policies_get"
+  },
+  {
+    "path": "/api/v1/warranty-policies",
+    "method": "POST",
+    "tags": [
+      "product-warranty"
+    ],
+    "operation_id": "create_product_warranty_policy"
+  },
+  {
+    "path": "/api/v1/orders/{order_id}/unit-warranties",
+    "method": "GET",
+    "tags": [
+      "product-warranty"
+    ],
+    "operation_id": "unit_warranties_api_v1_orders__order_id__unit_warranties_get"
+  },
+  {
+    "path": "/api/v1/tickets",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "create_ticket_api_v1_tickets_post"
+  },
+  {
+    "path": "/api/v1/tickets",
+    "method": "GET",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "list_tickets_api_v1_tickets_get"
+  },
+  {
+    "path": "/api/v1/support/staff",
+    "method": "GET",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "assignable_staff_api_v1_support_staff_get"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}",
+    "method": "GET",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "read_ticket_api_v1_tickets__ticket_id__get"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/triage",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "triage_api_v1_tickets__ticket_id__triage_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/support-assignment",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "assign_owner_api_v1_tickets__ticket_id__support_assignment_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/request-info",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "ask_customer_api_v1_tickets__ticket_id__request_info_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/customer-reply",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "reply_api_v1_tickets__ticket_id__customer_reply_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/notes",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "add_note_api_v1_tickets__ticket_id__notes_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/escalation",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "escalate_api_v1_tickets__ticket_id__escalation_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/repair-jobs",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "create_repair_job_api_v1_tickets__ticket_id__repair_jobs_post"
+  },
+  {
+    "path": "/api/v1/repair-jobs",
+    "method": "GET",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "list_repair_jobs_api_v1_repair_jobs_get"
+  },
+  {
+    "path": "/api/v1/repair-jobs/{job_id}",
+    "method": "GET",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "read_repair_job_api_v1_repair_jobs__job_id__get"
+  },
+  {
+    "path": "/api/v1/repair-jobs/{job_id}/arrival",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "job_arrival_api_v1_repair_jobs__job_id__arrival_post"
+  },
+  {
+    "path": "/api/v1/repair-jobs/{job_id}/diagnostics",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "job_diagnostics_api_v1_repair_jobs__job_id__diagnostics_post"
+  },
+  {
+    "path": "/api/v1/repair-jobs/{job_id}/work",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "job_work_api_v1_repair_jobs__job_id__work_post"
+  },
+  {
+    "path": "/api/v1/repair-jobs/{job_id}/submit",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "job_submit_api_v1_repair_jobs__job_id__submit_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/attachments",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "upload_attachment_api_v1_tickets__ticket_id__attachments_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/attachments",
+    "method": "GET",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "list_attachments_api_v1_tickets__ticket_id__attachments_get"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/attachments/{attachment_id}",
+    "method": "GET",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "download_attachment_api_v1_tickets__ticket_id__attachments__attachment_id__get"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/resolution-ready",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "resolution_ready_api_v1_tickets__ticket_id__resolution_ready_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/resolution-summary",
+    "method": "GET",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "read_resolution_summary_api_v1_tickets__ticket_id__resolution_summary_get"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/confirmation",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "confirm_api_v1_tickets__ticket_id__confirmation_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/close",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "close_api_v1_tickets__ticket_id__close_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/reopen",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "reopen_api_v1_tickets__ticket_id__reopen_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/cancel",
+    "method": "POST",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "cancel_api_v1_tickets__ticket_id__cancel_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/history",
+    "method": "GET",
+    "tags": [
+      "tickets"
+    ],
+    "operation_id": "history_api_v1_tickets__ticket_id__history_get"
+  },
+  {
+    "path": "/api/v1/warranty/policies",
+    "method": "GET",
+    "tags": [
+      "warranty"
+    ],
+    "operation_id": "list_policies_api_v1_warranty_policies_get"
+  },
+  {
+    "path": "/api/v1/warranty/policies",
+    "method": "POST",
+    "tags": [
+      "warranty"
+    ],
+    "operation_id": "create_policy_api_v1_warranty_policies_post"
+  },
+  {
+    "path": "/api/v1/warranty/policies/{policy_id}/versions",
+    "method": "POST",
+    "tags": [
+      "warranty"
+    ],
+    "operation_id": "create_policy_version_api_v1_warranty_policies__policy_id__versions_post"
+  },
+  {
+    "path": "/api/v1/warranty/policies/{policy_id}/versions",
+    "method": "GET",
+    "tags": [
+      "warranty"
+    ],
+    "operation_id": "list_policy_versions_api_v1_warranty_policies__policy_id__versions_get"
+  },
+  {
+    "path": "/api/v1/warranty/orders/{order_id}/activate-coverages",
+    "method": "POST",
+    "tags": [
+      "warranty"
+    ],
+    "operation_id": "activate_coverages_api_v1_warranty_orders__order_id__activate_coverages_post"
+  },
+  {
+    "path": "/api/v1/warranty/coverage-decisions",
+    "method": "POST",
+    "tags": [
+      "warranty"
+    ],
+    "operation_id": "decide_coverage_api_v1_warranty_coverage_decisions_post"
+  },
+  {
+    "path": "/api/v1/warranty/coverage-decisions",
+    "method": "GET",
+    "tags": [
+      "warranty"
+    ],
+    "operation_id": "list_ticket_decisions_api_v1_warranty_coverage_decisions_get"
+  },
+  {
+    "path": "/api/v1/warranty/serials/mine",
+    "method": "GET",
+    "tags": [
+      "warranty"
+    ],
+    "operation_id": "my_coverages_api_v1_warranty_serials_mine_get"
+  },
+  {
+    "path": "/api/v1/warranty/serials/lookup",
+    "method": "GET",
+    "tags": [
+      "warranty"
+    ],
+    "operation_id": "lookup_serial_api_v1_warranty_serials_lookup_get"
+  },
+  {
+    "path": "/api/v1/warranty/exceptions",
+    "method": "POST",
+    "tags": [
+      "warranty"
+    ],
+    "operation_id": "create_exception_api_v1_warranty_exceptions_post"
+  },
+  {
+    "path": "/api/v1/warranty/coverages/{coverage_id}/void",
+    "method": "POST",
+    "tags": [
+      "warranty"
+    ],
+    "operation_id": "void_coverage_api_v1_warranty_coverages__coverage_id__void_post"
+  },
+  {
+    "path": "/api/v1/replacements",
+    "method": "POST",
+    "tags": [
+      "replacements"
+    ],
+    "operation_id": "propose_api_v1_replacements_post"
+  },
+  {
+    "path": "/api/v1/replacements",
+    "method": "GET",
+    "tags": [
+      "replacements"
+    ],
+    "operation_id": "list_all_api_v1_replacements_get"
+  },
+  {
+    "path": "/api/v1/replacements/{replacement_id}",
+    "method": "GET",
+    "tags": [
+      "replacements"
+    ],
+    "operation_id": "read_one_api_v1_replacements__replacement_id__get"
+  },
+  {
+    "path": "/api/v1/replacements/{replacement_id}/approve",
+    "method": "POST",
+    "tags": [
+      "replacements"
+    ],
+    "operation_id": "approve_api_v1_replacements__replacement_id__approve_post"
+  },
+  {
+    "path": "/api/v1/replacements/{replacement_id}/manufacturer-auth",
+    "method": "POST",
+    "tags": [
+      "replacements"
+    ],
+    "operation_id": "manufacturer_auth_api_v1_replacements__replacement_id__manufacturer_auth_post"
+  },
+  {
+    "path": "/api/v1/replacements/{replacement_id}/reserve",
+    "method": "POST",
+    "tags": [
+      "replacements"
+    ],
+    "operation_id": "reserve_api_v1_replacements__replacement_id__reserve_post"
+  },
+  {
+    "path": "/api/v1/replacements/{replacement_id}/issue",
+    "method": "POST",
+    "tags": [
+      "replacements"
+    ],
+    "operation_id": "issue_api_v1_replacements__replacement_id__issue_post"
+  },
+  {
+    "path": "/api/v1/replacements/{replacement_id}/install",
+    "method": "POST",
+    "tags": [
+      "replacements"
+    ],
+    "operation_id": "install_api_v1_replacements__replacement_id__install_post"
+  },
+  {
+    "path": "/api/v1/replacements/{replacement_id}/inspect",
+    "method": "POST",
+    "tags": [
+      "replacements"
+    ],
+    "operation_id": "inspect_return_api_v1_replacements__replacement_id__inspect_post"
+  },
+  {
+    "path": "/api/v1/replacements/{replacement_id}/cancel",
+    "method": "POST",
+    "tags": [
+      "replacements"
+    ],
+    "operation_id": "cancel_api_v1_replacements__replacement_id__cancel_post"
+  },
+  {
+    "path": "/api/v1/service-price-books",
+    "method": "GET",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "list_price_books_api_v1_service_price_books_get"
+  },
+  {
+    "path": "/api/v1/service-price-books",
+    "method": "POST",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "create_price_book_api_v1_service_price_books_post"
+  },
+  {
+    "path": "/api/v1/service-tax-policies",
+    "method": "GET",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "list_tax_policies_api_v1_service_tax_policies_get"
+  },
+  {
+    "path": "/api/v1/service-tax-policies",
+    "method": "POST",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "create_tax_policy_api_v1_service_tax_policies_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/estimates",
+    "method": "POST",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "create_estimate_api_v1_tickets__ticket_id__estimates_post"
+  },
+  {
+    "path": "/api/v1/tickets/{ticket_id}/estimates",
+    "method": "GET",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "list_estimates_api_v1_tickets__ticket_id__estimates_get"
+  },
+  {
+    "path": "/api/v1/estimates/{estimate_id}",
+    "method": "GET",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "read_estimate_api_v1_estimates__estimate_id__get"
+  },
+  {
+    "path": "/api/v1/estimates/{estimate_id}/decision",
+    "method": "POST",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "decide_estimate_api_v1_estimates__estimate_id__decision_post"
+  },
+  {
+    "path": "/api/v1/service-invoices",
+    "method": "POST",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "create_invoice_api_v1_service_invoices_post"
+  },
+  {
+    "path": "/api/v1/service-invoices",
+    "method": "GET",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "list_invoices_api_v1_service_invoices_get"
+  },
+  {
+    "path": "/api/v1/service-invoices/{invoice_id}",
+    "method": "GET",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "read_invoice_api_v1_service_invoices__invoice_id__get"
+  },
+  {
+    "path": "/api/v1/service-invoices/{invoice_id}/consume",
+    "method": "POST",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "consume_parts_api_v1_service_invoices__invoice_id__consume_post"
+  },
+  {
+    "path": "/api/v1/service-invoices/{invoice_id}/credit-notes",
+    "method": "POST",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "create_credit_note_api_v1_service_invoices__invoice_id__credit_notes_post"
+  },
+  {
+    "path": "/api/v1/service-invoices/{invoice_id}/credit-notes",
+    "method": "GET",
+    "tags": [
+      "billing"
+    ],
+    "operation_id": "list_credit_notes_api_v1_service_invoices__invoice_id__credit_notes_get"
+  },
+  {
+    "path": "/api/v1/finance/evidence",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "upload_evidence_api_v1_finance_evidence_post"
+  },
+  {
+    "path": "/api/v1/finance/evidence/{evidence_id}",
+    "method": "GET",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "download_evidence_api_v1_finance_evidence__evidence_id__get"
+  },
+  {
+    "path": "/api/v1/finance/records",
+    "method": "GET",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "list_records_api_v1_finance_records_get"
+  },
+  {
+    "path": "/api/v1/finance/periods",
+    "method": "GET",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "periods_api_v1_finance_periods_get"
+  },
+  {
+    "path": "/api/v1/finance/periods",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "create_period_api_v1_finance_periods_post"
+  },
+  {
+    "path": "/api/v1/finance/periods/{period_id}/close",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "close_period_api_v1_finance_periods__period_id__close_post"
+  },
+  {
+    "path": "/api/v1/finance/policies",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "policy_api_v1_finance_policies_post"
+  },
+  {
+    "path": "/api/v1/finance/invoices",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "invoice_api_v1_finance_invoices_post"
+  },
+  {
+    "path": "/api/v1/finance/invoices/{invoice_id}/recognize",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "recognize_api_v1_finance_invoices__invoice_id__recognize_post"
+  },
+  {
+    "path": "/api/v1/finance/receipts/import",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "receipt_api_v1_finance_receipts_import_post"
+  },
+  {
+    "path": "/api/v1/finance/invoices/{invoice_id}/credits",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "credit_api_v1_finance_invoices__invoice_id__credits_post"
+  },
+  {
+    "path": "/api/v1/finance/journal",
+    "method": "GET",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "journal_api_v1_finance_journal_get"
+  },
+  {
+    "path": "/api/v1/finance/journal/{entry_id}/reverse",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "reverse_api_v1_finance_journal__entry_id__reverse_post"
+  },
+  {
+    "path": "/api/v1/finance/labour-rates",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "rate_api_v1_finance_labour_rates_post"
+  },
+  {
+    "path": "/api/v1/finance/timesheets",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "timesheet_api_v1_finance_timesheets_post"
+  },
+  {
+    "path": "/api/v1/finance/timesheets/{sheet_id}/review",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "review_api_v1_finance_timesheets__sheet_id__review_post"
+  },
+  {
+    "path": "/api/v1/finance/costs",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "cost_api_v1_finance_costs_post"
+  },
+  {
+    "path": "/api/v1/finance/payables/{payable_id}/settlements",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "settle_api_v1_finance_payables__payable_id__settlements_post"
+  },
+  {
+    "path": "/api/v1/finance/completeness",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "attest_api_v1_finance_completeness_post"
+  },
+  {
+    "path": "/api/v1/finance/subsidy-schemes",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "scheme_api_v1_finance_subsidy_schemes_post"
+  },
+  {
+    "path": "/api/v1/finance/subsidies",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "subsidy_api_v1_finance_subsidies_post"
+  },
+  {
+    "path": "/api/v1/finance/subsidies/{case_id}",
+    "method": "GET",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "subsidy_detail_api_v1_finance_subsidies__case_id__get"
+  },
+  {
+    "path": "/api/v1/finance/subsidies/{case_id}/documents",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "subsidy_document_api_v1_finance_subsidies__case_id__documents_post"
+  },
+  {
+    "path": "/api/v1/finance/subsidies/{case_id}/events",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "subsidy_transition_api_v1_finance_subsidies__case_id__events_post"
+  },
+  {
+    "path": "/api/v1/finance/dashboard",
+    "method": "GET",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "dashboard_api_v1_finance_dashboard_get"
+  },
+  {
+    "path": "/api/v1/finance/reports/profit.csv",
+    "method": "GET",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "report_api_v1_finance_reports_profit_csv_get"
+  },
+  {
+    "path": "/api/v1/finance/advances/allocate",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "allocate_api_v1_finance_advances_allocate_post"
+  },
+  {
+    "path": "/api/v1/finance/payables/{payable_id}/adjustments",
+    "method": "POST",
+    "tags": [
+      "finance"
+    ],
+    "operation_id": "adjust_api_v1_finance_payables__payable_id__adjustments_post"
+  },
+  {
+    "path": "/api/v1/admin/employees",
+    "method": "GET",
+    "tags": [
+      "admin"
+    ],
+    "operation_id": "read_employees_api_v1_admin_employees_get"
+  },
+  {
+    "path": "/api/v1/admin/employees",
+    "method": "POST",
+    "tags": [
+      "admin"
+    ],
+    "operation_id": "create_employee_api_v1_admin_employees_post"
+  },
+  {
+    "path": "/api/v1/dev/mailbox/{email}",
+    "method": "GET",
+    "tags": [
+      "development"
+    ],
+    "operation_id": "read_mailbox_api_v1_dev_mailbox__email__get"
+  },
+  {
+    "path": "/api/v1/customer-snapshots/{customer_id}",
+    "method": "GET",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "read_snapshot_api_v1_customer_snapshots__customer_id__get"
+  },
+  {
+    "path": "/api/v1/customer-snapshots/{customer_id}/refresh",
+    "method": "POST",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "refresh_snapshot_api_v1_customer_snapshots__customer_id__refresh_post"
+  },
+  {
+    "path": "/api/v1/cache/invalidate",
+    "method": "POST",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "invalidate_cache_api_v1_cache_invalidate_post"
+  },
+  {
+    "path": "/api/v1/cache/metrics",
+    "method": "GET",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "cache_metrics_api_v1_cache_metrics_get"
+  },
+  {
+    "path": "/api/v1/ai-assists",
+    "method": "POST",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "create_assist_api_v1_ai_assists_post"
+  },
+  {
+    "path": "/api/v1/ai-assists/{session_id}/confirm",
+    "method": "POST",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "confirm_assist_api_v1_ai_assists__session_id__confirm_post"
+  },
+  {
+    "path": "/api/v1/weather/sites/{site_id}/geolocation",
+    "method": "POST",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "upsert_geolocation_api_v1_weather_sites__site_id__geolocation_post"
+  },
+  {
+    "path": "/api/v1/weather/forecasts",
+    "method": "POST",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "fetch_forecast_api_v1_weather_forecasts_post"
+  },
+  {
+    "path": "/api/v1/weather/advisories",
+    "method": "GET",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "list_advisories_api_v1_weather_advisories_get"
+  },
+  {
+    "path": "/api/v1/weather/advisories/{advisory_id}/ack",
+    "method": "POST",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "ack_advisory_api_v1_weather_advisories__advisory_id__ack_post"
+  },
+  {
+    "path": "/api/v1/weather/availability",
+    "method": "GET",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "weather_availability_api_v1_weather_availability_get"
+  },
+  {
+    "path": "/api/v1/generation/estimates",
+    "method": "GET",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "generation_estimate_api_v1_generation_estimates_get"
+  },
+  {
+    "path": "/api/v1/generation/summary",
+    "method": "GET",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "generation_summary_api_v1_generation_summary_get"
+  },
+  {
+    "path": "/api/v1/generation/readings",
+    "method": "POST",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "ingest_reading_api_v1_generation_readings_post"
+  },
+  {
+    "path": "/api/v1/generation/readings",
+    "method": "GET",
+    "tags": [
+      "intelligence"
+    ],
+    "operation_id": "list_readings_api_v1_generation_readings_get"
+  },
+  {
+    "path": "/api/v1/payments/razorpay/webhook",
+    "method": "POST",
+    "tags": [
+      "razorpay-webhook"
+    ],
+    "operation_id": "webhook_api_v1_payments_razorpay_webhook_post"
+  }
+]

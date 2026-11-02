@@ -1,0 +1,11 @@
+{
+  "tables": 100,
+  "foreign_keys": 233,
+  "unique_constraints": 80,
+  "check_constraints": 114,
+  "migration_heads": [
+    "6a1b2c3d4e50"
+  ],
+  "api_paths": 217,
+  "api_operations": 249
+}
