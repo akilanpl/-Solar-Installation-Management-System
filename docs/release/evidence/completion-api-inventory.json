@@ -528,6 +528,14 @@
     "operation_id": "withdraw_quotation_api_v1_quotations__quotation_id__withdrawal_post"
   },
   {
+    "path": "/api/v1/payments/sandbox/capability",
+    "method": "GET",
+    "tags": [
+      "payments"
+    ],
+    "operation_id": "sandbox_capability_api_v1_payments_sandbox_capability_get"
+  },
+  {
     "path": "/api/v1/quotations/{quotation_id}/payment-requirement",
     "method": "GET",
     "tags": [

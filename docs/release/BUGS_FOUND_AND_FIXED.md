@@ -1,15 +1,15 @@
 # Bugs Found And Fixed
 
-Current completion audit, 2 November 2026 (Asia/Kolkata). Branch `completion/solarops-20261102`, integrated base `2f6e7122494ce214036d9baf98128411bdbea3c5`. Final commit/build identity and post-commit smoke are recorded in the delivered `FINAL_EXECUTION_MANIFEST.json`. Historical reports describe earlier candidates and are not current evidence.
+Lifecycle follow-up, 2 November 2026 (Asia/Kolkata). Branch `completion/solarops-20261102`; baseline handoff `2b892fe3ec450ca1121afaaabdb1941d3f8716b9`. Final source/build SHA and post-commit smoke are in the delivered `FINAL_EXECUTION_MANIFEST.json`. Previous test counts are historical, not substituted for this run.
 
-| ID | Priority | Finding | Action / verification |
-|---|---|---|---|
-|RUN-01|P1 local operation|Launcher hardcodes occupied 3061/8061 ports|Added validated `--api-port` / `--web-port`, preflight both listeners before spawning; occupied web-port test verifies no API child starts and original listener remains usable.|
-|RUN-02|P1 local operation|Launcher announces URL before frontend readiness|Wait for HTTP 200 `/login`; detect early child exit and clean up only owned children.|
-|ENV-01|External environment|Chromium aborts at macOS MachPortRendezvous bootstrap permission|Supported in-app browser used for manual acceptance; automated Playwright remains BLOCKED. No security controls bypassed.|
-|ENV-02|External integration|No Razorpay test credentials/webhook secret|Preserved explicit disabled provider UI; no invented receipt/settlement.|
-|QA-01|Test prerequisite|Backup campaign needs CREATEDB on dedicated test role|Granted only dedicated temporary local role for this campaign; revoked after successful 89-test campaign. Separate restore rehearsal matches all 100 tables.|
+| ID / priority | Exact action / component | Expected vs baseline actual | Root cause and repair | Credentials needed? |
+|---|---|---|---|---|
+|PAY-01 P1|Customer payment → `quotations.tsx` / `/payments/intents`|Internal testing should proceed without claiming provider settlement; no UI existed|Connected explicit development-only intent/outcome interface to existing guarded service. Both public preview flag and authenticated backend capability required; production API denies simulation. Choices are pending, approval, failure or unknown; acknowledgment required.|No for internal simulation; yes for Razorpay|
+|EQ-01 P1|My equipment after installation|Seven product policies activated; UI falsely said no equipment|Page read only separate Phase 4B service-policy coverage. Reused order-bound product coverage and kept both provenances separate; before/after browser proof.|No|
+|CAL-01 P1|Create assigned job → calendar selector|New job should be selectable immediately; required refresh|Child calendar had an independent stale cache. Remount on parent job ID/status changes. Added focused frontend-contract browser regression; standalone execution blocked.|No|
+|WAR-01 P1 clarity|Customer complaint warranty text|Product terms should not be conflated with older estimate|Explicitly label legacy order-level estimate and preserve its explanation; direct customer to serial product terms.|No|
+|A11Y-01 P1|Mobile quotation/warehouse horizontal tables|Keyboard users could not focus scrolling regions|Added labelled focusable regions; axe rechecks pass.|No|
+|A11Y-02 P1|Small text, auth focus, field errors|Contrast/focus/announcements below requirements|Darkened measured failing text and badges, restored input focus outlines and live validation errors. Stabilized video text contrast with a dark scrim; bounded contrast calculations preserved.|No|
+|RUN-03 P1 local operation|Immediate launcher restart|Free port should restart; TIME_WAIT falsely rejected|SO_REUSEADDR preflight matches server restart behavior and still rejects live listeners. Five real-socket/argument tests pass.|No|
 
-No P0 product defect was confirmed in the executed scope. This is not proof that no P0 exists: the funded primary journey and remaining acceptance are incomplete. Browser chooser tool returned after an unusually long delay; API 201 and saved evidence confirmed upload completion, so this was not classified as a proven product outage. Repeated sign-ins also hit the configured abuse limit; a fresh owned-server restart is required before the seven-account demonstration.
-
-Regression additions: `apps/api/tests/test_complete_launcher.py` (four cases). `apps/api/scripts/demonstrate_local.py` reads real authorized data and verifies role/session boundaries without recording business events.
+Unresolved external/environment boundaries: Razorpay credentials absent; Playwright Chromium macOS bootstrap denied. Browser file-picker calls sometimes returned very late; API persistence and UI readback confirmed uploads, so uncertain responses were not blindly retried. No confirmed P0 was found in the executed scope; untested variants are not certified defect-free.

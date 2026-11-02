@@ -1,0 +1,62 @@
+[
+  {
+    "height": 44,
+    "name": "contact_name",
+    "width": 505
+  },
+  {
+    "height": 44,
+    "name": "contact_phone",
+    "width": 505
+  },
+  {
+    "height": 44,
+    "name": "contact_email",
+    "width": 505
+  },
+  {
+    "height": 43.5,
+    "name": "preferred_capacity_w",
+    "width": 505
+  },
+  {
+    "height": 43.5,
+    "name": "grid_preference",
+    "width": 505
+  },
+  {
+    "height": 44,
+    "name": "bill_rupees",
+    "width": 505
+  },
+  {
+    "height": 44,
+    "name": "line1",
+    "width": 505
+  },
+  {
+    "height": 44,
+    "name": "line2",
+    "width": 505
+  },
+  {
+    "height": 44,
+    "name": "city",
+    "width": 505
+  },
+  {
+    "height": 44,
+    "name": "state",
+    "width": 505
+  },
+  {
+    "height": 44,
+    "name": "postal_code",
+    "width": 505
+  },
+  {
+    "height": 36,
+    "name": "Submit enquiry",
+    "width": 133.8984375
+  }
+]

@@ -1,27 +1,23 @@
 # Test Execution Report
 
-Current completion audit, 2 November 2026 (Asia/Kolkata). Branch `completion/solarops-20261102`, integrated base `2f6e7122494ce214036d9baf98128411bdbea3c5`. Final commit/build identity and post-commit smoke are recorded in the delivered `FINAL_EXECUTION_MANIFEST.json`. Historical reports describe earlier candidates and are not current evidence.
+Lifecycle follow-up, 2 November 2026 (Asia/Kolkata). Branch `completion/solarops-20261102`; baseline handoff `2b892fe3ec450ca1121afaaabdb1941d3f8716b9`. Final source/build SHA and post-commit smoke are in the delivered `FINAL_EXECUTION_MANIFEST.json`. Previous test counts are historical, not substituted for this run.
 
-Current execution is against the integrated base plus only the listed launcher/demo/test changes. Final source SHA, exact artifact hashes and post-commit checks are in delivered `FINAL_EXECUTION_MANIFEST.json`.
-
-| Command / scope | Current observed outcome |
+| Exact command / layer | Current result |
 |---|---|
-|`uv sync --group dev` with writable UV cache|PASS, locked Python 3.12 environment|
-|`npm ci --cache /private/tmp/solarops-npm-cache --no-audit --no-fund`|PASS, 425 packages|
-|`python -m alembic upgrade head`|PASS, fresh isolated demo DB, head 6a1b2c3d4e50|
-|`pytest --ignore=tests/release_campaigns --junitxml=...`|508 PASS in 299.62 s; one Starlette TestClient deprecation warning|
-|`pytest tests/test_complete_launcher.py`|4 PASS after correcting macOS-unsupported test socket inspection to an actual connect/accept oracle|
-|`pytest tests/release_campaigns --junitxml=...`|89 PASS in 353.00 s, including five-minute real HTTP campaign and disposable backup/restore; original combined run incomplete|
-|`ruff check app tests scripts`|PASS|
-|`npm test`|85 PASS / 17 files|
+|`pytest --junitxml=../../var/evidence/lifecycle-final-backend.xml` (private environment explicitly passed)|PASS: 605 tests, zero failures/errors/skips, 646.58 s; one Starlette TestClient deprecation warning|
+|`pytest tests/test_sandbox_capability.py tests/test_quotation_integrity.py tests/test_razorpay_boundary.py`|PASS: 35 targeted tests|
+|`pytest tests/test_complete_launcher.py`|PASS: 5 cases, including active-listener preservation and TIME_WAIT restart|
+|`npm test`|PASS: 88 tests / 18 files|
 |`npm run typecheck`|PASS|
-|`npm run lint`|PASS|
-|`npm run build`|PASS, production build with explicit development preview flag|
-|`python scripts/export_openapi.py` + diff|PASS, no generated schema drift|
-|`npm run generate:api` + diff|PASS, no generated TypeScript drift|
-|Playwright smoke via complete config|BLOCKED before test interaction by macOS browser process bootstrap permissions|
-|Manual supported browser|Signup through accepted quotation PASS; provider/downstream blocked; 216 viewport observations, partial acceptance|
-|Logical backup restore|PASS, all 100 table row hashes match|
-|Seven-role HTTP demo and launcher restart|Final results in execution manifest|
+|`npm run lint`|PASS, zero warnings|
+|`npm run build`|PASS; final post-commit build identity in manifest|
+|`ruff check app tests scripts`|PASS|
+|`python scripts/export_openapi.py` / `npm run generate:api` with SHA-256 comparison before/after|PASS, generated artifacts exactly reproduce source|
+|`npx playwright test --config playwright.complete.config.ts lifecycle-persistence.spec.ts --project chromium`|BLOCKED: runner reports 3 launch failures before browser interaction; not product assertion failures or passing tests|
+|Supported in-app browser J1–J5|PASS with persisted synthetic lifecycle and separate roles; screenshots/trees retained|
+|Axe WCAG 2A/AA/2.1AA, critical route/viewports|PASS measured violations after repairs; manual-review items and limits in browser report|
+|Keyboard modal and invalid-form checks|PASS recorded subset; not full screen-reader certification|
+|Proxy/API replay and cross-customer campaign|PASS, unchanged payment/order counts|
+|Direct PostgreSQL linked-state readback|PASS: completed job, seven warranties, zero residual stock and closed complaint|
 
-Initial pytest invocation refused the database because the disposable-name environment variable had not been exported; dotenv loading alone does not export it. All later runs explicitly passed both variables from the private `.env`. The original combined diagnostic run collected 597 tests, passed the five-minute load test, failed backup on missing CREATEDB, then hit its 600-second wrapper timeout around 79%; it is not reported as a green full suite. Release campaigns repeat selected existing tests, so their count is not newly authored distinct coverage. No baseline assertions were weakened.
+The full suite includes selected duplicated release-campaign regressions and a five-minute 10-RPS HTTP campaign. Counts are test executions, not newly authored distinct business scenarios. The earlier 604-test full run passed before the final launcher case; 605 is the later final run. All run logs/XML are stored privately in var/evidence; sanitized final XML/JSON is included in the evidence deliverable. No prior-turn 601/85 result is used as current verification.

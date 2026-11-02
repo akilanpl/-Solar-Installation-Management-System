@@ -1,0 +1,14 @@
+{
+  "same_outcome_replay": 200,
+  "conflicting_outcome_replay": 409,
+  "intent_retry_returns_same_record": true,
+  "missing_csrf_rejected": true,
+  "customer_staff_access_rejected": true,
+  "cross_customer:/orders/7ddcfff1-7415-4972-a490-b7614948ab6f": 404,
+  "cross_customer:/orders/7ddcfff1-7415-4972-a490-b7614948ab6f/unit-warranties": 404,
+  "cross_customer:/jobs/5df62e43-d4da-4638-959b-a300c198b59c": 404,
+  "cross_customer:/tickets/4c70d3bd-ac76-4c5e-ae7a-01e0ee34c2f8": 404,
+  "cross_customer:/payments/073c254e-3bb2-4a0a-9264-0763e2626bee": 404,
+  "duplicate_order_rejected": 409,
+  "replay_preserves_order_payment_attempt_counts": true
+}

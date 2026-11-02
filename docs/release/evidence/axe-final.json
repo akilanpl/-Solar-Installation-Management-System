@@ -1,0 +1,1010 @@
+[
+  {
+    "url": "/login",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".auth-hero-brand-name"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".auth-hero-badge > span"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              "h2"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".auth-hero-subtitle"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(2) > .auth-step-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(2) > .auth-step-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(3) > .auth-step-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(3) > .auth-step-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              "small"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+          }
+        ]
+      },
+      {
+        "id": "no-autoplay-audio",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "video"
+            ],
+            "failureSummary": "Fix all of the following:\n  <video> or <audio> outputs audio for more than allowed duration and does not have a controls mechanism"
+          }
+        ]
+      }
+    ],
+    "passes": 24,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/login",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".auth-hero-brand-name"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".auth-hero-badge > span"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              "h2"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".auth-hero-subtitle"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(2) > .auth-step-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(2) > .auth-step-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(3) > .auth-step-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(3) > .auth-step-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          }
+        ]
+      },
+      {
+        "id": "no-autoplay-audio",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "video"
+            ],
+            "failureSummary": "Fix all of the following:\n  <video> or <audio> outputs audio for more than allowed duration and does not have a controls mechanism"
+          }
+        ]
+      }
+    ],
+    "passes": 24,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/login",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".auth-hero-brand-name"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".auth-hero-badge > span"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              "h2"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".auth-hero-subtitle"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(2) > .auth-step-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(2) > .auth-step-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(3) > .auth-step-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(3) > .auth-step-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          }
+        ]
+      },
+      {
+        "id": "no-autoplay-audio",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "video"
+            ],
+            "failureSummary": "Fix all of the following:\n  <video> or <audio> outputs audio for more than allowed duration and does not have a controls mechanism"
+          }
+        ]
+      }
+    ],
+    "passes": 24,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  },
+  {
+    "url": "/signup",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".auth-hero-brand-name"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".auth-hero-badge > span"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              "h2"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".auth-hero-subtitle"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(2) > .auth-step-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(2) > .auth-step-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(3) > .auth-step-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(3) > .auth-step-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          }
+        ]
+      },
+      {
+        "id": "no-autoplay-audio",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "video"
+            ],
+            "failureSummary": "Fix all of the following:\n  <video> or <audio> outputs audio for more than allowed duration and does not have a controls mechanism"
+          }
+        ]
+      }
+    ],
+    "passes": 24,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/signup",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".auth-hero-brand-name"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".auth-hero-badge > span"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              "h2"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".auth-hero-subtitle"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(2) > .auth-step-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(2) > .auth-step-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(3) > .auth-step-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(3) > .auth-step-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          }
+        ]
+      },
+      {
+        "id": "no-autoplay-audio",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "video"
+            ],
+            "failureSummary": "Fix all of the following:\n  <video> or <audio> outputs audio for more than allowed duration and does not have a controls mechanism"
+          }
+        ]
+      }
+    ],
+    "passes": 24,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/signup",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".auth-hero-brand-name"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".auth-hero-badge > span"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              "h2"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".auth-hero-subtitle"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(2) > .auth-step-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(2) > .auth-step-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(3) > .auth-step-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "target": [
+              ".inactive.auth-step-card:nth-child(3) > .auth-step-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+          }
+        ]
+      },
+      {
+        "id": "no-autoplay-audio",
+        "impact": "moderate",
+        "nodes": [
+          {
+            "target": [
+              "video"
+            ],
+            "failureSummary": "Fix all of the following:\n  <video> or <audio> outputs audio for more than allowed duration and does not have a controls mechanism"
+          }
+        ]
+      }
+    ],
+    "passes": 24,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  },
+  {
+    "url": "/customer/equipment",
+    "violations": [],
+    "incomplete": [],
+    "passes": 21,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/customer/equipment",
+    "violations": [],
+    "incomplete": [],
+    "passes": 21,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/customer/equipment",
+    "violations": [],
+    "incomplete": [],
+    "passes": 21,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  },
+  {
+    "url": "/customer/payments",
+    "violations": [],
+    "incomplete": [],
+    "passes": 23,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/customer/payments",
+    "violations": [],
+    "incomplete": [],
+    "passes": 23,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/customer/payments",
+    "violations": [],
+    "incomplete": [],
+    "passes": 23,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  },
+  {
+    "url": "/customer/enquiries/new",
+    "violations": [],
+    "incomplete": [],
+    "passes": 25,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/customer/enquiries/new",
+    "violations": [],
+    "incomplete": [],
+    "passes": 25,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/customer/enquiries/new",
+    "violations": [],
+    "incomplete": [],
+    "passes": 25,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  },
+  {
+    "url": "/customer/installations",
+    "violations": [],
+    "incomplete": [],
+    "passes": 23,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/customer/installations",
+    "violations": [],
+    "incomplete": [],
+    "passes": 23,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/customer/installations",
+    "violations": [],
+    "incomplete": [],
+    "passes": 23,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  },
+  {
+    "url": "/customer/quotations",
+    "violations": [],
+    "incomplete": [],
+    "passes": 23,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/customer/quotations",
+    "violations": [],
+    "incomplete": [],
+    "passes": 23,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/customer/quotations",
+    "violations": [],
+    "incomplete": [],
+    "passes": 23,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  },
+  {
+    "url": "/customer/complaints/4c70d3bd-ac76-4c5e-ae7a-01e0ee34c2f8",
+    "violations": [],
+    "incomplete": [],
+    "passes": 26,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/customer/complaints/4c70d3bd-ac76-4c5e-ae7a-01e0ee34c2f8",
+    "violations": [],
+    "incomplete": [],
+    "passes": 26,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/customer/complaints/4c70d3bd-ac76-4c5e-ae7a-01e0ee34c2f8",
+    "violations": [],
+    "incomplete": [],
+    "passes": 26,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  },
+  {
+    "url": "/warehouse/picking",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".dock-scan-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          },
+          {
+            "target": [
+              ".dock-ai-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      }
+    ],
+    "passes": 28,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/warehouse/picking",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".dock-scan-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          },
+          {
+            "target": [
+              ".dock-ai-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      }
+    ],
+    "passes": 28,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/warehouse/picking",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".dock-scan-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          },
+          {
+            "target": [
+              ".dock-ai-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      }
+    ],
+    "passes": 28,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  },
+  {
+    "url": "/technician",
+    "violations": [],
+    "incomplete": [],
+    "passes": 23,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/technician",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".dock-scan-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          },
+          {
+            "target": [
+              ".dock-ai-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      }
+    ],
+    "passes": 23,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/technician",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".dock-scan-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          },
+          {
+            "target": [
+              ".dock-ai-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          },
+          {
+            "target": [
+              ".operations_kicker__rNWrU"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          },
+          {
+            "target": [
+              ".operations_focus__XNBLq > h3"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          },
+          {
+            "target": [
+              ".operations_focus__XNBLq > p"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      }
+    ],
+    "passes": 23,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  },
+  {
+    "url": "/technician/repairs/4853d978-44fb-4f42-bbe0-843ee6a34f7d",
+    "violations": [],
+    "incomplete": [],
+    "passes": 22,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/technician/repairs/4853d978-44fb-4f42-bbe0-843ee6a34f7d",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".dock-scan-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          },
+          {
+            "target": [
+              ".dock-ai-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      }
+    ],
+    "passes": 22,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/technician/repairs/4853d978-44fb-4f42-bbe0-843ee6a34f7d",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".dock-scan-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          },
+          {
+            "target": [
+              ".dock-ai-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      }
+    ],
+    "passes": 21,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  },
+  {
+    "url": "/support/tickets/4c70d3bd-ac76-4c5e-ae7a-01e0ee34c2f8",
+    "violations": [],
+    "incomplete": [],
+    "passes": 26,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/support/tickets/4c70d3bd-ac76-4c5e-ae7a-01e0ee34c2f8",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".dock-ai-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      }
+    ],
+    "passes": 26,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/support/tickets/4c70d3bd-ac76-4c5e-ae7a-01e0ee34c2f8",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".dock-ai-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      }
+    ],
+    "passes": 26,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  },
+  {
+    "url": "/sales/quotations",
+    "violations": [],
+    "incomplete": [],
+    "passes": 26,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/sales/quotations",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".dock-ai-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      }
+    ],
+    "passes": 26,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/sales/quotations",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".dock-ai-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      }
+    ],
+    "passes": 26,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  },
+  {
+    "url": "/sales/installations",
+    "violations": [],
+    "incomplete": [],
+    "passes": 24,
+    "width": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "url": "/sales/installations",
+    "violations": [],
+    "incomplete": [],
+    "passes": 24,
+    "width": 768,
+    "clientWidth": 768,
+    "scrollWidth": 768
+  },
+  {
+    "url": "/sales/installations",
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "nodes": [
+          {
+            "target": [
+              ".dock-scan-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          },
+          {
+            "target": [
+              ".dock-ai-badge"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+          }
+        ]
+      }
+    ],
+    "passes": 24,
+    "width": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280
+  }
+]

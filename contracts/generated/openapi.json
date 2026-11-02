@@ -2688,6 +2688,27 @@
         }
       }
     },
+    "/api/v1/payments/sandbox/capability": {
+      "get": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "Sandbox Capability",
+        "operationId": "sandbox_capability_api_v1_payments_sandbox_capability_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxCapability"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/quotations/{quotation_id}/payment-requirement": {
       "get": {
         "tags": [
@@ -18289,6 +18310,24 @@
         },
         "type": "object",
         "title": "RevokeRequest"
+      },
+      "SandboxCapability": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled",
+          "notice"
+        ],
+        "title": "SandboxCapability"
       },
       "SandboxOutcome": {
         "properties": {

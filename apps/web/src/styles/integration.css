@@ -15,7 +15,7 @@
 .auth-google-btn:disabled { cursor:not-allowed; }
 .auth-disclaimer-note { color:#64748b; }
 .auth-hero-brand { width:fit-content; }
-.auth-page-viewport input:focus-visible,.auth-page-viewport select:focus-visible { outline:none; }
+.auth-page-viewport input:focus-visible,.auth-page-viewport select:focus-visible { outline:3px solid #4338ca; outline-offset:3px; }
 .auth-page-viewport button:focus-visible,.auth-page-viewport a:focus-visible { outline:3px solid #2563eb; outline-offset:4px; }
 .auth-page-viewport .auth-hero-brand:focus-visible { outline-color:white; }
 @media(max-width:1024px) { .auth-hero-content { margin-top:40px; } .auth-hero-panel { flex:none; } .auth-form-panel { flex:none; } }
@@ -46,7 +46,7 @@
 .actual-board { display:flex; flex-direction:column; gap:24px; }
 .actual-board .bento-card { min-width:0; }
 .actual-board .bento-card-title { display:flex; align-items:center; gap:9px; }
-.actual-board p,.actual-board li { font-size:13px; line-height:1.6; color:#64748b; margin:8px 0; }
+.actual-board p,.actual-board li { font-size:13px; line-height:1.6; color:#475569; margin:8px 0; }
 .actual-record-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr)); gap:20px; }
 .actual-workflow-form { background:white; border:1px solid #edf0f5; border-radius:18px; padding:22px; margin-top:16px; min-width:0; }
 .actual-workflow-form h3 { font-size:14px;font-weight:700;margin-bottom:16px; }

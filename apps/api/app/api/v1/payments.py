@@ -26,6 +26,22 @@ from app.services import payment_service
 router = APIRouter(tags=["payments"])
 
 
+class SandboxCapability(BaseModel):
+    enabled: bool
+    notice: str
+
+
+@router.get("/payments/sandbox/capability", response_model=SandboxCapability)
+def sandbox_capability(
+    user: User = Depends(current_user), settings: Settings = Depends(get_settings)
+):
+    return SandboxCapability(
+        enabled=settings.app_env in {"development", "test"}
+        and user.role_code in {"customer", "sales", "admin"},
+        notice="Internal software simulation only. No money moves and no provider settlement occurs.",
+    )
+
+
 def _key(value: str | None) -> str:
     try:
         return parse_idempotency_key(value)

@@ -46,7 +46,7 @@ export function TextField({
         </span>
       ) : null}
       {error ? (
-        <span id={`${fieldId}-error`} className="mt-1 block text-xs text-clay-700">
+        <span role="alert" id={`${fieldId}-error`} className="mt-1 block text-xs text-clay-700">
           {error}
         </span>
       ) : null}
@@ -75,7 +75,7 @@ export function SelectField({
       >
         {children}
       </select>
-      {error ? <span id={`${fieldId}-error`} className="mt-1 block text-xs text-clay-700">{error}</span> : null}
+      {error ? <span role="alert" id={`${fieldId}-error`} className="mt-1 block text-xs text-clay-700">{error}</span> : null}
     </label>
   );
 }

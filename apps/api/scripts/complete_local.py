@@ -18,6 +18,14 @@ WEB = ROOT / "apps/web"
 PYTHON = API / ".venv/bin/python"
 
 
+def check_port(port):
+    with socket.socket() as listener:
+        # Match uvicorn/Node restart semantics: TIME_WAIT is not a live service.
+        # A currently listening socket still prevents the bind.
+        listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        listener.bind(("127.0.0.1", port))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=["migrate", "seed", "serve"])
@@ -46,11 +54,10 @@ def main():
         parser.error("Run npm run build in apps/web first")
     # Check both listeners before starting either child. Never stop an existing service.
     for port in (args.api_port, args.web_port):
-        with socket.socket() as listener:
-            try:
-                listener.bind(("127.0.0.1", port))
-            except OSError:
-                parser.error(f"Port {port} is unavailable; choose another port")
+        try:
+            check_port(port)
+        except OSError:
+            parser.error(f"Port {port} is unavailable; choose another port")
     children = []
     try:
         children.append(subprocess.Popen([str(API / ".venv/bin/uvicorn"), "app.main:app", "--host", "127.0.0.1", "--port", str(args.api_port)], cwd=API, env=env))

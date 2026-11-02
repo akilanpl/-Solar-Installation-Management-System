@@ -25,7 +25,7 @@ export function Timeline({ events }: { events: TicketEvent[] }) {
             {[event.from_status, event.to_status].filter(Boolean).join(" → ") || "No status change"}
           </p>
           {event.reason ? <p className="mt-1">{event.reason}</p> : null}
-          <p className="mt-1 text-xs text-moss-800/70">{new Date(event.created_at).toLocaleString()}</p>
+          <p className="mt-1 text-xs text-moss-800">{new Date(event.created_at).toLocaleString()}</p>
         </li>
       ))}
     </ol>
@@ -72,7 +72,7 @@ export function AttachmentSection({ ticketId, canUpload }: { ticketId: string; c
             <a className="underline" href={`/api/v1/tickets/${ticketId}/attachments/${item.id}`} target="_blank" rel="noreferrer">
               {item.original_filename}
             </a>{" "}
-            <span className="text-xs text-moss-800/70">({Math.round(item.size_bytes / 1024)} KB)</span>
+            <span className="text-xs text-moss-800">({Math.round(item.size_bytes / 1024)} KB)</span>
           </li>
         ))}
       </ul>
@@ -230,7 +230,7 @@ export function ComplaintDetail({ ticketId }: { ticketId: string }) {
           <h2 className="font-semibold">What you reported</h2>
           <p className="mt-2 text-sm">{ticket.symptoms}</p>
           <p className="mt-2 text-sm">Fault code: {ticket.fault_code ?? "None"} · Serial: {ticket.serial_number ?? "None"} · Your urgency: {ticket.customer_urgency}</p>
-          {ticket.warranty && <p className="mt-2 text-sm">Warranty on this order: {ticket.warranty.status}{ticket.warranty.ends_at ? ` until ${new Date(ticket.warranty.ends_at).toLocaleDateString()}` : ""}</p>}
+          {ticket.warranty && <p className="mt-2 text-sm">Legacy order-level estimate: {ticket.warranty.status}{ticket.warranty.ends_at ? ` until ${new Date(ticket.warranty.ends_at).toLocaleDateString()}` : ""}. {ticket.warranty.coverage_note} Review product and serial terms in My equipment.</p>}
         </Card>
         {summary && (ticket.status === "resolved" || ticket.status === "customer_confirmed" || ticket.status === "closed") && (
           <Card>

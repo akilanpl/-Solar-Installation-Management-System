@@ -1,17 +1,21 @@
 # Final Release Verdict
 
-Current completion audit, 2 November 2026 (Asia/Kolkata). Branch `completion/solarops-20261102`, integrated base `2f6e7122494ce214036d9baf98128411bdbea3c5`. Final commit/build identity and post-commit smoke are recorded in the delivered `FINAL_EXECUTION_MANIFEST.json`. Historical reports describe earlier candidates and are not current evidence.
+Lifecycle follow-up, 2 November 2026 (Asia/Kolkata). Branch `completion/solarops-20261102`; baseline handoff `2b892fe3ec450ca1121afaaabdb1941d3f8716b9`. Final source/build SHA and post-commit smoke are in the delivered `FINAL_EXECUTION_MANIFEST.json`. Previous test counts are historical, not substituted for this run.
 
-**INCOMPLETE / BLOCKED — do not release.**
+**INCOMPLETE — external provider and automated acceptance gates remain blocked.**
 
-Achieved: preserved latest integrated history; dedicated completion branch; fresh isolated migration and synthetic seed; repaired safe launcher ports/frontend readiness; 508-test backend regression, four launcher tests, frontend 85 tests, lint/type/build, synchronized contracts, 100-table backup/restore; actual multi-role browser journey through accepted quotation; all static routes captured at three widths. Read the exact final campaign and startup results in the execution manifest.
+The payment credential blocker is now correctly isolated: all five internal journeys have passed in the supported real browser with explicit test-only funding and real PostgreSQL persistence. Warehouse, customer acknowledgment, serial warranty activation, repair/resolution and customer confirmation are no longer blocked by Razorpay credentials. No live or invented cash/provider settlement was used.
 
-Required gates still open:
+| Acceptance area | Status | Scope / remaining work |
+|---|---|---|
+|Internal J1–J5 business lifecycle|PASS|Actual forms/API/database, same linked records, labelled synthetic events|
+|Persistence and critical role/replay controls|PASS|Browser refresh/relogin plus direct DB/proxy negatives|
+|Backend and frontend regression / lint / types / build / contracts|PASS|605 backend, 88 frontend; exact source/build manifest|
+|Critical axe/overflow and keyboard smoke|PASS for tested cases|42 route/viewports and explicit modal/error checks; not full assistive-technology certification|
+|Standalone Playwright browser regression / exact new-calendar regression|BLOCKED|macOS Chromium bootstrap permission denied; run unchanged assertion-bearing tests in supported environment|
+|Actual Razorpay test checkout/callback/webhook acceptance|BLOCKED|Private authorized test key/secret and webhook secret absent|
+|All remaining saved-record variants / full screen-reader acceptance|NOT TESTED|Estimate/bill/replacement variants and hardware assistive technology are not certified|
 
-1. Legitimate Razorpay TEST payment, authenticated reconciliation/webhook and funded order in the primary browser campaign. No provider credentials are available; configure only authorized test credentials privately, then rerun.
-2. Same-record warehouse → delivery → installation → customer acknowledgment → warranty → support/repair browser journey, without manufactured business success.
-3. Ten populated dynamic route patterns and complete individual visual/accessibility acceptance, including axe/keyboard/negative cases. In-app capture is not automated Playwright acceptance.
-4. Supported automated browser execution: macOS Chromium process launch is denied. CI source is available but this branch was not pushed or remotely dispatched.
-5. Device passkeys/offline/camera/speech and unsupported external providers remain explicitly unverified.
+No confirmed P0 or unresolved P1 blocking the executed primary internal path remains. That statement is limited to observed scope. The requested stronger “INTERNAL PRODUCT ACCEPTANCE PASSED — EXTERNAL PAYMENT PROVIDER ACCEPTANCE BLOCKED” label is not used because it would omit the separately blocked automated browser gate and unexecuted acceptance variants.
 
-No confirmed P0 defect remains in the executed scope; unexecuted gates can still contain P0/P1 defects. No claim of full product completion, exhaustive security or production readiness is made. Do not merge, push, deploy publicly or execute live payments from this verdict. Current historical blockers were reverified, not carried over as passing evidence.
+Next execution: use a supported Chromium/CI runner without disabling macOS controls; run the three added browser regressions and existing primary release suites on a fresh controlled fixture set. Configure only authorized Razorpay TEST credentials privately for separate provider acceptance. No push, merge, public deployment or live financial transaction is authorized or performed.

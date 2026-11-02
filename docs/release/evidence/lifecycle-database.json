@@ -1,0 +1,409 @@
+{
+  "orders": [
+    {
+      "id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "reference": "ORD-2026-000001",
+      "quotation_id": "23eed395-71bb-4188-8a3f-c730f1969374",
+      "quotation_version": 1,
+      "total_minor": 9487200,
+      "test_only_payment": true,
+      "payment_verification_state": "test_verified"
+    }
+  ],
+  "payments": [
+    {
+      "id": "f7d128c5-d2bf-44bb-9ad8-0d1f0a12b433",
+      "quotation_id": "23eed395-71bb-4188-8a3f-c730f1969374",
+      "status": "failed",
+      "amount_minor": 10000,
+      "method": "sandbox",
+      "provider": "sandbox",
+      "is_test_only": true
+    },
+    {
+      "id": "073c254e-3bb2-4a0a-9264-0763e2626bee",
+      "quotation_id": "23eed395-71bb-4188-8a3f-c730f1969374",
+      "status": "verified",
+      "amount_minor": 9487200,
+      "method": "sandbox",
+      "provider": "sandbox",
+      "is_test_only": true
+    }
+  ],
+  "deliveries": [
+    {
+      "id": "7358fd4f-ac5d-483a-a684-1fa7157baf29",
+      "reference": "DLV-2026-000001",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "status": "confirmed"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "5df62e43-d4da-4638-959b-a300c198b59c",
+      "reference": "JOB-2026-000001",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "status": "completed",
+      "technician_user_id": "d958938e-5dd2-443b-a2f5-d39a5164936f",
+      "otp_verified": true,
+      "completed_at": "2026-11-02 14:06:50.999632+05:30"
+    }
+  ],
+  "equipment": [
+    {
+      "id": "43fb0635-92e4-4568-bc74-f754dd015a11",
+      "serial_number": "TEST-LIFECYCLE-INVERTER-1",
+      "component_code": "INV-ONG",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "status": "installed"
+    },
+    {
+      "id": "264d72c0-ed69-4f72-ad01-3ceae9626972",
+      "serial_number": "TEST-LIFECYCLE-PANEL-1",
+      "component_code": "PANEL-550",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "status": "installed"
+    },
+    {
+      "id": "3c5df25c-4840-4a0c-9274-15818e0f6f62",
+      "serial_number": "TEST-LIFECYCLE-PANEL-2",
+      "component_code": "PANEL-550",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "status": "installed"
+    },
+    {
+      "id": "6bb8f900-8fb5-4792-a22d-a230562fe648",
+      "serial_number": "TEST-LIFECYCLE-PANEL-3",
+      "component_code": "PANEL-550",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "status": "installed"
+    },
+    {
+      "id": "65ca0504-8044-4867-9e8f-c404257af1c9",
+      "serial_number": "TEST-LIFECYCLE-PANEL-4",
+      "component_code": "PANEL-550",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "status": "installed"
+    },
+    {
+      "id": "67b51794-d52a-40ad-bbe4-a580ac135c2d",
+      "serial_number": "TEST-LIFECYCLE-PANEL-5",
+      "component_code": "PANEL-550",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "status": "installed"
+    },
+    {
+      "id": "639d3cdf-c2ca-4857-8aa8-5714b2329f21",
+      "serial_number": "TEST-LIFECYCLE-PANEL-6",
+      "component_code": "PANEL-550",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "status": "installed"
+    }
+  ],
+  "warranties": [
+    {
+      "serial_id": "264d72c0-ed69-4f72-ad01-3ceae9626972",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "starts_at": "2026-11-02 14:06:50.999632+05:30",
+      "ends_at": "2028-11-02 14:06:50.999632+05:30",
+      "status": "active"
+    },
+    {
+      "serial_id": "3c5df25c-4840-4a0c-9274-15818e0f6f62",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "starts_at": "2026-11-02 14:06:50.999632+05:30",
+      "ends_at": "2028-11-02 14:06:50.999632+05:30",
+      "status": "active"
+    },
+    {
+      "serial_id": "43fb0635-92e4-4568-bc74-f754dd015a11",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "starts_at": "2026-11-02 14:06:50.999632+05:30",
+      "ends_at": "2028-11-02 14:06:50.999632+05:30",
+      "status": "active"
+    },
+    {
+      "serial_id": "639d3cdf-c2ca-4857-8aa8-5714b2329f21",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "starts_at": "2026-11-02 14:06:50.999632+05:30",
+      "ends_at": "2028-11-02 14:06:50.999632+05:30",
+      "status": "active"
+    },
+    {
+      "serial_id": "65ca0504-8044-4867-9e8f-c404257af1c9",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "starts_at": "2026-11-02 14:06:50.999632+05:30",
+      "ends_at": "2028-11-02 14:06:50.999632+05:30",
+      "status": "active"
+    },
+    {
+      "serial_id": "67b51794-d52a-40ad-bbe4-a580ac135c2d",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "starts_at": "2026-11-02 14:06:50.999632+05:30",
+      "ends_at": "2028-11-02 14:06:50.999632+05:30",
+      "status": "active"
+    },
+    {
+      "serial_id": "6bb8f900-8fb5-4792-a22d-a230562fe648",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "starts_at": "2026-11-02 14:06:50.999632+05:30",
+      "ends_at": "2028-11-02 14:06:50.999632+05:30",
+      "status": "active"
+    }
+  ],
+  "stock_balances": [
+    {
+      "component_code": "BOX-AC",
+      "remaining": "0.0000"
+    },
+    {
+      "component_code": "CONN-MC4",
+      "remaining": "0.0000"
+    },
+    {
+      "component_code": "EARTH",
+      "remaining": "0.0000"
+    },
+    {
+      "component_code": "INV-ONG",
+      "remaining": "0.0000"
+    },
+    {
+      "component_code": "PANEL-550",
+      "remaining": "0.0000"
+    },
+    {
+      "component_code": "STAND",
+      "remaining": "0.0000"
+    },
+    {
+      "component_code": "SW-DC",
+      "remaining": "0.0000"
+    },
+    {
+      "component_code": "WIRE-BUNDLE",
+      "remaining": "0.0000"
+    }
+  ],
+  "tickets": [
+    {
+      "id": "4c70d3bd-ac76-4c5e-ae7a-01e0ee34c2f8",
+      "reference": "TKT-2026-000001",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "serial_id": "43fb0635-92e4-4568-bc74-f754dd015a11",
+      "status": "closed",
+      "resolution_version": 1,
+      "assigned_support_user_id": "71e65d03-f2af-4bef-bef0-9692ddd3b2cc"
+    }
+  ],
+  "repair_jobs": [
+    {
+      "id": "4853d978-44fb-4f42-bbe0-843ee6a34f7d",
+      "reference": "RPJ-2026-000001",
+      "ticket_id": "4c70d3bd-ac76-4c5e-ae7a-01e0ee34c2f8",
+      "order_id": "7ddcfff1-7415-4972-a490-b7614948ab6f",
+      "serial_id": "43fb0635-92e4-4568-bc74-f754dd015a11",
+      "status": "work_submitted",
+      "summary_version": 1
+    }
+  ],
+  "audit_actions": [
+    {
+      "action": "appointment.booked",
+      "events": 1
+    },
+    {
+      "action": "delivery.confirmed",
+      "events": 1
+    },
+    {
+      "action": "delivery.delivered",
+      "events": 1
+    },
+    {
+      "action": "delivery.in_transit",
+      "events": 1
+    },
+    {
+      "action": "delivery.prepared",
+      "events": 1
+    },
+    {
+      "action": "demo.account_seeded",
+      "events": 5
+    },
+    {
+      "action": "enquiry.created",
+      "events": 5
+    },
+    {
+      "action": "enquiry.qualification_updated",
+      "events": 5
+    },
+    {
+      "action": "job.arrival",
+      "events": 1
+    },
+    {
+      "action": "job.completed",
+      "events": 1
+    },
+    {
+      "action": "job.created",
+      "events": 1
+    },
+    {
+      "action": "job.customer_acknowledged",
+      "events": 1
+    },
+    {
+      "action": "job.evidence_recorded",
+      "events": 1
+    },
+    {
+      "action": "job.otp_verified",
+      "events": 1
+    },
+    {
+      "action": "order.confirmed",
+      "events": 1
+    },
+    {
+      "action": "payment.sandbox_intent_created",
+      "events": 2
+    },
+    {
+      "action": "payment.sandbox_outcome",
+      "events": 2
+    },
+    {
+      "action": "quotation.accepted",
+      "events": 1
+    },
+    {
+      "action": "quotation.issued",
+      "events": 1
+    },
+    {
+      "action": "serial.assigned",
+      "events": 7
+    },
+    {
+      "action": "serial.scanned",
+      "events": 7
+    },
+    {
+      "action": "stock_operation.created",
+      "events": 8
+    },
+    {
+      "action": "stock_operation.ready",
+      "events": 8
+    },
+    {
+      "action": "stock_operation.validated",
+      "events": 9
+    },
+    {
+      "action": "stock.allocated",
+      "events": 15
+    },
+    {
+      "action": "survey.approved",
+      "events": 1
+    },
+    {
+      "action": "survey.assigned",
+      "events": 1
+    },
+    {
+      "action": "survey.created",
+      "events": 1
+    },
+    {
+      "action": "survey.submitted",
+      "events": 1
+    },
+    {
+      "action": "technician.availability_recorded",
+      "events": 1
+    },
+    {
+      "action": "ticket.attachment_added",
+      "events": 1
+    },
+    {
+      "action": "ticket.closed",
+      "events": 1
+    },
+    {
+      "action": "ticket.created",
+      "events": 1
+    },
+    {
+      "action": "ticket.diagnostics_recorded",
+      "events": 1
+    },
+    {
+      "action": "ticket.repair_job_created",
+      "events": 1
+    },
+    {
+      "action": "ticket.resolution_confirmed",
+      "events": 1
+    },
+    {
+      "action": "ticket.resolution_ready",
+      "events": 1
+    },
+    {
+      "action": "ticket.support_assigned",
+      "events": 1
+    },
+    {
+      "action": "ticket.technician_arrived",
+      "events": 1
+    },
+    {
+      "action": "ticket.triaged",
+      "events": 1
+    },
+    {
+      "action": "ticket.work_recorded",
+      "events": 1
+    },
+    {
+      "action": "ticket.work_submitted",
+      "events": 1
+    },
+    {
+      "action": "user.email_verified",
+      "events": 1
+    },
+    {
+      "action": "user.login",
+      "events": 48
+    },
+    {
+      "action": "user.logout",
+      "events": 47
+    },
+    {
+      "action": "user.signed_up",
+      "events": 1
+    },
+    {
+      "action": "warranty.activated",
+      "events": 1
+    },
+    {
+      "action": "warranty.policy_version_created",
+      "events": 2
+    },
+    {
+      "action": "warranty.serial_activated",
+      "events": 7
+    }
+  ],
+  "checks": "PASS: linked order, completed installation, seven installed units and active policies, zero stock balances, closed versioned complaint"
+}

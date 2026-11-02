@@ -46,3 +46,17 @@ def test_occupied_web_port_never_starts_api_or_stops_listener(monkeypatch, tmp_p
         with socket.create_connection(occupied.getsockname(), timeout=1):
             accepted, _ = occupied.accept()
             accepted.close()
+
+
+def test_released_listener_can_restart_while_connection_is_in_time_wait():
+    with socket.socket() as server:
+        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server.bind(("127.0.0.1", 0))
+        server.listen()
+        port = server.getsockname()[1]
+        with socket.create_connection(server.getsockname(), timeout=1) as client:
+            accepted, _ = server.accept()
+            accepted.shutdown(socket.SHUT_WR)
+            accepted.close()
+            assert client.recv(1) == b""
+    launcher.check_port(port)

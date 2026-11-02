@@ -7,6 +7,7 @@ import { api } from "@/lib/api";
 import { decimalRupeesToPaise, formatInrFromPaise } from "@/lib/format";
 import {RazorpayCheckout} from "@/components/razorpay-checkout";
 import { PaymentAvailability } from "@/components/payment-availability";
+import { SandboxCheckout } from "@/components/sandbox-checkout";
 import { WorkflowForm, Input, post, value } from "@/components/workflow-form";
 import { Button, Card, EmptyState, ErrorState, LoadingState, PageHeader, StatusBadge, TextField } from "@/components/ui";
 
@@ -60,10 +61,11 @@ function QuoteCard({ quote, customer, onChange,showPayments }: { quote: Quote; c
   }
   return <Card><div className="flex flex-wrap justify-between gap-3"><h2 className="text-lg font-semibold"><Link href={`/${customer?"customer":"sales"}/quotations/${quote.id}`}>{quote.reference} · Version {quote.version_number}</Link></h2><StatusBadge status={quote.status} /></div>
     <p className="mt-2">{quote.package_code} · {formatInrFromPaise(quote.total_minor)}</p>
-    <div className="overflow-x-auto"><table className="my-4 w-full text-left text-sm"><caption className="sr-only">Quoted bill of materials and service</caption><thead><tr><th scope="col">Item</th><th scope="col">Quantity</th><th scope="col">Amount</th></tr></thead><tbody>{quote.lines.map(line => <tr key={line.sort_order}><td className="py-2">{line.description}</td><td>{line.quantity} {line.unit}</td><td>{formatInrFromPaise(line.line_total_minor)}</td></tr>)}</tbody></table></div>
+    <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Quotation bill of materials"><table className="my-4 w-full text-left text-sm"><caption className="sr-only">Quoted bill of materials and service</caption><thead><tr><th scope="col">Item</th><th scope="col">Quantity</th><th scope="col">Amount</th></tr></thead><tbody>{quote.lines.map(line => <tr key={line.sort_order}><td className="py-2">{line.description}</td><td>{line.quantity} {line.unit}</td><td>{formatInrFromPaise(line.line_total_minor)}</td></tr>)}</tbody></table></div>
     <p className="text-sm">Tax: {formatInrFromPaise(quote.tax_minor)} · Discount: {formatInrFromPaise(quote.discount_minor)}</p>
     {requirement && <p className="my-3 text-sm">Required advance: {formatInrFromPaise(requirement.minimum_advance_minor)} · Verified recorded payments: {formatInrFromPaise(requirement.verified_minor)} · Outstanding total: {formatInrFromPaise(requirement.outstanding_minor)}</p>}
     {showPayments && requirement && <><PaymentAvailability outstandingMinor={requirement.outstanding_minor} quotationRef={quote.reference}/>{customer&&["issued","accepted"].includes(quote.status)&&<RazorpayCheckout quotationId={quote.id} outstandingMinor={requirement.outstanding_minor} onChange={onChange}/>}</>}
+    {showPayments && customer && requirement && quote.status === "accepted" && <SandboxCheckout quotationId={quote.id} outstandingMinor={requirement.outstanding_minor} onChange={onChange} />}
     {error && <ErrorState message={error} />}
     {!customer && ["issued","accepted"].includes(quote.status) && <WorkflowForm title="Record an authorized cash receipt" label="Record verified cash received" onSaved={onChange} submit={(d,key)=>post("/api/v1/payments/cash-receipts",{quotation_id:quote.id,amount_minor:money(d,"amount"),receipt_reference:value(d,"receipt")} satisfies components["schemas"]["CashReceiptCreate"],key)}><Input label="Amount actually received (₹)" name="amount" type="number" min="0.01" max="1000000" step="0.01"/><Input label="Actual receipt reference" name="receipt" minLength={3} maxLength={80}/><p className="auth-input-note">Record only cash actually received and verified by authorized staff.</p></WorkflowForm>}
     {!customer && quote.status === "accepted" && <WorkflowForm title="Confirm accepted quotation as an order" label="Confirm order" onSaved={onChange} submit={(_d,key)=>post("/api/v1/orders",{quotation_id:quote.id} satisfies components["schemas"]["OrderCreate"],key)}><p className="auth-input-note">The server checks verified advance requirements and prevents duplicate orders.</p></WorkflowForm>}

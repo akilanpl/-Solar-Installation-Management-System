@@ -1,30 +1,25 @@
 {
-  "backend-regression": {
-    "tests": "508",
-    "failures": "0",
+  "backend": {
+    "name": "pytest",
     "errors": "0",
-    "skipped": "0",
-    "time": "299.607"
-  },
-  "campaigns": {
-    "tests": "89",
     "failures": "0",
-    "errors": "0",
     "skipped": "0",
-    "time": "352.999"
-  },
-  "launcher": {
-    "tests": "4",
-    "failures": "0",
-    "errors": "0",
-    "skipped": "0",
-    "time": "0.016"
+    "tests": "605",
+    "time": "646.580",
+    "timestamp": "2026-11-02T14:51:43.955562+05:30",
+    "hostname": "Akilans-MacBook-Air.local"
   },
   "frontend": {
-    "tests": 85,
-    "files": 17,
+    "tests": 88,
+    "files": 18,
     "failures": 0
   },
-  "total_backend_executions": 601,
-  "note": "Release campaigns repeat selected existing tests; counts are executions, not independent newly authored coverage."
+  "targeted_payments": 35,
+  "launcher_cases": 5,
+  "playwright": {
+    "status": "BLOCKED",
+    "launch_failures": 3,
+    "reason": "macOS MachPortRendezvous bootstrap permission denied before test interaction"
+  },
+  "note": "Full 605 includes maintained release campaign repeats and the five-minute real HTTP test; not 605 independent newly authored scenarios."
 }
