@@ -8,7 +8,8 @@ The payment credential blocker is now correctly isolated: all five internal jour
 
 | Acceptance area | Status | Scope / remaining work |
 |---|---|---|
-|Internal J1–J5 business lifecycle|PASS|Actual forms/API/database, same linked records, labelled synthetic events|
+|Internal J1–J5 business lifecycle|PASS for observed campaign|Actual forms/API/database across repair builds, same linked records, labelled synthetic events|
+|Fresh complete lifecycle replay on final commit|NOT TESTED manually / BLOCKED in automated runner|Final committed build readback is verified; it is not substituted for a fresh full replay|
 |Persistence and critical role/replay controls|PASS|Browser refresh/relogin plus direct DB/proxy negatives|
 |Backend and frontend regression / lint / types / build / contracts|PASS|605 backend, 88 frontend; exact source/build manifest|
 |Critical axe/overflow and keyboard smoke|PASS for tested cases|42 route/viewports and explicit modal/error checks; not full assistive-technology certification|

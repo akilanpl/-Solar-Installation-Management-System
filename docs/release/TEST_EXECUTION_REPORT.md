@@ -14,7 +14,7 @@ Lifecycle follow-up, 2 November 2026 (Asia/Kolkata). Branch `completion/solarops
 |`ruff check app tests scripts`|PASS|
 |`python scripts/export_openapi.py` / `npm run generate:api` with SHA-256 comparison before/after|PASS, generated artifacts exactly reproduce source|
 |`npx playwright test --config playwright.complete.config.ts lifecycle-persistence.spec.ts --project chromium`|BLOCKED: runner reports 3 launch failures before browser interaction; not product assertion failures or passing tests|
-|Supported in-app browser J1–J5|PASS with persisted synthetic lifecycle and separate roles; screenshots/trees retained|
+|Supported in-app browser J1–J5|PASS across repair builds with persisted synthetic lifecycle and separate roles; final committed build readback PASS, fresh full replay NOT TESTED|
 |Axe WCAG 2A/AA/2.1AA, critical route/viewports|PASS measured violations after repairs; manual-review items and limits in browser report|
 |Keyboard modal and invalid-form checks|PASS recorded subset; not full screen-reader certification|
 |Proxy/API replay and cross-customer campaign|PASS, unchanged payment/order counts|

@@ -2,7 +2,7 @@
 
 Lifecycle follow-up, 2 November 2026 (Asia/Kolkata). Branch `completion/solarops-20261102`; baseline handoff `2b892fe3ec450ca1121afaaabdb1941d3f8716b9`. Final source/build SHA and post-commit smoke are in the delivered `FINAL_EXECUTION_MANIFEST.json`. Previous test counts are historical, not substituted for this run.
 
-Browser test names below are named **manual supported-browser cases**, not claims that Playwright executed. PNG + accessibility-tree evidence uses these exact names in delivered `lifecycle/`. Every case is backed by the normal API and PostgreSQL. Exact final source and readback are in the manifest.
+Browser test names below are named **manual supported-browser cases**, not claims that Playwright executed. PNG + accessibility-tree evidence uses these exact names in delivered `lifecycle/`. Every case is backed by the normal API and PostgreSQL. The transitions were executed across successive local repair builds. The final committed build was checked by persisted readback, not by replaying a second fresh full lifecycle. Exact-final-source fresh browser replay remains NOT TESTED manually and BLOCKED in the automated runner. Final source/readback are in the manifest.
 
 | Browser case | Result | Roles | Persisted records | Screenshot / error evidence |
 |---|---|---|---|---|
