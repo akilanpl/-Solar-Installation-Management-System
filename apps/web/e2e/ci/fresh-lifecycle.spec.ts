@@ -89,7 +89,6 @@ test('fresh customer through delivered serials, acknowledged installation, activ
   const email = `synthetic-ci-${tag}@example.com`;
   const failures: string[] = [];
   const contexts = [page.context()];
-  const tracedContexts = new Set<import('@playwright/test').BrowserContext>();
   function monitor(p: Page) {
     p.on('pageerror', error => failures.push(error.message));
     p.on('console', message => { if (message.type() === 'error' && !message.text().startsWith('Failed to load resource:')) failures.push(message.text()); });
@@ -102,7 +101,7 @@ test('fresh customer through delivered serials, acknowledged installation, activ
     const staff: Record<string, Page> = {};
     for (const [role, code] of [['sales', 'SALES'], ['warehouse', 'WH'], ['technician', 'TECH'], ['support', 'SUP'], ['admin', 'ADMIN']]) {
       const context = await browser.newContext({ baseURL: 'http://127.0.0.1:3001', timezoneId: 'UTC' }); contexts.push(context);
-      await context.tracing.start({ screenshots: true, snapshots: true, sources: true }); tracedContexts.add(context);
+      // Playwright Test starts tracing on every context, including manually created ones.
       staff[role] = await context.newPage(); monitor(staff[role]);
       await login(staff[role], role, `EMP-${code}-001`);
     }
@@ -246,11 +245,6 @@ test('fresh customer through delivered serials, acknowledged installation, activ
         for (const [pageIndex, opened] of context.pages().entries()) {
           if (!opened.isClosed()) await test.info().attach(`context-${index}-page-${pageIndex}-failure`, { body: await opened.screenshot({ fullPage: true }), contentType: 'image/png' });
         }
-      }
-      if (tracedContexts.has(context)) {
-        const path = test.info().outputPath(`staff-${index}-trace.zip`);
-        await context.tracing.stop({ path });
-        await test.info().attach(`staff-${index}-trace`, { path, contentType: 'application/zip' });
       }
       await context.close();
     }
