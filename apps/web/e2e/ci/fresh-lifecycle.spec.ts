@@ -66,6 +66,13 @@ async function signup(page: Page, email: string) {
 async function audit(page: Page, name: string) {
   await expect(page.locator('main')).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: /Loading/i })).toHaveCount(0);
+  // Measure settled content after finite entrance fades, not random opacity.
+  // Infinite decorative animations remain enabled and are not awaited.
+  await page.evaluate(async () => {
+    await Promise.all(document.getAnimations().filter(animation =>
+      animation.playState === 'running' && animation.effect?.getTiming().iterations !== Infinity
+    ).map(animation => animation.finished.catch(() => undefined)));
+  });
   const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
   await test.info().attach(`${name}-axe`, { body: JSON.stringify(result), contentType: 'application/json' });
   expect(result.violations.filter(v => v.impact === 'critical' || v.impact === 'serious')).toEqual([]);
