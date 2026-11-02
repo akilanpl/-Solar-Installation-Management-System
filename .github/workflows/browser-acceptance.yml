@@ -1,0 +1,107 @@
+name: Fresh browser acceptance
+
+on:
+  push:
+    branches: [completion/solarops-20261102]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-acceptance-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  lifecycle:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: browser_ci
+          POSTGRES_PASSWORD: disposable-local-only
+          POSTGRES_DB: solarops_browser_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U browser_ci -d solarops_browser_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      CI: "true"
+      SOLAROPS_APP_ENV: development
+      SOLAROPS_DATABASE_URL: postgresql+psycopg://browser_ci:disposable-local-only@127.0.0.1:5432/solarops_browser_ci
+      SOLAROPS_BROWSER_DATABASE_NAME: solarops_browser_ci
+      SOLAROPS_COOKIE_SECURE: "false"
+      SOLAROPS_TRUSTED_ORIGINS: http://127.0.0.1:3001
+      SOLAROPS_API_ORIGIN: http://127.0.0.1:8001
+      SOLAROPS_MAILBOX_PATH: var/browser-ci/private/mailbox.jsonl
+      SOLAROPS_EVIDENCE_DIR: var/browser-ci/private/uploads
+      SOLAROPS_NEXT_DIST_DIR: .next-qa
+      NEXT_PUBLIC_SOLAROPS_ENV: development
+      NEXT_TELEMETRY_DISABLED: "1"
+      # Ephemeral service only; no provider or production credentials are used.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Generate ephemeral secrets and record exact source
+        shell: bash
+        run: |
+          mkdir -p var/browser-ci/private
+          chmod 700 var/browser-ci/private
+          python - <<'PY'
+          import os, secrets
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              for key in ['SOLAROPS_SECRET_KEY', 'SOLAROPS_SEED_PASSWORD']:
+                  value = 'Ci9' + secrets.token_hex(32)
+                  print(f'::add-mask::{value}')
+                  output.write(f'{key}={value}\n')
+          PY
+          git rev-parse HEAD > var/browser-ci/source-sha.txt
+      - name: Install locked dependencies and Chromium
+        shell: bash
+        run: |
+          (cd apps/api && uv sync --frozen)
+          (cd apps/web && npm ci && npx playwright install --with-deps chromium)
+      - name: Migrate empty database and provision staff only
+        working-directory: apps/api
+        run: uv run python scripts/prepare_browser_ci.py 2>&1 | tee ../../var/browser-ci/migration.log
+      - name: Build actual frontend
+        working-directory: apps/web
+        run: npm run build 2>&1 | tee ../../var/browser-ci/build.log
+      - name: Fresh lifecycle, authorization, persistence and accessibility
+        working-directory: apps/web
+        run: npm run e2e -- --config playwright.ci.config.ts
+      - name: Independent PostgreSQL persistence oracle
+        working-directory: apps/api
+        run: uv run python scripts/verify_browser_ci.py
+      - name: Preserve PostgreSQL service logs
+        if: always()
+        run: docker logs "${{ job.services.postgres.id }}" > var/browser-ci/postgres.log 2>&1
+      - name: Preserve browser evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-acceptance-${{ github.sha }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            var/browser-ci/source-sha.txt
+            var/browser-ci/*.log
+            var/browser-ci/*.json
+            var/browser-ci/*.xml
+            var/browser-ci/report/
+            var/browser-ci/test-results/
