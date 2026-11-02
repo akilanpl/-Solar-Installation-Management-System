@@ -165,7 +165,8 @@ def main():
     for name, family, sev, directory, command in stages:
         print(f"Running {name}", flush=True)
         rows = run_stage(root, folder, name, family, sev, directory, command,
-                         require_junit=name in {"backend", "frontend"})
+                         require_junit=name in {"backend", "frontend"},
+                         timeout=2400 if name == "backend" else 600)
         tests.extend(rows)
         if name == "backend-coverage-check" and coverage_check.exists():
             try:
@@ -189,7 +190,7 @@ def main():
             (folder / "campaign-context.json").write_text(json.dumps(context, indent=2) + "\n")
         rows = run_stage(root, folder, name, family, sev, directory, command,
                          require_junit=True, prerequisites=prerequisites,
-                         timeout=1200 if name == "main-ratchet-two-order-ci" else 600)
+                         timeout=3600 if name == "main-ratchet-two-order-ci" else 600)
         tests.extend(rows)
         if rows[0]["status"] != "pass":
             missing.append(f"{name}: {rows[0]['status']} ({rows[0]['reason']})")

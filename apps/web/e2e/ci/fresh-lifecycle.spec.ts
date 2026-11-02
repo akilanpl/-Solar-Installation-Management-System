@@ -156,11 +156,14 @@ test('fresh customer through delivered serials, acknowledged installation, activ
       await command(w, `/stock/operations/${receipt.id}/ready`);
       await command(w, `/stock/operations/${receipt.id}/validate`);
       if (catalogue.components.find(component => component.code === line.component_code)?.requires_serial_tracking) {
+        const received: Row[] = [];
         for (let index = 0; index < line.quantity; index++) {
           const serial = `TEST-CI-${tag}-${line.component_code}-${index}`; serials.push(serial);
           const unit = await command(w, '/serials/scan', { serial_number: serial, component_code: line.component_code, operation_id: receipt.id }, 201);
-          await command(w, `/serials/${unit.id}/assign`, { order_id: order.id });
+          received.push(unit);
         }
+        // Complete receipt reconciliation before reserving any physical unit.
+        for (const unit of received) await command(w, `/serials/${unit.id}/assign`, { order_id: order.id });
       }
     }
     expect(serials).toHaveLength(7);

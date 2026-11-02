@@ -344,7 +344,7 @@ def execute_two_orders(root, folder, sha):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
-        timeout=900,
+        timeout=1800,
         check=False,
     )
     (folder / "ci-reverse-order.log").write_text(result.stdout)

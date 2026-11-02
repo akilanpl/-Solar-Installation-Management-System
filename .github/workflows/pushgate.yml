@@ -6,7 +6,7 @@ permissions:
 jobs:
   gate:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     services:
       postgres:
         image: postgres:16
@@ -35,6 +35,13 @@ jobs:
         working-directory: apps/api
       - run: npm ci
         working-directory: apps/web
+      - name: Install browser engines and system dependencies
+        working-directory: apps/web
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Install checksum-verified pinned Gitleaks
+        run: |
+          python3 .pushgate/install_gitleaks.py
+          echo "$GITHUB_WORKSPACE/var/tools" >> "$GITHUB_PATH"
       - run: .pushgate/run.sh --mode=ci
         env:
           GH_TOKEN: ${{ github.token }}

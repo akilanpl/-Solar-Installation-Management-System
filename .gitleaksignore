@@ -1,0 +1,4 @@
+# Reviewed false positive: fixed dummy password passed only to validate_target
+# unit tests. It never seeds/authenticates an account. Exact historical finding
+# only; future commits, other lines and all actual credentials remain scanned.
+d11a3ddf03af114ffa77b3528b423d02f85622e0:apps/api/tests/test_browser_ci_guard.py:generic-api-key:16
