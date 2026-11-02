@@ -14,3 +14,7 @@ Lifecycle follow-up, 2 November 2026 (Asia/Kolkata). Branch `completion/solarops
 Warehouse-manager login/approval page was historically verified; no new procurement/replacement approval campaign was executed. Seven-role HTTP auth/read/logout script remains available. Actual credentials remain in owner-only ignored var/dev-seed-password.txt, var/demo-credentials.json and var/completion-customer.json.
 
 Negative checks PASS: missing CSRF, customer staff-roster denial, five cross-customer record reads returning 404, duplicate order, intent replay, identical outcome replay and conflicting outcome rejection. Full backend regression independently exercises broader role and transaction boundaries. Browser proof files use the exact manual case names in END_TO_END_WORKFLOW_MATRIX.md.
+
+## Current independent sign-off
+
+Final-source fresh browser acceptance remains BLOCKED; historical manual/axe results are not current acceptance. Fresh API/DB and non-browser results, exact candidate, backup and environment blockers are documented in TEST_EXECUTION_REPORT.md and FINAL_RELEASE_VERDICT.md. No product change during sign-off; QA runner gains fail-closed browser preflight and explicitly disposable database support.

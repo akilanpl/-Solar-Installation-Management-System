@@ -1,0 +1,20 @@
+{
+  "candidate": "aee6c9be26162927b8dea3275e440968b1920b93",
+  "backend": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "605",
+    "time": "632.526",
+    "timestamp": "2026-11-02T15:34:18.164241+05:30",
+    "hostname": "Akilans-MacBook-Air.local"
+  },
+  "frontend_tests": 88,
+  "runner_tests": 2,
+  "browser": "BLOCKED",
+  "fresh_lifecycle": "BLOCKED",
+  "fresh_accessibility": "NOT TESTED",
+  "provider": "BLOCKED",
+  "recommendation": "DO NOT SIGN OFF"
+}

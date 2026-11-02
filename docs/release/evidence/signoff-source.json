@@ -1,0 +1,33 @@
+{
+  "source": "aee6c9be26162927b8dea3275e440968b1920b93",
+  "clean": true,
+  "build": "aee6c9be26162927b8dea3275e440968b1920b93-282feae1844b5d89",
+  "frontend": 200,
+  "api": {
+    "status": "ready",
+    "database": "up"
+  },
+  "proxy": {
+    "status": "ready",
+    "database": "up"
+  },
+  "database": {
+    "host": "127.0.0.1",
+    "port": 5432,
+    "name": "solarops_release_demo_20261102"
+  },
+  "app_env": "development",
+  "razorpay_settings_present": {
+    "SOLAROPS_RAZORPAY_KEY_ID": false,
+    "SOLAROPS_RAZORPAY_KEY_SECRET": false,
+    "SOLAROPS_RAZORPAY_WEBHOOK_SECRET": false
+  },
+  "public_preview": "NEXT_PUBLIC_SOLAROPS_ENV=development",
+  "backup": {
+    "path": "var/completion-private.dump",
+    "bytes": 364006,
+    "sha256": "f3857cb3c84d2f85c7a3dff93b3f971da0ced528cb0e785ceab30cd8cdd7e7fc"
+  },
+  "browser_control": "BLOCKED: Local browser use is disabled in Work settings",
+  "ci": "No workflow_dispatch in configured workflows; exact local SHA not published; push not authorized; no remote run dispatched"
+}

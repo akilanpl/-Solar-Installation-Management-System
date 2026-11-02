@@ -13,3 +13,7 @@ Lifecycle follow-up, 2 November 2026 (Asia/Kolkata). Branch `completion/solarops
 |RUN-03 P1 local operation|Immediate launcher restart|Free port should restart; TIME_WAIT falsely rejected|SO_REUSEADDR preflight matches server restart behavior and still rejects live listeners. Five real-socket/argument tests pass.|No|
 
 Unresolved external/environment boundaries: Razorpay credentials absent; Playwright Chromium macOS bootstrap denied. Browser file-picker calls sometimes returned very late; API persistence and UI readback confirmed uploads, so uncertain responses were not blindly retried. No confirmed P0 was found in the executed scope; untested variants are not certified defect-free.
+
+## Current independent sign-off
+
+Final-source fresh browser acceptance remains BLOCKED; historical manual/axe results are not current acceptance. Fresh API/DB and non-browser results, exact candidate, backup and environment blockers are documented in TEST_EXECUTION_REPORT.md and FINAL_RELEASE_VERDICT.md. No product change during sign-off; QA runner gains fail-closed browser preflight and explicitly disposable database support.

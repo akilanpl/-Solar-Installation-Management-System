@@ -18,3 +18,7 @@ Browser test names below are named **manual supported-browser cases**, not claim
 Refresh, logout/login, a fresh server build and linked database readback preserved completed records. Customer and staff read the same IDs; another customer was denied order, coverage, job, complaint and payment access. A failed payment simulation preceded explicit approval; no unconditional success control exists.
 
 Financial reporting sees the actual order with incomplete cost/revenue reconciliation, not fictitious profit. Its cash and recognized revenue remain ₹0 because internal simulation is not an evidenced bank/cash ledger settlement. Warehouse preparation requests retain their original intake marker under the existing schema; actual fulfilment is represented by delivery, consumed reservations and exact serial custody, not that static request field.
+
+## Current independent sign-off
+
+Final-source fresh browser acceptance remains BLOCKED; historical manual/axe results are not current acceptance. Fresh API/DB and non-browser results, exact candidate, backup and environment blockers are documented in TEST_EXECUTION_REPORT.md and FINAL_RELEASE_VERDICT.md. No product change during sign-off; QA runner gains fail-closed browser preflight and explicitly disposable database support.

@@ -9,3 +9,7 @@ Payment paths reviewed: authenticated Razorpay test order/reconciliation and HMA
 External provider acceptance: BLOCKED. All three credential settings were checked for presence only and are absent. No key/password/code was printed or copied into source. Provider callback/webhook tests use controlled transport and are not represented as real Razorpay acceptance.
 
 OpenAPI and generated TypeScript reproduce current source exactly (218 paths / 250 operations). The read-only local axe harness additionally requires development APP_ENV, loopback hostname and explicit SOLAROPS_LOCAL_AUDIT=on; it is absent by default and on production. Three frontend boundary tests cover opt-in, production, target/path and viewport validation.
+
+## Current independent sign-off
+
+Final-source fresh browser acceptance remains BLOCKED; historical manual/axe results are not current acceptance. Fresh API/DB and non-browser results, exact candidate, backup and environment blockers are documented in TEST_EXECUTION_REPORT.md and FINAL_RELEASE_VERDICT.md. No product change during sign-off; QA runner gains fail-closed browser preflight and explicitly disposable database support.

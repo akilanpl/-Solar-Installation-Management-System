@@ -51,3 +51,7 @@ Verified browser means an actual operation/read was observed; discovered/capture
 
 
 Complete API/DB regression: 605 PASS, frontend: 88 PASS. Standalone Playwright remains environment-blocked; full assistive-technology and remaining non-primary saved-record variants are not accepted by those counts.
+
+## Current independent sign-off
+
+Final-source fresh browser acceptance remains BLOCKED; historical manual/axe results are not current acceptance. Fresh API/DB and non-browser results, exact candidate, backup and environment blockers are documented in TEST_EXECUTION_REPORT.md and FINAL_RELEASE_VERDICT.md. No product change during sign-off; QA runner gains fail-closed browser preflight and explicitly disposable database support.
