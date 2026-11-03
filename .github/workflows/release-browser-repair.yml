@@ -1,0 +1,79 @@
+name: baseline repair browser campaigns
+on:
+  push:
+    branches: [repair/accepted-main-baseline-20261103]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: solarops
+          POSTGRES_PASSWORD: solarops
+          POSTGRES_DB: solarops_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U solarops -d solarops_test"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      SOLAROPS_APP_ENV: test
+      SOLAROPS_TEST_DATABASE_URL: postgresql+psycopg://solarops:solarops@127.0.0.1:5432/solarops_test
+      SOLAROPS_DATABASE_URL: postgresql+psycopg://solarops:solarops@127.0.0.1:5432/solarops_test
+      SOLAROPS_SECRET_KEY: isolated-repair-ci-only-not-production-2026
+      SOLAROPS_COOKIE_SECURE: "false"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: astral-sh/setup-uv@v5
+        with: {python-version: "3.12"}
+      - uses: actions/setup-node@v4
+        with: {node-version: "22"}
+      - run: uv sync --frozen
+        working-directory: apps/api
+      - run: npm ci
+        working-directory: apps/web
+      - run: npx playwright install --with-deps chromium firefox webkit
+        working-directory: apps/web
+      - name: Install checksum-verified Gitleaks
+        run: |
+          curl --fail --location --silent --show-error https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz -o /tmp/gitleaks.tar.gz
+          echo '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  /tmp/gitleaks.tar.gz' | sha256sum --check
+          tar -xzf /tmp/gitleaks.tar.gz -C /usr/local/bin gitleaks
+      - name: Build actual source with isolated development mailbox enabled
+        run: npm run build
+        working-directory: apps/web
+        env:
+          NEXT_PUBLIC_SOLAROPS_ENV: development
+      - name: Seven complete legacy browser journeys
+        id: journeys
+        continue-on-error: true
+        run: |
+          mkdir -p .pushgate/reports/browser
+          node .pushgate/campaigns/browser_campaign.cjs customer-warranty.spec.ts "$PWD/.pushgate/reports/browser/journeys.xml"
+      - name: Complete discovered accessibility and compatibility inventory
+        id: accessibility
+        if: always()
+        continue-on-error: true
+        run: node .pushgate/campaigns/browser_campaign.cjs accessibility.spec.ts "$PWD/.pushgate/reports/browser/accessibility.xml"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: repair-browser-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          retention-days: 14
+          path: |
+            .pushgate/reports/
+            apps/web/test-results/
+            var/ui-acceptance/screenshots/
+            var/release-campaign/**/*-api.log
+            var/release-campaign/**/*-web.log
+      - name: Preserve failed gate as failure
+        if: always() && (steps.journeys.outcome != 'success' || steps.accessibility.outcome != 'success')
+        run: exit 1

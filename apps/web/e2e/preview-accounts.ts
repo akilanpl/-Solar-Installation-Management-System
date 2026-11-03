@@ -2,7 +2,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 type Account = {role:string;identifier:string;password:string;account_kind?:string};
 function privateAccounts(root:string):Account[]|null {
- const path=resolve(root,"var/LOCAL_PREVIEW_ACCOUNTS.txt");if(!existsSync(path))return null;
+ const path=resolve(process.env.SOLAROPS_RELEASE_FIXTURE_DIR??resolve(root,"var"),"LOCAL_PREVIEW_ACCOUNTS.txt");if(!existsSync(path))return null;
  if((statSync(path).mode&0o077)!==0)throw new Error("Private preview credentials must have owner-only permissions.");
  try{const data=JSON.parse(readFileSync(path,"utf8"));if(data.environment!=="development"||!Array.isArray(data.accounts))throw new Error();return data.accounts;}catch{throw new Error("Private preview credential document is invalid; diagnostic values suppressed.");}
 }

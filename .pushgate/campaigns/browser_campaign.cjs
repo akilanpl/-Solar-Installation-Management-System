@@ -24,6 +24,12 @@ async function run() {
     process.exitCode = 1;
     return;
   }
+  if (process.env.SOLAROPS_RELEASE_SERVICES_READY !== "true") {
+    const python = path.join(root, "apps/api/.venv/bin/python");
+    const result = spawnSync(python, [".pushgate/campaigns/release_environment.py", suite, output], {cwd:root, stdio:"inherit", env:process.env});
+    process.exitCode = result.status === null ? 1 : result.status;
+    return;
+  }
   const cli = resolveCli();
   const result = spawnSync(process.execPath, [cli,'test',`e2e/release/${suite}`,'--config=playwright.release.config.ts','--reporter=junit'], {
     cwd:web,stdio:'inherit',env:{...process.env,PLAYWRIGHT_JUNIT_OUTPUT_FILE:output},

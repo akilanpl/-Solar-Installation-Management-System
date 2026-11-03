@@ -3,10 +3,11 @@
 // Employee enrolls a TOTP second factor -> password login stops at a ticket ->
 // TOTP code completes sign-in -> wrong codes are rejected -> recovery code
 // signs in without privilege escalation -> revoked factor restores direct login.
+import { previewPassword } from "./preview-accounts";
 import { createHmac } from "crypto";
 import { expect, test } from "@playwright/test";
 
-const TECH = { identifier: "EMP-TECH-4E", password: "PreviewTech123" };
+const TECH = { identifier: "EMP-TECH-4E", password: previewPassword("EMP-TECH-4E", "PreviewTech123") };
 
 function totpNow(secretBase32: string, atMs = Date.now()): string {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";

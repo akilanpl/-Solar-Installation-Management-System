@@ -77,6 +77,32 @@ class CampaignExecutionTests(unittest.TestCase):
         self.assertEqual(rows[0]["status"], "notrun")
         self.assertEqual(rows[1]["status"], "pass")
 
+    def test_timeout_terminates_owned_descendant_listener(self):
+        import socket
+        with socket.socket() as probe:
+            probe.bind(("127.0.0.1", 0))
+            port = probe.getsockname()[1]
+        code = ("import socket,time,signal; signal.signal(signal.SIGTERM,signal.SIG_IGN); s=socket.socket(); "
+                f"s.bind(('127.0.0.1',{port})); s.listen(); "
+                f"open({str(self.folder / 'listener-ready')!r},'w').write('ready'); time.sleep(20)")
+        program = ("import subprocess,time; "
+                   f"subprocess.Popen([{sys.executable!r},'-c',{code!r}]); "
+                   "time.sleep(20)")
+        rows = self.run_child(program, timeout=0.5)
+        self.assertEqual(rows[0]["status"], "notrun")
+        self.assertTrue((self.folder / 'listener-ready').exists())
+        import time
+        deadline = time.monotonic() + 2
+        while True:
+            try:
+                with socket.socket() as probe:
+                    probe.bind(("127.0.0.1", port))
+                break
+            except OSError:
+                if time.monotonic() >= deadline:
+                    raise
+                time.sleep(0.01)
+
     def test_source_mutation_invalidates_success(self):
         rows = self.run_child(self.write_xml(
             '<testsuite><testcase name="case"/></testsuite>') +
