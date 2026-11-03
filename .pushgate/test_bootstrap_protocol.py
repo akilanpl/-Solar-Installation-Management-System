@@ -356,6 +356,62 @@ class BootstrapTrustTests(unittest.TestCase):
                     files, self.pins, run, artifact, "a" * 40, lambda _: 100, source
                 )
 
+    def test_real_adapter_uses_ratchet_and_rejects_regression_before_order_execution(
+        self,
+    ):
+        import sys
+        import tempfile
+        import xml.etree.ElementTree as ET
+        from pathlib import Path
+        from unittest.mock import patch
+
+        from campaigns import baseline_ci_order as adapter
+
+        for candidate, baseline, expected in [
+            (98, 100, 0),
+            (97.9, 100, 1),
+            (89, 90, 1),
+        ]:
+            with (
+                self.subTest(candidate=candidate),
+                tempfile.TemporaryDirectory() as temporary,
+            ):
+                root = Path(temporary)
+                sha = "a" * 40
+                output = (
+                    root / ".pushgate/reports" / sha / "main-ratchet-two-order-ci.xml"
+                )
+                with (
+                    patch.object(
+                        adapter,
+                        "__file__",
+                        str(root / ".pushgate/campaigns/baseline_ci_order.py"),
+                    ),
+                    patch.object(adapter.shutil, "which", return_value="/usr/bin/gh"),
+                    patch.object(adapter, "execute", return_value=sha),
+                    patch.object(adapter, "checked_context", return_value=candidate),
+                    patch.object(adapter, "verify_ci", return_value=(REPOSITORY, "1")),
+                    patch.object(
+                        adapter, "baseline_score", return_value=("b" * 40, baseline)
+                    ),
+                    patch.object(
+                        adapter, "execute_two_orders", return_value=100
+                    ) as orders,
+                    patch.object(
+                        sys, "argv", ["baseline_ci_order.py", "--junit", str(output)]
+                    ),
+                ):
+                    self.assertEqual(adapter.main(), expected)
+                    if expected:
+                        orders.assert_not_called()
+                        self.assertFalse(
+                            (output.parent / "baseline-ci-verified.json").exists()
+                        )
+                        self.assertTrue(list(ET.parse(output).iter("failure")))
+                    else:
+                        orders.assert_called_once()
+                        self.assertFalse(list(ET.parse(output).iter("failure")))
+
 
 if __name__ == "__main__":
     unittest.main()

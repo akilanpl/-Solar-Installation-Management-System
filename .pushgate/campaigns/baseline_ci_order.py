@@ -155,7 +155,10 @@ def baseline_score(root, repository, sha):
     main_sha = live[0]
     if execute(root, ["git", "rev-parse", "origin/main"]) != main_sha:
         raise ValueError("origin/main is stale; fetch and rerun")
-    if os.environ.get("GITHUB_EVENT_NAME") == "push" and os.environ.get("GITHUB_REF") == "refs/heads/main":
+    if (
+        os.environ.get("GITHUB_EVENT_NAME") == "push"
+        and os.environ.get("GITHUB_REF") == "refs/heads/main"
+    ):
         if main_sha != sha:
             raise ValueError("Main moved since this certification run")
         event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
@@ -163,7 +166,9 @@ def baseline_score(root, repository, sha):
         if not re.fullmatch(r"[0-9a-f]{40}", previous) or previous == "0" * 40:
             raise ValueError("Missing previous accepted main identity")
         if execute(root, ["git", "rev-parse", sha + "^1"]) != previous:
-            raise ValueError("Main push must be a single normally merged first-parent transition")
+            raise ValueError(
+                "Main push must be a single normally merged first-parent transition"
+            )
         main_sha = previous
     runs = api(
         root,
@@ -180,7 +185,10 @@ def baseline_score(root, repository, sha):
     if accepted is None:
         sys.path.insert(0, str(root / ".pushgate"))
         from bootstrap_consumer import accepted_bootstrap
-        return accepted_bootstrap(root, repository, main_sha, api, execute, scorer(root))
+
+        return accepted_bootstrap(
+            root, repository, main_sha, api, execute, scorer(root)
+        )
     artifacts = api(
         root, f"repos/{repository}/actions/runs/{accepted['id']}/artifacts"
     )["artifacts"]
@@ -389,10 +397,10 @@ def main():
         candidate = checked_context(root, args.junit.parent, sha)
         repository, run_id = verify_ci(root, sha)
         main_sha, baseline = baseline_score(root, repository, sha)
-        if candidate < baseline - 2:
-            raise ValueError(
-                f"Measured candidate score {candidate} regresses beyond2points from accepted main {baseline}"
-            )
+        sys.path.insert(0, str(root / ".pushgate"))
+        from bootstrap_protocol import check_ratchet
+
+        check_ratchet(candidate, baseline)
         count = execute_two_orders(root, args.junit.parent, sha)
         (args.junit.parent / "baseline-ci-verified.json").write_text(
             json.dumps(
