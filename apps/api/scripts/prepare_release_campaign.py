@@ -78,6 +78,14 @@ def main():
             accounts.append({"role": role, "identifier": code, "password": password})
         db.commit()
     with TestClient(app) as client:
+        admin = _login(client, "employee", "EMP-ADMIN-001", password)
+        with Session(app.state.engine) as db:
+            technician = db.scalar(select(User.id).join(EmployeeProfile).where(
+                EmployeeProfile.employee_code == "EMP-TECH-001"))
+        response = client.put(f"/api/v1/scheduling/availability/{technician}", headers=admin, json={
+            "timezone": "UTC", "working_hours": {str(day): [["00:00", "23:59"]] for day in range(7)},
+            "qualifications": {"installation": "2099-12-31", "survey": "2099-12-31"}, "daily_capacity": 20})
+        assert response.status_code == 200, response.text
         _all_staff(app)
         ticket, job, _ = _ready_flow(client, app, labour_covered=False)
         order = {"id": ticket["order_id"]}
@@ -114,10 +122,15 @@ def main():
                    "estimates": estimate["id"], "bills": invoice["id"], "replacements": replacement["id"]}
     # Access audits must use the record owner and assigned technician, not fake IDs.
     for role, identifier in [("customer", "leela@example.com"), ("technician", "EMP-TECH-901")]:
-        accounts = [a for a in accounts if a["role"] != role]
-        accounts.append({"role": role, "identifier": identifier,
-                         "password": "Solarops123" if role == "customer" else "Staffpass123"})
-    accounts.append({"role": "mfa", "identifier": "EMP-TECH-4E", "password": password})
+        accounts.insert(0, {"role": role, "identifier": identifier,
+                            "password": "Solarops123" if role == "customer" else "Staffpass123"})
+    expected = {code for _, code, _, _, _ in STAFF} | {"EMP-TECH-4E", "EMP-TECH-901", "leela@example.com"}
+    if not expected.issubset({account["identifier"] for account in accounts}):
+        raise ValueError("Incomplete synthetic role/account inventory")
+    with TestClient(app) as client:
+        for account in accounts:
+            _login(client, "employee" if account["identifier"].startswith("EMP-") else "customer",
+                   account["identifier"], account["password"])
     mapping = {}
     for page in (ROOT / "apps/web/src/app").rglob("page.tsx"):
         route = "/" + "/".join(page.parent.relative_to(ROOT / "apps/web/src/app").parts)

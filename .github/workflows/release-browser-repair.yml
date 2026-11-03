@@ -52,12 +52,23 @@ jobs:
         working-directory: apps/web
         env:
           NEXT_PUBLIC_SOLAROPS_ENV: development
+          NEXT_PUBLIC_SOLAROPS_PASSKEYS: "on"
       - name: Seven complete legacy browser journeys
         id: journeys
         continue-on-error: true
         run: |
           mkdir -p .pushgate/reports/browser
           node .pushgate/campaigns/browser_campaign.cjs customer-warranty.spec.ts "$PWD/.pushgate/reports/browser/journeys.xml"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: repair-journeys-${{ github.sha }}-${{ github.run_attempt }}
+          retention-days: 14
+          path: |
+            .pushgate/reports/browser/journeys.xml
+            apps/web/test-results/
+            var/release-campaign/**/*-api.log
+            var/release-campaign/**/*-web.log
       - name: Complete discovered accessibility and compatibility inventory
         id: accessibility
         if: always()

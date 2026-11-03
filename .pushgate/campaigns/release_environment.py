@@ -56,10 +56,10 @@ def main():
         SOLAROPS_DATABASE_URL=test_url.set(database="solarops_browser_release_ci").render_as_string(hide_password=False),
         SOLAROPS_RELEASE_FIXTURE_DIR=str(folder),
         SOLAROPS_EVIDENCE_DIR=str(folder / "uploads"), SOLAROPS_MAILBOX_PATH=str(folder / "mailbox.jsonl"),
-        SOLAROPS_TRUSTED_ORIGINS="http://127.0.0.1:3061",
-        SOLAROPS_WEBAUTHN_RP_ID="127.0.0.1", SOLAROPS_WEBAUTHN_ALLOWED_ORIGINS="http://127.0.0.1:3061",
-        SOLAROPS_API_ORIGIN="http://127.0.0.1:8061", SOLAROPS_WEB_URL="http://127.0.0.1:3061",
-        NEXT_PUBLIC_SOLAROPS_ENV="development", NEXT_TELEMETRY_DISABLED="1",
+        SOLAROPS_TRUSTED_ORIGINS="http://localhost:3061",
+        SOLAROPS_WEBAUTHN_RP_ID="localhost", SOLAROPS_WEBAUTHN_ALLOWED_ORIGINS="http://localhost:3061",
+        SOLAROPS_API_ORIGIN="http://127.0.0.1:8061", SOLAROPS_WEB_URL="http://localhost:3061",
+        NEXT_PUBLIC_SOLAROPS_ENV="development", NEXT_PUBLIC_SOLAROPS_PASSKEYS="on", NEXT_TELEMETRY_DISABLED="1",
         SOLAROPS_LOGIN_IP_LIMIT="1000", SOLAROPS_LOGIN_IDENTIFIER_LIMIT="1000")
     for key in ("SOLAROPS_RAZORPAY_KEY_ID", "SOLAROPS_RAZORPAY_KEY_SECRET", "SOLAROPS_RAZORPAY_WEBHOOK_SECRET", "SOLAROPS_SMTP_HOST"):
         if env.get(key):

@@ -9,10 +9,11 @@ const requireWeb = createRequire(path.join(web, 'package.json'));
 const suite = process.argv[2];
 const output = process.argv[3];
 const allowed = new Set(['customer-warranty.spec.ts', 'accessibility.spec.ts']);
-const escape = text => String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const escape = text => String(text).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 async function run() {
   if (!allowed.has(suite) || !output) throw new Error('Expected a reviewed suite and JUnit path');
   try {
+    if (process.env.GITHUB_ACTIONS !== 'true') throw new Error('This release harness requires fresh Linux CI; unavailable desktop browser is not retried.');
     const { chromium } = requireWeb('@playwright/test');
     const browser = await chromium.launch();
     await browser.close();

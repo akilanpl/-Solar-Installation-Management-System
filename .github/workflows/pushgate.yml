@@ -67,8 +67,13 @@ jobs:
         with:
           name: pushgate-evidence
           retention-days: 14
+          path: .pushgate/reports/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pushgate-browser-evidence
+          retention-days: 14
           path: |
-            .pushgate/reports/
             apps/web/test-results/
             var/ui-acceptance/screenshots/
             var/release-campaign/**/*-api.log

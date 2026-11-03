@@ -44,6 +44,7 @@ def run_stage(root, folder, name, family, sev, directory, command, *,
                            SOLAROPS_RELEASE_SOURCE_SHA=before["sha"])
                 if name == "build":
                     env["NEXT_PUBLIC_SOLAROPS_ENV"] = "development"
+                    env["NEXT_PUBLIC_SOLAROPS_PASSKEYS"] = "on"
                 with subprocess.Popen(command, cwd=root / directory, stdout=log,
                                       stderr=subprocess.STDOUT, env=env, start_new_session=True) as process:
                     try:
