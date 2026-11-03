@@ -1,0 +1,408 @@
+{
+  "source": "solarops_release_demo_20261102",
+  "restore_target": "solarops_signoff_restore_7a0fd3d21212",
+  "all_rows_match": true,
+  "table_count": 100,
+  "tables": {
+    "alembic_version": {
+      "count": 1,
+      "hash": "88b85736b83dd24377468869b6aa9fc8fb4137e9a1def841e6e1aca4edc5aa4e"
+    },
+    "audit_events": {
+      "count": 261,
+      "hash": "de6bdca8d8c3fd886fb84dd416ca9505b2794e204734249ec1553b04baf08ada"
+    },
+    "catalogue_components": {
+      "count": 12,
+      "hash": "2f175ceeeff751b817d4dfd6b01f9481c102f5597b15e7de76a1d1c65539fa97"
+    },
+    "coverage_decisions": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "customer_profiles": {
+      "count": 4,
+      "hash": "7c03b1b4dd24c6a75e562a702b77378565784a0e066a71855e3dd1539dea23ae"
+    },
+    "customer_sites": {
+      "count": 5,
+      "hash": "ae77dcc18a5aba01d41cae1aa63af942d32470f7bcd7072370c19dfd855afa9e"
+    },
+    "deliveries": {
+      "count": 1,
+      "hash": "1cc52b55e2974ad20b027f883fe9533bccb4bf1c2f60f09c3f8cc41492ff6794"
+    },
+    "delivery_lines": {
+      "count": 8,
+      "hash": "6d0510556a2a59b72ce26949f3bb0af1f5e8b666c289cf4f6dc0f1fbbcd623b1"
+    },
+    "document_counters": {
+      "count": 8,
+      "hash": "9a517eb82baf73b3abc11643d37a66c1da6dcbe3b637f14d1afb65aabc8c7db7"
+    },
+    "email_verification_challenges": {
+      "count": 1,
+      "hash": "0fb02629fe4ab607cc289fdf8656a34799c0d9ce15544e5f9438637ad5d01aff"
+    },
+    "employee_profiles": {
+      "count": 8,
+      "hash": "6e07099024b3d524fb8dbfdc45c036fd0eba397d048926211eff03a0ce9cf9bb"
+    },
+    "enquiries": {
+      "count": 5,
+      "hash": "b06f3a710e834fcfca7b6f5cade74aad62d177908290f935dc63383b8fb25acb"
+    },
+    "enquiry_counters": {
+      "count": 1,
+      "hash": "ab9ddfd0cca7dc05354f90d61c2d1861ca83ce24d93a90f7369d7d202d644583"
+    },
+    "enquiry_status_history": {
+      "count": 10,
+      "hash": "e8b3a7cf2a6daba9a6ad38fb97d2a7c2dbbba1e2261f796820c8b0ec8d99f6aa"
+    },
+    "equipment_serials": {
+      "count": 7,
+      "hash": "a31e522288da6e71ac8c9d7b5119e84598021b14a56ccdcd7b48a1cce74e367f"
+    },
+    "estimate_decisions": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "finance_entries": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "finance_evidence": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "finance_lines": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "finance_periods": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "finance_records": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "goods_returns": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "installation_evidence": {
+      "count": 1,
+      "hash": "b5fd9b632ae02a5c453bc428faa08b786ecc29ca8c8c49e45e1cb066f3c5bf08"
+    },
+    "installation_jobs": {
+      "count": 1,
+      "hash": "283c7fbe91cf37231bfbb2a58830874a4d8362fc74c1eff843f22f96d740458d"
+    },
+    "installation_otps": {
+      "count": 1,
+      "hash": "d4146a76f8113094bd0dbd8b06eed4cdd050a62215578d020e9d6200c9abbd87"
+    },
+    "installation_scheduling_requests": {
+      "count": 1,
+      "hash": "281527b9efa6164edfbb7839559d3d2a07946e968472fdb699d11b8f474843e7"
+    },
+    "mfa_factors": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "mfa_recovery_codes": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "mfa_tickets": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "order_warranty_terms": {
+      "count": 2,
+      "hash": "536265f1c30e7a42b626305f0fd68a7b4ca6245dbef62b978b4aa74de4211c8e"
+    },
+    "package_template_lines": {
+      "count": 104,
+      "hash": "72dfd45167b523e04f960e583f77b7b842491d7be47735beb89165b02288f523"
+    },
+    "package_template_versions": {
+      "count": 12,
+      "hash": "83b7cc562e7aad3cb6de7e2e34b60f906bba0f1c74cda60f4f7d8fd248bd7559"
+    },
+    "payment_attempts": {
+      "count": 4,
+      "hash": "46b42e73c97afa7d605c4f9b69286b024f489fc568eea4b06ba9f1f3781eee55"
+    },
+    "payment_intents": {
+      "count": 2,
+      "hash": "97482eb0cc08cace786ff7f225863dbcb6d805b97b23900d03039704e6f4aa85"
+    },
+    "payment_requirements": {
+      "count": 1,
+      "hash": "3ecdf85fbc23671158cd1d17e7e6d4a35f87f20ffe416738462e4ef50b379403"
+    },
+    "phase4d_ai_assists": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "phase4d_cache_consumers": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "phase4d_cache_metrics": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "phase4d_cache_outbox": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "phase4d_customer_snapshots": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "phase4d_forecast_snapshots": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "phase4d_generation_readings": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "phase4d_site_geolocations": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "phase4d_weather_advisories": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "product_warranty_policies": {
+      "count": 2,
+      "hash": "f3c02d133aaac268f2025c7a6a12065bf647145b4432e500002494a4d6368b13"
+    },
+    "provider_events": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "provider_payment_orders": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "quotation_acceptances": {
+      "count": 1,
+      "hash": "3dc9436d8ab2f86c58f98d929c7506a9afb04c4e97c46c9dc2200c67516b96d6"
+    },
+    "quotation_lines": {
+      "count": 10,
+      "hash": "98ffff83237812edfb7d9d1bca7f51f17c48b44f810ac8851e6c1b8373ae06cb"
+    },
+    "quotation_revision_requests": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "quotations": {
+      "count": 1,
+      "hash": "7a0da5c130271dd22c535a8ea8db8b11c22f9a9c1e32782bc7ae030618fe4e16"
+    },
+    "rate_limit_buckets": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "replacement_decisions": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "replenishment_requests": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "resolution_acknowledgments": {
+      "count": 1,
+      "hash": "becf150a3378e972f91730b4b5bea895a07c72a37c4c2112e090350c999d5f57"
+    },
+    "return_inspections": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "roles": {
+      "count": 7,
+      "hash": "10981aac87e148c6f02a630e837820f8a02c61a803e7bcd92f873a975d290511"
+    },
+    "sales_order_lines": {
+      "count": 10,
+      "hash": "68fadc18ed666a047df2dd813af4806bbea17f13ca389b264a577f34e5086a9b"
+    },
+    "sales_orders": {
+      "count": 1,
+      "hash": "6fab733a538e301c97b3c3dcb7737f535c61de7f7c633e507bd9c12268e301b0"
+    },
+    "serial_warranties": {
+      "count": 7,
+      "hash": "174b087c82a6fce61bc0d5f0e0ab84885130edf139c125482024d04e26c0940a"
+    },
+    "serialized_asset_coverage": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "service_credit_notes": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "service_estimates": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "service_invoices": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "service_price_books": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "service_tax_policies": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "service_ticket_attachments": {
+      "count": 1,
+      "hash": "db7dd89bcaa5d0fe8db8062bd82cd6351f3612b1e33236c7e00567be7e06e097"
+    },
+    "service_ticket_events": {
+      "count": 12,
+      "hash": "9489bfaf102924b2f761eb0241ebf5604db69d77d135e3f7fa8a27a25b2a6e69"
+    },
+    "service_tickets": {
+      "count": 1,
+      "hash": "6754530fefd208601c12dc6eaa1571f80be91da54e8fba0bf6b7423a3f8fa8ea"
+    },
+    "sessions": {
+      "count": 76,
+      "hash": "cb2c11f2f5fee1051eddb40c2ae0e2240244728de13081242dcf256731301483"
+    },
+    "solar_packages": {
+      "count": 12,
+      "hash": "416b0f3eff3db8eb8cd8ff004f16f8d86847563a44a16b4346719993ac55e16e"
+    },
+    "stock_allocations": {
+      "count": 8,
+      "hash": "0ba937635334151132b26043b9933aacf41601225da010afe20a8d16f93c58c5"
+    },
+    "stock_ledger": {
+      "count": 16,
+      "hash": "82790e82e8b4d2e5b7ab3d79957ec940c3cf85a8460d8ee7f14bc34dc2d22160"
+    },
+    "stock_operation_lines": {
+      "count": 16,
+      "hash": "62b5be1a107095f607266622a3e0ca13c8fd3c18eb5b9cf46be500ccdf3c5fbf"
+    },
+    "stock_operations": {
+      "count": 9,
+      "hash": "91a65d3830e01dbf583b25aba0d51730ad9872f8a14378a2d57f7808d7217b5e"
+    },
+    "stock_reservations": {
+      "count": 8,
+      "hash": "5a84dca22b6efe8f28f99b4436733ccd58e9cdd2dd04cff904df599e0790e6ac"
+    },
+    "stock_serial_movements": {
+      "count": 14,
+      "hash": "1b0355bb1487c2f14183d62ef6d762615822256bf850de46fb8ddfb7750d38c7"
+    },
+    "strong_auth_grants": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "supplier_orders": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "survey_evidence": {
+      "count": 1,
+      "hash": "589f12a2754d782a045cd162a8b2bc61db1c0918be1197c43380d3a91bffe9cb"
+    },
+    "survey_status_history": {
+      "count": 5,
+      "hash": "ad1ebe975ee2cc2e1475987c1ccb22659780dcc35a08831135a41f2db0429897"
+    },
+    "surveys": {
+      "count": 1,
+      "hash": "14aff799d5ddccbe594da0f9d6dc662e0e4b95a79f569717acb4f51616c5aeac"
+    },
+    "technician_appointments": {
+      "count": 1,
+      "hash": "4fadc7a24ec1e1e7b909e21e068f6e7eb620c8d0f0e8b17323eb63ae5035c2ab"
+    },
+    "technician_availability": {
+      "count": 1,
+      "hash": "70ecc6823fac8496a0566ff8eb6ffc1eb3c842831bbd822dae324ac8d5be8a86"
+    },
+    "technician_leave": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "technician_sync_operations": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ticket_repair_jobs": {
+      "count": 1,
+      "hash": "c891eb0bf5a88150c59cc2a230fb12462df100440bee38c73f625e7e1046f374"
+    },
+    "users": {
+      "count": 12,
+      "hash": "04b37935da1c0079b0d1087509b983c9aa38cb15f381a021dd84e9448c3d37d7"
+    },
+    "warehouse_locations": {
+      "count": 3,
+      "hash": "d1f7f2bbc263b27d219be3bdfc0bdc0e756394908ce81db1bd3c7e784e0e7c66"
+    },
+    "warehouse_preparation_lines": {
+      "count": 8,
+      "hash": "6b9926ed8ca2810ddcd84c10d84ad0fdeffae770c9728a29ce4fbf7fbe60ae75"
+    },
+    "warehouse_preparation_requests": {
+      "count": 1,
+      "hash": "a744d1960ae40ee6f739b586bb957c11738b2512c04d929d915bdadcfa6136fc"
+    },
+    "warranties": {
+      "count": 1,
+      "hash": "4024f2fe0b5d3229a36bdfe5a91a320eeb109719dd3ae24e4ef955228e81e285"
+    },
+    "warranty_exceptions": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "warranty_extension_offers": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "warranty_extension_terms": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "warranty_extensions": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "warranty_policies": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "warranty_policy_versions": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "webauthn_challenges": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "webauthn_credentials": {
+      "count": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

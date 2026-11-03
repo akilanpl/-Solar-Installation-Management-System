@@ -35,15 +35,20 @@ function Review({ id }: { id: string }) {
   const [pending, setPending] = useState(false);
 
   function load() {
+    let current = true;
     api<EnquiryDetail>(`/api/v1/enquiries/${id}`)
       .then((body) => {
+        if (!current) return;
         setEnquiry(body);
         setArea(body.shadow_free_area_sqm ?? "");
         setGrid(body.grid_connection_suitable === null ? "" : String(body.grid_connection_suitable));
         const options = NEXT_STATUS[body.status] ?? [];
         if (options[0]) setStatus(options[0]);
       })
-      .catch((caught: unknown) => setError(caught instanceof Error ? caught.message : "Could not load the enquiry."));
+      .catch((caught: unknown) => {
+        if (current) setError(caught instanceof Error ? caught.message : "Could not load the enquiry.");
+      });
+    return () => { current = false; };
   }
 
   useEffect(load, [id]);

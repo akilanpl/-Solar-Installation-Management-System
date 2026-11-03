@@ -5,6 +5,7 @@ import type { components } from "@/generated/schema";
 import { api } from "@/lib/api";
 import { formatPaise } from "@/lib/money";
 import { newIdempotencyKey } from "@/lib/tickets";
+import { Warranty } from "@/components/orders-board";
 import { Button, Card, EmptyState, ErrorState, LoadingState, PageHeader, SelectField, StatusBadge, TextField } from "@/components/ui";
 
 type Coverage = components["schemas"]["CoverageResponse"];
@@ -54,12 +55,24 @@ function linesOf(estimate: Estimate): EstimateLine[] {
 
 export function Equipment() {
   const { data, error, load } = useGet<Coverage[]>(`/api/v1/warranty/serials/mine`);
+  const orders = useGet<components["schemas"]["OrderList"]>("/api/v1/orders?page_size=100");
   return (
     <>
-      <PageHeader title="My equipment" description="Every installed unit registered to you, with its live warranty coverage period." />
+      <PageHeader title="My equipment" description="Recorded product warranties and separate service-policy coverage for your equipment." />
       {error && <ErrorState message={error} onRetry={load} />}
+      {orders.error && <ErrorState message={orders.error} onRetry={orders.load} />}
+      {!orders.data && !orders.error && <LoadingState label="Loading product coverage" />}
+      {orders.data && <section aria-label="Order-bound product warranties" className="space-y-4">
+        <h2 className="text-lg font-semibold">Product warranties · latest 100 orders</h2>
+        {orders.data.items.map(order => <Card key={order.id}>
+          <h3 className="font-semibold"><Link href={`/customer/orders/${order.id}`}>{order.reference}</Link></h3>
+          {order.test_only_payment && <p>Test-funded order · synthetic acceptance records</p>}
+          <Warranty orderId={order.id} />
+        </Card>)}
+        {orders.data.total > 100 && <Link className="underline" href="/customer/orders">Review additional orders and their coverage</Link>}
+      </section>}
       {!data && !error && <LoadingState label="Loading equipment" />}
-      {data?.length === 0 && <EmptyState title="No equipment" body="Installed units with warranty coverage appear here after delivery confirmation." />}
+      {data?.length === 0 && <EmptyState title="No separate service-policy coverage" body="Order-bound product warranties are listed above. Additional service coverage appears only when an applicable service policy has been activated." />}
       <div className="space-y-4">
         {data?.map((row) => (
           <Card key={row.coverage_id}>

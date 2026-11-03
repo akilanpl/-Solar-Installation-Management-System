@@ -1030,6 +1030,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/payments/sandbox/capability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sandbox Capability */
+        get: operations["sandbox_capability_api_v1_payments_sandbox_capability_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/quotations/{quotation_id}/payment-requirement": {
         parameters: {
             query?: never;
@@ -6856,6 +6873,13 @@ export interface components {
             /** Password */
             password?: string | null;
         };
+        /** SandboxCapability */
+        SandboxCapability: {
+            /** Enabled */
+            enabled: boolean;
+            /** Notice */
+            notice: string;
+        };
         /** SandboxOutcome */
         SandboxOutcome: {
             /**
@@ -10223,6 +10247,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sandbox_capability_api_v1_payments_sandbox_capability_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SandboxCapability"];
                 };
             };
         };

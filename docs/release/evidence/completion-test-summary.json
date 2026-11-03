@@ -1,0 +1,25 @@
+{
+  "backend": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "605",
+    "time": "646.580",
+    "timestamp": "2026-11-02T14:51:43.955562+05:30",
+    "hostname": "Akilans-MacBook-Air.local"
+  },
+  "frontend": {
+    "tests": 88,
+    "files": 18,
+    "failures": 0
+  },
+  "targeted_payments": 35,
+  "launcher_cases": 5,
+  "playwright": {
+    "status": "BLOCKED",
+    "launch_failures": 3,
+    "reason": "macOS MachPortRendezvous bootstrap permission denied before test interaction"
+  },
+  "note": "Full 605 includes maintained release campaign repeats and the five-minute real HTTP test; not 605 independent newly authored scenarios."
+}

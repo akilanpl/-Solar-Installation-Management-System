@@ -5,8 +5,10 @@ import base from "./playwright.config";
 const database = process.env.SOLAROPS_E2E_DATABASE_URL;
 if (!database) throw new Error("Use apps/api/scripts/run_browser_qa.py to prepare isolated browser QA.");
 const target = new URL(database);
-if (target.pathname !== "/solarops_test" || !["127.0.0.1", "localhost"].includes(target.hostname)) {
-  throw new Error("Browser QA requires local solarops_test; development databases are forbidden.");
+const name = target.pathname.slice(1);
+const explicitlyDisposable = name === process.env.SOLAROPS_DISPOSABLE_TEST_DATABASE_NAME && /^solarops_release_test_[0-9]{8}$/.test(name);
+if ((name !== "solarops_test" && !explicitlyDisposable) || !["127.0.0.1", "localhost"].includes(target.hostname)) {
+  throw new Error("Browser QA requires local solarops_test or an explicitly named release test database; development databases are forbidden.");
 }
 
 export default defineConfig({

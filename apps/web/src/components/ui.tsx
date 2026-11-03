@@ -46,7 +46,7 @@ export function TextField({
         </span>
       ) : null}
       {error ? (
-        <span id={`${fieldId}-error`} className="mt-1 block text-xs text-clay-700">
+        <span role="alert" id={`${fieldId}-error`} className="mt-1 block text-xs text-clay-700">
           {error}
         </span>
       ) : null}
@@ -65,9 +65,10 @@ export function SelectField({
   const fieldId = id ?? generatedId;
   return (
     <label className="block text-sm" htmlFor={fieldId}>
-      <span className="font-medium text-ink">{label}</span>
+      <span id={`${fieldId}-label`} className="font-medium text-ink">{label}</span>
       <select
         id={fieldId}
+        aria-labelledby={`${fieldId}-label`}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${fieldId}-error` : undefined}
         className="mt-1 w-full rounded-md border border-moss-200 bg-white px-3 py-2"
@@ -75,7 +76,7 @@ export function SelectField({
       >
         {children}
       </select>
-      {error ? <span id={`${fieldId}-error`} className="mt-1 block text-xs text-clay-700">{error}</span> : null}
+      {error ? <span role="alert" id={`${fieldId}-error`} className="mt-1 block text-xs text-clay-700">{error}</span> : null}
     </label>
   );
 }

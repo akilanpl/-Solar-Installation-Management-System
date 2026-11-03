@@ -1,0 +1,29 @@
+[
+  {
+    "case": "modal-backward-wrap",
+    "focused": "Reset accessibility preferences",
+    "inDialog": true
+  },
+  {
+    "case": "modal-forward-wrap",
+    "focused": "Close Accessibility Panel",
+    "inDialog": true
+  },
+  {
+    "case": "modal-escape-restores-trigger",
+    "focused": "Accessibility",
+    "openDialogs": 0
+  },
+  {
+    "alerts": [
+      "Enter a 6-digit PIN code."
+    ],
+    "case": "invalid-pin-announcement",
+    "invalidFields": [
+      {
+        "description": "_r_a_-error",
+        "name": "postal_code"
+      }
+    ]
+  }
+]

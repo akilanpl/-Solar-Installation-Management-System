@@ -1,0 +1,51 @@
+name: Attested owner-pin verification probe
+on:
+  push:
+    branches: [verification/baseline-token-probe]
+    paths: ['.github/workflows/baseline-attestation-probe.yml', '.pushgate/owner_pin_attestation.py', '.pushgate/test_owner_pin_attestation.py']
+permissions:
+  contents: read
+jobs:
+  trusted-reader:
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    uses: akilanpl/-Solar-Installation-Management-System/.github/workflows/baseline-trust-reader.yml@35420870a93d68eb0a184201b667cf439d65f43f
+  verify:
+    needs: trusted-reader
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+      attestations: read
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - name: Exercise the complete authenticated consumer path
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .pushgate/owner_pin_attestation.py
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: baseline-owner-pins-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pins
+      - name: Verify real signature, immutable signer and source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh attestation verify "$RUNNER_TEMP/pins/pins.json" \
+            --repo akilanpl/-Solar-Installation-Management-System \
+            --signer-workflow akilanpl/-Solar-Installation-Management-System/.github/workflows/baseline-trust-reader.yml \
+            --signer-digest 35420870a93d68eb0a184201b667cf439d65f43f \
+            --source-digest "$GITHUB_SHA" --source-ref "$GITHUB_REF" \
+            --cert-oidc-issuer https://token.actions.githubusercontent.com \
+            --predicate-type https://slsa.dev/provenance/v1 \
+            --deny-self-hosted-runners --format json > "$RUNNER_TEMP/pins/verified-attestation.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: owner-pin-attestation-probe
+          path: ${{ runner.temp }}/pins/
+          if-no-files-found: error

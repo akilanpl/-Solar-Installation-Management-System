@@ -1,0 +1,15 @@
+# Browser Visual Acceptance Report
+
+Lifecycle follow-up, 2 November 2026 (Asia/Kolkata). Branch `completion/solarops-20261102`; baseline handoff `2b892fe3ec450ca1121afaaabdb1941d3f8716b9`. Final source/build SHA and post-commit smoke are in the delivered `FINAL_EXECUTION_MANIFEST.json`. Previous test counts are historical, not substituted for this run.
+
+PASS for the recorded critical-page axe/overflow checks and manual keyboard cases; **not a blanket WCAG, screen-reader or all-route acceptance**. The earlier 216 route/role screenshots remain historical. Current `axe-final.json` records fourteen critical routes at 390/768/1280 (42 scans), including login/signup, enquiry, quotation, payment, warehouse picking, installation, equipment, support, repair and sales scheduling. Latest scan per route/viewport is authoritative; red/intermediate findings are retained separately.
+
+Measured defects repaired: non-focusable horizontal tables; low-contrast small/secondary text; low-contrast decorative text badges; suppressed auth input focus; missing live field error announcement. No horizontal document overflow in the recorded critical scans. All automatic violations were repaired and rechecked, with the final scheduling text recheck recorded after its last CSS fix.
+
+Manual PASS: dialog initial focus, Shift-Tab backward wrap, Tab forward wrap, Escape closing and focus return; invalid PIN sets aria-invalid/describedby and announces a live alert without saving. Authentication input focus is a measured solid 3px indigo outline. Twelve visible mobile enquiry form controls meet at least 24px target dimensions; inline links/checkboxes were not certified by that geometry check. Muted background video and gradient contrast are separately checked. `lifecycle-contrast-bounds.json` gives conservative white-frame compositing bounds: hero small text and badges exceed 4.5:1 after repair. Blue/green dock badge and operations kicker gradient endpoints were checked and corrected rather than dismissing axe incomplete results. Browser video reports muted=true; its audio incomplete item is not treated as a confirmed audible autoplay defect.
+
+NOT TESTED: actual screen-reader/hardware behavior, every transient state on every route, and remaining non-primary estimate/bill/replacement saved-record variants. Standalone Playwright is BLOCKED before interactions by macOS MachPortRendezvous permissions. The three new assertion-bearing cases in e2e/lifecycle-persistence.spec.ts remain unexecuted, not marked passed. Existing tests were not weakened. Five previously empty primary detail patterns now have legitimate fixtures; old all-route screenshot counts do not certify those new views.
+
+## Current independent sign-off
+
+Final-source fresh browser acceptance remains BLOCKED; historical manual/axe results are not current acceptance. Fresh API/DB and non-browser results, exact candidate, backup and environment blockers are documented in TEST_EXECUTION_REPORT.md and FINAL_RELEASE_VERDICT.md. No product change during sign-off; QA runner gains fail-closed browser preflight and explicitly disposable database support.

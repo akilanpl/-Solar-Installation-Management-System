@@ -1,0 +1,127 @@
+[
+  {
+    "name": "J1-test-payment-persisted",
+    "url": "http://127.0.0.1:3063/customer/payments",
+    "observed": true
+  },
+  {
+    "name": "J3-synthetic-technician-availability-and-policies",
+    "url": "http://127.0.0.1:3063/admin",
+    "observed": true
+  },
+  {
+    "name": "J1-order-confirmation-duplicate-rejected",
+    "url": "http://127.0.0.1:3063/sales/quotations",
+    "observed": true
+  },
+  {
+    "name": "J2-insufficient-stock-rejected",
+    "url": "http://127.0.0.1:3063/warehouse",
+    "observed": true
+  },
+  {
+    "name": "J2-eight-synthetic-receipts-validated",
+    "url": "http://127.0.0.1:3063/warehouse",
+    "observed": true
+  },
+  {
+    "name": "J2-seven-serials-allocated",
+    "url": "http://127.0.0.1:3063/warehouse",
+    "observed": true
+  },
+  {
+    "name": "J2-picked-delivery-seven-exact-serials",
+    "url": "http://127.0.0.1:3063/warehouse",
+    "observed": true
+  },
+  {
+    "name": "J2-double-pick-rejected",
+    "url": "http://127.0.0.1:3063/warehouse",
+    "observed": true
+  },
+  {
+    "name": "J3-synthetic-delivery-confirmed",
+    "url": "http://127.0.0.1:3063/warehouse",
+    "observed": true
+  },
+  {
+    "name": "J3-eligible-test-installation-booked",
+    "url": "http://127.0.0.1:3063/sales/installations",
+    "observed": true
+  },
+  {
+    "name": "J3-completion-before-evidence-denied",
+    "url": "http://127.0.0.1:3063/technician",
+    "observed": true
+  },
+  {
+    "name": "J3-completion-before-customer-acknowledgment-denied",
+    "url": "http://127.0.0.1:3063/technician",
+    "observed": true
+  },
+  {
+    "name": "J3-customer-summary-bound-acknowledgment",
+    "url": "http://127.0.0.1:3063/customer/installations",
+    "observed": true
+  },
+  {
+    "name": "J4-installation-completed",
+    "url": "http://127.0.0.1:3063/technician",
+    "observed": true
+  },
+  {
+    "name": "J4-seven-installed-units-active-warranty",
+    "url": "http://127.0.0.1:3063/customer/equipment",
+    "observed": true
+  },
+  {
+    "name": "J5-synthetic-complaint-created",
+    "url": "http://127.0.0.1:3063/customer/complaints",
+    "observed": true
+  },
+  {
+    "name": "J5-support-owner-and-repair-assigned",
+    "url": "http://127.0.0.1:3063/support/tickets/4c70d3bd-ac76-4c5e-ae7a-01e0ee34c2f8",
+    "observed": true
+  },
+  {
+    "name": "J5-technician-repair-summary-submitted",
+    "url": "http://127.0.0.1:3063/technician/repairs/4853d978-44fb-4f42-bbe0-843ee6a34f7d",
+    "observed": true
+  },
+  {
+    "name": "J5-technician-repair-summary-persisted",
+    "url": "http://127.0.0.1:3063/technician/repairs/4853d978-44fb-4f42-bbe0-843ee6a34f7d",
+    "observed": true
+  },
+  {
+    "name": "J5-versioned-resolution-ready",
+    "url": "http://127.0.0.1:3063/support/tickets/4c70d3bd-ac76-4c5e-ae7a-01e0ee34c2f8",
+    "observed": true
+  },
+  {
+    "name": "J5-customer-confirmed-exact-resolution-after-refresh",
+    "url": "http://127.0.0.1:3063/customer/complaints/4c70d3bd-ac76-4c5e-ae7a-01e0ee34c2f8",
+    "observed": true
+  },
+  {
+    "name": "J5-confirmed-resolution-closed",
+    "url": "http://127.0.0.1:3063/support/tickets/4c70d3bd-ac76-4c5e-ae7a-01e0ee34c2f8",
+    "observed": true
+  },
+  {
+    "name": "J4-product-warranties-visible-GREEN",
+    "url": "http://127.0.0.1:3063/customer/equipment",
+    "observed": true
+  },
+  {
+    "name": "J6-admin-source-linked-financial-readback",
+    "url": "http://127.0.0.1:3063/admin/reports",
+    "observed": true
+  },
+  {
+    "name": "FINAL-seven-product-warranties-after-relogin",
+    "url": "http://127.0.0.1:3063/customer/equipment",
+    "observed": true
+  }
+]

@@ -1,0 +1,141 @@
+name: First accepted-main baseline
+on:
+  push:
+    branches: [completion/solarops-20261102]
+    paths: ['.pushgate/bootstrap*', '.pushgate/test_bootstrap*', '.github/workflows/baseline-bootstrap.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: first-main-baseline
+  cancel-in-progress: false
+jobs:
+  measure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: solarops
+          POSTGRES_PASSWORD: solarops
+          POSTGRES_DB: solarops_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U solarops -d solarops_test"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      SOLAROPS_BASELINE_MAIN_SHA: ${{ vars.SOLAROPS_BASELINE_MAIN_SHA }}
+      SOLAROPS_BASELINE_CONTROLLER_SHA: ${{ vars.SOLAROPS_BASELINE_CONTROLLER_SHA }}
+      CI: 'true'
+      GH_TOKEN: ${{ github.token }}
+      SOLAROPS_APP_ENV: test
+      SOLAROPS_TEST_DATABASE_URL: postgresql+psycopg://solarops:solarops@127.0.0.1:5432/solarops_test
+      SOLAROPS_DATABASE_URL: postgresql+psycopg://solarops:solarops@127.0.0.1:5432/solarops_test
+      SOLAROPS_SECRET_KEY: ci-test-only-not-a-production-secret-2026
+      SOLAROPS_COOKIE_SECURE: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with: {path: controller, fetch-depth: 0, persist-credentials: false}
+      - uses: actions/checkout@v4
+        with:
+          path: measured-main
+          ref: ${{ vars.SOLAROPS_BASELINE_MAIN_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Validate owner pins and frozen source before executing source
+        run: python controller/.pushgate/bootstrap.py preflight --main measured-main
+      - name: Install locked main dependencies and all browser engines
+        run: |
+          (cd measured-main/apps/api && uv sync --frozen)
+          (cd measured-main/apps/web && npm ci && npx playwright install --with-deps chromium firefox webkit)
+          python controller/.pushgate/install_gitleaks.py
+          echo "$GITHUB_WORKSPACE/controller/var/tools" >> "$GITHUB_PATH"
+      - name: Measure all absolute main requirements
+        id: absolute
+        continue-on-error: true
+        run: measured-main/apps/api/.venv/bin/python controller/.pushgate/bootstrap.py measure --main measured-main
+      - name: Install locked controller assertion dependencies
+        if: always() && steps.absolute.outcome != 'skipped'
+        run: |
+          (cd controller/apps/api && uv sync --frozen)
+          (cd controller/apps/web && npm ci)
+      - name: Prepare separate empty database and ephemeral browser environment
+        if: always() && steps.absolute.outcome != 'skipped'
+        run: |
+          docker exec '${{ job.services.postgres.id }}' createdb -U solarops solarops_browser_ci
+          mkdir -p controller/var/browser-ci/private
+          python - <<'PY'
+          import os, pathlib, secrets
+          root = pathlib.Path.cwd()
+          values = {'SOLAROPS_APP_ENV': 'development', 'SOLAROPS_DATABASE_URL': 'postgresql+psycopg://solarops:solarops@127.0.0.1:5432/solarops_browser_ci', 'SOLAROPS_BROWSER_DATABASE_NAME': 'solarops_browser_ci', 'SOLAROPS_ACCEPTANCE_APPLICATION_ROOT': str(root/'measured-main'), 'SOLAROPS_MAILBOX_PATH': str(root/'controller/var/browser-ci/private/mailbox.jsonl'), 'SOLAROPS_EVIDENCE_DIR': str(root/'controller/var/browser-ci/private/uploads'), 'SOLAROPS_API_ORIGIN': 'http://127.0.0.1:8001', 'SOLAROPS_TRUSTED_ORIGINS': 'http://127.0.0.1:3001', 'SOLAROPS_NEXT_DIST_DIR': '.next', 'NEXT_PUBLIC_SOLAROPS_ENV': 'development'}
+          for key in ['SOLAROPS_SECRET_KEY', 'SOLAROPS_SEED_PASSWORD']:
+              values[key] = 'Ci9'+secrets.token_hex(32)
+              print('::add-mask::'+values[key])
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              for key,value in values.items(): output.write(f'{key}={value}\n')
+          PY
+          git -C measured-main rev-parse HEAD > controller/var/browser-ci/source-sha.txt
+      - name: Migrate and seed staff using frozen main models
+        if: always() && steps.absolute.outcome != 'skipped'
+        working-directory: measured-main/apps/api
+        run: |
+          .venv/bin/python - <<'PY'
+          import runpy, sys
+          from pathlib import Path
+          sys.path[:0] = [str(Path.cwd()), str(Path.cwd()/'scripts')]
+          # Load the unchanged main modules before the controller's guarded fixture.
+          import app.core.config, app.core.security, app.db.session, app.models.identity, seed_dev
+          runpy.run_path('../../../controller/apps/api/scripts/prepare_browser_ci.py', run_name='__main__')
+          PY
+      - name: Build actual frozen main frontend
+        if: always() && steps.absolute.outcome != 'skipped'
+        working-directory: measured-main/apps/web
+        run: npm run build
+      - name: Real frozen-main lifecycle browser acceptance
+        id: browser
+        if: always() && steps.absolute.outcome != 'skipped'
+        continue-on-error: true
+        working-directory: controller/apps/web
+        run: npm run e2e -- --config playwright.ci.config.ts
+      - name: Independent PostgreSQL oracle
+        id: oracle
+        if: always() && steps.browser.outcome == 'success'
+        continue-on-error: true
+        working-directory: controller/apps/api
+        run: uv run python scripts/verify_browser_ci.py
+      - name: Validate complete certificate before publication
+        if: steps.absolute.outcome == 'success' && steps.browser.outcome == 'success' && steps.oracle.outcome == 'success'
+        run: measured-main/apps/api/.venv/bin/python controller/.pushgate/bootstrap.py seal --main measured-main
+      - uses: actions/upload-artifact@v4
+        if: success() && steps.absolute.outcome == 'success' && steps.browser.outcome == 'success' && steps.oracle.outcome == 'success'
+        with:
+          name: first-baseline-${{ vars.SOLAROPS_BASELINE_MAIN_SHA }}-attempt-${{ github.run_attempt }}
+          path: controller/var/baseline-certificate/*
+          if-no-files-found: error
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: first-main-measurement-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            measured-main/.pushgate/reports/
+            controller/var/browser-ci/*.json
+            controller/var/browser-ci/*.xml
+            controller/var/browser-ci/*.log
+            controller/var/browser-ci/source-sha.txt
+            controller/var/browser-ci/report/
+            controller/var/browser-ci/test-results/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Fail unsuccessful measurement without issuing certification
+        if: always()
+        env:
+          ABSOLUTE: ${{ steps.absolute.outcome }}
+          BROWSER: ${{ steps.browser.outcome }}
+          ORACLE: ${{ steps.oracle.outcome }}
+        run: test "$ABSOLUTE/$BROWSER/$ORACLE" = 'success/success/success'

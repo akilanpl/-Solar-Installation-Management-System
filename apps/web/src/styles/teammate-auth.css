@@ -61,13 +61,8 @@
 .auth-hero-video-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    145deg,
-    rgba(29, 78, 216, 0.74) 0%,
-    rgba(37, 99, 235, 0.62) 35%,
-    rgba(30, 64, 175, 0.76) 70%,
-    rgba(23, 37, 84, 0.90) 100%
-  );
+  /* Keep text contrast stable even over the brightest video frame. */
+  background: rgba(23, 37, 84, 0.92);
   z-index: 1;
   pointer-events: none;
 }
@@ -209,7 +204,7 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -478,6 +473,7 @@
 }
 
 .auth-divider-text {
+  color: #475569;
   padding: 0 12px;
 }
 
