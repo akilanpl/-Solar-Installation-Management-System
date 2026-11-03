@@ -1,4 +1,6 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
+
+import { statusLabel } from "@/lib/format";
 
 export function Button({
   variant = "primary",
@@ -100,25 +102,52 @@ export function PageHeader({
 }
 
 export function StatusBadge({ status }: { status: string }) {
-  const label =
-    status === "under_review"
-      ? "Under review"
-      : status === "not_qualified"
-        ? "Not qualified"
-        : status === "qualified"
-          ? "Qualified"
-          : status === "submitted"
-            ? "Submitted"
-            : status;
   const tone =
-    status === "qualified"
+    status === "qualified" || status === "approved" || status === "accepted" || status === "verified" || status === "confirmed"
       ? "bg-moss-100 text-moss-800"
-      : status === "not_qualified"
+      : status === "not_qualified" || status === "rejected" || status === "failed" || status === "withdrawn"
         ? "bg-clay-50 text-clay-700"
-        : status === "under_review"
+        : status === "under_review" || status === "submitted" || status === "in_progress" || status === "unresolved" || status === "pending"
           ? "bg-sun-100 text-sun-700"
           : "bg-moss-50 text-ink";
-  return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${tone}`}>{label}</span>;
+  return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${tone}`}>{statusLabel(status)}</span>;
+}
+
+export function TextArea({
+  label,
+  error,
+  hint,
+  id,
+  ...props
+}: ComponentProps<"textarea"> & { label: string; error?: string; hint?: string }) {
+  const fieldId = id ?? props.name;
+  return (
+    <label className="block text-sm" htmlFor={fieldId}>
+      <span className="font-medium text-ink">{label}</span>
+      <textarea
+        id={fieldId}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${fieldId}-error` : hint ? `${fieldId}-hint` : undefined}
+        className="mt-1 w-full rounded-md border border-moss-200 bg-white px-3 py-2 text-ink shadow-sm"
+        {...props}
+      />
+      {hint && !error ? (
+        <span id={`${fieldId}-hint`} className="mt-1 block text-xs text-moss-800/80">
+          {hint}
+        </span>
+      ) : null}
+      {error ? (
+        <span id={`${fieldId}-error`} className="mt-1 block text-xs text-clay-700">
+          {error}
+        </span>
+      ) : null}
+    </label>
+  );
+}
+
+export function Notice({ tone = "info", children }: { tone?: "info" | "warning"; children: ReactNode }) {
+  const styles = tone === "warning" ? "border-sun-700/30 bg-sun-100 text-ink" : "border-moss-200 bg-moss-50 text-ink";
+  return <p className={`rounded-md border px-3 py-2 text-sm ${styles}`}>{children}</p>;
 }
 
 export function LoadingState({ label = "Loading" }: { label?: string }) {

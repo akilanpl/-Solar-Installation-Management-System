@@ -9,6 +9,27 @@ export type PackageResponse = components["schemas"]["PackageResponse"];
 export type EmployeeResponse = components["schemas"]["EmployeeResponse"];
 export type EmployeeCreate = components["schemas"]["EmployeeCreate"];
 export type QualificationUpdate = components["schemas"]["QualificationUpdate"];
+export type SurveyResponse = components["schemas"]["SurveyResponse"];
+export type SurveyList = components["schemas"]["SurveyList"];
+export type TechnicianOption = components["schemas"]["TechnicianOption"];
+export type QuotationResponse = components["schemas"]["QuotationResponse"];
+export type QuotationList = components["schemas"]["QuotationList"];
+export type QuotationLineResponse = components["schemas"]["QuotationLineResponse"];
+export type RevisionRequestResponse = components["schemas"]["RevisionRequestResponse"];
+export type PaymentRequirementResponse = components["schemas"]["PaymentRequirementResponse"];
+export type PaymentIntentResponse = components["schemas"]["PaymentIntentResponse"];
+export type OrderResponse = components["schemas"]["OrderResponse"];
+export type OrderList = components["schemas"]["OrderList"];
+export type WarehouseRequestResponse = components["schemas"]["WarehouseRequestResponse"];
+export type SchedulingRequestResponse = components["schemas"]["SchedulingRequestResponse"];
+export type TemplateVersionResponse = components["schemas"]["TemplateVersionResponse"];
+export type PackageResponseList = PackageResponse[];
+
+export function idempotencyKey(): string {
+  return crypto.randomUUID();
+}
+
+export const sandboxPaymentsEnabled = process.env.NEXT_PUBLIC_SOLAROPS_ENV === "development";
 
 export class ApiError extends Error {
   status: number;
@@ -42,7 +63,8 @@ async function ensureCsrf(): Promise<string> {
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
   headers.set("Accept", "application/json");
-  if (init.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+  const isForm = typeof FormData !== "undefined" && init.body instanceof FormData;
+  if (init.body && !isForm && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
   const method = (init.method ?? "GET").toUpperCase();
   if (method !== "GET" && method !== "HEAD") {
     headers.set("X-CSRF-Token", await ensureCsrf());

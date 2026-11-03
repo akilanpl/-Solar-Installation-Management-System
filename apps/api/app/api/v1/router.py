@@ -12,6 +12,7 @@ from app.api.v1 import (
     payments,
     quotations,
     surveys,
+    technicians,
 )
 
 api_router = APIRouter(prefix="/api/v1", dependencies=[Depends(require_csrf)])
@@ -20,6 +21,7 @@ api_router.include_router(auth.router)
 api_router.include_router(enquiries.router)
 api_router.include_router(packages.router)
 api_router.include_router(surveys.router)
+api_router.include_router(technicians.router)
 api_router.include_router(quotations.router)
 api_router.include_router(payments.router)
 api_router.include_router(orders.router)

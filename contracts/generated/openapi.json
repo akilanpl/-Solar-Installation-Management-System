@@ -1081,6 +1081,31 @@
         }
       }
     },
+    "/api/v1/technicians": {
+      "get": {
+        "tags": [
+          "technicians"
+        ],
+        "summary": "List Technicians",
+        "operationId": "list_technicians_api_v1_technicians_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TechnicianOption"
+                  },
+                  "type": "array",
+                  "title": "Response List Technicians Api V1 Technicians Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/quotations": {
       "post": {
         "tags": [
@@ -4464,6 +4489,31 @@
           "notes"
         ],
         "title": "SurveySubmit"
+      },
+      "TechnicianOption": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "employee_code": {
+            "type": "string",
+            "title": "Employee Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "full_name",
+          "employee_code"
+        ],
+        "title": "TechnicianOption",
+        "description": "Who sales may assign to a survey. No email or phone."
       },
       "TemplateLineResponse": {
         "properties": {

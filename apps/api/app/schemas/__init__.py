@@ -352,6 +352,14 @@ class EmployeeCreate(BaseModel):
         return _password(value)
 
 
+class TechnicianOption(BaseModel):
+    """Who sales may assign to a survey. No email or phone."""
+
+    id: uuid.UUID
+    full_name: str
+    employee_code: str
+
+
 class EmployeeResponse(BaseModel):
     id: uuid.UUID
     email: str

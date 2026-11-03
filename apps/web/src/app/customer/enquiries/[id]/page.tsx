@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 
 import { Workspace } from "@/components/workspace";
 import { Card, ErrorState, LoadingState, PageHeader, StatusBadge } from "@/components/ui";
-import { api, type EnquiryDetail } from "@/lib/api";
-import { formatCapacity, formatInrFromPaise, formatWhen, GRID_LABEL, STATUS_LABEL } from "@/lib/format";
+import { api, type EnquiryDetail, type QuotationList, type SurveyList } from "@/lib/api";
+import { formatCapacity, formatInrFromPaise, formatWhen, GRID_LABEL, statusLabel } from "@/lib/format";
 
 export default function CustomerEnquiryPage() {
   const params = useParams<{ id: string }>();
@@ -20,11 +20,21 @@ export default function CustomerEnquiryPage() {
 
 function EnquiryView({ id }: { id: string }) {
   const [enquiry, setEnquiry] = useState<EnquiryDetail | null>(null);
+  const [surveys, setSurveys] = useState<SurveyList["items"]>([]);
+  const [quotes, setQuotes] = useState<QuotationList["items"]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    api<EnquiryDetail>(`/api/v1/enquiries/${id}`)
-      .then(setEnquiry)
+    Promise.all([
+      api<EnquiryDetail>(`/api/v1/enquiries/${id}`),
+      api<SurveyList>("/api/v1/surveys?page=1&page_size=50"),
+      api<QuotationList>("/api/v1/quotations?page=1&page_size=50"),
+    ])
+      .then(([body, surveyBody, quoteBody]) => {
+        setEnquiry(body);
+        setSurveys(surveyBody.items.filter((item) => item.enquiry_id === body.id));
+        setQuotes(quoteBody.items.filter((item) => item.enquiry_id === body.id));
+      })
       .catch((caught: unknown) => setError(caught instanceof Error ? caught.message : "Could not load the enquiry."));
   }, [id]);
 
@@ -35,7 +45,7 @@ function EnquiryView({ id }: { id: string }) {
     <>
       <PageHeader
         title={enquiry.reference}
-        description="Saved in PostgreSQL. Refreshing this page reads it again."
+        description="Saved in PostgreSQL. Survey and quotation status below come from the same records."
         action={<StatusBadge status={enquiry.status} />}
       />
       <div className="grid gap-4 md:grid-cols-2">
@@ -63,7 +73,7 @@ function EnquiryView({ id }: { id: string }) {
         <ol className="mt-3 space-y-3 text-sm">
           {enquiry.history.map((item) => (
             <li key={item.id}>
-              <p className="font-medium">{STATUS_LABEL[item.to_status] ?? item.to_status}</p>
+              <p className="font-medium">{statusLabel(item.to_status)}</p>
               <p className="text-moss-800/80">
                 {formatWhen(item.created_at)} · {item.actor_role}
                 {item.note ? ` · ${item.note}` : ""}
@@ -71,6 +81,31 @@ function EnquiryView({ id }: { id: string }) {
             </li>
           ))}
         </ol>
+      </Card>
+      <Card className="mt-4">
+        <h2 className="font-semibold">Survey</h2>
+        {surveys.length === 0 ? <p className="mt-2 text-sm">No survey has been opened yet.</p> : (
+          <ul className="mt-3 space-y-2 text-sm">
+            {surveys.map((item) => (
+              <li key={item.id} className="flex flex-wrap items-center gap-2">
+                {item.reference} <StatusBadge status={item.status} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+      <Card className="mt-4">
+        <h2 className="font-semibold">Quotations</h2>
+        {quotes.length === 0 ? <p className="mt-2 text-sm">No quotation has been issued yet.</p> : (
+          <ul className="mt-3 space-y-2 text-sm">
+            {quotes.map((item) => (
+              <li key={item.id}>
+                <Link className="font-semibold text-moss-800 underline" href={`/customer/quotations/${item.id}`}>{item.reference}</Link>
+                {" "}<StatusBadge status={item.status} />
+              </li>
+            ))}
+          </ul>
+        )}
       </Card>
       <p className="mt-4 text-sm">
         <Link className="font-semibold text-moss-800 underline" href="/customer">

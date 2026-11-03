@@ -28,7 +28,8 @@ test("customer enquiry persists and sales can qualify it", async ({ page, browse
   await page.reload();
   await expect(page.getByRole("heading", { name: reference })).toBeVisible();
 
-  const sales = await browser.newPage();
+  const salesContext = await browser.newContext();
+  const sales = await salesContext.newPage();
   await sales.goto("/login");
   await sales.getByLabel("I am signing in as").selectOption("sales");
   await sales.getByLabel("Employee ID").fill("EMP-SALES-001");

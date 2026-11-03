@@ -36,6 +36,7 @@ Planned routes below are not registered. Calling them returns 404 `not_found`.
 | GET | `/api/v1/packages` | Cookie | Any signed-in user | Catalogue identity. Prices live on template versions. |
 | GET | `/api/v1/packages/{code}/versions/current` | Cookie | signed-in staff and customers | Current BOM template. |
 | GET | `/api/v1/packages/{code}/versions/{version}` | Cookie | signed-in staff and customers | A historical template version. |
+| GET | `/api/v1/technicians` | Cookie | sales, admin | Active technicians: id, name, employee code. No email or phone. |
 | POST | `/api/v1/surveys` | Cookie | sales, admin | Enquiry must be `qualified`. |
 | GET | `/api/v1/surveys` | Cookie | owner, assigned technician, sales, admin | |
 | GET | `/api/v1/surveys/{id}` | Cookie | owner, assigned technician, sales, admin | Other customers get 404. |

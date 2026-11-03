@@ -1,5 +1,12 @@
 "use client";
-import { PlannedRoute } from "@/components/planned-route";
-export default function Page() {
-  return <PlannedRoute path="/technician/surveys" kind="surveys" />;
+
+import { AssignedSurveys } from "@/app/technician/page";
+import { Workspace } from "@/components/workspace";
+
+export default function TechnicianSurveysPage() {
+  return (
+    <Workspace path="/technician/surveys">
+      {() => <AssignedSurveys />}
+    </Workspace>
+  );
 }

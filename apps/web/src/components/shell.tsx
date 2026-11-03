@@ -11,26 +11,28 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
   customer: [
     { href: "/customer", label: "Overview" },
     { href: "/customer/enquiries/new", label: "New enquiry" },
-    { href: "/customer/quotations", label: "Quotations", planned: true },
-    { href: "/customer/payments", label: "Payments", planned: true },
+    { href: "/customer/quotations", label: "Quotations" },
+    { href: "/customer/orders", label: "Orders" },
+    { href: "/customer/payments", label: "Payments" },
     { href: "/customer/support", label: "Support", planned: true },
   ],
   technician: [
-    { href: "/technician", label: "Assigned jobs" },
-    { href: "/technician/surveys", label: "Surveys", planned: true },
+    { href: "/technician", label: "Surveys" },
     { href: "/technician/repairs", label: "Repairs", planned: true },
   ],
   sales: [
     { href: "/sales", label: "Enquiries" },
-    { href: "/sales/surveys", label: "Surveys", planned: true },
-    { href: "/sales/quotations", label: "Quotations", planned: true },
+    { href: "/sales/surveys", label: "Surveys" },
+    { href: "/sales/quotations", label: "Quotations" },
+    { href: "/sales/orders", label: "Orders" },
+    { href: "/sales/scheduling", label: "Scheduling" },
   ],
   warehouse_staff: [
-    { href: "/warehouse", label: "Stock" },
+    { href: "/warehouse", label: "Preparation" },
     { href: "/warehouse/picking", label: "Picking", planned: true },
   ],
   warehouse_manager: [
-    { href: "/warehouse", label: "Stock" },
+    { href: "/warehouse", label: "Preparation" },
     { href: "/warehouse/approvals", label: "Approvals", planned: true },
   ],
   support: [
@@ -40,9 +42,20 @@ const LINKS: Record<string, { href: string; label: string; planned?: boolean }[]
   admin: [
     { href: "/admin", label: "Employees" },
     { href: "/sales", label: "Enquiries" },
+    { href: "/sales/surveys", label: "Surveys" },
+    { href: "/sales/quotations", label: "Quotations" },
+    { href: "/sales/orders", label: "Orders" },
+    { href: "/sales/scheduling", label: "Scheduling" },
+    { href: "/warehouse", label: "Preparation" },
     { href: "/admin/reports", label: "Reports", planned: true },
   ],
 };
+
+function navActive(pathname: string, href: string): boolean {
+  const roots = new Set(["/customer", "/technician", "/sales", "/warehouse", "/support", "/admin"]);
+  if (roots.has(href)) return pathname === href;
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function AppShell({ user, children }: { user: CurrentUser; children: React.ReactNode }) {
   const pathname = usePathname();
@@ -53,7 +66,7 @@ export function AppShell({ user, children }: { user: CurrentUser; children: Reac
   const nav = (
     <nav aria-label="Workspace" className="flex flex-col gap-1">
       {links.map((link) => {
-        const active = pathname === link.href;
+        const active = navActive(pathname, link.href);
         return (
           <Link
             key={link.href}
