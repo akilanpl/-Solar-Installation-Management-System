@@ -356,6 +356,65 @@ class BootstrapTrustTests(unittest.TestCase):
                     files, self.pins, run, artifact, "a" * 40, lambda _: 100, source
                 )
 
+    def test_owner_pin_reader_never_falls_back_to_pr_environment(self):
+        import os
+        from pathlib import Path
+        from unittest.mock import patch
+
+        from bootstrap_consumer import read_owner_pins
+
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    PIN_MAIN: "a" * 40,
+                    PIN_CONTROLLER: "b" * 40,
+                    "SOLAROPS_BASELINE_VARIABLES_READ_TOKEN": "",
+                },
+            ),
+            self.assertRaisesRegex(ValueError, "Variables:read"),
+        ):
+            read_owner_pins(Path("."))
+
+    def test_owner_pin_reader_uses_only_dedicated_read_token(self):
+        import os
+        from pathlib import Path
+        from types import SimpleNamespace
+        from unittest.mock import patch
+
+        from bootstrap_consumer import read_owner_pins
+
+        replies = [
+            SimpleNamespace(returncode=0, stdout=json.dumps({"value": "a" * 40})),
+            SimpleNamespace(returncode=0, stdout=json.dumps({"value": "b" * 40})),
+        ]
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "SOLAROPS_BASELINE_VARIABLES_READ_TOKEN": "synthetic-read-token",
+                    "GH_TOKEN": "different-runtime-token",
+                },
+            ),
+            patch("bootstrap_consumer.subprocess.run", side_effect=replies) as run,
+        ):
+            self.assertEqual(read_owner_pins(Path(".")), self.pins)
+            self.assertEqual(
+                run.call_args.kwargs["env"]["GH_TOKEN"], "synthetic-read-token"
+            )
+        with (
+            patch.dict(
+                os.environ,
+                {"SOLAROPS_BASELINE_VARIABLES_READ_TOKEN": "synthetic-read-token"},
+            ),
+            patch(
+                "bootstrap_consumer.subprocess.run",
+                return_value=SimpleNamespace(returncode=1, stdout=""),
+            ),
+            self.assertRaisesRegex(ValueError, "no environment-SHA fallback"),
+        ):
+            read_owner_pins(Path("."))
+
 
 if __name__ == "__main__":
     unittest.main()

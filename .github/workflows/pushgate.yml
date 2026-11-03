@@ -42,9 +42,15 @@ jobs:
         run: |
           python3 .pushgate/install_gitleaks.py
           echo "$GITHUB_WORKSPACE/var/tools" >> "$GITHUB_PATH"
+      - name: Verify owner trust-root API access
+        continue-on-error: true
+        run: python3 .pushgate/bootstrap_consumer.py
+        env:
+          SOLAROPS_BASELINE_VARIABLES_READ_TOKEN: ${{ secrets.SOLAROPS_BASELINE_VARIABLES_READ_TOKEN }}
       - run: .pushgate/run.sh --mode=ci
         env:
           GH_TOKEN: ${{ github.token }}
+          SOLAROPS_BASELINE_VARIABLES_READ_TOKEN: ${{ secrets.SOLAROPS_BASELINE_VARIABLES_READ_TOKEN }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
