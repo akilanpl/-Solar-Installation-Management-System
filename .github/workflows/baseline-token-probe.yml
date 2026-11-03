@@ -1,0 +1,25 @@
+name: Baseline trust-root permission probe
+on:
+  push:
+    branches: [verification/baseline-token-probe]
+    paths: ['.github/workflows/baseline-token-probe.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  readonly-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Probe exact consumer API using workflow token
+        env:
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set +e
+          gh api "repos/$REPOSITORY/actions/variables/SOLAROPS_BASELINE_CONTROLLER_SHA" > /dev/null 2> probe-error.txt
+          status=$?
+          echo "Repository-variable consumer API exit status: $status"
+          if [ "$status" -ne 0 ]; then cat probe-error.txt; fi
+          exit "$status"

@@ -72,7 +72,7 @@ jobs:
           python - <<'PY'
           import os, pathlib, secrets
           root = pathlib.Path.cwd()
-          values = {'SOLAROPS_APP_ENV': 'development', 'SOLAROPS_DATABASE_URL': 'postgresql+psycopg://solarops:solarops@127.0.0.1:5432/solarops_browser_ci', 'SOLAROPS_BROWSER_DATABASE_NAME': 'solarops_browser_ci', 'SOLAROPS_ACCEPTANCE_APPLICATION_ROOT': str(root/'measured-main'), 'SOLAROPS_MAILBOX_PATH': str(root/'controller/var/browser-ci/private/mailbox.jsonl'), 'SOLAROPS_EVIDENCE_DIR': str(root/'controller/var/browser-ci/private/uploads'), 'SOLAROPS_API_ORIGIN': 'http://127.0.0.1:8001', 'SOLAROPS_TRUSTED_ORIGINS': 'http://127.0.0.1:3001', 'SOLAROPS_NEXT_DIST_DIR': '.next-bootstrap', 'NEXT_PUBLIC_SOLAROPS_ENV': 'development'}
+          values = {'SOLAROPS_APP_ENV': 'development', 'SOLAROPS_DATABASE_URL': 'postgresql+psycopg://solarops:solarops@127.0.0.1:5432/solarops_browser_ci', 'SOLAROPS_BROWSER_DATABASE_NAME': 'solarops_browser_ci', 'SOLAROPS_ACCEPTANCE_APPLICATION_ROOT': str(root/'measured-main'), 'SOLAROPS_MAILBOX_PATH': str(root/'controller/var/browser-ci/private/mailbox.jsonl'), 'SOLAROPS_EVIDENCE_DIR': str(root/'controller/var/browser-ci/private/uploads'), 'SOLAROPS_API_ORIGIN': 'http://127.0.0.1:8001', 'SOLAROPS_TRUSTED_ORIGINS': 'http://127.0.0.1:3001', 'SOLAROPS_NEXT_DIST_DIR': '.next', 'NEXT_PUBLIC_SOLAROPS_ENV': 'development'}
           for key in ['SOLAROPS_SECRET_KEY', 'SOLAROPS_SEED_PASSWORD']:
               values[key] = 'Ci9'+secrets.token_hex(32)
               print('::add-mask::'+values[key])

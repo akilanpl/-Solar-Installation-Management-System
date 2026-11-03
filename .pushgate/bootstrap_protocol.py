@@ -23,6 +23,7 @@ SCHEMA = 1
 SHA = re.compile(r"^[0-9a-f]{40}$")
 # These are the fixed canonical absolute campaigns, not caller-selected commands.
 CAMPAIGNS = {
+    "main-ratchet-two-order-ci",
     "migration-preservation",
     "edge-cases",
     "boundary-values",
@@ -150,6 +151,7 @@ def validate_rows(report, score_function):
     require({"stage-" + c for c in CAMPAIGNS} <= stages, "Absolute campaign omitted")
     require(
         {
+            "stage-gate-selftest",
             "stage-backend",
             "stage-backend-coverage-export",
             "stage-backend-coverage-check",
@@ -414,6 +416,40 @@ def validate_certificate(
         and diff.get("percent", -1) >= 90,
         "Diff coverage threshold failed",
     )
+    covered, total = diff.get("covered"), diff.get("total")
+    require(
+        type(covered) is int and type(total) is int and 0 <= covered <= total,
+        "Invalid diff counts",
+    )
+    expected_percent = 100.0 if total == 0 else covered / total * 100
+    require(abs(diff["percent"] - expected_percent) < 0.001, "False diff percentage")
+    diff_files = diff.get("files")
+    require(isinstance(diff_files, list), "Missing diff file inventory")
+    require(
+        len({r.get("path") for r in diff_files}) == len(diff_files),
+        "Duplicate diff file",
+    )
+    for row in diff_files:
+        require(
+            type(row.get("covered")) is int
+            and type(row.get("total")) is int
+            and 0 <= row["covered"] <= row["total"],
+            "Invalid diff file counts",
+        )
+        require(
+            isinstance(row.get("missing_changed_lines"), list)
+            and len(set(row["missing_changed_lines"])) == row["total"] - row["covered"],
+            "Partial changed-line evidence",
+        )
+    require(
+        sum(r["total"] for r in diff_files) == total
+        and sum(r["covered"] for r in diff_files) == covered,
+        "Diff totals disagree with inventory",
+    )
+    require(
+        diff.get("base_sha") == expected_main and total == 0 and not diff_files,
+        "First baseline must measure actual main against its exact live main base",
+    )
     require(
         json.loads(files["candidate-secret-history.json"]) == [],
         "Secret findings present",
@@ -427,24 +463,9 @@ def validate_certificate(
         and mutation.get("decision") == "PASS",
         "Mutation evidence failed",
     )
-    mutants, planned = mutation.get("mutants", []), mutation["planned"]
-    require(
-        len(mutants) == planned
-        and len(set(mutation.get("inventory", []))) == planned
-        and {m.get("id") for m in mutants} == set(mutation["inventory"]),
-        "Partial mutation inventory",
-    )
-    require(
-        all(m.get("status") in {"killed", "survived"} for m in mutants)
-        and mutation.get("baseline", {}).get("status") == "passed",
-        "Unexecuted mutation",
-    )
-    killed = sum(m["status"] == "killed" for m in mutants)
-    require(
-        mutation.get("killed") == killed
-        and abs(mutation["kill_percent"] - killed / planned * 100) < 0.001,
-        "False mutation score",
-    )
+    from campaigns.coverage_quality import validate_mutation_report
+
+    validate_mutation_report(mutation, expected_main)
     require(
         json.loads(files["core-database-verification.json"]).get("status") == "PASS",
         "Independent database oracle failed",

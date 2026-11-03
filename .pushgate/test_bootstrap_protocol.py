@@ -141,6 +141,7 @@ class BootstrapTrustTests(unittest.TestCase):
         sha = "a" * 40
         identity = {"sha": sha, "dirty": False}
         stages = CAMPAIGNS | {
+            "gate-selftest",
             "backend",
             "backend-coverage-export",
             "backend-coverage-check",
@@ -208,6 +209,10 @@ class BootstrapTrustTests(unittest.TestCase):
             "diff-coverage-measured.json": {
                 "sha": sha,
                 "threshold": 90,
+                "base_sha": sha,
+                "covered": 0,
+                "total": 0,
+                "files": [],
                 "percent": 100,
             },
             "candidate-secret-history.json": [],
@@ -221,7 +226,9 @@ class BootstrapTrustTests(unittest.TestCase):
                 "killed": 15,
                 "inventory": [str(i) for i in range(15)],
                 "mutants": [{"id": str(i), "status": "killed"} for i in range(15)],
-                "baseline": {"status": "passed"},
+                "baseline": {"status": "passed", "tests": 1},
+                "schema_version": 1,
+                "scope": "critical-guard-spotcheck",
             },
         }
         files = {name: json.dumps(value).encode() for name, value in data.items()}
@@ -304,6 +311,47 @@ class BootstrapTrustTests(unittest.TestCase):
                 cert["files"][name] = digest(files[name])
                 files["certificate.json"] = json.dumps(cert).encode()
             with self.subTest(failure=failure), self.assertRaises(ValueError):
+                validate_certificate(
+                    files, self.pins, run, artifact, "a" * 40, lambda _: 100, source
+                )
+
+    def test_independent_review_integrity_regressions(self):
+        for kind in [
+            "diff-percent",
+            "diff-inventory",
+            "mutation-baseline",
+            "missing-order",
+            "missing-selftest",
+        ]:
+            files, run, artifact, source = self.certificate_fixture()
+            if kind.startswith("diff"):
+                name = "diff-coverage-measured.json"
+                data = json.loads(files[name])
+                data.update(covered=0, total=100, percent=100)
+                if kind == "diff-inventory":
+                    data.update(covered=100)
+                files[name] = json.dumps(data).encode()
+            elif kind == "mutation-baseline":
+                name = "mutation-report.json"
+                data = json.loads(files[name])
+                data["baseline"]["tests"] = 0
+                files[name] = json.dumps(data).encode()
+            elif kind == "missing-order":
+                name = "inventory.json"
+                data = json.loads(files[name])
+                del data["junit_cases"]["main-ratchet-two-order-ci.xml"]
+                files[name] = json.dumps(data).encode()
+            else:
+                name = "report.json"
+                data = json.loads(files[name])
+                data["tests"] = [
+                    r for r in data["tests"] if r["id"] != "stage-gate-selftest"
+                ]
+                files[name] = json.dumps(data).encode()
+            cert = json.loads(files["certificate.json"])
+            cert["files"][name] = digest(files[name])
+            files["certificate.json"] = json.dumps(cert).encode()
+            with self.subTest(kind=kind), self.assertRaises(ValueError):
                 validate_certificate(
                     files, self.pins, run, artifact, "a" * 40, lambda _: 100, source
                 )
