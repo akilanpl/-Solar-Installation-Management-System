@@ -4,7 +4,18 @@ permissions:
   contents: read
   actions: read
 jobs:
+  owner-pins:
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    uses: akilanpl/-Solar-Installation-Management-System/.github/workflows/baseline-trust-reader.yml@35420870a93d68eb0a184201b667cf439d65f43f
   gate:
+    needs: owner-pins
+    permissions:
+      contents: read
+      actions: read
+      attestations: read
     runs-on: ubuntu-latest
     timeout-minutes: 90
     services:

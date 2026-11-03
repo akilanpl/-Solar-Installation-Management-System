@@ -42,3 +42,49 @@ to defend against a malicious repository owner. PR authors cannot impersonate
 that owner-pinned initialization merely by uploading a similarly named artifact.
 A complete independent review and successful hosted certification are required
 before treating this protocol as release acceptance evidence.
+
+## Secret-free authenticated owner-pin acquisition
+
+The ordinary workflow token returned HTTP 403 for repository-variable REST
+reads. A proposed dedicated-token path was independently rejected because a
+candidate subprocess could inherit the credential; that change was reverted
+before credential provisioning. No additional credential is required or used.
+
+The consumer instead invokes the immutable reusable reader at
+`35420870a93d68eb0a184201b667cf439d65f43f`. That workflow accepts no inputs,
+performs no caller checkout/cache/dependency installation, reads GitHub's own
+repository `vars` context, and signs only a canonical public pin manifest with
+GitHub artifact attestations. Only its isolated job has OIDC/attestation-write
+permissions; candidate tests receive read permissions and no extra secret.
+
+The consumer checks the GitHub artifact digest, then runs GitHub CLI Sigstore
+verification with the exact signer workflow/digest, source SHA/ref, repository,
+predicate type and issuer, denying self-hosted signers. It additionally checks
+certified repository ID, run invocation and attempt, exact signed file digest
+and manifest identity. On PR runs the authenticated API run head may differ
+from the tested synthetic merge SHA; both identities are validated in their
+proper fields. Missing signatures, fields, capabilities or evidence fail closed.
+An unsigned environment value or caller-selected signer is never a fallback.
+The genuine hosted signature probe passed at run `41572508968`.
+
+The verifier code and its fixed signer pin remain subject to independent review
+for each owner-approved controller SHA. Signatures do not make arbitrary PR
+edits to the verifier trustworthy. This is a release-review boundary, not a
+claim of protection against a malicious repository owner.
+
+## Existing-main measurement status
+
+Run `41568604316` measured exact main
+`2f6e7122494ce214036d9baf98128411bdbea3c5`: both backend orders executed 508 tests
+with zero failures. The aggregate gate measured 69/100 INCOMPLETE. Legacy
+browser campaigns had no populated preview/fixture environment; these are
+infrastructure failures, not application defects. The separate real-services
+fresh browser test independently failed serious customer-home text contrast
+(4.19:1 and 4.47:1 against a 4.5:1 requirement). It stopped there; downstream
+lifecycle and SQL oracle were not accepted. No certificate was issued.
+
+The legacy campaigns still require a separate disposable, populated preview,
+all sixteen concrete saved-record route mappings and their documented private
+synthetic accounts before they can certify. Do not infer their results from the
+separately passing fresh lifecycle on the completion branch. Until this
+infrastructure and every genuine main defect pass, release remains HOLD.

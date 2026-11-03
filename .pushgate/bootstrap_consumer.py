@@ -1,7 +1,6 @@
 """Retrieve only the owner-pinned successful first-main certificate."""
 
 from bootstrap_protocol import (
-    PIN_CONTROLLER,
     PIN_MAIN,
     REPOSITORY,
     require,
@@ -13,10 +12,9 @@ from bootstrap_protocol import (
 def accepted_bootstrap(root, repository, main_sha, api, execute, score):
     require(repository == REPOSITORY, "Unexpected baseline repository")
     # Candidate-controlled JSON/environment cannot set these trust anchors.
-    pins = {
-        key: api(root, f"repos/{repository}/actions/variables/{key}")["value"]
-        for key in (PIN_MAIN, PIN_CONTROLLER)
-    }
+    from owner_pin_attestation import verified_owner_pins
+
+    pins = verified_owner_pins(root, api, execute)
     require(pins[PIN_MAIN] == main_sha, "Owner pin is not the exact required main SHA")
     runs = []
     for page in range(1, 1001):
