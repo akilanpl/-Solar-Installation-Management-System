@@ -9,7 +9,7 @@ SolarOps connects customer enquiries, sales, field teams and warehouse operation
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 
-[Run locally](#getting-started) · [Architecture](#system-architecture) · [Engineering](#engineering-highlights) · [Verification status](#product-status-and-limitations)
+[Final project handoff](docs/release/FINAL_PROJECT_HANDOFF.md) · [Run locally](#getting-started) · [Architecture](#system-architecture) · [Engineering](#engineering-highlights) · [Verification status](#product-status-and-limitations)
 
 > **Status:** source for Phases 1–4 is on the default branch. Local demonstration and regression tooling exist; complete browser and external-provider acceptance remain incomplete. No verified public deployment or production certification is documented.
 
