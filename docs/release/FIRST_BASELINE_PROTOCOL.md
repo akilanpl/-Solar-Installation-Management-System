@@ -42,18 +42,3 @@ to defend against a malicious repository owner. PR authors cannot impersonate
 that owner-pinned initialization merely by uploading a similarly named artifact.
 A complete independent review and successful hosted certification are required
 before treating this protocol as release acceptance evidence.
-
-## Consumer credential prerequisite
-
-The real hosted default-token probe returned HTTP 403. The ordinary
-`GITHUB_TOKEN` with contents/actions read cannot read repository variables.
-The owner must configure repository Actions secret
-`SOLAROPS_BASELINE_VARIABLES_READ_TOKEN` using a fine-grained credential scoped
-only to this repository with Variables:read (and GitHub's mandatory metadata
-read). No contents write, Actions write, administration, deployment, provider or
-production credential is needed. Do not paste the credential into chat, files,
-logs or commits; configure it in GitHub's Actions secret settings. The consumer
-uses it only in the repository-variable API subprocess. Missing/denied access
-fails closed; candidate environment SHA values are never substituted. The
-workflow access probe is diagnostic; the mandatory O07 campaign still fails if
-this prerequisite or any prior certification evidence is absent.
