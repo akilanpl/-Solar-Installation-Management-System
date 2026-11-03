@@ -1,0 +1,40 @@
+name: Immutable SolarOps baseline trust reader
+on:
+  workflow_call:
+permissions: {}
+jobs:
+  signed-owner-pins:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    env:
+      OWNER_MAIN: ${{ vars.SOLAROPS_BASELINE_MAIN_SHA }}
+      OWNER_CONTROLLER: ${{ vars.SOLAROPS_BASELINE_CONTROLLER_SHA }}
+    steps:
+      # No caller inputs, checkout, cache, dependencies, credentials or artifacts.
+      - name: Materialize only GitHub owner-managed public pins
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib, re
+          assert os.environ['GITHUB_REPOSITORY'] == 'akilanpl/-Solar-Installation-Management-System'
+          assert os.environ['GITHUB_REPOSITORY_ID'] == '1440476764'
+          pins = {'SOLAROPS_BASELINE_MAIN_SHA': os.environ['OWNER_MAIN'], 'SOLAROPS_BASELINE_CONTROLLER_SHA': os.environ['OWNER_CONTROLLER']}
+          assert all(re.fullmatch('[0-9a-f]{40}', v) for v in pins.values())
+          document = {'schema': 1, 'repository': os.environ['GITHUB_REPOSITORY'], 'repository_id': 1440476764, 'source_sha': os.environ['GITHUB_SHA'], 'source_ref': os.environ['GITHUB_REF'], 'run_id': int(os.environ['GITHUB_RUN_ID']), 'run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']), 'pins': pins}
+          path = pathlib.Path(os.environ['RUNNER_TEMP'])/'solarops-owner-pins'
+          path.mkdir(mode=0o700)
+          (path/'pins.json').write_text(json.dumps(document, sort_keys=True, separators=(',', ':'))+'\n')
+          PY
+      - name: Sign owner-pin manifest with immutable reusable-workflow identity
+        uses: actions/attest-build-provenance@43d14bc2b83dec42d39ecae14e916627a18bb661 # v3
+        with:
+          subject-path: ${{ runner.temp }}/solarops-owner-pins/pins.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: baseline-owner-pins-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/solarops-owner-pins/pins.json
+          if-no-files-found: error
+          retention-days: 14
