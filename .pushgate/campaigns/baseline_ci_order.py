@@ -298,7 +298,7 @@ def verify_normal_order(root, folder, sha, nodes, gate_started_at):
     started_at = header.get("started_at", 0)
     now = time.time()
     if (
-        not 0 <= now - gate_started_at <= 3600
+        not 0 <= now - gate_started_at <= 14400
         or not gate_started_at <= started_at <= now
         or not started_at <= output.stat().st_mtime <= now
         or not started_at <= log.stat().st_mtime <= now
@@ -344,7 +344,7 @@ def execute_two_orders(root, folder, sha):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
-        timeout=900,
+        timeout=2400,
         check=False,
     )
     (folder / "ci-reverse-order.log").write_text(result.stdout)

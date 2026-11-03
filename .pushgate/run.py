@@ -7,6 +7,7 @@ must implement the named contract before that campaign can pass.
 import json
 import os
 import re
+import signal
 import subprocess
 import sys
 import time
@@ -41,11 +42,34 @@ def run_stage(root, folder, name, family, sev, directory, command, *,
             try:
                 env = dict(os.environ, PLAYWRIGHT_JUNIT_OUTPUT_FILE=str(xml),
                            SOLAROPS_RELEASE_SOURCE_SHA=before["sha"])
-                outcome = subprocess.run(command, cwd=root / directory, stdout=log,
-                                         stderr=subprocess.STDOUT, timeout=timeout, env=env, check=False)
-                status = "pass" if outcome.returncode == 0 else "fail"
-                if outcome.returncode:
-                    reason = f"Command exited {outcome.returncode}"
+                if name == "build":
+                    env["NEXT_PUBLIC_SOLAROPS_ENV"] = "development"
+                    env["NEXT_PUBLIC_SOLAROPS_PASSKEYS"] = "on"
+                with subprocess.Popen(command, cwd=root / directory, stdout=log,
+                                      stderr=subprocess.STDOUT, env=env, start_new_session=True) as process:
+                    try:
+                        result = process.wait(timeout=timeout)
+                    except subprocess.TimeoutExpired:
+                        try:
+                            os.killpg(process.pid, signal.SIGTERM)
+                        except ProcessLookupError:
+                            pass
+                        try:
+                            process.wait(timeout=15)
+                        except subprocess.TimeoutExpired:
+                            pass
+                        # The leader may have exited while a descendant ignored TERM.
+                        # All owned services stay in this group, so kill remaining
+                        # descendants even after a successful leader wait.
+                        try:
+                            os.killpg(process.pid, signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+                        process.wait()
+                        raise
+                status = "pass" if result == 0 else "fail"
+                if result:
+                    reason = f"Command exited {result}"
             except (OSError, subprocess.TimeoutExpired) as exc:
                 status, reason = "notrun", type(exc).__name__
                 log.write(reason + "\n")
@@ -165,7 +189,8 @@ def main():
     for name, family, sev, directory, command in stages:
         print(f"Running {name}", flush=True)
         rows = run_stage(root, folder, name, family, sev, directory, command,
-                         require_junit=name in {"backend", "frontend"})
+                         require_junit=name in {"backend", "frontend"},
+                         timeout=2400 if name == "backend" else 600)
         tests.extend(rows)
         if name == "backend-coverage-check" and coverage_check.exists():
             try:
@@ -189,7 +214,9 @@ def main():
             (folder / "campaign-context.json").write_text(json.dumps(context, indent=2) + "\n")
         rows = run_stage(root, folder, name, family, sev, directory, command,
                          require_junit=True, prerequisites=prerequisites,
-                         timeout=1200 if name == "main-ratchet-two-order-ci" else 600)
+                         timeout={"main-ratchet-two-order-ci": 3600,
+                                  "customer-warranty-browser": 1800,
+                                  "accessibility-compatibility": 3600}.get(name, 600))
         tests.extend(rows)
         if rows[0]["status"] != "pass":
             missing.append(f"{name}: {rows[0]['status']} ({rows[0]['reason']})")

@@ -1,3 +1,4 @@
+import { receivedUnits, installReceivedOrder, fixtureUpload } from "./release/business-fixtures";
 import { previewPassword } from "./preview-accounts";
 import { randomUUID } from "node:crypto";
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
@@ -118,13 +119,14 @@ async function installOrderAndTicket(
     }, true)).json()) as { id: string };
     expect((await post(w, `/api/v1/stock/operations/${op.id}/ready`, {})).status()).toBe(200);
     expect((await post(w, `/api/v1/stock/operations/${op.id}/validate`, {})).status()).toBe(200);
+    const units = await receivedUnits(w, line.component_code!, Number(line.quantity), op.id, line === material[0] ? serial : undefined);
+    for (const unit of units) expect((await post(w, `/api/v1/serials/${unit.id}/assign`, { order_id: order.id })).status()).toBe(200);
   }
-  const scanned = (await (await post(w, "/api/v1/serials/scan", { serial_number: serial, component_code: material[0].component_code })).json()) as { id: string };
-  expect((await post(w, `/api/v1/serials/${scanned.id}/assign`, { order_id: order.id })).status()).toBe(200);
   const delivery = (await (await post(w, "/api/v1/deliveries", { order_id: order.id }, true)).json()) as { id: string };
   expect((await post(w, `/api/v1/deliveries/${delivery.id}/transit`, {})).status()).toBe(200);
   expect((await post(w, `/api/v1/deliveries/${delivery.id}/deliver`, {})).status()).toBe(200);
   expect((await post(w, `/api/v1/deliveries/${delivery.id}/confirm`, {})).status()).toBe(200);
+  await installReceivedOrder(c, s, t, order.id, techId as string, email);
   const ticket = (await (await post(c, "/api/v1/tickets", {
     order_id: order.id, serial_number: serial, fault_code: "E-07",
     symptoms: "The inverter shows fault code E-07 every afternoon and stops feeding power.",
@@ -176,6 +178,7 @@ async function stockUnit(w: APIRequestContext, component: string, quantity: stri
   }, true)).json()) as { id: string };
   expect((await post(w, `/api/v1/stock/operations/${op.id}/ready`, {})).status()).toBe(200);
   expect((await post(w, `/api/v1/stock/operations/${op.id}/validate`, {})).status()).toBe(200);
+  await receivedUnits(w, component, Number(quantity), op.id);
 }
 
 async function recordRepair(
@@ -201,6 +204,7 @@ async function recordRepair(
     work_finished_at: finished.toISOString(),
     parts_used: [{ component_code: "PANEL-550", quantity: 1 }],
   })).status()).toBe(200);
+  await fixtureUpload(ctx, `/tickets/${ticketId}/attachments?repair_job_id=${job.id}`);
   expect((await post(ctx, `/api/v1/repair-jobs/${job.id}/submit`, {
     summary: "Isolator replaced and generation verified at 2.9 kW under load.",
   })).status()).toBe(200);
@@ -412,9 +416,11 @@ test("4B replacement: custody chain, warranty transfer, quarantine inspection", 
 
     await publishPolicyAndPricing(a, `INV4B-C-${tag}`, {}, { "PANEL-550": 1500000 });
     const { order, ticket, techId } = await installOrderAndTicket(c, s, w, t, sup, email, serial);
-    expect((await post(sup, `/api/v1/tickets/${ticket.id}/repair-jobs`, {
+    const repairResponse = await post(sup, `/api/v1/tickets/${ticket.id}/repair-jobs`, {
       technician_user_id: techId, note: "Replacement install required.",
-    }, true)).status()).toBe(201);
+    }, true);
+    expect(repairResponse.status()).toBe(201);
+    const repair = await repairResponse.json() as { id: string };
     expect((await post(sup, `/api/v1/warranty/orders/${order.id}/activate-coverages`, {})).status()).toBe(201);
     const decision = await (await post(sup, "/api/v1/warranty/coverage-decisions", {
       ticket_id: ticket.id, serial_number: serial,
@@ -432,7 +438,7 @@ test("4B replacement: custody chain, warranty transfer, quarantine inspection", 
     expect((await post(w, `/api/v1/stock/operations/${receipt.id}/ready`, {})).status()).toBe(200);
     expect((await post(w, `/api/v1/stock/operations/${receipt.id}/validate`, {})).status()).toBe(200);
     expect((await post(w, "/api/v1/serials/scan", {
-      serial_number: replacementSerial, component_code: component,
+      serial_number: replacementSerial, component_code: component, operation_id: receipt.id,
     })).status()).toBe(201);
 
     const proposed = await (await post(sup, "/api/v1/replacements", {
@@ -451,9 +457,30 @@ test("4B replacement: custody chain, warranty transfer, quarantine inspection", 
     const issued = await (await post(w, `/api/v1/replacements/${proposed.id}/issue`, {}, true)).json() as { status: string };
     expect(issued.status).toBe("issued");
     const lookupNew = (await (await sup.get(`/api/v1/warranty/serials/lookup?serial_number=${replacementSerial}`)).json()) as { status: string };
-    expect(lookupNew.status).toBe("installed");
+    expect(lookupNew.status).toBe("in_transit");
     const lookupOld = (await (await sup.get(`/api/v1/warranty/serials/lookup?serial_number=${serial}`)).json()) as { status: string };
-    expect(lookupOld.status).toBe("returned");
+    expect(lookupOld.status).toBe("faulty");
+
+    expect((await post(t, `/api/v1/repair-jobs/${repair.id}/arrival`, {})).status()).toBe(200);
+    expect((await post(t, `/api/v1/repair-jobs/${repair.id}/diagnostics`, {
+      findings: `Verified defective ${serial}; matched replacement ${replacementSerial}.`,
+    })).status()).toBe(200);
+    const started = new Date();
+    await fixtureUpload(t, `/tickets/${ticket.id}/attachments?repair_job_id=${repair.id}`);
+    expect((await post(t, `/api/v1/repair-jobs/${repair.id}/work`, {
+      work_performed: `Removed ${serial}; installed ${replacementSerial}; tested continuity.`,
+      work_started_at: started.toISOString(), work_finished_at: new Date().toISOString(), parts_used: [],
+    })).status()).toBe(200);
+    expect((await post(t, `/api/v1/repair-jobs/${repair.id}/submit`, {
+      summary: `Installed ${replacementSerial}; retained defective ${serial} for inspection.`,
+    })).status()).toBe(200);
+    expect((await post(sup, `/api/v1/tickets/${ticket.id}/resolution-ready`, {
+      summary: `Exact unit ${replacementSerial} installed for ${serial}; customer to review.`,
+    })).status()).toBe(200);
+    const customerSummary = await (await c.get(`/api/v1/tickets/${ticket.id}/resolution-summary`)).json() as { summary_version: number };
+    expect((await post(c, `/api/v1/tickets/${ticket.id}/confirmation`, {
+      decision: "confirmed", summary_version: customerSummary.summary_version,
+    })).status()).toBe(200);
 
     const techPage = await (await browser.newContext()).newPage();
     await signIn(techPage, "technician", "EMP-TECH-001", "");
@@ -461,6 +488,8 @@ test("4B replacement: custody chain, warranty transfer, quarantine inspection", 
     await techPage.getByLabel("Replacement ID").fill(proposed.id);
     await techPage.getByRole("button", { name: "Confirm installation" }).click();
     await expect(techPage.getByText(/now the linked unit/)).toBeVisible({ timeout: 30000 });
+    const installedLookup = await (await sup.get(`/api/v1/warranty/serials/lookup?serial_number=${replacementSerial}`)).json() as { status: string };
+    expect(installedLookup.status).toBe("installed");
 
     const warehousePage = await (await browser.newContext()).newPage();
     await signIn(warehousePage, "warehouse", "EMP-WH-001", "");

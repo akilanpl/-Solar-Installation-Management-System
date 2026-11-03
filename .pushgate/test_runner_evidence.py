@@ -43,7 +43,29 @@ class RunnerEvidenceTests(unittest.TestCase):
                     return subprocess.CompletedProcess(command, 1)
                 return subprocess.CompletedProcess(command, 0)
 
+            class OwnedProcess:
+                pid = 999999999
+
+                def __init__(self, command, **kwargs):
+                    self.command = command
+                    self.kwargs = kwargs
+                    self.finished = False
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *args):
+                    return False
+
+                def wait(self, timeout=None):
+                    if self.finished:
+                        return 1
+                    self.finished = True
+                    return execute(self.command, **self.kwargs).returncode
+
             with (
+                patch("subprocess.Popen", OwnedProcess),
+                patch("os.killpg"),
                 patch("pathlib.Path.cwd", return_value=root),
                 patch("subprocess.check_output", return_value="test-sha"),
                 patch("subprocess.run", side_effect=execute),

@@ -5,7 +5,10 @@ import AxeBuilder from "@axe-core/playwright";
 import { previewAccount } from "../preview-accounts";
 import { discoverPages, owner } from "./routes";
 
+const sessions = new Map<string, Awaited<ReturnType<ReturnType<Page["context"]>["cookies"]>>>();
 async function login(page: Page, role: string) {
+  const saved = sessions.get(role);
+  if (saved) { await page.context().addCookies(saved); return; }
   const user = previewAccount(role);
   await page.goto("/login");
   await page.waitForFunction(() => document.body.dataset.loginReady === "1");
@@ -14,10 +17,11 @@ async function login(page: Page, role: string) {
   await page.getByLabel("Password",{exact:true}).fill(user.password);
   await page.getByRole("button",{name:"Sign in",exact:true}).click();
   await expect(page).not.toHaveURL(/\/login/);
+  sessions.set(role, await page.context().cookies());
 }
 function concrete(route: string) {
   if (!route.includes("[")) return route;
-  const path = resolve(process.cwd(),"../../var/browser-fixtures.json");
+  const path = resolve(process.env.SOLAROPS_RELEASE_FIXTURE_DIR??resolve(process.cwd(),"../../var"),"browser-fixtures.json");
   if (!existsSync(path)) throw new Error(`Missing populated fixture for ${route}; generate through supported business workflow and record in ignored var/browser-fixtures.json`);
   const value = JSON.parse(readFileSync(path,"utf8"))[route];
   if (typeof value !== "string" || value.includes("[") || !value.startsWith("/")) throw new Error(`No concrete saved-record route for ${route}`);
@@ -32,6 +36,7 @@ for (const route of discoverPages()) {
       if(role!=="public") await login(page,role);
       const response=await page.goto(concrete(route));
       expect(response?.status()).toBe(200);
+      if (role !== "public") await expect(page).toHaveURL(new URL(concrete(route), process.env.SOLAROPS_WEB_URL??"http://localhost:3061").href);
       await expect(page.locator("main")).toBeVisible();
       await expect(page.getByRole("status").filter({hasText:/Loading/i})).toHaveCount(0,{timeout:15000});
       await expect(page.getByText("Application error",{exact:false})).toHaveCount(0);

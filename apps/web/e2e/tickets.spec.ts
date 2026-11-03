@@ -1,3 +1,4 @@
+import { receivedUnits, installReceivedOrder, fixtureUpload } from "./release/business-fixtures";
 import { previewPassword } from "./preview-accounts";
 import { randomUUID } from "node:crypto";
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
@@ -141,13 +142,14 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
       }, true)).json() as { id: string };
       expect((await post(w, `/api/v1/stock/operations/${op.id}/ready`, {})).status()).toBe(200);
       expect((await post(w, `/api/v1/stock/operations/${op.id}/validate`, {})).status()).toBe(200);
+      const units = await receivedUnits(w, line.component_code!, Number(line.quantity), op.id, line === material[0] ? serial : undefined);
+      for (const unit of units) expect((await post(w, `/api/v1/serials/${unit.id}/assign`, { order_id: order.id })).status()).toBe(200);
     }
-    const scanned = await (await post(w, "/api/v1/serials/scan", { serial_number: serial, component_code: material[0].component_code })).json() as { id: string };
-    expect((await post(w, `/api/v1/serials/${scanned.id}/assign`, { order_id: order.id })).status()).toBe(200);
     const delivery = await (await post(w, "/api/v1/deliveries", { order_id: order.id }, true)).json() as { id: string };
     expect((await post(w, `/api/v1/deliveries/${delivery.id}/transit`, {})).status()).toBe(200);
     expect((await post(w, `/api/v1/deliveries/${delivery.id}/deliver`, {})).status()).toBe(200);
     expect((await post(w, `/api/v1/deliveries/${delivery.id}/confirm`, {})).status()).toBe(200);
+    await installReceivedOrder(c, s, t, order.id, techId as string, email);
 
     await page.goto("/customer/complaints");
     await page.getByLabel("Confirmed order").selectOption({ label: order.reference });
@@ -198,6 +200,8 @@ test("Leela reports an inverter fault and confirms the repair in the browser", a
     await techPage.getByRole("button", { name: "Save work" }).click();
     await expect(techPage.getByText("Saved.")).toBeVisible();
     await techPage.getByLabel(/Completion summary/).fill("Isolator replaced and generation verified at 2.9 kW under load.");
+    const repairId = techPage.url().split("/").pop()!;
+    await fixtureUpload(t, `/tickets/${(await (await t.get(`/api/v1/repair-jobs/${repairId}`)).json()).ticket_id}/attachments?repair_job_id=${repairId}`);
     await techPage.getByRole("button", { name: "Submit repair summary" }).click();
     await expect(techPage.getByText("Saved.")).toBeVisible();
 
