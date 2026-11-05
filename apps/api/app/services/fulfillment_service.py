@@ -41,16 +41,6 @@ def _hash(order_id: uuid.UUID) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
-def _main_on_hand(db: Session, component_code: str) -> int:
-    total = db.scalar(
-        select(func.coalesce(func.sum(StockLedger.quantity_delta), 0)).where(
-            StockLedger.component_code == component_code,
-            StockLedger.location_code == "MAIN",
-        )
-    )
-    return int(total or 0)
-
-
 def _deduct_pick(
     db: Session, user: User, order: SalesOrder, delivery: Delivery, picks: list[dict]
 ) -> StockOperation:
