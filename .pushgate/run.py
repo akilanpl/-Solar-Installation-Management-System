@@ -165,7 +165,8 @@ def main():
     for name, family, sev, directory, command in stages:
         print(f"Running {name}", flush=True)
         rows = run_stage(root, folder, name, family, sev, directory, command,
-                         require_junit=name in {"backend", "frontend"})
+                         require_junit=name in {"backend", "frontend"},
+                         timeout=1800 if name == "backend" else 600)
         tests.extend(rows)
         if name == "backend-coverage-check" and coverage_check.exists():
             try:
