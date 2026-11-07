@@ -6,7 +6,7 @@ on:
 
 jobs:
   api:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:16
@@ -36,7 +36,11 @@ jobs:
       - name: Create the disposable test database
         run: |
           sudo apt-get update
-          sudo apt-get install -y postgresql-client
+          sudo apt-get install -y postgresql-client-16
+          export PATH="/usr/lib/postgresql/16/bin:$PATH"
+          pg_dump --version | grep -E 'PostgreSQL\) 16\.'
+          pg_restore --version | grep -E 'PostgreSQL\) 16\.'
+          echo "/usr/lib/postgresql/16/bin" >> "$GITHUB_PATH"
           psql "postgresql://solarops:solarops@127.0.0.1:5432/solarops" -c "CREATE DATABASE solarops_test OWNER solarops;"
       - name: Lint, migrate through pytest, and test
         working-directory: apps/api

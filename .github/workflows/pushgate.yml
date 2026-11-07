@@ -5,8 +5,8 @@ permissions:
   actions: read
 jobs:
   gate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
     services:
       postgres:
         image: postgres:16
@@ -35,6 +35,27 @@ jobs:
         working-directory: apps/api
       - run: npm ci
         working-directory: apps/web
+      - name: Install PostgreSQL 16 client tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-16
+          export PATH="/usr/lib/postgresql/16/bin:$PATH"
+          pg_dump --version | grep -E 'PostgreSQL\) 16\.'
+          pg_restore --version | grep -E 'PostgreSQL\) 16\.'
+          echo "/usr/lib/postgresql/16/bin" >> "$GITHUB_PATH"
+      - name: Install project Playwright Chromium
+        working-directory: apps/web
+        run: npm exec -- playwright install --with-deps chromium
+      - name: Install verified Gitleaks release
+        run: |
+          tool_dir="$RUNNER_TEMP/solarops-gitleaks"
+          mkdir -p "$tool_dir"
+          cd "$tool_dir"
+          curl --fail --location --silent --show-error https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz -o gitleaks.tar.gz
+          echo '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  gitleaks.tar.gz' | sha256sum --check
+          tar -xzf gitleaks.tar.gz gitleaks
+          "$tool_dir/gitleaks" version
+          echo "$tool_dir" >> "$GITHUB_PATH"
       - run: .pushgate/run.sh --mode=ci
         env:
           GH_TOKEN: ${{ github.token }}
