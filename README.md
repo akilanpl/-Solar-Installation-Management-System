@@ -13,6 +13,8 @@ SolarOps connects customer enquiries, sales, field teams and warehouse operation
 
 The source integrates six role workspaces around transactional business services. The verification section identifies the recorded database/browser checks and the external-provider acceptance required for a release.
 
+[Engineering documentation](docs/README.md)
+
 ## Why SolarOps exists
 
 A rooftop installation crosses several teams before the first panel generates power. Disconnected enquiries, survey notes and quotation revisions make sales handoffs difficult; inventory and installation schedules add another coordination problem. Warranty and support then need the original equipment and acceptance history.
