@@ -9,9 +9,9 @@ SolarOps connects customer enquiries, sales, field teams and warehouse operation
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 
-[Run locally](#getting-started) · [Architecture](#system-architecture) · [Engineering](#engineering-highlights) · [Verification status](#product-status-and-limitations)
+[Run locally](#getting-started) · [Architecture](#system-architecture) · [Engineering](#engineering-highlights) · [Verification status](#verification-scope)
 
-> **Status:** source for Phases 1–4 is on the default branch. Local demonstration and regression tooling exist; complete browser and external-provider acceptance remain incomplete. No verified public deployment or production certification is documented.
+The source integrates six role workspaces around transactional business services. The verification section identifies the recorded database/browser checks and the external-provider acceptance required for a release.
 
 ## Why SolarOps exists
 
@@ -34,11 +34,11 @@ flowchart LR
     A --- H
 ```
 
-This is a product map, not a screenshot. The repository includes product imagery and decorative assets, but no tracked application captures with verified provenance suitable for this preview.
+The product map shows how the six workspaces share business records.
 
 ## Core capabilities
 
-These capabilities have registered routes and implementation code. Their presence does not imply complete browser or provider acceptance; see [status and limitations](#product-status-and-limitations).
+The following workflows have registered routes and implementation code; [verification scope](#verification-scope) records their acceptance evidence.
 
 | Product area | Implemented workflow |
 | --- | --- |
@@ -266,7 +266,7 @@ Back up data and evidence before migrations. Restore backups into a new database
 
 Historical reports refer to different commits and sometimes retain superseded branch status. The [multi-role report](docs/release/MULTI_ROLE_END_TO_END_REPORT.md) records a later backend checkpoint than the older tracked gate JSON; neither certifies the current default-branch commit. Test totals and gate scores are deliberately not promoted to current badges or release claims here. Re-run checks and acceptance against the exact source under review.
 
-No tests, application startup or provider calls were executed as part of this README-only redesign. Unit/integration success alone does not establish production readiness.
+The documentation review did not rerun application or provider acceptance. At the inspected `6bc512b` source, ordinary CI succeeded while the separate pushgate failed; these distinct outcomes must not be collapsed into a passing release claim.
 
 ## Repository structure
 
@@ -289,7 +289,7 @@ docs/                     Architecture, phase designs and release evidence
 .pushgate/                Release gate runner and evaluation
 ```
 
-## Product status and limitations
+## Verification scope
 
 | Area | Current evidence boundary |
 | --- | --- |
@@ -313,3 +313,5 @@ SolarOps began for the **Odoo x GCET Hyderabad Hackathon** and subsequently expa
 Git history records contributions under **Akilan / Akilan P L** and **VengadeshwararRao**. Adapted frontend source credits **ashwin-hue** in the [integration styles](apps/web/src/styles/integration.css) and teammate stylesheets. These credits preserve the repository's recorded attribution without assigning undocumented individual responsibilities.
 
 [Repository](https://github.com/akilanpl/-Solar-Installation-Management-System) · [Contributors](https://github.com/akilanpl/-Solar-Installation-Management-System/graphs/contributors) · [Contributing](CONTRIBUTING.md) · [API contract](contracts/generated/openapi.json) · [Release documentation](docs/release/)
+
+Documentation basis: [`6bc512b`](https://github.com/akilanpl/-Solar-Installation-Management-System/tree/6bc512bfb9f8ccc99dc3894ddb912ad32a3f640c). Recorded validation retains its original source and environment scope.
